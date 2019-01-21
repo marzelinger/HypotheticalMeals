@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 import logger from 'morgan';
 import mongoose from 'mongoose';
 import { getSecret } from './secrets';
-import Comment from './models/comment';
+import CommentHandler from './models/handlers/CommentHandler'
 
 // and create our instances
 const app = express();
@@ -28,33 +28,13 @@ router.get('/', (req, res) => {
   res.json({ message: 'Hello, World!' });
 });
 
-router.get('/comments', (req, res) => {
-    // res.json({ message: 'Hello, World!' });
-    // console.log(Comment)
-    Comment.find((err, comments) => {
-      if (err) return res.json({ success: false, error: err });
-      return res.json({ success: true, data: comments });
-    });
-  });
+router.get('/comments', (req, res) => CommentHandler.getAllComments(req, res));
 
-router.post('/comments', (req, res) => {
-const comment = new Comment();
-// body parser lets us use the req.body
-const { author, text } = req.body;
-if (!author || !text) {
-    // we should throw an error. we can do this check on the front end
-    return res.json({
-    success: false,
-    error: 'You must provide an author and comment'
-    });
-}
-comment.author = author;
-comment.text = text;
-comment.save(err => {
-    if (err) return res.json({ success: false, error: err });
-    return res.json({ success: true });
-});
-});
+router.post('/comments', (req, res) => CommentHandler.updateComment(req, res));
+
+router.put('/comments/:commentId', (req, res) => CommentHandler.getCommentById(req, res));
+
+router.delete('/comments/:commentId', (req, res) => CommentHandler.deleteComment(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);
