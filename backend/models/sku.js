@@ -1,4 +1,6 @@
 // model/sku.js
+// Belal and Riley
+
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
