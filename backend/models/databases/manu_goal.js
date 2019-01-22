@@ -1,4 +1,4 @@
-// model/databases/prod_line.js
+// model/databases/manu_goal.js
 // Riley
 
 import mongoose from 'mongoose';
@@ -6,9 +6,14 @@ const Schema = mongoose.Schema;
 
 // create new instance of the mongoose.schema. the schema takes an
 // object that shows the shape of your database entries.
-const Prod_linesSchema = new Schema({
-  name: String
+const Manu_GoalSchema = new Schema({
+    name: String,
+    user: String,
+    skus: {
+        type: Map,
+          of: Number
+    },
 }, { timestamps: true });
 
 // export our module to use in server.js
-export default mongoose.model('Prod_Line', Prod_linesSchema);
+export default mongoose.model('Manu_Goal', Manu_GoalSchema);

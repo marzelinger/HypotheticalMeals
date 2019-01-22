@@ -6,16 +6,16 @@ import SKU from './../databases/sku';
 class SkuHandler{
 
     static updateSkuByID(req, res){
-        const { sku_ID_param } = req.params;
-        if (!sku_ID_param) {
+        const { sku_ID } = req.params;
+        if (!sku_ID) {
             return res.json({ success: false, error: 'No sku id provided' });
         }
-        SKU.findById(sku_ID_param, (error, sku) => {
+        SKU.findById(sku_ID, (error, sku) => {
             if (error) return res.json({ success: false, error });
-            const { sku_ID, name, case_upc, unit_upc, unit_size, cpc, 
+            const { sku_num, name, case_upc, unit_upc, unit_size, cpc, 
                 prod_line, ingredients, comment } = req.body;
-            if (sku_id) skue.sku_id = sku_id;
             if (name) sku.name = name;
+            if (sku_num) skue.sku_num = sku_num;
             if (case_upc) sku.case_upc = case_upc;
             if (unit_upc) sku.unit_upc = unit_upc;
             if (unit_size) sku.unit_size = unit_size;
