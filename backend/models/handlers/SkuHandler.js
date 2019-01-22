@@ -5,12 +5,12 @@ import SKU from './../databases/sku';
 
 class SkuHandler{
 
-    static updateSkuById(req, res){
+    static updateSkuByID(req, res){
         const { sku_ID_param } = req.params;
         if (!sku_ID_param) {
             return res.json({ success: false, error: 'No sku id provided' });
         }
-        SKU.updateById(sku_ID_param, (error, sku) => {
+        SKU.findById(sku_ID_param, (error, sku) => {
             if (error) return res.json({ success: false, error });
             const { sku_ID, name, case_upc, unit_upc, unit_size, cpc, 
                 prod_line, ingredients, comment } = req.body;
@@ -37,3 +37,5 @@ class SkuHandler{
           });
     }
 }
+
+export default SkuHandler;

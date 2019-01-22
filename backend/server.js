@@ -6,7 +6,9 @@ import bodyParser from 'body-parser';
 import logger from 'morgan';
 import mongoose from 'mongoose';
 import { getConfig } from './config';
-import SkuHandler from './models/handlers/SkuHandler'
+import SkuHandler from './models/handlers/SkuHandler';
+import Prod_LineHandler from './models/handlers/Prod_LineHandler';
+
 
 // and create our instances
 const app = express();
@@ -32,6 +34,11 @@ router.get('/', (req, res) => {
 router.put('/skus/:sku_ID_param', (req, res) => SkuHandler.updateSkuByID(req, res));
 
 router.get('/skus', (req, res) => SkuHandler.getAllSkus(req, res));
+
+// Product Line database APIs
+router.put('/products', (req, res) => Prod_LineHandler.createProductLine(req, res));
+
+router.get('/products', (req, res) => Prod_LineHandler.getAllProductLines(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);
