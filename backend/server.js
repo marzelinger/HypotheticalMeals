@@ -29,7 +29,7 @@ router.get('/', (req, res) => {
 });
 
 // SKU database APIs
-router.put('/skus/:sku_ID', (req, res) => SkuHandler.updateSkuByID(req, res));
+router.put('/skus/:sku_ID_param', (req, res) => SkuHandler.updateSkuByID(req, res));
 
 router.get('/skus', (req, res) => SkuHandler.getAllSkus(req, res));
 

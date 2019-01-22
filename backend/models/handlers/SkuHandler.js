@@ -12,10 +12,10 @@ class SkuHandler{
         }
         SKU.updateById(sku_ID_param, (error, sku) => {
             if (error) return res.json({ success: false, error });
-            const { name, sku_ID, case_upc, unit_upc, unit_size, cpc, 
+            const { sku_ID, name, case_upc, unit_upc, unit_size, cpc, 
                 prod_line, ingredients, comment } = req.body;
-            if (name) sku.name = name;
             if (sku_id) skue.sku_id = sku_id;
+            if (name) sku.name = name;
             if (case_upc) sku.case_upc = case_upc;
             if (unit_upc) sku.unit_upc = unit_upc;
             if (unit_size) sku.unit_size = unit_size;
@@ -31,9 +31,9 @@ class SkuHandler{
     }
 
     static getAllSkus(req, res){
-        Comment.find((err, comments) => {
+        SKU.find((err, skus) => {
             if (err) return res.json({ success: false, error: err });
-            return res.json({ success: true, data: comments });
+            return res.json({ success: true, data: skus });
           });
     }
 }
