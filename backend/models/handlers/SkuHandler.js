@@ -1,4 +1,4 @@
-// SkuHandler.js
+// /models/handlers/SkuHandler.js
 // Belal and Riley
 
 import SKU from './../databases/sku';

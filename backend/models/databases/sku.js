@@ -1,4 +1,4 @@
-// model/sku.js
+// model/databases/sku.js
 // Belal and Riley
 
 import mongoose from 'mongoose';
