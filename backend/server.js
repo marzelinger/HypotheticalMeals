@@ -39,6 +39,7 @@ router.get('/skus', (req, res) => SkuHandler.getAllSkus(req, res));
 router.put('/products', (req, res) => Prod_LineHandler.createProductLine(req, res));
 
 router.get('/products', (req, res) => Prod_LineHandler.getAllProductLines(req, res));
+router.get('/products/:prod_line_id', (req, res) => Prod_LineHandler.getOneProductLine(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);

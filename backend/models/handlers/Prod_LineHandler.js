@@ -1,5 +1,5 @@
 // /models/handlers/Prod_lineHandler.js
-// Riley
+// Riley, Belal
 
 import Prod_Line from '../databases/prod_line';
 
@@ -29,6 +29,15 @@ class Prod_LineHandler{
         if (err) return res.json({ success: false, error: err });
         return res.json({ success: true, data: prod_lines });
       });
+  }
+
+  static getOneProductLine(req, res){
+    var target_name = "" + req.params.prod_line_id;
+    Prod_Line.find({ name : target_name}, function(err, prod_lines) {
+      if(err) return res.json({ success: false, error: err});
+      if(prod_lines.length < 1) return res.json({ success : false, error: '404'});
+      return res.json({ success: true, data: prod_lines})
+    });
   }
 
 }
