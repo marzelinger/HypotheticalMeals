@@ -15,7 +15,7 @@ const app = express();
 const router = express.Router();
 
 // set our port to either a predetermined port number if you have set it up, or 3001
-const API_PORT = process.env.API_PORT || 3000;
+const API_PORT = process.env.API_PORT || 3003;
 // mongoose.connect(getConfig('dbUri'), { useNewUrlParser: true})
 //         .then(() => console.log( "MongoDB successfully connected"))
 //         .catch( err => console.log(err));
