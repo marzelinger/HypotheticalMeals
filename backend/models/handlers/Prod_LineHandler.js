@@ -31,7 +31,7 @@ class Prod_LineHandler{
       });
   }
 
-  static getOneProductLine(req, res){
+  static getProductLineByID(req, res){
     var target_name = "" + req.params.prod_line_id;
     Prod_Line.find({ name : target_name}, function(err, prod_lines) {
       if(err) return res.json({ success: false, error: err});
