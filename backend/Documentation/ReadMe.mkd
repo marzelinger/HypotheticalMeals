@@ -1,0 +1,12 @@
+# Backend Documentation
+
+## API Conventions
+Each database document (ingredient, sku, etc.) will start with 5 basic HTTP routes: POST, PUT, GET, GET (by ID) and DELETE. These are placed in the `server.js` file.
+
+POST: used for creating objects, will return error if a unique identifier conflicts
+PUT: used for updating objects, will override an object with unique identifier conflicts
+GET: used for getting all objects in document
+GET (by ID): used for getting a single object by its unique identifier
+DELETE: used for deleting a single object by its unique identifier
+
+If an object is not found, a JSON object is returned with Success:True and Error:404.

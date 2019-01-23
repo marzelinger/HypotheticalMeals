@@ -1,10 +1,5 @@
 // server.js
 // This file contains all of the routes for databases, organized by document.
-// POST is used for creating a new object
-// PUT is used for updating an object
-// GET is used for getting all objects
-// GET (with :ID) is used for getting an object by its ID
-// DELETE is used for deleting an object
 
 // first we import our dependencies…
 import express from 'express';
@@ -59,7 +54,7 @@ router.get('/ingredients', (req, res) => IngredientHandler.getAllIngredients(req
 router.get('/ingredients/:ingredient_ID', (req, res) => IngredientHandler.getIngredientByID(req, res));
 router.delete('/ingredients/:ingredient_ID', (req, res) => IngredientHandler.deleteIngredientByID(req, res));
 
-// Ingredient database APIs
+// Manufacturing Goals database APIs
 router.post('/manugoals', (req, res) => Manu_GoalHandler.createManufacturingGoal(req, res));
 router.put('/manugoals/:manu_goal_ID', (req, res) => Manu_GoalHandler.updateManufacturingGoalByID(req, res));
 router.get('/manugoals', (req, res) => Manu_GoalHandler.getAllManufacturingGoals(req, res));
