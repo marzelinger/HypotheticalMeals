@@ -1,5 +1,5 @@
-// model/databases/sku.js
-// Belal and Riley
+// models/databases/user.js
+// Belal & Riley
 
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
