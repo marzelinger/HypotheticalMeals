@@ -51,8 +51,8 @@ class CommentHandler{
             if (author) comment.author = author;
             if (text) comment.text = text;
             comment.save(error => {
-            if (error) return res.json({ success: false, error });
-            return res.json({ success: true });
+                if (error) return res.json({ success: false, error });
+                return res.json({ success: true });
             });
         });
     }
