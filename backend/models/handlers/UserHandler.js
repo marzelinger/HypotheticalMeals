@@ -3,6 +3,10 @@
 
 import User from '../databases/User';
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const keys = require("../../config/keys");
+
+
 // Load input validation
 const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
@@ -12,26 +16,6 @@ class UserHandler{
     // Creates a User in the Database
     // If the User exists, return error if it exists
     static createUser(req, res){
-        // const user = new User();
-        // const { name, email, password, date} = req.body;
-        // User.find({ name : name }, (err, curr_user) => {
-        //     if (err) return res.json({ success: false, error: err });
-        //     if (curr_user.length != 0) {
-        //         return res.json({ success: true, error: '422' });
-        //     }
-        //     user.name = name;
-        //     user.email = email;
-        //     user.password = password;
-        //     user.date = date;
-        //     //error on successful POST
-        //     user.save(err => {
-        //         if (err) return res.json({ success: false, error: err });
-        //         return res.json({ success: true, data: user });
-        //     });
-        //     return res.json({ success: true, data: user });
-            
-        // });
-
     // Form validation
   const { errors, isValid } = validateRegisterInput(req.body);
   // Check validation
@@ -64,9 +48,56 @@ class UserHandler{
     }
 
 
+    static loginUserByNameAndPassword(req,res){
 
+        
+    // Form validation
+  const { errors, isValid } = validateLoginInput(req.body);
+  // Check validation
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+    const email = req.body.email;
+    const password = req.body.password;
+  // Find user by email
+    User.findOne({ email }).then(user => {
+      // Check if user exists
+      if (!user) {
+        return res.status(404).json({ emailnotfound: "Email not found" });
+      }
+  // Check password
+      bcrypt.compare(password, user.password).then(isMatch => {
+        if (isMatch) {
+          // User matched
+          // Create JWT Payload
+          const payload = {
+            id: user.id,
+            name: user.name
+          };
+  // Sign token
+          jwt.sign(
+            payload,
+            keys.secretOrKey,
+            {
+              expiresIn: 31556926 // 1 year in seconds
+            },
+            (err, token) => {
+              res.json({
+                success: true,
+                token: "Bearer " + token
+              });
+            }
+          );
+        } else {
+          return res
+            .status(400)
+            .json({ passwordincorrect: "Password incorrect" });
+        }
+      });
+    });
+  
 
-
+    }
 
     static updateUserByID(req, res){
     }
