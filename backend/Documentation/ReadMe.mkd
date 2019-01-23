@@ -10,3 +10,7 @@ GET (by ID): used for getting a single object by its unique identifier
 DELETE: used for deleting a single object by its unique identifier
 
 If an object is not found, a JSON object is returned with Success:True and Error:404.
+
+## Error Codes
+404: object is not found
+422: object already exists

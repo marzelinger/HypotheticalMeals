@@ -44,7 +44,6 @@ router.delete('/skus/:sku_ID', (req, res) => SkuHandler.deleteSkuByID(req, res))
 router.post('/products', (req, res) => Prod_LineHandler.createProductLine(req, res));
 router.put('/products/:prod_line_ID', (req, res) => Prod_LineHandler.updateProductLineByID(req, res));
 router.get('/products', (req, res) => Prod_LineHandler.getAllProductLines(req, res));
-
 router.get('/products/:prod_line_ID', (req, res) => Prod_LineHandler.getProductLineByID(req, res));
 router.delete('/products/:prod_line_ID', (req, res) => Prod_LineHandler.deleteProductLineByID(req, res));
 
