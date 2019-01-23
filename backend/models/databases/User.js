@@ -54,5 +54,5 @@ const UserSchema = new Schema({
 
 
 // export our module to use in server.js
-export default mongoose.model('users', UserSchema);
+export default mongoose.model('User', UserSchema);
 //module.exports = User = mongoose.model("users", UserSchema);
