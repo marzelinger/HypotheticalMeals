@@ -1,6 +1,6 @@
 //register.js file to pull in validator and is-empty dependencies
 //then have the function of validateRegisterInput which has an input of data
-//and it then checks that the data is correct etc.
+//and it then checks that the data is correct etc. This is for creating a user.
 //Maddie
 //derived from: https://blog.bitsrc.io/build-a-login-auth-app-with-mern-stack-part-1-c405048e3669
 

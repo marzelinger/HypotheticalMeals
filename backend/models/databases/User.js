@@ -2,7 +2,6 @@
 // Maddie
 
 import mongoose from 'mongoose';
-import uuid from 'uuid';
 const Schema = mongoose.Schema;
 
 // create new instance of the mongoose.schema. the schema takes an
@@ -55,4 +54,5 @@ const UserSchema = new Schema({
 
 
 // export our module to use in server.js
-export default mongoose.model('User', UserSchema);
+export default mongoose.model('users', UserSchema);
+//module.exports = User = mongoose.model("users", UserSchema);
