@@ -1,14 +1,13 @@
-// server.js
 
-// first we import our dependencies…
-import express from 'express';
-import bodyParser from 'body-parser';
-import logger from 'morgan';
-import mongoose from 'mongoose';
-import { getConfig } from './config';
-import CommentHandler from './models/handlers/CommentHandler'
+
 const passport = require("passport");
 const users = require ("./routes/api/users");
+const bodyParser = require('body-parser');
+const logger = require('morgan');
+const mongoose = require ('mongoose');
+const { getConfig } = require ('./config');
+const CommentHandler = require ('./models/handlers/CommentHandler');
+const express = require('express');
 
 // and create our instances
 const app = express();

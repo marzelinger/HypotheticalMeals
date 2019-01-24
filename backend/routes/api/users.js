@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-import UserHandler from '../../models/handlers/UserHandler';
+const UserHandler = require('../../models/handlers/UserHandler');
 
 // Load User model
 const User = require("../../models/databases/User");

@@ -1,7 +1,7 @@
 // /models/handlers/UserHandler.js
 // Maddie
 
-import User from '../databases/User';
+const User = require('../databases/User');
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
