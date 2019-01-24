@@ -51,7 +51,7 @@ router.put('/comments/:commentId', (req, res) => CommentHandler.getCommentById(r
 router.delete('/comments/:commentId', (req, res) => CommentHandler.deleteComment(req, res));
 
 // Use our router configuration when we call /api
-//app.use('/api', router);
+app.use('/api', router);
 app.use(passport.initialize());
 require("./config/passport")(passport);
 app.use("/api/users", users);
