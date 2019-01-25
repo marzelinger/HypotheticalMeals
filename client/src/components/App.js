@@ -1,11 +1,13 @@
 import React from 'react'
-import ListPage from './ListPage';
-import Filter from './Filter';
+import PageTemplate from './PageTemplate'
 
 const App = () => (
-  <div>
-    <Filter></Filter>
-  </div>
+//   <div>
+//     <AddTodoContainer />
+//     <VisibleTodoList />
+//     <Footer />
+//   </div>
+    <PageTemplate></PageTemplate>
 )
 
 export default App

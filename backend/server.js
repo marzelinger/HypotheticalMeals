@@ -8,6 +8,8 @@ import mongoose from 'mongoose';
 import { getSecret } from './secrets';
 import CommentHandler from './models/handlers/CommentHandler'
 
+const dotenv = require('dotenv');
+dotenv.config();
 // and create our instances
 const app = express();
 const router = express.Router();
