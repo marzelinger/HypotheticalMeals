@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 const mongoose = require ('mongoose');
 const { getConfig } = require ('./config');
-const CommentHandler = require ('./models/handlers/CommentHandler');
+const CommentHandler =require ('./models/handlers/CommentHandler');
 const express = require('express');
 
 // and create our instances
@@ -51,8 +51,8 @@ router.delete('/comments/:commentId', (req, res) => CommentHandler.deleteComment
 
 // Use our router configuration when we call /api
 app.use('/api', router);
-app.use(passport.initialize());
-require("./config/passport")(passport);
-app.use("/api/users", users);
+//app.use(passport.initialize());
+//require("./config/passport")(passport);
+//app.use("/api/users", users);
 
 app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));

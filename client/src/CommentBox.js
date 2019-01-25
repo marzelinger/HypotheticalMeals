@@ -3,6 +3,7 @@ import 'whatwg-fetch';
 import CommentList from './CommentList';
 import CommentForm from './CommentForm';
 import './CommentBox.css';
+import NavBar from './components/layout/Navbar'
 
 class CommentBox extends Component {
   constructor() {
