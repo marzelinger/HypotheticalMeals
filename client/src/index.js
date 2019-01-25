@@ -58,19 +58,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const store = createStore(todoApp)
 
 render(
+  <div>
   <Provider store={store}>
-     <Router>
-          <div className="App">
-            <Navbar />
-            <Route exact path="/" component={Landing} />
-            <Route exact path="/register" component={Register} />
-            <Route exact path="/login" component={Login} />
-            <Switch>
-              <PrivateRoute exact path="/dashboard" component={Dashboard} />
-            </Switch>
-          </div>
-        </Router>
-  </Provider>,
+    <App />
+  </Provider>
+  </div>,
   document.getElementById('root')
 )
 
