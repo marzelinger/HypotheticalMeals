@@ -7,6 +7,9 @@ import logger from 'morgan';
 import mongoose from 'mongoose';
 import { getSecret } from './secrets';
 import CommentHandler from './models/handlers/CommentHandler'
+const passport = require("passport");
+const users = require ("./routes/api/users");
+
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -16,6 +19,7 @@ const router = express.Router();
 
 // set our port to either a predetermined port number if you have set it up, or 3001
 const API_PORT = process.env.API_PORT || 3001;
+
 mongoose.connect(getSecret('dbUri'));
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
@@ -39,6 +43,10 @@ router.put('/comments/:commentId', (req, res) => CommentHandler.getCommentById(r
 router.delete('/comments/:commentId', (req, res) => CommentHandler.deleteComment(req, res));
 
 // Use our router configuration when we call /api
-app.use('/api', router);
+//app.use('/api', router);
+app.use(passport.initialize());
+require("./config/passport")(passport);
+app.use("/api/users", users);
+
 
 app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
