@@ -38,10 +38,19 @@
 //   unsubscribe()
 import React from 'react'
 import { render } from 'react-dom'
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import todoApp from './reducers/reducers'
 import App from './components/App'
+import Navbar from './components/layout/Navbar'
+import Landing from './components/layout/Landing'
+import Register from "./components/auth/Register";
+import Login from "./components/auth/Login";
+import PrivateRoute from "./components/private-route/PrivateRoute";
+import Dashboard from "./components/dashboard/Dashboard";
+
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // console.log(process.env.TITLE)
@@ -50,7 +59,17 @@ const store = createStore(todoApp)
 
 render(
   <Provider store={store}>
-    <App />
+     <Router>
+          <div className="App">
+            <Navbar />
+            <Route exact path="/" component={Landing} />
+            <Route exact path="/register" component={Register} />
+            <Route exact path="/login" component={Login} />
+            <Switch>
+              <PrivateRoute exact path="/dashboard" component={Dashboard} />
+            </Switch>
+          </div>
+        </Router>
   </Provider>,
   document.getElementById('root')
 )
