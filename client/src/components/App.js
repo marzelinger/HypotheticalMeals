@@ -13,8 +13,9 @@ import setAuthToken from "../utils/setAuthToken";
 
 import { setCurrentUser, logoutUser } from "../actions/authActions";
 import { Provider } from "react-redux";
-import store from "../store/configureStore";
-
+import store from '../store/configureStore';
+//const store = require('../store/configureStore')
+//state = store.default.getState()
 
 
 // Check for token to keep user logged in
@@ -39,17 +40,21 @@ if (localStorage.jwtToken) {
 
 const App = () => (
   <div>
-    <Router>
-        <div>
+    <Provider store={store}>
     <PageTemplate></PageTemplate>
-    <Navbar />
+        <Router>
+          <div className="App">
+            <Navbar />
             <Route exact path="/" component={Landing} />
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
-            </div>
-            </Router>
-
-    </div>
+            <Switch>
+              <PrivateRoute exact path="/dashboard" component={Dashboard} />
+            </Switch>
+          </div>
+        </Router>
+      </Provider>
+      </div>
 )
 
 export default App
