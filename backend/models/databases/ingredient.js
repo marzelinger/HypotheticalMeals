@@ -7,7 +7,7 @@ const Schema = mongoose.Schema;
 // create new instance of the mongoose.schema. the schema takes an
 // object that shows the shape of your database entries.
 const IngredientsSchema = new Schema({
-  ingredient_name: String,
+  name: String,
   ingredient_num: String,
   vendor_info: String,
   pkg_size: String,
