@@ -35,10 +35,10 @@ router.get('/', (req, res) => {
 
 // SKU database APIs
 router.post('/skus', (req, res) => SkuHandler.createSku(req, res));
-router.put('/skus/:sku_num', (req, res) => SkuHandler.updateSkuByID(req, res));
+router.put('/skus/:sku_num', (req, res) => SkuHandler.updateSkuBySkuNum(req, res));
 router.get('/skus', (req, res) => SkuHandler.getAllSkus(req, res));
-router.get('/skus/:sku_num', (req, res) => SkuHandler.getSkuByID(req, res));
-router.delete('/skus/:sku_num', (req, res) => SkuHandler.deleteSkuByID(req, res));
+router.get('/skus/:sku_num', (req, res) => SkuHandler.getSkuBySkuNum(req, res));
+router.delete('/skus/:sku_num', (req, res) => SkuHandler.deleteSkuBySkuNum(req, res));
 
 // Product Line database APIs
 router.post('/products', (req, res) => Prod_LineHandler.createProductLine(req, res));
