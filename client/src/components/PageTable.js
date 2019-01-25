@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Table } from 'reactstrap';
 
 export default class PageTable extends React.Component {
@@ -36,4 +37,20 @@ export default class PageTable extends React.Component {
       </Table>
     );
   }
+
+    // PageTable.propTypes = {
+    //   data: PropTypes.arrayOf(PropTypes.shape({
+    //     author: PropTypes.string,
+    //     id: PropTypes.string,
+    //     text: PropTypes.string,
+    //     updatedAt: PropTypes.date,
+    //   })),
+    //   handleDeleteComment: PropTypes.func.isRequired,
+    //   handleUpdateComment: PropTypes.func.isRequired
+    // };
+
+    // PageTable.defaultProps = {
+    //   data: [],
+    // };
+
 }

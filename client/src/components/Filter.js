@@ -1,6 +1,8 @@
 import React from 'react'
 import { 
-    ButtonDropdown, 
+    Input,
+    InputGroup, 
+    InputGroupButtonDropdown,
     DropdownToggle, 
     DropdownMenu, 
     DropdownItem } from 'reactstrap';
@@ -9,33 +11,36 @@ import {
 export default class Filter extends React.Component {
     constructor(props) {
         super(props);
-    
-        this.toggle = this.toggle.bind(this);
+
+        this.toggleDropDown = this.toggleDropDown.bind(this);
         this.state = {
-          dropdownOpen: false
+            width: 30,
+            dropdownOpen: false
         };
-      }
+    }
     
-      toggle() {
+    toggleDropDown() {
         this.setState({
-          dropdownOpen: !this.state.dropdownOpen
+            dropdownOpen: !this.state.dropdownOpen
         });
-      }
+    }
     
-      render() {
+    render() {
         return (
-          <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-            <DropdownToggle caret>
-              Button Dropdown
-            </DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem header>Header</DropdownItem>
-              <DropdownItem disabled>Action</DropdownItem>
-              <DropdownItem>Another Action</DropdownItem>
-              <DropdownItem divider />
-              <DropdownItem>Another Action</DropdownItem>
-            </DropdownMenu>
-          </ButtonDropdown>
+        <div classname='filter-item' style={{width: this.state.width + '%'}}>
+            <InputGroup>
+                <Input />
+                <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
+                <DropdownToggle caret>
+                    Category
+                </DropdownToggle>
+                <DropdownMenu>
+                    <DropdownItem>Keyword</DropdownItem>
+                    <DropdownItem>SKU</DropdownItem>
+                </DropdownMenu>
+                </InputGroupButtonDropdown>
+            </InputGroup>
+        </div>
         );
-      }
+    }
 }
