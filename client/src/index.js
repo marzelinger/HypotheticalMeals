@@ -42,6 +42,9 @@ import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import todoApp from './reducers/reducers'
 import App from './components/App'
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+// console.log(process.env.TITLE)
 
 const store = createStore(todoApp)
 
