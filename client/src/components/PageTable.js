@@ -2,44 +2,56 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Table } from 'reactstrap';
 
-const PageTable = (props) => {
-    const { columns,
-            properties,
-            // list_items: {
-            //   _id,
-            //   ingredient_name,
-            //   ingredient_num,
-            //   vendor_info,
-            //   pkg_size,
-            //   pkg_cost,
-            //   skus,
-            //   comment,
-            //   updatedAt,
-            //   createdAt,
-            //   __v
-            // } 
-          } = props;
+export class PageTable extends React.Component{
+    constructor(props) {
+      super(props);
+      // const { columns,
+      //   properties,
+      //   list_items
+      //   //   _id,
+      //   //   ingredient_name,
+      //   //   ingredient_num,
+      //   //   vendor_info,
+      //   //   pkg_size,
+      //   //   pkg_cost,
+      //   //   skus,
+      //   //   comment,
+      //   //   updatedAt,
+      //   //   createdAt,
+      //   //   __v
+      //   // } 
+      // } = props;
+    }
 
-    return (
-      <Table>
-        <thead>
-          <tr>
-            {columns.map(column => 
-              <th key={column}>{column}</th>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {props.list_items.map(item => 
-            <tr key={item.number}>
-              {properties.map(prop => 
-                <td key={prop}>{item[prop]}</td>
+    getProperty = (col_label) => {
+      console.log(col_label);
+      console.log(this.props.columns.indexOf(col_label));
+      console.log(this.props.properties[this.props.columns.indexOf(col_label)]);
+      return this.props.properties[this.props.columns.indexOf(col_label)];
+    }
+
+    render() {
+      return (
+        <Table>
+          <thead>
+            <tr>
+              {this.props.columns.map(column => 
+                <th key={column} onClick={e => this.props.handleSort(e, this.getProperty(column))}>{column}</th>
               )}
             </tr>
-          )}
-        </tbody>
-      </Table>
-    );
+          </thead>
+          <tbody>
+            {this.props.list_items.map(item => 
+              <tr key={item.number}>
+                {this.props.properties.map(prop => 
+                  <td key={prop}>{item[prop]}</td>
+                )}
+              </tr>
+            )}
+          </tbody>
+        </Table>
+      );
+    }
 
 };
 

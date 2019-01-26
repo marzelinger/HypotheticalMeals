@@ -37,6 +37,12 @@ export default class ListPage extends React.Component {
         }
     }
 
+    onSort = (event, sortKey) => {
+        const data = this.state.data;
+        data.sort((a,b) => a[sortKey].toString().localeCompare(b[sortKey]))
+        this.setState({data})
+      };
+
     render() {
         return (
             <div className="list-page">
@@ -53,6 +59,7 @@ export default class ListPage extends React.Component {
                         columns={this.state.table_columns} 
                         properties={this.state.table_properties} 
                         list_items={this.state.data}
+                        handleSort={this.onSort}
                     >
                     </PageTable>
                 </div>
