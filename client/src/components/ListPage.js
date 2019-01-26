@@ -26,6 +26,7 @@ export default class ListPage extends React.Component {
             filter_options: [Constants.keyword_label, Constants.sku_label],
             table_columns: ['Name', 'Number', 'Package Size', 'Cost per Package (USD)'],
             table_properties: ['ingredient_name', 'ingredient_num', 'pkg_size', 'pkg_cost'],
+            selected_items: [],
             data: []
         };
     }
@@ -73,7 +74,13 @@ export default class ListPage extends React.Component {
         this.setState({data})
     };
 
-
+    onSelect = (event, item) => {
+        var newState = this.state.selected_items.slice();
+        var loc = newState.indexOf(item);
+        (loc > -1) ? newState.splice(loc, 1) : newState.push(item);
+        this.setState({ selected_items: newState});
+        console.log(this.state.selected_items);
+    };
 
     render() {
         return (
@@ -95,9 +102,7 @@ export default class ListPage extends React.Component {
                     <div className="options"> 
                         {/* <DropdownToggle caret>
                             ...
-                        </DropdownToggle>
-                        <DropdownMenu>
-                        </DropdownMenu> */}
+                        </DropdownToggle> */}
                     </div>
                 </div>
                 <div className='table'>
@@ -105,7 +110,9 @@ export default class ListPage extends React.Component {
                         columns={this.state.table_columns} 
                         properties={this.state.table_properties} 
                         list_items={this.state.data}
+                        selected_items={this.state.selected_items}
                         handleSort={this.onSort}
+                        handleSelect={this.onSelect}
                     >
                     </PageTable>
                 </div>
