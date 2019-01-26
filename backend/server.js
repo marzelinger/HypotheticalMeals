@@ -6,11 +6,13 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import logger from 'morgan';
 import mongoose from 'mongoose';
-import { getConfig } from './config';
 import SkuHandler from './models/handlers/SkuHandler';
 import Prod_LineHandler from './models/handlers/Prod_LineHandler';
 import IngredientHandler from './models/handlers/IngredientHandler';
 import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
+import { getSecret } from './secrets';
+const passport = require("passport");
+const users = require ("./routes/api/users");
 
 
 const dotenv = require('dotenv');
@@ -21,7 +23,9 @@ const router = express.Router();
 
 // set our port to either a predetermined port number if you have set it up, or 3001
 const API_PORT = process.env.API_PORT || 3001;
-mongoose.connect(getConfig('dbUri'));
+
+
+mongoose.connect(getSecret('dbUri'));
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
@@ -64,6 +68,10 @@ router.get('/manugoals/:manu_goal_name', (req, res) => Manu_GoalHandler.getManuf
 router.delete('/manugoals/:manu_goal_name', (req, res) => Manu_GoalHandler.deleteManufacturingGoalByName(req, res));
 
 // Use our router configuration when we call /api
-app.use('/api', router);
+//app.use('/api', router);
+app.use(passport.initialize());
+require("./config/passport")(passport);
+app.use("/api/users", users);
+
 
 app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
