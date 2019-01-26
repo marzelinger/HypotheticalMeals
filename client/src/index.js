@@ -41,8 +41,8 @@ import { render } from 'react-dom'
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
-import todoApp from './reducers/reducers'
-import App from './components/App'
+import rootReducer from "./reducers";
+import App from "./components/App";
 import Navbar from './components/layout/Navbar'
 import Landing from './components/layout/Landing'
 import Register from "./components/auth/Register";
@@ -55,14 +55,21 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 // console.log(process.env.TITLE)
 
-const store = createStore(todoApp)
+//const store = createStore(rootReducer)
+
+// render(
+//   <div>
+//   <Provider store={store}>
+//     <App />
+//   </Provider>
+//   </div>,
+//   document.getElementById('root')
+// )
+
 
 render(
   <div>
-  <Provider store={store}>
     <App />
-  </Provider>
   </div>,
   document.getElementById('root')
 )
-

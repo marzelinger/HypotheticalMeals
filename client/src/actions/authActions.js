@@ -8,6 +8,8 @@ import {
 } from "./types";
 // Register User
 export const registerUser = (userData, history) => dispatch => {
+  console.log(history);
+  console.log(userData);
   axios
     .post("/api/users/register", userData)
     .then(res => history.push("/login")) // re-direct to login on successful register

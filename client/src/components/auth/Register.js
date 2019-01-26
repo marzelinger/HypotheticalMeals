@@ -7,6 +7,11 @@ import classnames from "classnames";
 class Register extends Component {
   constructor() {
     super();
+
+    this.onSubmit = this.onSubmit.bind(this);
+    this.onChange = this.onChange.bind(this);
+
+
     this.state = {
       name: "",
       email: "",
@@ -20,7 +25,9 @@ class Register extends Component {
     // If logged in and user navigates to Register page, should redirect them to dashboard
     if (this.props.auth.isAuthenticated) {
       this.props.history.push("/dashboard");
+      console.log("mounted" +this.props.history);
     }
+
   }
 
 
@@ -31,10 +38,12 @@ componentWillReceiveProps(nextProps) {
       });
     }
   }
-onChange = e => {
+onChange(e){
     this.setState({ [e.target.id]: e.target.value });
+    //onsole.log(e.target.id + e.target.value);
   };
-onSubmit = e => {
+
+onSubmit(e){
     e.preventDefault();
 const newUser = {
       name: this.state.name,
@@ -42,8 +51,17 @@ const newUser = {
       password: this.state.password,
       password2: this.state.password2
     };
+    console.log(e);
+    console.log(this.state);
+    console.log(this.props.history);
+    console.log(this.props);
+    console.log(newUser);
 this.props.registerUser(newUser, this.props.history); 
   };
+
+
+
+
 render() {
     const { errors } = this.state;
 return (

@@ -1,5 +1,5 @@
  //import {createStore, applyMiddleware, compose} from 'redux';
- import rootReducer from "../reducers";
+ //import rootReducer from "../reducers";
 //import thunk from 'redux-thunk';
 /* Redux DevTools for debugging application's state changes.
 The extension provides power-ups for your Redux development workflow. Apart from Redux, it can be used with any other architectures which handle the state.
@@ -16,19 +16,48 @@ The extension provides power-ups for your Redux development workflow. Apart from
 
 
 
-import { createStore, applyMiddleware, compose } from "redux";
-import thunk from "redux-thunk";
-//import rootReducer from "./reducers";
+// import { createStore, applyMiddleware, compose } from "redux";
+// import thunk from "redux-thunk";
+// //import rootReducer from "./reducers";
 
-const initialState = {};
+// const initialState = {};
 
-const middleware = [thunk];
+// const store = createStore(
+//   rootReducer,
+//   initialState,
+//      window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+//     applyMiddleware(thunk)
+// );
 
-const store = createStore(
-  rootReducer,
-  initialState,
-     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
-    applyMiddleware(thunk)
-);
+// export default store;
 
-export default store;
+// import { createStore, applyMiddleware, compose } from "redux";
+// import thunk from "redux-thunk";
+// //import rootReducer from "./reducers";
+
+
+// export function configureStore(initialState){}
+// const initialState = {};
+
+// const store = createStore(
+//   rootReducer,
+//   initialState,
+//      window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+//     applyMiddleware(thunk)
+// );
+
+// export default store;
+
+
+
+
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+import rootReducer from '../reducers';
+export default function configureStore(initialState) {
+    return createStore(
+        rootReducer,
+        initialState,
+        applyMiddleware(thunk)
+    );
+}
