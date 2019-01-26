@@ -11,7 +11,7 @@ export default class ListPage extends React.Component {
 
         this.state = {
             page_name: 'ingredients',
-            page_title: '',
+            page_title: 'Ingredients',
             num_filters: 0,
             filter_value: '',
             filter_category: '',
@@ -64,7 +64,7 @@ export default class ListPage extends React.Component {
             <div className="list-page">
                 <Button onClick={this.loadDataFromServer}></Button>
                 <div className="title-bar">
-                    <h1>{this.page_title}</h1>
+                    <h1>{this.state.page_title}</h1>
                 </div>
                 <div className="filter-bar">
                     <Filter 

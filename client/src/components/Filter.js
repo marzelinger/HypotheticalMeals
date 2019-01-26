@@ -43,6 +43,7 @@ export default class Filter extends React.Component {
                 <DropdownMenu>
                     {this.props.categories.map(cat => 
                         <DropdownItem 
+                            key={cat}
                             onClick={e => this.props.handleFilterSelection(e, cat)}
                         >{cat}</DropdownItem>
                     )}
