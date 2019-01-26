@@ -48,7 +48,7 @@ class IngredientHandler{
 
     static async updateIngredientByID(req, res){
         try {
-            var target_id = req.params.ingredient_ID;
+            var target_id = req.params.ingredient_id;
             if (!target_id) {
                 return res.json({ success: false, error: 'No ingredient name provided'});
             }
@@ -90,13 +90,9 @@ class IngredientHandler{
 
     static async getIngredientByID(req, res){
         try {
-            console.log("hi");
-            var target_id = req.params.ingredient_ID;
-            console.log("hi2");
-            console.log(target_id);
+            var target_id = req.params.ingredient_id;
             let to_return = await Ingredient.find({ _id : target_id});
-            console.log(to_return);
-            if(to_return.length == 0) return res.json({ success: false});
+            if(to_return.length == 0) return res.json({ success: false, error: '404'});
             return res.json({ success: true, data: to_return});
         } catch (err) {
             return res.json({ success: false, error: err});
@@ -105,7 +101,7 @@ class IngredientHandler{
 
     static async deleteIngredientByID(req, res){
         try{
-            var target_id = req.params.ingredient_ID;
+            var target_id = req.params.ingredient_id;
             let to_remove = await Ingredient.findOneAndDelete({ _id: target_id});
             if(!to_remove){
                 return res.json({ success: false, error: '404'});
