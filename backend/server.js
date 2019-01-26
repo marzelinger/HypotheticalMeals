@@ -49,10 +49,10 @@ router.delete('/products/:prod_line_name', (req, res) => Prod_LineHandler.delete
 
 // Ingredient database APIs
 router.post('/ingredients', (req, res) => IngredientHandler.createIngredient(req, res));
-router.put('/ingredients/:ingredient_name', (req, res) => IngredientHandler.updateIngredientByName(req, res));
+router.put('/ingredients/:ingredient_ID', (req, res) => IngredientHandler.updateIngredientByID(req, res));
 router.get('/ingredients', (req, res) => IngredientHandler.getAllIngredients(req, res));
-router.get('/ingredients/:ingredient_name', (req, res) => IngredientHandler.getIngredientByName(req, res));
-router.delete('/ingredients/:ingredient_name', (req, res) => IngredientHandler.deleteIngredientByName(req, res));
+router.get('/ingredients/:ingredient_ID', (req, res) => IngredientHandler.getIngredientByID(req, res));
+router.delete('/ingredients/:ingredient_ID', (req, res) => IngredientHandler.deleteIngredientByID(req, res));
 
 // Manufacturing Goals database APIs
 router.post('/manugoals', (req, res) => Manu_GoalHandler.createManufacturingGoal(req, res));
