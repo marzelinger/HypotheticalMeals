@@ -27,7 +27,7 @@ export default class Filter extends React.Component {
     
     render() {
         return (
-        <div classname='filter-item' style={{width: this.state.width + '%'}}>
+        <div className='filter-item' style={{width: this.state.width + '%'}}>
             <InputGroup>
                 <Input />
                 <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
