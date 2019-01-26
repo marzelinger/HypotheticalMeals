@@ -13,7 +13,9 @@ export default class ListPage extends React.Component {
             page_name: 'ingredients',
             page_title: '',
             num_filters: 0,
-            filter_options: [],
+            filter_value: '',
+            filter_category: '',
+            filter_options: [Constants.keyword_label, Constants.sku_label],
             table_columns: ['Name', 'Number', 'Package Size', 'Cost per Package (USD)'],
             table_properties: ['ingredient_name', 'ingredient_num', 'pkg_size', 'pkg_cost'],
             data: []
@@ -37,11 +39,25 @@ export default class ListPage extends React.Component {
         }
     }
 
+    onFilterValueChange = (event) => {
+        this.setState({
+            filter_value: event.target.value
+        });
+    }
+
+    onFilterSelection = (e, sel) => {
+        this.setState({
+            filter_category: sel
+        });
+    }
+
     onSort = (event, sortKey) => {
         const data = this.state.data;
         data.sort((a,b) => a[sortKey].toString().localeCompare(b[sortKey]))
         this.setState({data})
-      };
+    };
+
+
 
     render() {
         return (
@@ -51,7 +67,12 @@ export default class ListPage extends React.Component {
                     <h1>{this.page_title}</h1>
                 </div>
                 <div className="filter-bar">
-                    <Filter>
+                    <Filter 
+                        value={this.state.filter_value}
+                        selection={this.state.filter_category} 
+                        categories={this.state.filter_options}
+                        handleValueChange={this.onFilterValueChange}
+                        handleFilterSelection={this.onFilterSelection}>
                     </Filter>
                 </div>
                 <div className='table'>

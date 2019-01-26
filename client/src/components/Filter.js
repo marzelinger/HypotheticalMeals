@@ -1,4 +1,6 @@
 import React from 'react'
+import PropTypes from 'prop-types';
+import * as Constants from '../resources/Constants';
 import { 
     Input,
     InputGroup, 
@@ -14,7 +16,7 @@ export default class Filter extends React.Component {
 
         this.toggleDropDown = this.toggleDropDown.bind(this);
         this.state = {
-            width: 30,
+            width: 33,
             dropdownOpen: false
         };
     }
@@ -29,14 +31,21 @@ export default class Filter extends React.Component {
         return (
         <div className='filter-item' style={{width: this.state.width + '%'}}>
             <InputGroup>
-                <Input />
+                <Input 
+                    type="text"
+                    value={this.props.value}
+                    onChange={this.props.handleValueChange}>
+                </Input>
                 <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
                 <DropdownToggle caret>
-                    Category
+                    {this.props.selection}
                 </DropdownToggle>
                 <DropdownMenu>
-                    <DropdownItem>Keyword</DropdownItem>
-                    <DropdownItem>SKU</DropdownItem>
+                    {this.props.categories.map(cat => 
+                        <DropdownItem 
+                            onClick={e => this.props.handleFilterSelection(e, cat)}
+                        >{cat}</DropdownItem>
+                    )}
                 </DropdownMenu>
                 </InputGroupButtonDropdown>
             </InputGroup>
@@ -44,3 +53,11 @@ export default class Filter extends React.Component {
         );
     }
 }
+
+Filter.propTypes = {
+    value: PropTypes.string,
+    selection: PropTypes.string,
+    categories: PropTypes.arrayOf(PropTypes.string),
+    handleValueChange: PropTypes.func,
+    handleFilterSelection: PropTypes.func
+  };

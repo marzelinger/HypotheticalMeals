@@ -24,9 +24,6 @@ export class PageTable extends React.Component{
     }
 
     getProperty = (col_label) => {
-      console.log(col_label);
-      console.log(this.props.columns.indexOf(col_label));
-      console.log(this.props.properties[this.props.columns.indexOf(col_label)]);
       return this.props.properties[this.props.columns.indexOf(col_label)];
     }
 
@@ -68,7 +65,8 @@ PageTable.propTypes = {
     comment: PropTypes.string,
     updatedAt: PropTypes.date,
     createdAt: PropTypes.date
-  }))
+  })),
+  handleSort: PropTypes.func
 };
 
 // PageTable.defaultProps = {
