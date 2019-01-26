@@ -2,7 +2,6 @@
 // Riley
 
 import Manu_Goal from '../databases/manu_goal';
-import IngredientHandler from './IngredientHandler';
 
 class Manu_GoalHandler{
 

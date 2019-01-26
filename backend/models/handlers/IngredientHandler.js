@@ -2,7 +2,6 @@
 // Riley
 
 import Ingredient from '../databases/ingredient';
-import sku from '../databases/sku';
 
 class IngredientHandler{
 
@@ -13,21 +12,24 @@ class IngredientHandler{
             var ingredient = new Ingredient();
             var new_ingredient_name = req.body.name;
             var new_ingredient_num = req.body.ingredient_num;
-            var new_vendor_info = req.vendor_info;
-            var new_pkg_size = req.pkg_size;
-            var new_pkg_cost = req.pkg_cost;
-            var new_skus = req.skus;
-            var new_comment = req.comment;
-            if(!new_ingredient_name || ! new_ingredient_numer || !pkg_size || !pkg_cost) {
+            var new_vendor_info = req.body.vendor_info;
+            var new_pkg_size = req.body.pkg_size;
+            var new_pkg_cost = req.body.pkg_cost;
+            var new_skus = req.body.skus;
+            var new_comment = req.body.comment;
+            console.log('gets here');
+            if(!new_ingredient_name || ! new_ingredient_num || !new_pkg_size || !new_pkg_cost) {
                 return res.json({
                     success: false, error: 'You must provide all required fields'
                 });
             }
-
-            let conflict = await ingredients.find({ ingredient_name : new_ingredient_name});
+            console.log('get here 2');
+            let conflict = await Ingredient.find({ name : new_ingredient_name});
+            console.log(conflict.length);
             if(conflict.length > 0){
                 return res.json({ success: false, error: 'CONFLICT'});
             }
+            
 
             ingredient.name = new_ingredient_name;
             ingredient.ingredient_num = new_ingredient_num;

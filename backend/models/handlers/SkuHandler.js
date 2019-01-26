@@ -1,8 +1,7 @@
 // /models/handlers/SkuHandler.js
 // Belal and Riley
 
-import SKU from './../databases/sku';
-import Prod_LineHandler from './Prod_LineHandler';
+import SKU from '../databases/sku';
 
 class SkuHandler{
 
@@ -18,18 +17,16 @@ class SkuHandler{
             var new_prod_line = req.body.prod_line;
             var new_ingredients = req.body.ingredients;
             var new_comments = req.body.comments;
-            if(!new_name || !new_sku_num || !new_case_upc || !new_unit_upc ||
-                !new_unit_size || !new_cpc || !prod_line){
+/*
+            if(!new_name || !new_sku_num || !new_case_upc || !new_unit_upc || !new_unit_size || !new_cpc || !prod_line){
                    return res.json({
                        success: false, error: 'You must provide all required fields'
                    });
-            }
-
+            }*/
             let conflict = await SKU.find({ sku_num : new_sku_num});
             if(conflict.length > 0){
                 return res.json({ success: false, error: 'CONFLICT'});
             }
-
             sku.name = new_name;
             sku.sku_num = new_sku_num;
             sku.case_upc = new_case_upc;
