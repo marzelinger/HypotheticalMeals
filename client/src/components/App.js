@@ -1,9 +1,10 @@
 import React from 'react'
 import Filter from './Filter'
-import ListPage from './ListPage'
+import PageTemplate from './PageTemplate'
 
 const App = () => (
-    <ListPage></ListPage>
+    <PageTemplate>
+    </PageTemplate>
 )
 
 export default App

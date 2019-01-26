@@ -1,3 +1,7 @@
+// Filter.js
+// Riley
+// Individual Filter component for ListPage Component
+
 import React from 'react'
 import PropTypes from 'prop-types';
 import * as Constants from '../resources/Constants';

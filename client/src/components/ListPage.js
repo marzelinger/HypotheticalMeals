@@ -1,7 +1,15 @@
+// ListPage.js
+// Riley
+// Larger page component to be shown in PageTemplate
+
 import React from 'react';
 import Filter from './Filter';
 import PageTable from './PageTable'
-import { Button } from 'reactstrap';
+import { 
+    Button,
+    DropdownMenu,
+    DropdownItem,
+    DropdownToggle } from 'reactstrap';
 import * as Constants from '../resources/Constants';
 
 
@@ -39,6 +47,14 @@ export default class ListPage extends React.Component {
         }
     }
 
+    componentDidUpdate = (prevProps, prevState) => {
+        if (prevState.filter_value !== this.state.filter_value || 
+            prevState.filter_category !== this.state.filter_category){
+                this.setState({ num_filters: 1 });
+                this.loadDataFromServer();
+        }
+    }
+
     onFilterValueChange = (event) => {
         this.setState({
             filter_value: event.target.value
@@ -66,14 +82,23 @@ export default class ListPage extends React.Component {
                 <div className="title-bar">
                     <h1>{this.state.page_title}</h1>
                 </div>
-                <div className="filter-bar">
-                    <Filter 
-                        value={this.state.filter_value}
-                        selection={this.state.filter_category} 
-                        categories={this.state.filter_options}
-                        handleValueChange={this.onFilterValueChange}
-                        handleFilterSelection={this.onFilterSelection}>
-                    </Filter>
+                <div className="options-container">
+                    <div className="filter-bar"> 
+                        <Filter 
+                            value={this.state.filter_value}
+                            selection={this.state.filter_category} 
+                            categories={this.state.filter_options}
+                            handleValueChange={this.onFilterValueChange}
+                            handleFilterSelection={this.onFilterSelection}>
+                        </Filter>
+                    </div>
+                    <div className="options"> 
+                        {/* <DropdownToggle caret>
+                            ...
+                        </DropdownToggle>
+                        <DropdownMenu>
+                        </DropdownMenu> */}
+                    </div>
                 </div>
                 <div className='table'>
                     <PageTable 
