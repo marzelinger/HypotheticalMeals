@@ -18,7 +18,7 @@ class IngredientHandler{
             var new_pkg_cost = req.pkg_cost;
             var new_skus = req.skus;
             var new_comment = req.comment;
-            if(!new_ingredient_name || ! new_ingredient_numer || !pkg_size || !pkg_cost) {
+            if(!new_ingredient_name || ! new_ingredient_num || !pkg_size || !pkg_cost) {
                 return res.json({
                     success: false, error: 'You must provide all required fields'
                 });
