@@ -37,7 +37,7 @@ export class PageTable extends React.Component{
           <thead>
             <tr>
               {this.props.columns.map(column => 
-                <th key={column} onClick={e => this.props.handleSort(e, this.getProperty(column))}>{column}</th>
+                <th key={column.uniqueId} onClick={e => this.props.handleSort(e, this.getProperty(column))}>{column}</th>
               )}
             </tr>
           </thead>

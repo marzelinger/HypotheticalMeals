@@ -10,6 +10,7 @@ import SkuHandler from './models/handlers/SkuHandler';
 import Prod_LineHandler from './models/handlers/Prod_LineHandler';
 import IngredientHandler from './models/handlers/IngredientHandler';
 import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
+import UserHandler from './models/handlers/UserHandler';
 import { getSecret } from './secrets';
 const passport = require("passport");
 const users = require ("./routes/api/users");
@@ -68,10 +69,20 @@ router.get('/manugoals/:manu_goal_name', (req, res) => Manu_GoalHandler.getManuf
 router.delete('/manugoals/:manu_goal_name', (req, res) => Manu_GoalHandler.deleteManufacturingGoalByName(req, res));
 
 // Use our router configuration when we call /api
-//app.use('/api', router);
+app.use('/api', router);
 app.use(passport.initialize());
 require("./config/passport")(passport);
-app.use("/api/users", users);
+//app.use("/api/users", users);
+
+// @route POST api/users/register
+// @desc Register user
+// @access Public
+router.post("/users/register", (req, res) => UserHandler.createUser(req, res));
+
+// @route POST api/users/login
+// @desc Login user and return JWT token
+// @access Public
+router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword(req,res));
 
 
 app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));

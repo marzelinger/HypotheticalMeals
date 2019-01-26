@@ -1,6 +1,4 @@
 import React from 'react'
-import Filter from './Filter'
-import PageTemplate from './PageTemplate'
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 
