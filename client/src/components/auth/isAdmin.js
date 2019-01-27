@@ -11,13 +11,13 @@ module.exports = function isAdmin(user){
       isValid: isEmpty(errors)
   }
   }
-  if (user.priviledges.includes("Admin")){
+  if (user.privileges.includes("Admin")){
     return {
         errors,
         isValid: isEmpty(errors)
     };  
   }
-    errors.priviledges = "Only admins may create new users.";
+    errors.privileges = "Only admins may create new users.";
     return {
     errors,
     isValid: isEmpty(errors)

@@ -23,7 +23,7 @@ const UserSchema = new Schema({
       default: Date.now
     },
     //id: uuid,
-    priviledges : [String],
+    privileges : [String],
     import_ids : [String],
     admin_creator : String,
     comment : String

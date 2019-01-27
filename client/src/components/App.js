@@ -7,7 +7,6 @@ import Landing from "./layout/Landing";
 import Register from "./auth/Register";
 import Login from "./auth/Login";
 import PrivateRoute from "./private-route/PrivateRoute";
-import Logout from "./auth/Logout";
 import Dashboard from "./dashboard/Dashboard";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "../utils/setAuthToken";
@@ -49,8 +48,8 @@ render(){
           <div className="App">
             <Navbar />
             <Route exact path="/" component={Landing} />
-            <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
+            <Route exact path="/register" component={Register} />
             <Switch>
             <PrivateRoute exact path="/dashboard" component={Dashboard} />
             </Switch>
@@ -63,6 +62,29 @@ render(){
 }
 
 export default App
+
+
+// class App extends React.Component{
+//   render(){
+//       return(
+//     <div>
+//       <Provider store={store}>
+//           <Router>
+//             <div className="App">
+//               <Navbar />
+//               <Route exact path="/" component={Landing} />
+//               <Route exact path="/adminregister" component={AdminRegister} />
+//               <Route exact path="/login" component={Login} />
+//               <Switch>
+//               <PrivateRoute exact path="/dashboard" component={Dashboard} />
+//               </Switch>
+//             </div>
+//           </Router>
+//         </Provider>
+//         </div>
+//       )
+//   }
+//   }
 
 
 

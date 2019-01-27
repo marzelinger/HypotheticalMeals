@@ -77,6 +77,8 @@ require("./config/passport")(passport);
 // @desc Register user
 // @access Public
 router.post("/users/register", (req, res) => UserHandler.createUser(req, res));
+//router.post("/users/register", (req, res, user) => UserHandler.createUser(req, res, user));
+
 
 // @route POST api/users/login
 // @desc Login user and return JWT token

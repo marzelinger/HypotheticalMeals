@@ -7,40 +7,33 @@ import {
   USER_LOADING
 } from "./types";
 
-
-// Register User
+var firstAdminRegistered = false;
+// Register New User
 export const registerUser = (userData, history) => dispatch => {
   console.log(history);
   console.log(userData);
-  //localStorage.SET_CURRENT_USER.
   console.log(localStorage);
-  axios
-    .post("/api/users/register", userData)
-    .then(res => history.push("/login")) // re-direct to login on successful register
-    .catch(err =>
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.response.data
-      })
-    );
+
+  if(localStorage.getItem("jwtToken")!=null){  //the registering the user can only happen when an admin is logged in. ie a token is present.
+      const decoded = jwt_decode(localStorage.getItem("jwtToken"));
+      const curUserIsAdmin = decoded.admin;
+      console.log(decoded);
+      console.log("decoded.name:" + decoded.name);
+      if(curUserIsAdmin){
+        console.log("curUserIsAdmin" + curUserIsAdmin);
+        axios
+        .post("/api/users/register", userData)
+        //.then(res => history.push("/login")) // re-direct to login on successful register
+        .then(res => history.push("/dashboard")) //re-direct to dashboard on successful register.
+        .catch(err =>
+          dispatch({
+            type: GET_ERRORS,
+            payload: err.response.data
+          })
+        );
+      }
+    }
 };
-
-// Register First Admin
-export const registerAdmin = (userData, history) => dispatch => {
-  console.log(history);
-  console.log(userData);
-  axios
-    .post("/api/users/register", userData)
-    .then(res => history.push("/login")) // re-direct to login on successful register
-    .catch(err =>
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.response.data
-      })
-    );
-};
-
-
 
 // Login - get user token
 export const loginUser = userData => dispatch => {
@@ -86,4 +79,26 @@ export const logoutUser = () => dispatch => {
   setAuthToken(false);
   // Set current user to empty object {} which will set isAuthenticated to false
   dispatch(setCurrentUser({}));
+  console.log(SET_CURRENT_USER);
+  console.log("localStorage: "+localStorage.getItem("jwtToken"));
+};
+
+
+
+// // Register First Admin
+export const registerFirstAdmin = (userData, history) => dispatch => {
+  console.log(history);
+  console.log(userData);
+  if(!firstAdminRegistered){
+  axios
+    .post("/api/users/register", userData)
+    .then(res => history.push("/login")) // re-direct to login on successful register
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+  firstAdminRegistered = true;
+  }
 };

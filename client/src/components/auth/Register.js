@@ -6,16 +6,14 @@ import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
 import isAdmin from "./isAdmin";
 
-var firstAdmin = true;
+var userIsAdmin = false;
 
 class Register extends Component {
   constructor() {
     super();
 
-
     this.onSubmit = this.onSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
-
 
     this.state = {
       name: "",
@@ -27,14 +25,17 @@ class Register extends Component {
   }
 
   componentDidMount() {
+    console.log("trying to mount the register" +this.props.history);
+
     // If logged in and user navigates to Register page, should redirect them to dashboard
-    if (this.props.auth.isAuthenticated) {
-      //this.props.history.push("/dashboard"); TRYING TO COMMENT THIS OUT.
+    var curUser = localStorage.getItem("User");
+    userIsAdmin = isAdmin(curUser).isValid;
+    if (this.props.auth.isAuthenticated && !isAdmin) {
+      this.props.history.push("/dashboard"); //if they are not an admin, get redirected to dashboard.
       console.log("mounted" +this.props.history);
     }
 
   }
-
 
 componentWillReceiveProps(nextProps) {
     if (nextProps.errors) {
@@ -45,7 +46,6 @@ componentWillReceiveProps(nextProps) {
   }
 onChange(e){
     this.setState({ [e.target.id]: e.target.value });
-    //onsole.log(e.target.id + e.target.value);
   };
 
 onSubmit(e){
@@ -54,19 +54,17 @@ const newUser = {
       name: this.state.name,
       email: this.state.email,
       password: this.state.password,
-      password2: this.state.password2
+      password2: this.state.password2,
+      privileges: []
     };
     console.log(e);
     console.log(this.state);
     console.log(this.props.history);
     console.log(this.props);
     console.log(newUser);
-    console.log ("firstAdmin: "+ firstAdmin);
-    const curUser = localStorage.getItem("User");
-    if(isAdmin(curUser).isValid || firstAdmin){
+
+    if(isAdmin){
       this.props.registerUser(newUser, this.props.history); 
-      firstAdmin = false;
-      console.log ("firstAdmin: "+ firstAdmin);
     }
     else{
       console.log("person trying to register user when non admin");
@@ -83,16 +81,12 @@ return (
         <div className="row">
           <div className="col s8 offset-s2">
             <Link to="/" className="btn-flat waves-effect">
-              <i className="material-icons left">keyboard_backspace</i> Back to
-              home
+              <i className="material-icons left">keyboard_backspace</i> Back to Home
             </Link>
             <div className="col s12" style={{ paddingLeft: "11.250px" }}>
               <h4>
-                <b>Register</b> below
+                <b>Register</b> New User Below
               </h4>
-              <p className="grey-text text-darken-1">
-                Already have an account? <Link to="/login">Log in</Link>
-              </p>
             </div>
             <form noValidate onSubmit={this.onSubmit}>
               <div className="input-field col s12">
@@ -162,7 +156,7 @@ return (
                   type="submit"
                   className="btn btn-large waves-effect waves-light hoverable blue accent-3"
                 >
-                  Sign up
+                  Register New User
                 </button>
               </div>
             </form>

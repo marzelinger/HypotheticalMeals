@@ -2,10 +2,11 @@
 // Maddie
 
 import User from '../databases/User';
-
+import isAdmin from '../../validation/isAdmin';
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
+
 
 
 // Load input validation
@@ -13,39 +14,12 @@ const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
 
 class UserHandler{
-
-
-//   static tokenConfig(){
-//   if (localStorage.jwtToken) {
-//     // Set auth token header auth
-//     const token = localStorage.jwtToken;
-//     setAuthToken(token);
-//     // Decode token and get user info and exp
-//     const decoded = jwt_decode(token);
-//     // Set user and isAuthenticated
-//     store.dispatch(setCurrentUser(decoded));
-//     // Check for expired token
-//     const currentTime = Date.now() / 1000; // to get in milliseconds
-//     if (decoded.exp < currentTime) {
-//       // Logout user
-//       store.dispatch(logoutUser());
-  
-//       // Redirect to login
-//       window.location.href = "./login";
-//     }
-//   }
-
-// }
-
-
-
-
     // Creates a User in the Database
     // If the User exists, return error if it exists
     static createUser(req, res){
       //const user = getCurUser();
     // Form validation
-  const { errors, isValid } = validateRegisterInput(req.body, user);
+  const { errors, isValid } = validateRegisterInput(req.body);
   // Check validation
     if (!isValid) {
       return res.status(400).json(errors);
@@ -62,7 +36,7 @@ class UserHandler{
           name: req.body.name,
           email: req.body.email,
           password: req.body.password,
-          priviledges : req.body.priviledges,
+          privileges : req.body.privileges,
           admin_creator: req.body.admin_creator,
           comment: req.body.comment
         });
