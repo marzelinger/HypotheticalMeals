@@ -35,10 +35,10 @@ router.get('/', (req, res) => {
 
 // SKU database APIs
 router.post('/skus', (req, res) => SkuHandler.createSku(req, res));
-router.put('/skus/:sku_num', (req, res) => SkuHandler.updateSkuBySkuNum(req, res));
+router.put('/skus/:sku_id', (req, res) => SkuHandler.updateSkuByID(req, res));
 router.get('/skus', (req, res) => SkuHandler.getAllSkus(req, res));
-router.get('/skus/:sku_num', (req, res) => SkuHandler.getSkuBySkuNum(req, res));
-router.delete('/skus/:sku_num', (req, res) => SkuHandler.deleteSkuBySkuNum(req, res));
+router.get('/skus/:sku_id', (req, res) => SkuHandler.getSkuByID(req, res));
+router.delete('/skus/:sku_id', (req, res) => SkuHandler.deleteSkuByID(req, res));
 
 // Product Line database APIs
 router.post('/products', (req, res) => Prod_LineHandler.createProductLine(req, res));
@@ -56,10 +56,10 @@ router.delete('/ingredients/:ingredient_id', (req, res) => IngredientHandler.del
 
 // Manufacturing Goals database APIs
 router.post('/manugoals', (req, res) => Manu_GoalHandler.createManufacturingGoal(req, res));
-router.put('/manugoals/:manu_goal_name', (req, res) => Manu_GoalHandler.updateManufacturingGoalByName(req, res));
+router.put('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.updateManufacturingGoalByID(req, res));
 router.get('/manugoals', (req, res) => Manu_GoalHandler.getAllManufacturingGoals(req, res));
-router.get('/manugoals/:manu_goal_name', (req, res) => Manu_GoalHandler.getManufacturingGoalByName(req, res));
-router.delete('/manugoals/:manu_goal_name', (req, res) => Manu_GoalHandler.deleteManufacturingGoalByName(req, res));
+router.get('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.getManufacturingGoalByID(req, res));
+router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteManufacturingGoalByID(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);

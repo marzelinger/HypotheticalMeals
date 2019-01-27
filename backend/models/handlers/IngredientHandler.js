@@ -11,7 +11,7 @@ class IngredientHandler{
         try {
             var ingredient = new Ingredient();
             var new_ingredient_name = req.body.name;
-            var new_ingredient_num = req.body.ingredient_num;
+            var new_ingredient_num = req.body.num;
             var new_vendor_info = req.body.vendor_info;
             var new_pkg_size = req.body.pkg_size;
             var new_pkg_cost = req.body.pkg_cost;
@@ -24,14 +24,13 @@ class IngredientHandler{
             }
 
             let conflict = await Ingredient.find({ name : new_ingredient_name});
-            let conflict2 = await Ingredient.find({ ingredient_num: new_ingredient_num});
-
+            let conflict2 = await Ingredient.find({ num: new_ingredient_num});
             if(conflict.length > 0 || conflict2.length > 0){
                 return res.json({ success: false, error: 'CONFLICT'});
             }
             
             ingredient.name = new_ingredient_name;
-            ingredient.ingredient_num = new_ingredient_num;
+            ingredient.num = new_ingredient_num;
             ingredient.vendor_info = new_vendor_info;
             ingredient.pkg_size = new_pkg_size;
             ingredient.pkg_cost = new_pkg_cost;
@@ -53,7 +52,7 @@ class IngredientHandler{
                 return res.json({ success: false, error: 'No ingredient name provided'});
             }
             var new_ingredient_name = req.body.name;
-            var new_ingredient_num = req.body.ingredient_num;
+            var new_ingredient_num = req.body.num;
             var new_vendor_info = req.body.vendor_info;
             var new_pkg_size = req.body.pkg_size;
             var new_pkg_cost = req.body.pkg_cost;
@@ -61,7 +60,7 @@ class IngredientHandler{
             var new_comment = req.body.comment;
 
             let updated_ingredient = await Ingredient.findOneAndUpdate({ _id: target_id},
-                {$set: {name: new_ingredient_name, ingredient_num : new_ingredient_num, vendor_info: new_vendor_info, pkg_size : new_pkg_size,
+                {$set: {name: new_ingredient_name, num : new_ingredient_num, vendor_info: new_vendor_info, pkg_size : new_pkg_size,
                      pkg_count : new_pkg_cost, skus : new_skus, comment: new_comment}}, {upsert: true, new: true});
             
             if(!updated_ingredient){
