@@ -2,7 +2,6 @@
 // Riley
 
 import Ingredient from '../databases/ingredient';
-import sku from '../databases/sku';
 
 class IngredientHandler{
 
@@ -12,25 +11,26 @@ class IngredientHandler{
         try {
             var ingredient = new Ingredient();
             var new_ingredient_name = req.body.name;
-            var new_ingredient_num = req.body.ingredient_num;
-            var new_vendor_info = req.vendor_info;
-            var new_pkg_size = req.pkg_size;
-            var new_pkg_cost = req.pkg_cost;
-            var new_skus = req.skus;
-            var new_comment = req.comment;
-            if(!new_ingredient_name || ! new_ingredient_num || !pkg_size || !pkg_cost) {
+            var new_ingredient_num = req.body.num;
+            var new_vendor_info = req.body.vendor_info;
+            var new_pkg_size = req.body.pkg_size;
+            var new_pkg_cost = req.body.pkg_cost;
+            var new_skus = req.body.skus;
+            var new_comment = req.body.comment;
+            if(!new_ingredient_name || ! new_ingredient_num || !new_pkg_size || !new_pkg_cost) {
                 return res.json({
                     success: false, error: 'You must provide all required fields'
                 });
             }
 
-            let conflict = await ingredients.find({ ingredient_name : new_ingredient_name});
-            if(conflict.length > 0){
+            let conflict = await Ingredient.find({ name : new_ingredient_name});
+            let conflict2 = await Ingredient.find({ num: new_ingredient_num});
+            if(conflict.length > 0 || conflict2.length > 0){
                 return res.json({ success: false, error: 'CONFLICT'});
             }
-
+            
             ingredient.name = new_ingredient_name;
-            ingredient.ingredient_num = new_ingredient_num;
+            ingredient.num = new_ingredient_num;
             ingredient.vendor_info = new_vendor_info;
             ingredient.pkg_size = new_pkg_size;
             ingredient.pkg_cost = new_pkg_cost;
@@ -40,31 +40,37 @@ class IngredientHandler{
             let new_ingredient = await ingredient.save();
             return res.json({ success: true, data: new_ingredient});
         }
-        catch (err){
+        catch (err) {
             return res.json({ success: false, error: err});
         }
     }
 
-    static async updateIngredientByName(req, res){
+    static async updateIngredientByID(req, res){
         try {
-            var target_name = req.params.ingredient_name;
-            if (!target_name) {
+            var target_id = req.params.ingredient_id;
+            if (!target_id) {
                 return res.json({ success: false, error: 'No ingredient name provided'});
             }
-            var new_ingredient_num = req.body.ingredient_num;
+            var new_ingredient_name = req.body.name;
+            var new_ingredient_num = req.body.num;
             var new_vendor_info = req.body.vendor_info;
             var new_pkg_size = req.body.pkg_size;
             var new_pkg_cost = req.body.pkg_cost;
             var new_skus = req.body.skus;
             var new_comment = req.body.comment;
-            let updated_ingredient = await Ingredients.findOneAndUpdate({ name: target_name},
-                {$set: {ingredient_num: new_ingredient_num, vendor_info: new_vendor_info, pkg_size : new_pkg_size,
-                     pkg_count : new_pkg_cost, skus : new_skus, comment: new_comment}}, {new: true});
+
+            let updated_ingredient = await Ingredient.findOneAndUpdate({ _id: target_id},
+                {$set: {name: new_ingredient_name, num : new_ingredient_num, vendor_info: new_vendor_info, pkg_size : new_pkg_size,
+                     pkg_count : new_pkg_cost, skus : new_skus, comment: new_comment}}, {upsert: true, new: true});
+            
             if(!updated_ingredient){
                 return res.json({
                     success: true, error: 'This document does not exist'
                 });
-            }         
+            }
+            return res.json({
+                success: true, data: updated_ingredient
+            });    
         }
         catch (err) {
             return res.json({ success: false, error: err});
@@ -81,22 +87,21 @@ class IngredientHandler{
         }
     }
 
-    static async getIngredientByName(req, res){
+    static async getIngredientByID(req, res){
         try {
-            target_name = req.params.ingredient_name;
-            let to_return = await Ingredient.find({ name : target_name});
-
-            if(to_return.length == 0) return res.json({ success: false});
+            var target_id = req.params.ingredient_id;
+            let to_return = await Ingredient.find({ _id : target_id});
+            if(to_return.length == 0) return res.json({ success: false, error: '404'});
             return res.json({ success: true, data: to_return});
         } catch (err) {
             return res.json({ success: false, error: err});
         }
     }
 
-    static async deleteIngredientByName(req, res){
+    static async deleteIngredientByID(req, res){
         try{
-            var target_name = req.params.ingredient_name;
-            let to_remove = await Ingredient.findOneAndDelete({ name: target_name});
+            var target_id = req.params.ingredient_id;
+            let to_remove = await Ingredient.findOneAndDelete({ _id: target_id});
             if(!to_remove){
                 return res.json({ success: false, error: '404'});
             }

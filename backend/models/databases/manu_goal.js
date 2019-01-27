@@ -11,7 +11,7 @@ const Manu_GoalSchema = new Schema({
     user: String,
     skus: {
         type: Map,
-          of: Number
+          of: String
     },
 }, { timestamps: true });
 
