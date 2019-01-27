@@ -4,9 +4,14 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
+import isAdmin from "./isAdmin";
+
+var firstAdmin = true;
+
 class Register extends Component {
   constructor() {
     super();
+
 
     this.onSubmit = this.onSubmit.bind(this);
     this.onChange = this.onChange.bind(this);
@@ -24,7 +29,7 @@ class Register extends Component {
   componentDidMount() {
     // If logged in and user navigates to Register page, should redirect them to dashboard
     if (this.props.auth.isAuthenticated) {
-      this.props.history.push("/dashboard");
+      //this.props.history.push("/dashboard"); TRYING TO COMMENT THIS OUT.
       console.log("mounted" +this.props.history);
     }
 
@@ -56,7 +61,16 @@ const newUser = {
     console.log(this.props.history);
     console.log(this.props);
     console.log(newUser);
-this.props.registerUser(newUser, this.props.history); 
+    console.log ("firstAdmin: "+ firstAdmin);
+    const curUser = localStorage.getItem("User");
+    if(isAdmin(curUser).isValid || firstAdmin){
+      this.props.registerUser(newUser, this.props.history); 
+      firstAdmin = false;
+      console.log ("firstAdmin: "+ firstAdmin);
+    }
+    else{
+      console.log("person trying to register user when non admin");
+    }
   };
 
 

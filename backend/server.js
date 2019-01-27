@@ -13,7 +13,6 @@ import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
 import UserHandler from './models/handlers/UserHandler';
 import { getSecret } from './secrets';
 const passport = require("passport");
-const users = require ("./routes/api/users");
 
 
 const dotenv = require('dotenv');

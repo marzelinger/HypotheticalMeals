@@ -2,6 +2,7 @@
 // Maddie
 
 import User from '../databases/User';
+
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
@@ -13,11 +14,38 @@ const validateLoginInput = require("../../validation/login");
 
 class UserHandler{
 
+
+//   static tokenConfig(){
+//   if (localStorage.jwtToken) {
+//     // Set auth token header auth
+//     const token = localStorage.jwtToken;
+//     setAuthToken(token);
+//     // Decode token and get user info and exp
+//     const decoded = jwt_decode(token);
+//     // Set user and isAuthenticated
+//     store.dispatch(setCurrentUser(decoded));
+//     // Check for expired token
+//     const currentTime = Date.now() / 1000; // to get in milliseconds
+//     if (decoded.exp < currentTime) {
+//       // Logout user
+//       store.dispatch(logoutUser());
+  
+//       // Redirect to login
+//       window.location.href = "./login";
+//     }
+//   }
+
+// }
+
+
+
+
     // Creates a User in the Database
     // If the User exists, return error if it exists
     static createUser(req, res){
+      //const user = getCurUser();
     // Form validation
-  const { errors, isValid } = validateRegisterInput(req.body);
+  const { errors, isValid } = validateRegisterInput(req.body, user);
   // Check validation
     if (!isValid) {
       return res.status(400).json(errors);
@@ -27,10 +55,16 @@ class UserHandler{
       if (user) {
         return res.status(400).json({ email: "Email already exists" });
       } 
+  //we assume by here that the user that is creating this person has
+  //the permission to because we checked it in the validateRegisterInput function
+
   const newUser = new User({
           name: req.body.name,
           email: req.body.email,
-          password: req.body.password
+          password: req.body.password,
+          priviledges : req.body.priviledges,
+          admin_creator: req.body.admin_creator,
+          comment: req.body.comment
         });
   // Hash password before saving in database
         bcrypt.genSalt(10, (err, salt) => {
@@ -47,10 +81,7 @@ class UserHandler{
   )
     }
 
-
     static loginUserByNameAndPassword(req,res){
-
-        
     // Form validation
   const { errors, isValid } = validateLoginInput(req.body);
   // Check validation
@@ -72,7 +103,8 @@ class UserHandler{
           // Create JWT Payload
           const payload = {
             id: user.id,
-            name: user.name
+            name: user.name,
+            admin: isAdmin(user).isValid
           };
   // Sign token
           jwt.sign(
