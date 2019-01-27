@@ -109,7 +109,7 @@ class IngredientHandler{
     // Filtering APIs
     static async getAllIngredientsByKeyword(req, res){
         var query = {};
-        if (req.body.name !== "") { query.name = req.body.ingredient_name}
+        if (req.body.name !== "") { query.name = req.body.name}
         try{
             let all_ingredients = await Ingredient.find({ query });
             return res.json({ success: true, data: all_ingredients});

@@ -25,8 +25,13 @@ export default class ListPage extends React.Component {
             filter_category: '',
             filter_options: [Constants.keyword_label, Constants.sku_label],
             table_columns: ['Name', 'Number', 'Package Size', 'Cost per Package (USD)'],
-            table_properties: ['ingredient_name', 'ingredient_num', 'pkg_size', 'pkg_cost'],
+            table_properties: ['name', 'num', 'pkg_size', 'pkg_cost'],
+            item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'skus', 'comment'],
+            item_property_labels: ['Name', 'Number', 'Package Size', 'Package Cost', 'Vendor Info', 'SKUs', 'Comments'],
+            item_property_placeholder: ['White Rice', '12345678', '1lb', '1.50', 'Tam Soy', 'Fried Rice', '...'],
+            item_options: ['View Ingredient'], 
             selected_items: [],
+            detail_view_item: null,
             data: []
         };
     }
@@ -82,6 +87,10 @@ export default class ListPage extends React.Component {
         console.log(this.state.selected_items);
     };
 
+    onDetailViewSelect = (event, item) => {
+        this.setState({ detail_view_item: item });
+    };
+
     render() {
         return (
             <div className="list-page">
@@ -108,11 +117,17 @@ export default class ListPage extends React.Component {
                 <div className='table'>
                     <PageTable 
                         columns={this.state.table_columns} 
-                        properties={this.state.table_properties} 
+                        table_properties={this.state.table_properties} 
                         list_items={this.state.data}
                         selected_items={this.state.selected_items}
+                        item_properties={this.state.item_properties}
+                        item_property_labels={this.state.item_property_labels}
+                        item_property_placeholder= {this.state.item_property_placeholder}
+                        item_options={this.state.item_options}
+                        detail_view_item={this.state.detail_view_item}
                         handleSort={this.onSort}
                         handleSelect={this.onSelect}
+                        handleDetailViewSelect={this.onDetailViewSelect}
                     >
                     </PageTable>
                 </div>
