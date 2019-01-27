@@ -5,6 +5,7 @@
 import React from 'react';
 import Filter from './Filter';
 import PageTable from './PageTable'
+import SubmitRequest from './../helpers/SubmitRequest'
 import { 
     Alert,
     Button } from 'reactstrap';
@@ -61,27 +62,6 @@ export default class ListPage extends React.Component {
         console.log(this.state.data);
     }
 
-    submitUpdateItem = (item) => {
-        fetch(`/api/${this.state.page_name}/${item._id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(item),
-        }).then(res => res.json()).then((res) => {
-          if (!res.success) this.setState({ error: res.error.message || res.error });
-          else console.log(res);
-        });
-    }
-
-    submitDeleteItem = (item) => {
-        fetch(`/api/${this.state.page_name}/${item._id}`, {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' }
-        }).then(res => res.json()).then((res) => {
-          if (!res.success) this.setState({ error: res.error.message || res.error });
-          else console.log(res);
-        });
-    }
-
     onFilterValueChange = (event) => {
         this.setState({
             filter_value: event.target.value
@@ -118,10 +98,10 @@ export default class ListPage extends React.Component {
     onDetailViewSubmit = (event, item, option) => {
         switch (option) {
             case Constants.details_save:
-                this.submitUpdateItem(item);
+                SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_delete:
-                this.submitDeleteItem(item);
+                SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
                 break;
             case Constants.details_cancel:
                 break;
@@ -137,6 +117,7 @@ export default class ListPage extends React.Component {
         var ind = newData.indexOf(item);
         newData[ind][prop] = event.target.value;
         this.setState({ data: newData });
+        console.log(event.target.value);
     };
 
     render() {
