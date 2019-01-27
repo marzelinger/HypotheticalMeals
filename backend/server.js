@@ -11,6 +11,7 @@ import SkuHandler from './models/handlers/SkuHandler';
 import Prod_LineHandler from './models/handlers/Prod_LineHandler';
 import IngredientHandler from './models/handlers/IngredientHandler';
 import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
+import CSV_parser from './csv_parser';
 
 
 // and create our instances
@@ -61,6 +62,7 @@ router.get('/manugoals', (req, res) => Manu_GoalHandler.getAllManufacturingGoals
 router.get('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.getManufacturingGoalByID(req, res));
 router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteManufacturingGoalByID(req, res));
 
+router.put('/testJSON', (req, res) => CSV_parser.parseCSV(req, res));
 // Use our router configuration when we call /api
 app.use('/api', router);
 
