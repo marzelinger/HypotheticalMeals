@@ -6,10 +6,8 @@ import React from 'react';
 import Filter from './Filter';
 import PageTable from './PageTable'
 import { 
-    Button,
-    DropdownMenu,
-    DropdownItem,
-    DropdownToggle } from 'reactstrap';
+    Alert,
+    Button } from 'reactstrap';
 import * as Constants from '../resources/Constants';
 
 
@@ -26,24 +24,16 @@ export default class ListPage extends React.Component {
             filter_options: [Constants.keyword_label, Constants.sku_label],
             table_columns: ['Name', 'Number', 'Package Size', 'Cost per Package (USD)'],
             table_properties: ['name', 'num', 'pkg_size', 'pkg_cost'],
-            item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'skus', 'comment'],
-            item_property_labels: ['Name', 'Number', 'Package Size', 'Package Cost', 'Vendor Info', 'SKUs', 'Comments'],
-            item_property_placeholder: ['White Rice', '12345678', '1lb', '1.50', 'Tam Soy', 'Fried Rice', '...'],
+            item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment', 'skus'],
+            item_property_labels: ['Name', 'Number', 'Package Size', 'Package Cost', 'Vendor Info', 'Comments', 'SKUs'],
+            item_property_placeholder: ['White Rice', '12345678', '1lb', '1.50', 'Tam Soy', '...', 'Fried Rice'],
             item_options: ['View Ingredient'], 
             selected_items: [],
             detail_view_item: null,
-            data: []
+            detail_view_options: [],
+            data: [],
+            error: null
         };
-    }
-
-    loadDataFromServer = () => {
-        fetch('/api/' + this.state.page_name, { method: 'GET' })
-          .then(data => data.json())
-          .then((res) => {
-            if (!res.success) this.setState({ error: res.error });
-            else this.setState({ data: res.data });
-          });
-        console.log(this.state.data);
     }
 
     componentDidMount = () => {
@@ -59,6 +49,37 @@ export default class ListPage extends React.Component {
                 this.setState({ num_filters: 1 });
                 this.loadDataFromServer();
         }
+    }
+
+    loadDataFromServer = () => {
+        fetch('/api/' + this.state.page_name, { method: 'GET' })
+          .then(data => data.json())
+          .then((res) => {
+            if (!res.success) this.setState({ error: res.error });
+            else this.setState({ data: res.data });
+          });
+        console.log(this.state.data);
+    }
+
+    submitUpdateItem = (item) => {
+        fetch(`/api/${this.state.page_name}/${item._id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(item),
+        }).then(res => res.json()).then((res) => {
+          if (!res.success) this.setState({ error: res.error.message || res.error });
+          else console.log(res);
+        });
+    }
+
+    submitDeleteItem = (item) => {
+        fetch(`/api/${this.state.page_name}/${item._id}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' }
+        }).then(res => res.json()).then((res) => {
+          if (!res.success) this.setState({ error: res.error.message || res.error });
+          else console.log(res);
+        });
     }
 
     onFilterValueChange = (event) => {
@@ -88,8 +109,28 @@ export default class ListPage extends React.Component {
     };
 
     onDetailViewSelect = (event, item) => {
-        this.setState({ detail_view_item: item });
+        this.setState({ 
+            detail_view_item: item ,
+            detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
+        });
     };
+
+    onDetailViewSubmit = (event, item, option) => {
+        switch (option) {
+            case Constants.details_save:
+                this.submitUpdateItem(item);
+                break;
+            case Constants.details_delete:
+                this.submitDeleteItem(item);
+                break;
+            case Constants.details_cancel:
+                break;
+        }
+        this.setState({ 
+            detail_view_item: null,
+            detail_view_options: []
+        });
+    }
 
     onPropChange = (event, item, prop) => {
         var newData = this.state.data.slice();
@@ -132,12 +173,17 @@ export default class ListPage extends React.Component {
                         item_property_placeholder= {this.state.item_property_placeholder}
                         item_options={this.state.item_options}
                         detail_view_item={this.state.detail_view_item}
+                        detail_view_options={this.state.detail_view_options}
                         handleSort={this.onSort}
                         handleSelect={this.onSelect}
                         handleDetailViewSelect={this.onDetailViewSelect}
                         handlePropChange={this.onPropChange}
+                        handleDetailViewSubmit={this.onDetailViewSubmit}
                     >
                     </PageTable>
+                    <Alert
+                        value={this.state.error}
+                        color='danger'/>
                 </div>
             </div>
         );

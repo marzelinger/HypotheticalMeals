@@ -14,3 +14,8 @@ export const undefined = 'Undefined'
 
 export const unselected_row_color = 'White'
 export const selected_row_color = 'PaleTurquoise'
+
+export const details_save = 'Save'
+export const details_delete = 'Delete'
+export const details_cancel = 'Cancel'
+export const details_create = 'Create'

@@ -38,6 +38,15 @@ export class PageTable extends React.Component{
           Constants.unselected_row_color : Constants.selected_row_color});
     }
 
+    showDetailsView = () => {
+      //there's something fundamentally wrong with how I change CSS/JSX properties
+      //using JS. It doesn't work here or on the item selection
+      if (this.state){
+        console.log(this.state.detail_view_item);
+        return (this.state.detail_view_item ? <ItemDetails/> : null);
+      }
+    }
+
     render() {
       return (
         <div className="container">
@@ -80,9 +89,11 @@ export class PageTable extends React.Component{
             item_properties={this.props.item_properties}
             item_property_labels={this.props.item_property_labels}
             item_property_placeholder={this.props.item_property_placeholder}
+            detail_view_options={this.props.detail_view_options}
             handlePropChange={this.props.handlePropChange}
-          >
-          </ItemDetails>
+            handleDetailViewSubmit={this.props.handleDetailViewSubmit}
+          />
+          
         </div>
       );
     }
@@ -110,10 +121,13 @@ PageTable.propTypes = {
   item_property_placeholder: PropTypes.arrayOf(PropTypes.string),
   item_options: PropTypes.arrayOf(PropTypes.string),
   detail_view_item: PropTypes.object,
+  detail_view_options: PropTypes.arrayOf(PropTypes.string),
   handleSort: PropTypes.func,
   handleSelect: PropTypes.func,
   handleDetailViewSelect: PropTypes.func,
-  handlePropChange: PropTypes.func
+  handlePropChange: PropTypes.func,
+  handleDetailViewSubmit: PropTypes.func
 };
+
 
 export default PageTable;

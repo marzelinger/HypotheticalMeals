@@ -6,6 +6,7 @@ import React from 'react'
 import PropTypes from 'prop-types';
 import * as Constants from '../resources/Constants';
 import { 
+    Button,
     Input,
     InputGroup,
     InputGroupAddon} from 'reactstrap';
@@ -48,6 +49,13 @@ export default class ItemDetails extends React.Component {
             <div className='item-properties'>
                 { this.injectProperties() }
             </div>
+            <div className='item-options'>
+                { this.props.detail_view_options.map(opt => 
+                    <Button key={opt} onClick={(e) => this.props.handleDetailViewSubmit(e, this.props.item, opt)}>
+                        {opt}
+                    </Button>
+                )}
+            </div>
         </div>
         );
     }
@@ -58,5 +66,7 @@ ItemDetails.propTypes = {
     item_properties: PropTypes.arrayOf(PropTypes.string),
     item_property_labels: PropTypes.arrayOf(PropTypes.string),
     item_property_placeholder: PropTypes.arrayOf(PropTypes.string),
-    handlePropChange: PropTypes.func
+    detail_view_options: PropTypes.arrayOf(PropTypes.string),
+    handlePropChange: PropTypes.func,
+    handleDetailViewSubmit: PropTypes.func
   };
