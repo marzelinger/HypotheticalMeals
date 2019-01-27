@@ -1,25 +1,20 @@
-// model/databases/sku.js
-// Belal and Riley
+// model/databases/ingredient.js
+// Riley
 
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 // create new instance of the mongoose.schema. the schema takes an
 // object that shows the shape of your database entries.
-const SkusSchema = new Schema({
+const IngredientsSchema = new Schema({
   name: String,
   num: String,
-  case_upc: String,
-  unit_upc: String,
-  unit_size: String,
-  cpc: String,
-  prod_line: String,
-  ingredients: {
-      type: Map,
-        of: String
-  },
+  vendor_info: String,
+  pkg_size: String,
+  pkg_cost: String,
+  skus: [String],
   comment: String
 }, { timestamps: true });
 
 // export our module to use in server.js
-export default mongoose.model('SKU', SkusSchema);
+export default mongoose.model('Ingredient', IngredientsSchema);
