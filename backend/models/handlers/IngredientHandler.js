@@ -61,7 +61,7 @@ class IngredientHandler{
 
             let updated_ingredient = await Ingredient.findOneAndUpdate({ _id: target_id},
                 {$set: {name: new_ingredient_name, num : new_ingredient_num, vendor_info: new_vendor_info, pkg_size : new_pkg_size,
-                     pkg_count : new_pkg_cost, skus : new_skus, comment: new_comment}}, {upsert: true, new: true});
+                     pkg_cost : new_pkg_cost, skus : new_skus, comment: new_comment}}, {upsert: true, new: true});
             
             if(!updated_ingredient){
                 return res.json({
