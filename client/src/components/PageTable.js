@@ -60,14 +60,14 @@ export class PageTable extends React.Component{
                   {this.props.table_properties.map(prop => 
                     <td 
                       key={prop}
-                      onClick={e => { this.props.handleSelect(e, item)}}
+                      onClick={e => this.props.handleSelect(e, item) }
                     >
                       {item[prop]}
                     </td>
                   )}
                   <td
                     color='link'
-                    onClick={(e) => this.props.handleDetailViewSelect(e, item)}
+                    onClick={(e) => this.props.handleDetailViewSelect(e, item) }
                   >
                     ...
                   </td>
@@ -80,6 +80,7 @@ export class PageTable extends React.Component{
             item_properties={this.props.item_properties}
             item_property_labels={this.props.item_property_labels}
             item_property_placeholder={this.props.item_property_placeholder}
+            handlePropChange={this.props.handlePropChange}
           >
           </ItemDetails>
         </div>
@@ -111,7 +112,8 @@ PageTable.propTypes = {
   detail_view_item: PropTypes.object,
   handleSort: PropTypes.func,
   handleSelect: PropTypes.func,
-  handleDetailViewSelect: PropTypes.func
+  handleDetailViewSelect: PropTypes.func,
+  handlePropChange: PropTypes.func
 };
 
 export default PageTable;

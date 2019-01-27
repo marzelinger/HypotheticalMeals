@@ -91,6 +91,13 @@ export default class ListPage extends React.Component {
         this.setState({ detail_view_item: item });
     };
 
+    onPropChange = (event, item, prop) => {
+        var newData = this.state.data.slice();
+        var ind = newData.indexOf(item);
+        newData[ind][prop] = event.target.value;
+        this.setState({ data: newData });
+    };
+
     render() {
         return (
             <div className="list-page">
@@ -128,6 +135,7 @@ export default class ListPage extends React.Component {
                         handleSort={this.onSort}
                         handleSelect={this.onSelect}
                         handleDetailViewSelect={this.onDetailViewSelect}
+                        handlePropChange={this.onPropChange}
                     >
                     </PageTable>
                 </div>

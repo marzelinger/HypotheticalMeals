@@ -32,7 +32,7 @@ export default class ItemDetails extends React.Component {
                     <Input 
                         placeholder={ this.getPropertyPlaceholder(prop) } 
                         value={ this.props.item[prop] }
-                        /*onChange={}*/
+                        onChange={ (e) => this.props.handlePropChange(e, this.props.item, prop) }
                     />
                 </InputGroup>));
         }
@@ -57,5 +57,6 @@ ItemDetails.propTypes = {
     item: PropTypes.object,
     item_properties: PropTypes.arrayOf(PropTypes.string),
     item_property_labels: PropTypes.arrayOf(PropTypes.string),
-    item_property_placeholder: PropTypes.arrayOf(PropTypes.string)
+    item_property_placeholder: PropTypes.arrayOf(PropTypes.string),
+    handlePropChange: PropTypes.func
   };
