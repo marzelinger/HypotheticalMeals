@@ -45,7 +45,7 @@ export class PageTable extends React.Component{
             <thead>
               <tr>
                 {this.props.table_properties.map(prop => 
-                  <th key={prop} onClick={e => this.props.handleSort(e, this.getPropertyLabel(prop))}>
+                  <th key={prop} onClick={e => this.props.handleSort(e, prop)}>
                     {this.getPropertyLabel(prop)}
                   </th>
                 )}
