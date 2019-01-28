@@ -105,7 +105,7 @@ export const registerFirstAdmin = (userData, history) => dispatch => {
 export const getAllUsers = (history) => dispatch => {
   console.log(history);
 
-  return axios
+  axios
     .get("/api/users/getall")
     //.then(res => history.push("/login")) // re-direct to login on successful register
     .then(res => {
@@ -136,7 +136,6 @@ export const getAllUsers = (history) => dispatch => {
       // console.log("this is the response in getAllusers length: "+ res.data.length);
       // console.log("this is the firstAdminCreatedFlag: "+ localStorage.getItem("firstAdminCreated"));
     }) // re-direct to login on successful register
-
     .catch(err =>
       dispatch({
         type: GET_ERRORS,
