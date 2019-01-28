@@ -23,8 +23,7 @@ export default class GeneralNavBar extends React.Component {
       <div>
         <Navbar color="light" light expand="md">
           <GeneralMenu></GeneralMenu>
-          <NavbarBrand id = "title" href="/">{Constants.TITLE}</NavbarBrand>
-
+          <NavbarBrand right id = "title" href="/">{Constants.TITLE}</NavbarBrand>
         </Navbar>
         
       </div>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // constants.js
 // Riley
 
@@ -22,3 +23,8 @@ export const details_cancel = 'Cancel'
 export const details_create = 'Create'
 
 export const create_ingredient = 'Create Ingredient'
+=======
+export const TITLE="ALLIGATOR"
+export const MANUFACTURING_TITLE="Manufacturing Goals"
+export const DEFAULT_USER="default_user"
+>>>>>>> front_end_start

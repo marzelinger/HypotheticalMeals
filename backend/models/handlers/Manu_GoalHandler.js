@@ -7,21 +7,25 @@ class Manu_GoalHandler{
 
     static async createManufacturingGoal(req, res){
         try {
+            console.log("creating goal");
             var manu_goal = new Manu_Goal();
             var new_name = req.body.name;
-            var new_user = req.body.user;
+            var new_user = req.body.user || "default_user";
             if(!new_name || !new_user){
+                console.log("??")
                 return res.json({
                     success: false, error: 'You must provide a name'
                 });
             }
             let conflict = await Manu_Goal.find({ name : new_name, user: new_user});
             if(conflict.length > 0){
+                console.log("?");
                 return res.json({ success: false, error: 'CONFLICT'});
             }
 
             manu_goal.name = new_name;
             manu_goal.user = new_user;
+            console.log("here");
             let new_manu_goal = await manu_goal.save();
             return res.json({ success: true, data: new_manu_goal});
         }
