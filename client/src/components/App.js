@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 
 import Navbar from "./layout/Navbar";
+import ListPage from "./ListPage";
 import Landing from "./layout/Landing";
 import Register from "./auth/Register";
 import AdminRegister from "./auth/AdminRegister";
@@ -50,10 +51,8 @@ render(){
         <Router>
           <div className="App">
             <Navbar />
-            <Route exact path="/" component={Landing} />
-            <Route exact path="/login" component={Login} />
-            <Route exact path="/register" component={Register} />
-            <Route exact path="/adminregister" component={AdminRegister} />
+            <ListPage>
+            </ListPage>
             <Switch>
             <PrivateRoute exact path="/dashboard" component={Dashboard} />
             </Switch>
@@ -66,6 +65,34 @@ render(){
 }
 
 export default App
+
+
+
+// render(){
+//   return(
+// <div>
+//   <Provider store={store}>
+//       <Router>
+//         <div className="App">
+//           <Navbar />
+//           <Route exact path="/" component={Landing} />
+//           <Route exact path="/login" component={Login} />
+//           <Route exact path="/register" component={Register} />
+//           <Route exact path="/adminregister" component={AdminRegister} />
+//           <Switch>
+//           <PrivateRoute exact path="/dashboard" component={Dashboard} />
+//           </Switch>
+//         </div>
+//       </Router>
+//     </Provider>
+//     </div>
+//   )
+// }
+// }
+
+
+
+
 
 
 // class App extends React.Component{
