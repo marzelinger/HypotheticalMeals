@@ -13,4 +13,3 @@ export const sku_label = "SKU"
 
 
 //Authorization Constants
-export const ADMIN = "Admin"

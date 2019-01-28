@@ -42,6 +42,7 @@ export const loginUser = userData => dispatch => {
       setAuthToken(token);
       // Decode token to get user data
       const decoded = jwt_decode(token);
+      console.log("logging in user and setting if admin in authActions: "+decoded.admin);
       // Set current user
       dispatch(setCurrentUser(decoded));
     })

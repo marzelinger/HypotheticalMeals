@@ -3,7 +3,6 @@
 
 import User from '../databases/User';
 import isAdmin from '../../validation/isAdmin';
-import ADMIN from '../../../client/src/resources/Constants';
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
@@ -76,9 +75,11 @@ class UserHandler{
         if (isMatch) {
           // User matched
           // Create JWT Payload
+          console.log("admin of new user: "+ user.email+" is: "+ isAdmin(user).isValid);
           const payload = {
             id: user.id,
             name: user.name,
+            email: user.email,
             admin: isAdmin(user).isValid
           };
   // Sign token
