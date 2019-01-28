@@ -110,24 +110,31 @@ export const getAllUsers = (history) => dispatch => {
     //.then(res => history.push("/login")) // re-direct to login on successful register
     .then(res => {
       console.log("this is the response in authActions: "+ res);
-      console.log("this is the response in authActions.data: "+ res.data);
-      console.log("this is the response in authActions.data: "+ res.error);
+      console.log("this is the response in authActions.data: "+ res.data.data);
+      console.log("the length is : "+ res.data.data.length);
 
-      let userList = {};
-      userList = res.data;
-      console.log("this is the list: "+userList);
-      console.log('this is the userlist.length: '+ userList.length);
-      if(res.data.length === undefined){
-        localStorage.setItem("firstAdminCreated", false);
-      }
-      else if(res.data.length === 0){
-        localStorage.setItem("firstAdminCreated", false);
+      if(res.data.data.length>0){
+        localStorage.setItem("firstAdminCreated", true);
       }
       else{
-          localStorage.setItem("firstAdminCreated", true);
-      }  
-      console.log("this is the response in getAllusers length: "+ res.data.length);
-      console.log("this is the firstAdminCreatedFlag: "+ localStorage.getItem("firstAdminCreated"));
+        localStorage.setItem("firstAdminCreated", false);
+      }
+
+      // let userList = {};
+      // userList = res.data;
+      // console.log("this is the list: "+userList);
+      // console.log('this is the userlist.length: '+ userList.length);
+      // if(res.data.length === undefined){
+      //   localStorage.setItem("firstAdminCreated", false);
+      // }
+      // else if(res.data.length === 0){
+      //   localStorage.setItem("firstAdminCreated", false);
+      // }
+      // else{
+      //     localStorage.setItem("firstAdminCreated", true);
+      // }  
+      // console.log("this is the response in getAllusers length: "+ res.data.length);
+      // console.log("this is the firstAdminCreatedFlag: "+ localStorage.getItem("firstAdminCreated"));
     }) // re-direct to login on successful register
 
     .catch(err =>

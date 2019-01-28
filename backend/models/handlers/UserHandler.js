@@ -112,14 +112,16 @@ class UserHandler{
 
     // Gets all Users in the database
     static getAllUsers(req, res){
+      console.log('hello');
         User.find((err, users) => {
             console.log("these are the users in getAllUsers: "+ users);
             if (err) return res.json({ success: false, error: err });
             console.log("these are the users in getAllUsers2: "+ users);
-
+            console.log(users);
             return res.json({ success: true, data: users });
           });
     }
+
     static getUserByID(req, res){
     }
     static deleteUserByID(req, res){
