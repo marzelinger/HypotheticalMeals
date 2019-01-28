@@ -105,13 +105,15 @@ export const registerFirstAdmin = (userData, history) => dispatch => {
 export const getAllUsers = (history) => dispatch => {
   console.log(history);
 
-  return axios
+  axios
     .get("/api/users/getall")
     //.then(res => history.push("/login")) // re-direct to login on successful register
     .then(res => {
-      console.log("this is the response in authActions: "+ res);
-      console.log("this is the response in authActions.data: "+ res.data);
-      console.log("this is the response in authActions.data: "+ res.error);
+      //console.log("this is the response in authActions: "+ res);
+      //console.log("this is the response in authActions.data.form 0: "+ res.data.form[0]);
+      //console.log("this is the response in authActions.error: "+ res.error);
+      //var myObject = JSON.parse(res.data);
+      //console.log("this is the parsed: "+ myObject);
 
       let userList = {};
       userList = res.data;
@@ -129,7 +131,6 @@ export const getAllUsers = (history) => dispatch => {
       console.log("this is the response in getAllusers length: "+ res.data.length);
       console.log("this is the firstAdminCreatedFlag: "+ localStorage.getItem("firstAdminCreated"));
     }) // re-direct to login on successful register
-
     .catch(err =>
       dispatch({
         type: GET_ERRORS,

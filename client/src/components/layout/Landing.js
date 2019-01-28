@@ -24,8 +24,9 @@ class Landing extends Component {
   componentDidMount() {
     console.log("trying to mount the adminregister" +this.props.history);
     var response = this.props.getAllUsers();
-    console.log("this is the response from getAllUsers with specific: "+response.data.name);
-    console.log("in the component mounting of landing, local storage says firstAdminCreated is; "+localStorage.getItem("firstAdminCreated"));
+    
+    //console.log("this is the response from getAllUsers with specific: "+response.data.name);
+    //console.log("in the component mounting of landing, local storage says firstAdminCreated is; "+localStorage.getItem("firstAdminCreated"));
     //firstAdminInit
     // if(Object.keys(response.data).length>0){
     //   localStorage.setItem("firstAdminCreated", true);
@@ -49,7 +50,7 @@ class Landing extends Component {
             </p>
             <br />
             {
-                localStorage.getItem("firstAdminCreated")
+                !localStorage.getItem("firstAdminCreated")
                 ? (
                 <div>
                 <Link
