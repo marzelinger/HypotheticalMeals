@@ -5,7 +5,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Table } from 'reactstrap';
-import ItemDetails from './ItemDetails'
 import * as Constants from '../resources/Constants';
 
 export class PageTable extends React.Component{
@@ -38,15 +37,6 @@ export class PageTable extends React.Component{
           Constants.unselected_row_color : Constants.selected_row_color});
     }
 
-    showDetailsView = () => {
-      //there's something fundamentally wrong with how I change CSS/JSX properties
-      //using JS. It doesn't work here or on the item selection
-      if (this.state){
-        console.log(this.state.detail_view_item);
-        return (this.state.detail_view_item ? <ItemDetails/> : null);
-      }
-    }
-
     render() {
       return (
         <div className="container">
@@ -63,7 +53,7 @@ export class PageTable extends React.Component{
             <tbody>
               {this.props.list_items.map(item => 
                 <tr 
-                  key={item._id}
+                  key={item.num}
                   style={this.rowStyle(item)}
                 >
                   {this.props.table_properties.map(prop => 
@@ -84,16 +74,6 @@ export class PageTable extends React.Component{
               )}
             </tbody>
           </Table>
-          <ItemDetails
-            item={this.props.detail_view_item}
-            item_properties={this.props.item_properties}
-            item_property_labels={this.props.item_property_labels}
-            item_property_placeholder={this.props.item_property_placeholder}
-            detail_view_options={this.props.detail_view_options}
-            handlePropChange={this.props.handlePropChange}
-            handleDetailViewSubmit={this.props.handleDetailViewSubmit}
-          />
-          
         </div>
       );
     }
@@ -116,17 +96,9 @@ PageTable.propTypes = {
   //     createdAt: PropTypes.date
   // })),
   selected_items: PropTypes.arrayOf(PropTypes.object),
-  item_properties: PropTypes.arrayOf(PropTypes.string),
-  item_property_labels: PropTypes.arrayOf(PropTypes.string),
-  item_property_placeholder: PropTypes.arrayOf(PropTypes.string),
-  item_options: PropTypes.arrayOf(PropTypes.string),
-  detail_view_item: PropTypes.object,
-  detail_view_options: PropTypes.arrayOf(PropTypes.string),
   handleSort: PropTypes.func,
   handleSelect: PropTypes.func,
-  handleDetailViewSelect: PropTypes.func,
-  handlePropChange: PropTypes.func,
-  handleDetailViewSubmit: PropTypes.func
+  handleDetailViewSelect: PropTypes.func
 };
 
 

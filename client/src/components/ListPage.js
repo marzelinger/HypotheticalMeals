@@ -5,11 +5,16 @@
 import React from 'react';
 import Filter from './Filter';
 import PageTable from './PageTable'
+import TableOptions from './TableOptions'
 import SubmitRequest from './../helpers/SubmitRequest'
+import ItemStore from './../helpers/ItemStore'
+import ItemDetails from './ItemDetails'
 import { 
     Alert,
-    Button } from 'reactstrap';
+    Button,
+    DropdownToggle } from 'reactstrap';
 import * as Constants from '../resources/Constants';
+import '../style/ListPage.css';
 
 
 export default class ListPage extends React.Component {
@@ -25,6 +30,7 @@ export default class ListPage extends React.Component {
             filter_options: [Constants.keyword_label, Constants.sku_label],
             table_columns: ['Name', 'Number', 'Package Size', 'Cost per Package (USD)'],
             table_properties: ['name', 'num', 'pkg_size', 'pkg_cost'],
+            table_options: [Constants.create_ingredient],
             item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment', 'skus'],
             item_property_labels: ['Name', 'Number', 'Package Size', 'Package Cost', 'Vendor Info', 'Comments', 'SKUs'],
             item_property_placeholder: ['White Rice', '12345678', '1lb', '1.50', 'Tam Soy', '...', 'Fried Rice'],
@@ -33,6 +39,7 @@ export default class ListPage extends React.Component {
             detail_view_item: null,
             detail_view_options: [],
             data: [],
+            loaded: false,
             error: null
         };
     }
@@ -57,10 +64,23 @@ export default class ListPage extends React.Component {
           .then(data => data.json())
           .then((res) => {
             if (!res.success) this.setState({ error: res.error });
-            else this.setState({ data: res.data });
+            else this.setState({ 
+                data: res.data,
+                loaded: true
+            });
           });
         console.log(this.state.data);
     }
+
+    //unused!
+    showDetailsView = () => {
+        //there's something fundamentally wrong with how I change CSS/JSX properties
+        //using JS. It doesn't work here or on the item selection
+        if (this.state){
+          console.log(this.state.detail_view_item);
+          return (this.state.detail_view_item ? <ItemDetails/> : null);
+        }
+      }
 
     onFilterValueChange = (event) => {
         this.setState({
@@ -72,6 +92,26 @@ export default class ListPage extends React.Component {
         this.setState({
             filter_category: sel
         });
+    }
+
+    onCreateNewItem = () => {
+        var item = ItemStore.getEmptyIngredient(this.state.data, this);
+        const newData = this.state.data.slice();
+        newData.push(item);
+        this.setState({ 
+            data: newData,
+            detail_view_item: item,
+            detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
+        })
+    }
+
+    onTableOptionSelection = (e, opt) => {
+        console.log(opt);
+        switch (opt){
+            case Constants.create_ingredient:
+                this.onCreateNewItem();
+                break;
+        }
     }
 
     onSort = (event, sortKey) => {
@@ -96,7 +136,11 @@ export default class ListPage extends React.Component {
     };
 
     onDetailViewSubmit = (event, item, option) => {
+        console.log(option);
         switch (option) {
+            case Constants.details_create:
+                SubmitRequest.submitCreateItem(this.state.page_name, item, this);
+                break;
             case Constants.details_save:
                 SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
                 break;
@@ -110,6 +154,7 @@ export default class ListPage extends React.Component {
             detail_view_item: null,
             detail_view_options: []
         });
+        this.loadDataFromServer();
     }
 
     onPropChange = (event, item, prop) => {
@@ -117,7 +162,6 @@ export default class ListPage extends React.Component {
         var ind = newData.indexOf(item);
         newData[ind][prop] = event.target.value;
         this.setState({ data: newData });
-        console.log(event.target.value);
     };
 
     render() {
@@ -137,11 +181,10 @@ export default class ListPage extends React.Component {
                             handleFilterSelection={this.onFilterSelection}>
                         </Filter>
                     </div>
-                    <div className="options"> 
-                        {/* <DropdownToggle caret>
-                            ...
-                        </DropdownToggle> */}
-                    </div>
+                    <TableOptions
+                        table_options={this.state.table_options}
+                        handleTableOptionSelection={this.onTableOptionSelection}
+                    />
                 </div>
                 <div className='table'>
                     <PageTable 
@@ -149,19 +192,21 @@ export default class ListPage extends React.Component {
                         table_properties={this.state.table_properties} 
                         list_items={this.state.data}
                         selected_items={this.state.selected_items}
-                        item_properties={this.state.item_properties}
-                        item_property_labels={this.state.item_property_labels}
-                        item_property_placeholder= {this.state.item_property_placeholder}
-                        item_options={this.state.item_options}
-                        detail_view_item={this.state.detail_view_item}
-                        detail_view_options={this.state.detail_view_options}
                         handleSort={this.onSort}
                         handleSelect={this.onSelect}
                         handleDetailViewSelect={this.onDetailViewSelect}
+                    />
+                </div>
+                <div className='item-details'>
+                    <ItemDetails
+                        item={this.state.detail_view_item}
+                        item_properties={this.state.item_properties}
+                        item_property_labels={this.state.item_property_labels}
+                        item_property_placeholder={this.state.item_property_placeholder}
+                        detail_view_options={this.state.detail_view_options}
                         handlePropChange={this.onPropChange}
                         handleDetailViewSubmit={this.onDetailViewSubmit}
-                    >
-                    </PageTable>
+                    />
                     <Alert
                         value={this.state.error}
                         color='danger'/>

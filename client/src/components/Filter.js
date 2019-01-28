@@ -20,7 +20,7 @@ export default class Filter extends React.Component {
 
         this.toggleDropDown = this.toggleDropDown.bind(this);
         this.state = {
-            width: 33,
+            width: 100,
             dropdownOpen: false
         };
     }
@@ -41,17 +41,17 @@ export default class Filter extends React.Component {
                     onChange={this.props.handleValueChange}>
                 </Input>
                 <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
-                <DropdownToggle caret>
-                    {this.props.selection}
-                </DropdownToggle>
-                <DropdownMenu>
-                    {this.props.categories.map(cat => 
-                        <DropdownItem 
-                            key={cat}
-                            onClick={e => this.props.handleFilterSelection(e, cat)}
-                        >{cat}</DropdownItem>
-                    )}
-                </DropdownMenu>
+                    <DropdownToggle caret>
+                        {this.props.selection}
+                    </DropdownToggle>
+                    <DropdownMenu>
+                        {this.props.categories.map(cat => 
+                            <DropdownItem 
+                                key={cat}
+                                onClick={e => this.props.handleFilterSelection(e, cat)}
+                            >{cat}</DropdownItem>
+                        )}
+                    </DropdownMenu>
                 </InputGroupButtonDropdown>
             </InputGroup>
         </div>
