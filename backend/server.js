@@ -6,11 +6,13 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import logger from 'morgan';
 import mongoose from 'mongoose';
-import { getConfig } from './config';
 import SkuHandler from './models/handlers/SkuHandler';
 import Prod_LineHandler from './models/handlers/Prod_LineHandler';
 import IngredientHandler from './models/handlers/IngredientHandler';
 import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
+import UserHandler from './models/handlers/UserHandler';
+import { getSecret } from './secrets';
+const passport = require("passport");
 
 
 const dotenv = require('dotenv');
@@ -21,7 +23,9 @@ const router = express.Router();
 
 // set our port to either a predetermined port number if you have set it up, or 3001
 const API_PORT = process.env.API_PORT || 3001;
-mongoose.connect(getConfig('dbUri'));
+
+
+mongoose.connect(getSecret('dbUri'));
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
@@ -65,5 +69,27 @@ router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteM
 
 // Use our router configuration when we call /api
 app.use('/api', router);
+app.use(passport.initialize());
+require("./config/passport")(passport);
+//app.use("/api/users", users);
+
+// @route POST api/users/register
+// @desc Register user
+// @access Public
+router.post("/users/register", (req, res) => UserHandler.createUser(req, res));
+//router.post("/users/register", (req, res, user) => UserHandler.createUser(req, res, user));
+
+
+// @route POST api/users/login
+// @desc Login user and return JWT token
+// @access Public
+router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword(req,res));
+
+// @route GET api/users/getall
+// @desc Get all users in the mlab db and return them.
+// @access Public
+router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
+
+
 
 app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
