@@ -25,7 +25,5 @@ export const details_create = 'Create'
 
 export const create_ingredient = 'Create Ingredient'
 
-export const TITLE="ALLIGATOR"
-
 
 //Authorization Constants
