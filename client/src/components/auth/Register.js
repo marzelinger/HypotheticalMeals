@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
-import isAdmin from "./isAdmin";
+const currentUserIsAdmin = require("./currentUserIsAdmin");
 
 var userIsAdmin = false;
 
@@ -28,9 +28,7 @@ class Register extends Component {
     console.log("trying to mount the register" +this.props.history);
 
     // If logged in and user navigates to Register page, should redirect them to dashboard
-    var curUser = localStorage.getItem("User");
-    userIsAdmin = isAdmin(curUser).isValid;
-    if (this.props.auth.isAuthenticated && !isAdmin) {
+    if (this.props.auth.isAuthenticated && !currentUserIsAdmin().isValid) {
       this.props.history.push("/dashboard"); //if they are not an admin, get redirected to dashboard.
       console.log("mounted" +this.props.history);
     }
@@ -63,7 +61,7 @@ const newUser = {
     console.log(this.props);
     console.log(newUser);
 
-    if(isAdmin){
+    if(currentUserIsAdmin().isValid){
       this.props.registerUser(newUser, this.props.history); 
     }
     else{

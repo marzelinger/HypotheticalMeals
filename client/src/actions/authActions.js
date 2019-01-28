@@ -6,21 +6,16 @@ import {
   SET_CURRENT_USER,
   USER_LOADING
 } from "./types";
-
+const currentUserIsAdmin = require("../components/auth/currentUserIsAdmin");
 var firstAdminRegistered = false;
+
 // Register New User
 export const registerUser = (userData, history) => dispatch => {
   console.log(history);
   console.log(userData);
   console.log(localStorage);
-
-  if(localStorage.getItem("jwtToken")!=null){  //the registering the user can only happen when an admin is logged in. ie a token is present.
-      const decoded = jwt_decode(localStorage.getItem("jwtToken"));
-      const curUserIsAdmin = decoded.admin;
-      console.log(decoded);
-      console.log("decoded.name:" + decoded.name);
-      if(curUserIsAdmin){
-        console.log("curUserIsAdmin" + curUserIsAdmin);
+      if(currentUserIsAdmin().isValid){
+        console.log("curUserIsAdmin has been confirmed to be true");
         axios
         .post("/api/users/register", userData)
         //.then(res => history.push("/login")) // re-direct to login on successful register
@@ -32,7 +27,6 @@ export const registerUser = (userData, history) => dispatch => {
           })
         );
       }
-    }
 };
 
 // Login - get user token

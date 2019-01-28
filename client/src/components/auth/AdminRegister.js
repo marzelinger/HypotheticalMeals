@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { registerFirstAdmin } from "../../actions/authActions";
 import classnames from "classnames";
-import isAdmin from "./isAdmin";
+const ADMIN = require("../../resources/Constants");
 
 class AdminRegister extends Component {
   constructor() {
@@ -51,7 +51,7 @@ const newUser = {
       email: this.state.email,
       password: this.state.password,
       password2: this.state.password2,
-      privileges: ["Admin"]
+      privileges: [ADMIN]
     };
     console.log(e);
     console.log(this.state);

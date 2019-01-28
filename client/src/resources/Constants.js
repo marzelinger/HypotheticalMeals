@@ -10,3 +10,7 @@ export const ProdTitle = "PRODUCT LINES"
 
 export const keyword_label = "Keyword"
 export const sku_label = "SKU"
+
+
+//Authorization Constants
+export const ADMIN = "Admin"

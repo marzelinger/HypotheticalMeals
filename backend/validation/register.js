@@ -6,7 +6,6 @@
 
 const Validator = require("validator");
 const isEmpty = require("is-empty");
-import isAdmin from "./isAdmin";
 
 module.exports = function validateRegisterInput(data){
     let errors = {};
@@ -40,11 +39,6 @@ module.exports = function validateRegisterInput(data){
     if (!Validator.equals(data.password, data.password2)) {
     errors.password2 = "Passwords must match";
   }
-
-  // //check that the only person that is trying to register a user is an admin.
-  // if(!isAdmin(user).isValid){
-  //   errors.privileges = "Only admins may create new users.";
-  // }
   return {
     errors,
     isValid: isEmpty(errors)

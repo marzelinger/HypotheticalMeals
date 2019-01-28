@@ -3,6 +3,7 @@
 
 import User from '../databases/User';
 import isAdmin from '../../validation/isAdmin';
+import ADMIN from '../../../client/src/resources/Constants';
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
