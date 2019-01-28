@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Navbar from "./layout/Navbar";
 import Landing from "./layout/Landing";
 import Register from "./auth/Register";
+import AdminRegister from "./auth/AdminRegister";
 import Login from "./auth/Login";
 import PrivateRoute from "./private-route/PrivateRoute";
 import Dashboard from "./dashboard/Dashboard";
@@ -21,6 +22,7 @@ import configureStore from '../store/configureStore';
 const store = configureStore();
 
 if (localStorage.jwtToken) {
+  if(localStorage.getItem("firstAdminCreated")){
     // Set auth token header auth
     const token = localStorage.jwtToken;
     setAuthToken(token);
@@ -38,6 +40,7 @@ if (localStorage.jwtToken) {
       window.location.href = "./login";
     }
   }
+  }
 
 class App extends React.Component{
 render(){
@@ -50,6 +53,7 @@ render(){
             <Route exact path="/" component={Landing} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
+            <Route exact path="/adminregister" component={AdminRegister} />
             <Switch>
             <PrivateRoute exact path="/dashboard" component={Dashboard} />
             </Switch>

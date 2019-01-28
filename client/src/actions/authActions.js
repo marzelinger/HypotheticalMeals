@@ -7,7 +7,7 @@ import {
   USER_LOADING
 } from "./types";
 const currentUserIsAdmin = require("../components/auth/currentUserIsAdmin");
-var firstAdminRegistered = false;
+const adminHasInit = require("../../src/components/auth/adminHasInit");
 
 // Register New User
 export const registerUser = (userData, history) => dispatch => {
@@ -84,7 +84,8 @@ export const logoutUser = () => dispatch => {
 export const registerFirstAdmin = (userData, history) => dispatch => {
   console.log(history);
   console.log(userData);
-  if(!firstAdminRegistered){
+
+  if(!adminHasInit().isValid){
   axios
     .post("/api/users/register", userData)
     .then(res => history.push("/login")) // re-direct to login on successful register
@@ -94,6 +95,45 @@ export const registerFirstAdmin = (userData, history) => dispatch => {
         payload: err.response.data
       })
     );
-  firstAdminRegistered = true;
+    localStorage.setItem("firstAdminCreated", true);
   }
+};
+
+
+
+// // Get all Users
+export const getAllUsers = (history) => dispatch => {
+  console.log(history);
+
+  return axios
+    .get("/api/users/getall")
+    //.then(res => history.push("/login")) // re-direct to login on successful register
+    .then(res => {
+      console.log("this is the response in authActions: "+ res);
+      console.log("this is the response in authActions.data: "+ res.data);
+      console.log("this is the response in authActions.data: "+ res.error);
+
+      let userList = {};
+      userList = res.data;
+      console.log("this is the list: "+userList);
+      console.log('this is the userlist.length: '+ userList.length);
+      if(res.data.length === undefined){
+        localStorage.setItem("firstAdminCreated", false);
+      }
+      else if(res.data.length === 0){
+        localStorage.setItem("firstAdminCreated", false);
+      }
+      else{
+          localStorage.setItem("firstAdminCreated", true);
+      }  
+      console.log("this is the response in getAllusers length: "+ res.data.length);
+      console.log("this is the firstAdminCreatedFlag: "+ localStorage.getItem("firstAdminCreated"));
+    }) // re-direct to login on successful register
+
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
 };

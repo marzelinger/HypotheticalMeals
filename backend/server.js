@@ -85,5 +85,11 @@ router.post("/users/register", (req, res) => UserHandler.createUser(req, res));
 // @access Public
 router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword(req,res));
 
+// @route GET api/users/getall
+// @desc Get all users in the mlab db and return them.
+// @access Public
+router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
+
+
 
 app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
