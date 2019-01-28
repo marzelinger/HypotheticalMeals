@@ -99,13 +99,11 @@
     flex: 1;
   }
   
-  .form button {
-    color: #999;
-    border-radius: 5px;
-    border: 1px solid #999;
+  .form img {
+    height: 20px;
   }
   
-  .form button:hover {
+  .form img:hover {
     cursor: pointer;
     color: #385997;
     border-color: #385997;

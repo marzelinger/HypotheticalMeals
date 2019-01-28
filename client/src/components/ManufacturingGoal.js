@@ -3,22 +3,31 @@ import React from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import ReactMarkdown from 'react-markdown';
+import { UncontrolledCollapse, CardBody, Card } from 'reactstrap';
+import deleteButton from'../resources/delete.png';
 
 const ManufacturingGoal = props => (
-  <div className="singleComment">
-    <img alt="user_image" className="userImage" src={`https://picsum.photos/70?random=${props.id}`} />
+  <div id="singleGoal">
     <div className="textContent">
-      <div className="singleCommentContent">
-        <h3>{props.user}</h3>
+      <div className="singleGoalContent" id={'goal' + props.id}>
         <h3>{props.name}</h3>
       </div>
-      <div className="singleCommentButtons">
-        <a onClick={() => { props.handleUpdateGoal(props.id); }}>update</a>
-        <a onClick={() => { props.handleDeleteGoal(props.id); }}>delete</a>
-      </div>
+      <UncontrolledCollapse toggler={'#goal' + props.id}>
+            <Card>
+                <CardBody>
+                List of skus and amounts will go here
+                </CardBody>
+            </Card>
+        </UncontrolledCollapse>
     </div>
+      <div className="singleGoalButtons">
+        {/* <a onClick={() => { props.handleUpdateGoal(props.id); }}>update</a> */}
+        <img id ="deleteButton" onClick={() => { props.handleDeleteGoal(props.id); }} src= {deleteButton}></img>
+      </div>
+
   </div>
 );
+
 
 ManufacturingGoal.propTypes = {
   user: PropTypes.string.isRequired,

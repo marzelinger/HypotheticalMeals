@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import ManufacturingGoal from './ManufacturingGoal';
 
 const ManufacturingGoalList = (props) => {
-  console.log(JSON.stringify(props.data));
   const goalNodes = props.data.map(goal => (
     <ManufacturingGoal
       user={goal.user}

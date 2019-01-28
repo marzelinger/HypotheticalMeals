@@ -3,7 +3,7 @@ import GeneralNavBar from './GeneralNavBar';
 import PageTable from './PageTable'
 import ManufacturingGoalsBox from './ManufacturingGoalsBox'
 import * as Constants from '../resources/Constants';
-// import '../style/PageStyle.css';
+import '../style/ManufacturingGoalsStyle.css';
 
 export default class GeneralPage extends React.Component {
   render() {

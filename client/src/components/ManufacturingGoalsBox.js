@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import 'whatwg-fetch';
 import ManufacturingGoalList from './ManufacturingGoalList';
 import ManufacturingGoalForm from './ManufacturingGoalForm';
-// import './CommentBox.css';
+import '../style/ManufacturingGoalsBox.css';
 import * as Constants from '../resources/Constants';
 
 
@@ -52,13 +52,10 @@ class ManufacturingGoalsBox extends Component {
   submitGoal = (e) => {
     e.preventDefault();
     const { name, updateId } = this.state;
-    console.log("submitting comment")
     if (!name) return;
     if (updateId) {
-        console.log("submitting update comment")
       this.submitUpdatedGoal();
     } else {
-        console.log("submitting new comment")
       this.submitNewGoal();
     }
   }
@@ -123,8 +120,8 @@ class ManufacturingGoalsBox extends Component {
   render() {
     return (
       <div className="container">
-        <div className="comments">
-          <h2>Goals:</h2>
+        <div className="goals">
+          <h2>Current Goals:</h2>
           <ManufacturingGoalList
             data={this.state.data}
             handleDeleteGoal={this.onDeleteGoal}
