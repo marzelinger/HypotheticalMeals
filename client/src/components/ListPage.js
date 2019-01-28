@@ -167,7 +167,6 @@ export default class ListPage extends React.Component {
     render() {
         return (
             <div className="list-page">
-                <Button onClick={this.loadDataFromServer}></Button>
                 <div className="title-bar">
                     <h1>{this.state.page_title}</h1>
                 </div>
