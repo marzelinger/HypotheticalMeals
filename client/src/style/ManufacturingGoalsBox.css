@@ -1,0 +1,112 @@
+.container {
+    background-color: #f1f1f1;
+    box-sizing: border-box;
+    padding: 25px;
+    margin: 0px;
+    /* min-height: 100vh; */
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 5fr 1fr;
+    align-items: center;
+    max-width: 100%;
+    /* justify-content: space-between; */
+  
+  }
+  
+  .goals {
+    overflow: auto;
+    width: 100%;
+    display:grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 5fr;
+    /* max-width: 700px; */
+    min-width: 300px;
+  }
+
+  .goals div {
+      display:flex;
+      flex-direction: column;
+  }
+  
+  .goals h2 {
+    font-weight: 300;
+  }
+  
+  #singleGoal {
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 50px;
+    align-items: center;
+  }
+
+  .singleGoalContent:hover{
+    border: solid grey thin;
+  }
+  
+  .singleGoalContent {
+    min-width: 100px;
+    background-color: #fff;
+    padding: 10px;
+  }
+  
+  .singleGoalContent h3 {
+    margin: 0;
+    padding-right: 5px;
+    font-size: 12px;
+    color: #385997;
+  }
+  
+  .singleGoalContent p {
+    font-size: 12px;
+    margin: 0;
+  }
+
+  
+  .singleGoalButtons img {
+    margin: 0px 3px;
+    width: 20px;
+    cursor: pointer;
+    display: inline-block
+  }
+  .singleGoalButtons img :hover{
+      border: solid yellow thin;
+  }
+
+  
+  .form {
+    width: 70%;
+    min-width: 300px;
+  }
+  
+  .form #button {
+    height: 40px;
+    width: 40px;
+    padding: 0px;
+    border-radius: 50%;
+  }
+  
+  #popup input {
+    height: 30px;
+    padding-left: 10px;
+    margin-right: 10px;
+    border-radius: 20px;
+    width: 100%;
+  }
+
+  #popup button {
+    color: #646464;
+    border-radius: 5px;
+    /* border: 1px solid #999; */
+  }
+
+  #submitbutton{
+      background-color: #999;
+      border:none;
+  }
+
+  #submitbutton:hover, #button:hover{
+    border: solid #646464 2px;
+  }

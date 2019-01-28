@@ -13,6 +13,8 @@ import IngredientHandler from './models/handlers/IngredientHandler';
 import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
 
 
+const dotenv = require('dotenv');
+dotenv.config();
 // and create our instances
 const app = express();
 const router = express.Router();
