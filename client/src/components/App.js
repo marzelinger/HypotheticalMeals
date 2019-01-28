@@ -1,5 +1,5 @@
 import React from 'react'
-import PageTemplate from './PageTemplate'
+import ManufacturingPage from './ManufacturingGoalsPage'
 
 const App = () => (
 //   <div>
@@ -7,7 +7,7 @@ const App = () => (
 //     <VisibleTodoList />
 //     <Footer />
 //   </div>
-    <PageTemplate></PageTemplate>
+    <ManufacturingPage></ManufacturingPage>
 )
 
 export default App
