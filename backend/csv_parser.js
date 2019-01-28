@@ -7,6 +7,7 @@ export default class CSV_parser{
     static async parseCSV(req, res){
         try {
             var formattedArray = {};
+            //TODO: change this to fromPath
             const jsonArray = await csv().fromFile('testSpreadSheet.csv');
             for(var i = 0; i < jsonArray.length; i++){
                 // Changes the name of the fields
