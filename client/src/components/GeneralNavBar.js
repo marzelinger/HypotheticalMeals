@@ -28,13 +28,9 @@ export default class GeneralNavBar extends React.Component {
       <div>
         <Navbar color="light" light expand="md">
           <GeneralMenu></GeneralMenu>
-<<<<<<< HEAD
-          <NavbarBrand right id = "title" href="/">{Constants.TITLE}</NavbarBrand>
-=======
           <Route exact path="/register" component={Register} />
           <NavbarBrand id = "title" href="/">{Constants.TITLE}</NavbarBrand>
           <Logout></Logout>
->>>>>>> ingredientLogin
         </Navbar>
         
       </div>
