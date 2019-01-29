@@ -9,8 +9,6 @@ export default class ManufacturingGoalsPage extends React.Component {
   render() {
     return (
       <div>
-        <GeneralNavBar>
-        </GeneralNavBar>
         <h1 id = "manufacturing_goals_title">{Constants.MANUFACTURING_TITLE}</h1>
         <ManufacturingGoalsBox></ManufacturingGoalsBox>
       </div>

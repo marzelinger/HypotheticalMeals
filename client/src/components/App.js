@@ -57,7 +57,6 @@ class App extends React.Component{
   getIngredientRender = () => {
     return () => (
       <div className="container">
-        <GeneralNavBar/>
         <ListPage
           {...DataStore.getIngredientData()}
         />
@@ -80,7 +79,7 @@ class App extends React.Component{
         <Provider store={store}>
           <Router>
             <div className="App">
-              <Navbar />
+            <GeneralNavBar/>
               <Route exact path="/" component={Landing} />
               <Route exact path="/login" component={Login} />
               <Route exact path="/register" component={Register} />
