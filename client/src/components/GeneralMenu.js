@@ -31,10 +31,6 @@ export default class GeneralMenu extends React.Component {
         <DropdownToggle id = "menubutton">
         </DropdownToggle>
         <DropdownMenu>
-          <DropdownItem header>Header</DropdownItem>
-          <DropdownItem>Some Action</DropdownItem>
-          <DropdownItem disabled>Action (disabled)</DropdownItem>
-          <DropdownItem divider />
           <DropdownItem>Manufacturing Goals</DropdownItem>
           <DropdownItem>User Settings</DropdownItem>
           

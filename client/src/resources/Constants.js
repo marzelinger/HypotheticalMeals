@@ -8,7 +8,7 @@ export const DEFAULT_USER="default_user"
 //List Pages
 export const IngTitle = "INGREDIENTS"
 export const SkuTitle = "SKUs"
-export const ProdTitle = "PRODUCT LINES"
+export const ManuGoalTitle = "MANUFACTURING GOALS"
 
 export const ingredients_page_name = 'ingredients';
 export const skus_page_name = 'skus';

@@ -1,7 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
-import Navbar from "./layout/Navbar";
 import ListPage from "./ListPage/ListPage";
 import Landing from "./layout/Landing";
 import Register from "./auth/Register";
@@ -14,12 +13,12 @@ import setAuthToken from "../utils/setAuthToken";
 import DataStore from "./../helpers/DataStore";
 import GeneralNavBar from "./GeneralNavBar";
 import ManufacturingGoalsPage from "./ManufacturingGoalsPage";
+import * as Constants from './../resources/Constants';
 
 import { setCurrentUser, logoutUser } from "../actions/authActions";
 import { Provider } from "react-redux";
 //import store from '../store/configureStore';
 import configureStore from '../store/configureStore';
-import ManufacturingGoal from './ManufacturingGoal';
 
 // Check for token to keep user logged in
 
@@ -29,6 +28,9 @@ class App extends React.Component{
   constructor() {
     super();
     this.determineUser();
+    this.state = {
+      navbar_items: [Constants.SkuTitle, Constants.IngTitle, Constants.ManuGoalTitle],
+    }
   }
 
   determineUser = () => {
