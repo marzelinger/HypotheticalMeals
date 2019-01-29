@@ -1,18 +1,35 @@
 
 const jwt_decode = require('jwt-decode');
 const isEmpty = require("is-empty");
+const getAllUsers = require('../../actions/authActions');
 
 module.exports = function adminHasInit(){
+  //var response = getAllUsers();
+
     let errors = {};
-    if(localStorage != null){
-      if(localStorage.getItem("firstAdminCreated")!= null){
-        errors.admin = "The initial admin has been created.";
+    console.log("this is the adminHasinit flag: "+ sessionStorage.getItem("firstAdminCreated"));
+
+    if(sessionStorage != null){
+      console.log("first");
+
+      if(sessionStorage.getItem("firstAdminCreated")!= null){
+        console.log("second");
+        
+        console.log("this is the adminHasinit boolean: "+ sessionStorage.getItem("firstAdminCreated"));
+        if(sessionStorage.getItem("firstAdminCreated")){
+          console.log("this is admin will be true: ");
+          console.log("third");
+
           return{
           errors,
           isValid: isEmpty(errors)
           };
       }
     }
+    }
+    console.log("this is admin will be false: ");
+
+    errors.admin = "The initial admin has not been created.";
     return {
     errors,
     isValid: isEmpty(errors)

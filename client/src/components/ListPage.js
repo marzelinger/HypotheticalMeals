@@ -82,11 +82,6 @@ export default class ListPage extends React.Component {
         }
       }
 
-    onFilterValueChange = (event) => {
-        this.setState({
-            filter_value: event.target.value
-        });
-    }
 
     onFilterSelection = (e, sel) => {
         this.setState({
@@ -135,6 +130,16 @@ export default class ListPage extends React.Component {
         });
     };
 
+
+    onFilterValueChange = (event) => {
+        this.setState({
+            filter_value: event.target.value
+        });
+        console.log('this is the current filter_value: '+this.state.filter_value);
+        //SubmitRequest.submitFilterRequest(this.state.page_name, item, this);
+
+
+    }
     onDetailViewSubmit = (event, item, option) => {
         console.log(option);
         switch (option) {

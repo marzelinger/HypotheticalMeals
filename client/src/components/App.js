@@ -21,6 +21,7 @@ import configureStore from '../store/configureStore';
 
 const store = configureStore();
 
+
 if (localStorage.jwtToken) {
   if(localStorage.getItem("firstAdminCreated")){
     // Set auth token header auth

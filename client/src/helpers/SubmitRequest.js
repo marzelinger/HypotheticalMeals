@@ -36,4 +36,15 @@ export default class SubmitRequest{
     });
   }
 
+
+  static submitFilterRequest = (route, item, obj) => {
+    fetch(`/api/${route}/${item._id}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    }).then(res => res.json()).then((res) => {
+      if (!res.success) obj.setState({ error: res.error.message || res.error });
+      else console.log(res);
+    });
+  }
+
 }
