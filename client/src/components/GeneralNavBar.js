@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Navbar,
   NavbarBrand} from 'reactstrap';
@@ -27,7 +28,7 @@ export default class GeneralNavBar extends React.Component {
     return (
       <div>
         <Navbar color="light" light expand="md">
-          <GeneralMenu></GeneralMenu>
+          <GeneralMenu/>
           <Route exact path="/register" component={Register} />
           <NavbarBrand id = "title" href="/">{Constants.TITLE}</NavbarBrand>
           <Logout></Logout>
@@ -37,3 +38,4 @@ export default class GeneralNavBar extends React.Component {
     );
   }
 }
+

@@ -69,10 +69,6 @@ class Landing extends Component {
     }
   };
 
-
-
-
-
   render() {
     return (
       <div style={{ height: "75vh" }} className="container valign-wrapper">
@@ -85,9 +81,7 @@ class Landing extends Component {
               Blah Blah Blah Blah Food Yum
             </p>
             <br />
-            <div> 
-            {this.switchLanding(adminHasInit().isValid)}          
-              </div>
+            {this.switchLanding(adminHasInit().isValid)}    
           </div>
         </div>
       </div>

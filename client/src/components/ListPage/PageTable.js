@@ -5,27 +5,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Table } from 'reactstrap';
-import * as Constants from '../resources/Constants';
+import * as Constants from './../../resources/Constants';
 
 export class PageTable extends React.Component{
     constructor(props) {
       super(props);
-      // const { columns,
-      //   properties,
-      //   list_items
-      //   //   _id,
-      //   //   ingredient_name,
-      //   //   ingredient_num,
-      //   //   vendor_info,
-      //   //   pkg_size,
-      //   //   pkg_cost,
-      //   //   skus,
-      //   //   comment,
-      //   //   updatedAt,
-      //   //   createdAt,
-      //   //   __v
-      //   // } 
-      // } = props;
     }
 
     getPropertyLabel = (col) => {
@@ -84,17 +68,6 @@ PageTable.propTypes = {
   table_columns: PropTypes.arrayOf(PropTypes.string),
   table_properties: PropTypes.arrayOf(PropTypes.string),
   list_items: PropTypes.arrayOf(PropTypes.object),
-  //   PropTypes.shape({
-  //     ingredient_name: PropTypes.string,
-  //     ingredient_num: PropTypes.string,
-  //     vendor_info: PropTypes.string,
-  //     pkg_size: PropTypes.string,
-  //     pkg_cost: PropTypes.number,
-  //     skus: PropTypes.arrayOf(PropTypes.string),
-  //     comment: PropTypes.string,
-  //     updatedAt: PropTypes.date,
-  //     createdAt: PropTypes.date
-  // })),
   selected_items: PropTypes.arrayOf(PropTypes.object),
   handleSort: PropTypes.func,
   handleSelect: PropTypes.func,

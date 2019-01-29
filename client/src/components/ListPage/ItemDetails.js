@@ -4,7 +4,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types';
-import * as Constants from '../resources/Constants';
+import * as Constants from './../../resources/Constants';
 import { 
     Button,
     Input,
