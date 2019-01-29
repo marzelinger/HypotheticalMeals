@@ -6,15 +6,15 @@ import React from 'react';
 import Filter from './Filter';
 import PageTable from './PageTable'
 import TableOptions from './TableOptions'
-import SubmitRequest from './../helpers/SubmitRequest'
-import ItemStore from './../helpers/ItemStore'
+import SubmitRequest from './../../helpers/SubmitRequest'
+import ItemStore from './../../helpers/ItemStore'
 import ItemDetails from './ItemDetails'
 import { 
     Alert,
     Button,
     DropdownToggle } from 'reactstrap';
-import * as Constants from '../resources/Constants';
-import '../style/ListPage.css';
+import * as Constants from './../../resources/Constants';
+import './../../style/ListPage.css';
 
 
 export default class ListPage extends React.Component {
@@ -22,19 +22,18 @@ export default class ListPage extends React.Component {
         super(props);
 
         this.state = {
-            page_name: 'ingredients',
-            page_title: 'Ingredients',
+            page_name: props.page_name,
+            page_title: props.page_title,
             num_filters: 0,
             filter_value: '',
             filter_category: '',
-            filter_options: [Constants.keyword_label, Constants.sku_label],
-            table_columns: ['Name', 'Number', 'Package Size', 'Cost per Package (USD)'],
-            table_properties: ['name', 'num', 'pkg_size', 'pkg_cost'],
-            table_options: [Constants.create_ingredient],
-            item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment', 'skus'],
-            item_property_labels: ['Name', 'Number', 'Package Size', 'Package Cost', 'Vendor Info', 'Comments', 'SKUs'],
-            item_property_placeholder: ['White Rice', '12345678', '1lb', '1.50', 'Tam Soy', '...', 'Fried Rice'],
-            item_options: ['View Ingredient'], 
+            filter_options: props.filter_options,
+            table_columns: props.table_columns,
+            table_properties: props.table_properties,
+            table_options: props.table_options,
+            item_properties: props.item_properties,
+            item_property_labels: props.item_property_labels,
+            item_property_placeholder: props.item_property_placeholder,
             selected_items: [],
             detail_view_item: null,
             detail_view_options: [],
@@ -95,7 +94,7 @@ export default class ListPage extends React.Component {
     }
 
     onCreateNewItem = () => {
-        var item = ItemStore.getEmptyIngredient(this.state.data, this);
+        var item = ItemStore.getEmptyItem(this.state.page_name, this.state.data, this);
         const newData = this.state.data.slice();
         newData.push(item);
         this.setState({ 
@@ -108,7 +107,7 @@ export default class ListPage extends React.Component {
     onTableOptionSelection = (e, opt) => {
         console.log(opt);
         switch (opt){
-            case Constants.create_ingredient:
+            case Constants.create_item:
                 this.onCreateNewItem();
                 break;
         }

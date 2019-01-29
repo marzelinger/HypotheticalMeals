@@ -50,7 +50,7 @@ class Landing extends Component {
             </p>
             <br />
             {
-                !localStorage.getItem("firstAdminCreated")
+                localStorage.getItem("firstAdminCreated")
                 ? (
                 <div>
                 <Link

@@ -23,9 +23,9 @@ class AdminRegister extends Component {
   componentDidMount() {
     console.log("trying to mount the adminregister" +this.props.history);
 
-    // If logged in and user navigates to Register page, should redirect them to dashboard
+    // If logged in and user navigates to Register page, should redirect them to skus
     if (this.props.auth.isAuthenticated) {
-      this.props.history.push("/dashboard");
+      this.props.history.push("/skus");
       console.log("mounted" +this.props.history);
     }
 

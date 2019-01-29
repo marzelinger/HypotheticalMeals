@@ -2,7 +2,9 @@
 // Riley
 // Store of empty items and default set items
 
-export default class SubmitRequest{
+import * as Constants from '../resources/Constants';
+
+export default class ItemStore{
 
   static getUniqueNumber = (list) => {
     while(true){
@@ -13,16 +15,31 @@ export default class SubmitRequest{
     }
   }
 
-  static getEmptyIngredient(data, obj) {
-    var new_id = SubmitRequest.getUniqueNumber(data);
-    return {
-      name: '',
-      num: new_id,
-      vendor_info: '',
-      pkg_size: '',
-      pkg_cost: '',
-      skus: [''],
-      comment: ''
-    };
+  static getEmptyItem(page_name, data, obj) {
+    var new_id = ItemStore.getUniqueNumber(data);
+    switch (page_name){
+      case Constants.ingredients_page_name:
+        return {
+          name: '',
+          num: new_id,
+          vendor_info: '',
+          pkg_size: '',
+          pkg_cost: '',
+          skus: ['']
+        };
+      case Constants.skus_page_name: 
+        return {
+          name: '',
+          num: new_id,
+          case_upc: '',
+          unit_upc: '',
+          unit_size: '',
+          cpc: '',
+          prod_line: '',
+          comment: '',
+          ingredients: ['']
+        };
+    }
+    
   }
 }

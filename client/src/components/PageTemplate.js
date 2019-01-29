@@ -1,6 +1,6 @@
 import React from 'react';
 import GeneralNavBar from './GeneralNavBar';
-import ListPage from './ListPage'
+import ListPage from './ListPage/ListPage'
 import * as Constants from '../resources/Constants';
 // import '../style/PageStyle.css';
 
