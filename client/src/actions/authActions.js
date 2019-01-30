@@ -85,6 +85,10 @@ export const registerFirstAdmin = (userData, history) => dispatch => {
   console.log(history);
   console.log(userData);
 
+  //console.log("this is the regfirstAdmin flag: "+ sessionStorage.getItem("firstAdminCreated"));
+  console.log("this is the regfirstAdmin flag: "+ localStorage.getItem("firstAdminCreated"));
+
+  console.log("this is the adminHasinit value: "+ adminHasInit().isValid);
   if(!adminHasInit().isValid){
   axios
     .post("/api/users/register", userData)
@@ -96,45 +100,38 @@ export const registerFirstAdmin = (userData, history) => dispatch => {
       })
     );
     localStorage.setItem("firstAdminCreated", true);
+    console.log("this is the regfirstAdminLATER flag: "+ localStorage.getItem("firstAdminCreated"));
   }
 };
 
 
 
 // // Get all Users
-export const getAllUsers = (history) => dispatch => {
-  console.log(history);
-
+export const getAllUsers = () => dispatch => {
+  var count = 0;
   axios
     .get("/api/users/getall")
-    //.then(res => history.push("/login")) // re-direct to login on successful register
     .then(res => {
-      //console.log("this is the response in authActions: "+ res);
-      //console.log("this is the response in authActions.data.form 0: "+ res.data.form[0]);
-      //console.log("this is the response in authActions.error: "+ res.error);
-      //var myObject = JSON.parse(res.data);
-      //console.log("this is the parsed: "+ myObject);
+      console.log("this is the response in authActions: "+ res);
+      console.log("this is the length: "+ res.data.data.length);
 
-      let userList = {};
-      userList = res.data;
-      console.log("this is the list: "+userList);
-      console.log('this is the userlist.length: '+ userList.length);
-      if(res.data.length === undefined){
-        localStorage.setItem("firstAdminCreated", false);
+      if(res.data.data.length>0){
+        //sessionStorage.setItem("firstAdminCreated", true);
+        localStorage.setItem("firstAdminCreated", true);
+        count = res.data.data.length;
+     }
+     else{
+      //sessionStorage.setItem("firstAdminCreated", false);
       }
-      else if(res.data.length === 0){
-        localStorage.setItem("firstAdminCreated", false);
-      }
-      else{
-          localStorage.setItem("firstAdminCreated", true);
-      }  
-      console.log("this is the response in getAllusers length: "+ res.data.length);
-      console.log("this is the firstAdminCreatedFlag: "+ localStorage.getItem("firstAdminCreated"));
-    }) // re-direct to login on successful register
+      //console.log("this is the firstAdminCreated flag: "+ sessionStorage.getItem("firstAdminCreated"));
+      console.log("this is the firstAdminCreated flag: "+ localStorage.getItem("firstAdminCreated"));
+
+          }) // re-direct to login on successful register
     .catch(err =>
       dispatch({
         type: GET_ERRORS,
         payload: err.response.data
       })
     );
+    return count;
 };
