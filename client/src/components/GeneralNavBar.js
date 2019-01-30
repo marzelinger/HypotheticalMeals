@@ -25,13 +25,18 @@ export default class GeneralNavBar extends React.Component {
     });
   }
   render() {
+    console.log("in the general navbar: "+ localStorage.getItem("jwtToken"));
     return (
       <div>
         <Navbar color="light" light expand="md">
           <GeneralMenu/>
           <Route exact path="/register" component={Register} />
           <NavbarBrand id = "title" href="/">{Constants.TITLE}</NavbarBrand>
-          <Logout></Logout>
+        
+            <Logout></Logout>
+
+
+          
         </Navbar>
         
       </div>
@@ -39,3 +44,20 @@ export default class GeneralNavBar extends React.Component {
   }
 }
 
+
+
+// <Navbar color="light" light expand="md">
+// <GeneralMenu/>
+// <Route exact path="/register" component={Register} />
+// <NavbarBrand id = "title" href="/">{Constants.TITLE}</NavbarBrand>
+// {
+//   localStorage.getItem("jwtToken")
+//   ? 
+//   <Logout></Logout>
+//   : <div></div>
+
+
+// }
+
+// }
+// </Navbar>

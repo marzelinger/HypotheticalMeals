@@ -8,14 +8,15 @@ const adminHasInit = require("../auth/adminHasInit");
 
 class Landing extends Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       user: 0
     };
     console.log("this is user state: " +this.state.user);
 
-    //var response = this.props.getAllUsers();
+    var response = this.props.getAllUsers();
+    console.log('this is the constructor for landing');
     this.change = this.change.bind(this);
    // console.log("this is the response for the getAll Users: " +sessionStorage.getItem('firstAdminCreated'));
     // if (response != null){

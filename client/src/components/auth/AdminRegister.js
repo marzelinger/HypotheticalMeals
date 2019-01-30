@@ -75,7 +75,6 @@ return (
                 <b>Register New Admin</b> below
               </h4>
               <p className="grey-text text-darken-1">
-                Already have an account? <Link to="/login">Log in</Link>
               </p>
             </div>
             <form noValidate onSubmit={this.onSubmit}>

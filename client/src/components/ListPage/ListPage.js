@@ -15,6 +15,7 @@ import {
     DropdownToggle } from 'reactstrap';
 import * as Constants from './../../resources/Constants';
 import './../../style/ListPage.css';
+import GeneralNavBar from "../GeneralNavBar";
 
 
 export default class ListPage extends React.Component {
@@ -172,6 +173,8 @@ export default class ListPage extends React.Component {
     render() {
         return (
             <div className="list-page">
+                                        <GeneralNavBar/>
+
                 <div className="title-bar">
                     <h1>{this.state.page_title}</h1>
                 </div>

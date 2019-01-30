@@ -108,8 +108,8 @@ export const registerFirstAdmin = (userData, history) => dispatch => {
 
 // // Get all Users
 export const getAllUsers = () => dispatch => {
-
-  return axios
+  var count = 0;
+  axios
     .get("/api/users/getall")
     .then(res => {
       console.log("this is the response in authActions: "+ res);
@@ -118,7 +118,7 @@ export const getAllUsers = () => dispatch => {
       if(res.data.data.length>0){
         //sessionStorage.setItem("firstAdminCreated", true);
         localStorage.setItem("firstAdminCreated", true);
-
+        count = res.data.data.length;
      }
      else{
       //sessionStorage.setItem("firstAdminCreated", false);
@@ -133,4 +133,5 @@ export const getAllUsers = () => dispatch => {
         payload: err.response.data
       })
     );
+    return count;
 };
