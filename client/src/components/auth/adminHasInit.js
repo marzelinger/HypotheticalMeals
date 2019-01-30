@@ -7,16 +7,24 @@ module.exports = function adminHasInit(){
   //var response = getAllUsers();
 
     let errors = {};
-    console.log("this is the adminHasinit flag: "+ sessionStorage.getItem("firstAdminCreated"));
+   // console.log("this is the adminHasinit flag: "+ sessionStorage.getItem("firstAdminCreated"));
+   console.log("this is the adminHasinit flag: "+ localStorage.getItem("firstAdminCreated"));
 
-    if(sessionStorage != null){
+   // if(sessionStorage != null){
+     if(localStorage != null){
       console.log("first");
 
-      if(sessionStorage.getItem("firstAdminCreated")!= null){
+      //if(sessionStorage.getItem("firstAdminCreated")!= null){
+        if(localStorage.getItem("firstAdminCreated")!= null){
+
         console.log("second");
         
-        console.log("this is the adminHasinit boolean: "+ sessionStorage.getItem("firstAdminCreated"));
-        if(sessionStorage.getItem("firstAdminCreated")){
+        //console.log("this is the adminHasinit boolean: "+ sessionStorage.getItem("firstAdminCreated"));
+        console.log("this is the adminHasinit boolean: "+ localStorage.getItem("firstAdminCreated"));
+
+        //if(sessionStorage.getItem("firstAdminCreated")=== true){
+        if(Boolean(localStorage.getItem("firstAdminCreated"))){
+ 
           console.log("this is admin will be true: ");
           console.log("third");
 
