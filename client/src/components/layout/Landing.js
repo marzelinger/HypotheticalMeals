@@ -107,10 +107,6 @@ class Landing extends Component {
     }
   };
 
-
-
-
-
   render() {
     var response = this.props.getAllUsers();
    
@@ -125,9 +121,7 @@ class Landing extends Component {
               Blah Blah Blah Blah Food Yum
             </p>
             <br />
-            <div> 
-            {this.switchLanding(adminHasInit().isValid)}          
-              </div>
+            {this.switchLanding(adminHasInit().isValid)}    
           </div>
         </div>
       </div>
