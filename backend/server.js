@@ -11,6 +11,7 @@ import Prod_LineHandler from './models/handlers/Prod_LineHandler';
 import IngredientHandler from './models/handlers/IngredientHandler';
 import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
 import UserHandler from './models/handlers/UserHandler';
+import FilterHandler from './models/handlers/FilterHandler';
 import { getSecret } from './secrets';
 const passport = require("passport");
 
@@ -61,6 +62,7 @@ router.get('/ingredients', (req, res) => IngredientHandler.getAllIngredients(req
 router.get('/ingredients/:ingredient_id', (req, res) => IngredientHandler.getIngredientByID(req, res));
 router.delete('/ingredients/:ingredient_id', (req, res) => IngredientHandler.deleteIngredientByID(req, res));
 router.get('/skus_by_ingredient/:ingredient_id', (req, res) => IngredientHandler.getSkusByIngredientID(req, res));
+router.get('/ingredient_name_substring', (req, res) => IngredientHandler.getIngredientByNameSubstring(req, res));
 
 // Manufacturing Goals database APIs
 router.post('/manugoals', (req, res) => Manu_GoalHandler.createManufacturingGoal(req, res));
@@ -69,6 +71,10 @@ router.get('/manugoals', (req, res) => Manu_GoalHandler.getAllManufacturingGoals
 router.get('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.getManufacturingGoalByID(req, res));
 router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteManufacturingGoalByID(req, res));
 router.get('/manugoals/:manu_goal_id/skus', (req, res) => Manu_GoalHandler.getManufacturingGoalByIDSkus(req, res));
+
+// Multiple database APIs
+router.get('/ingredient_filter', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
+router.get('/sku_filter', (req, res) => FilterHandler.getSkusByFilter(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);

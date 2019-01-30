@@ -30,6 +30,7 @@ export default class ListPage extends React.Component {
             filter_value: '',
             filter_category: '',
             filter_options: props.filter_options,
+            assisted_search_results: [],
             table_columns: props.table_columns,
             table_properties: props.table_properties,
             table_options: props.table_options,
@@ -64,7 +65,10 @@ export default class ListPage extends React.Component {
     componentDidUpdate = (prevProps, prevState) => {
         if (prevState.filter_value !== this.state.filter_value || 
             prevState.filter_category !== this.state.filter_category){
-                this.setState({ num_filters: 1 });
+                this.setState({ 
+                    assisted_search_results: this.props.assisted_search_function(this.state.filter_value, this),
+                    num_filters: 1 
+                });
                 this.loadDataFromServer();
         }
     }
@@ -79,7 +83,7 @@ export default class ListPage extends React.Component {
                 loaded: true
             });
           });
-        console.log(this.state.data);
+        console.log(this.state.assisted_search_results);
     }
 
     onFilterSelection = (e, sel) => {
@@ -131,16 +135,12 @@ export default class ListPage extends React.Component {
         this.toggle();
     };
 
-
     onFilterValueChange = (event) => {
         this.setState({
             filter_value: event.target.value
         });
-        console.log('this is the current filter_value: '+this.state.filter_value);
-        //SubmitRequest.submitFilterRequest(this.state.page_name, item, this);
-
-
     }
+
     onDetailViewSubmit = (event, item, option) => {
         console.log(option);
         switch (option) {
@@ -181,8 +181,8 @@ export default class ListPage extends React.Component {
                             selection={this.state.filter_category} 
                             categories={this.state.filter_options}
                             handleValueChange={this.onFilterValueChange}
-                            handleFilterSelection={this.onFilterSelection}>
-                        </Filter>
+                            handleFilterSelection={this.onFilterSelection}
+                        />
                         <TableOptions
                         table_options={this.state.table_options}
                         handleTableOptionSelection={this.onTableOptionSelection}

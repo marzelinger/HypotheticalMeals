@@ -135,6 +135,18 @@ class SkuHandler{
             return res.json({ success: false, error: err});
         }
     }
+
+    static async getSkusBySkuKeyword(req, res){
+        try{
+            var target_id = req.params.sku_id;
+            let sku = await SKU.find({ _id : target_id }).populate('ingredients');
+            if (sku.length == 0) return res.json({success: false, error: '404'})
+            return res.json({ success: true, data: sku[0].ingredients});
+        }
+        catch (err) {
+            return res.json({ success: false, error: err});
+        }
+    }
 }
 
 export default SkuHandler;

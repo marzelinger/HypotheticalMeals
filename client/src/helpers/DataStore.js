@@ -11,6 +11,7 @@ export default class DataStore{
         page_name: Constants.ingredients_page_name,
         page_title: 'Ingredients',
         filter_options: [Constants.keyword_label, Constants.sku_label],
+        assisted_search_function: DataStore.submitSkusByIngredientIDRequest,
         table_columns: ['Name', 'Number', 'Package Size', 'Cost per Package (USD)'],
         table_properties: ['name', 'num', 'pkg_size', 'pkg_cost'],
         table_options: [Constants.create_item],
@@ -19,6 +20,16 @@ export default class DataStore{
         item_property_placeholder: ['White Rice', '12345678', '1lb', '1.50', 'Tam Soy', '...', 'Fried Rice'],
         item_options: ['View Ingredient'], 
       };
+    }
+
+    static submitSkusByIngredientIDRequest = (item_id, obj) => {
+      fetch(`/api/skus_by_ingredient/${item_id}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      }).then(res => res.json()).then((res) => {
+        if (!res.success) obj.setState({ error: res.error.message || res.error });
+        else return { data: res.data };
+      });
     }
 
     static getSkuData() {
