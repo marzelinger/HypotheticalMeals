@@ -186,6 +186,7 @@ export default class ListPage extends React.Component {
     render() {
         return (
             <div className="list-page">
+            <GeneralNavBar></GeneralNavBar>
                 <div className="options-container" id={this.state.simple ? "simple" : "complex"}>
                         <Filter 
                             value={this.state.filter_value}
