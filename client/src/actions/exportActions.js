@@ -1,7 +1,7 @@
 var fileDownload = require('js-file-download');
 
 // Register New User
-export const exportSimpleData = () => {
+export const exportSimpleData = () => dispatch => {
     var data = ["dog", "cat", "mouse"];
     fileDownload(data, 'simple.csv')
 

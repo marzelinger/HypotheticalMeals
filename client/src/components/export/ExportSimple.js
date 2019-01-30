@@ -3,7 +3,23 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { exportSimpleData } from "../../actions/exportActions";
 class ExportSimple extends Component {
-  onExportSimpleClick = e => {
+
+  constructor() {
+    super();
+
+    this.onExportSimpleClick = this.onExportSimpleClick.bind(this);
+
+    this.state = {
+      name: "",
+      email: "",
+      password: "",
+      password2: "",
+      errors: {}
+    };
+  }
+
+
+  onExportSimpleClick(e){
     e.preventDefault();
     this.props.exportSimpleData();
   };

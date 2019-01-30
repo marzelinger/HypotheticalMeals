@@ -17,6 +17,7 @@ import {
 import * as Constants from './../../resources/Constants';
 import './../../style/ListPage.css';
 import GeneralNavBar from "../GeneralNavBar";
+import ExportSimple from '../export/ExportSimple';
 
 
 export default class ListPage extends React.Component {
@@ -186,7 +187,6 @@ export default class ListPage extends React.Component {
     render() {
         return (
             <div className="list-page">
-            <GeneralNavBar></GeneralNavBar>
                 <div className="options-container" id={this.state.simple ? "simple" : "complex"}>
                         <Filter 
                             value={this.state.filter_value}
@@ -225,6 +225,7 @@ export default class ListPage extends React.Component {
                         value={this.state.error}
                         color='danger'/>
                 </Modal>
+                <ExportSimple data = {this.state.data}/>
             </div>
         );
     }
