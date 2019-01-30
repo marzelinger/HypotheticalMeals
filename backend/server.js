@@ -60,7 +60,7 @@ router.put('/ingredients/:ingredient_id', (req, res) => IngredientHandler.update
 router.get('/ingredients', (req, res) => IngredientHandler.getAllIngredients(req, res));
 router.get('/ingredients/:ingredient_id', (req, res) => IngredientHandler.getIngredientByID(req, res));
 router.delete('/ingredients/:ingredient_id', (req, res) => IngredientHandler.deleteIngredientByID(req, res));
-router.get('/skus_by_ingredient/:ingredient_id', (req, res) => IngredientHandler.getSkusByIngredientID(req, res));
+// router.get('/ingredient_filter', (req, res) => IngredientHandler.getIngredientByFilter(req, res));
 
 // Manufacturing Goals database APIs
 router.post('/manugoals', (req, res) => Manu_GoalHandler.createManufacturingGoal(req, res));

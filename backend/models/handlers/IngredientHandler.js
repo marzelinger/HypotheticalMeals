@@ -123,6 +123,19 @@ class IngredientHandler{
             return res.json({ success: false, error: err});
         }
     }
+
+    // static async getIngredientByFilter(req, res){
+    //     try{
+    //         var target_id = req.body;
+    //         let ingredient = await Ingredient.find({ _id : target_id }).populate('skus');
+    //         console.log(ingredient);
+    //         if (ingredient.length == 0) return res.json({success: false, error: '404'})
+    //         return res.json({ success: true, data: ingredient[0].skus});
+    //     }
+    //     catch (err) {
+    //         return res.json({ success: false, error: err});
+    //     }
+    // }
 }
 
 export default IngredientHandler;
