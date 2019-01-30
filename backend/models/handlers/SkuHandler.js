@@ -43,7 +43,7 @@ class SkuHandler{
             sku.unit_size = new_unit_size;
             sku.cpc = new_cpc;
             sku.prod_line = new_prod_line;
-            sku.ingredients = new Map(JSON.parse(new_ingredients));
+            sku.ingredients = new_ingredients;
             sku.comment = new_comment;
             console.log(sku);
             let new_sku = await sku.save();
@@ -127,8 +127,7 @@ class SkuHandler{
     static async getIngredientsBySkuID(req, res){
         try{
             var target_id = req.params.sku_id;
-            let sku = await SKU.find({ _id : target_id }).populate('ingredient');
-            console.log(sku[0]);
+            let sku = await SKU.find({ _id : target_id }).populate('ingredients');
             if (sku.length == 0) return res.json({success: false, error: '404'})
             return res.json({ success: true, data: sku[0].ingredients});
         }
