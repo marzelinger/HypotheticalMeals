@@ -143,5 +143,33 @@ export default class CSV_parser{
         }
     }
 
+    static async parseFormulasCSV(req, res){
+        var db_ingredients_nums = new Set();
+        var db_skus_nums = new Set();
+
+        var all_skus = await SKU.find();
+        var all_ingredients = await Ingredient.find();
+
+        all_skus.forEach(function (sku){
+            db_skus_nums.add(sku.num);
+        });
+        all_ingredients.forEach(function (ingredient){
+            db_ingredients_nums.add(ingredient.num);
+        });
+
+        var rowsToAdd = new Set();
+        const jsonArray = csv().fromFile("testFormulaSheet.csv");
+        for(var i = 0; i < jsonArray.length; i++){
+            var obj = jsonArray[i];
+            if(db_skus_nums.has(obj["SKU#"]) && db_ingredients_nums.has(obj["Ingredient#"])){
+                rowsToAdd.add(i);
+            }
+        }
+
+        for(var i = 0; i < jsonArray.length; i++){
+            //TODO: depends on how the sku refers to ingredients in database and how ingredients refer to skus
+        }
+    }
+
 
 }
