@@ -66,6 +66,7 @@ router.put('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.updateManu
 router.get('/manugoals', (req, res) => Manu_GoalHandler.getAllManufacturingGoals(req, res));
 router.get('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.getManufacturingGoalByID(req, res));
 router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteManufacturingGoalByID(req, res));
+router.get('/manugoals/:manu_goal_id/skus', (req, res) => Manu_GoalHandler.getManufacturingGoalByIDSkus(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);

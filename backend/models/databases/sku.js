@@ -14,10 +14,13 @@ const SkusSchema = new Schema({
   unit_size: String,
   cpc: String,
   prod_line: String,
-  ingredients: {
-      type: Map,
-        of: String
-  },
+  ingredients: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Ingredient'
+    }
+  ],
+  ingredient_quantities:[],
   comment: String
 }, { timestamps: true });
 

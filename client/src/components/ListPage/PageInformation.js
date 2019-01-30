@@ -1,24 +1,10 @@
-// ListPage.js
-// Riley
-// Larger page component to be shown in PageTemplate
-
-import React from 'react';
-import Filter from './Filter';
-import PageTable from './PageTable'
-import TableOptions from './TableOptions'
-import SubmitRequest from './../../helpers/SubmitRequest'
-import ItemStore from './../../helpers/ItemStore'
-import ItemDetails from './ItemDetails'
-import { 
-    Alert,
-    Button,
-    DropdownToggle,
-    Modal} from 'reactstrap';
-import * as Constants from './../../resources/Constants';
-import './../../style/ListPage.css';
-
-
-export default class ListPage extends React.Component {
+                
+ 
+ 
+ 
+ 
+ 
+export default class PageInformation extends React.Component {
     constructor(props) {
         super(props);
 
@@ -40,18 +26,9 @@ export default class ListPage extends React.Component {
             detail_view_options: [],
             data: [],
             loaded: false,
-            error: null,
-            modal: false,
-            simple: props.simple || false
+            error: null
         };
-        this.toggle = this.toggle.bind(this);
     }
-
-    toggle(){
-        this.setState({
-            modal: !this.state.modal
-        });
-    }   
 
     componentDidMount = () => {
         this.loadDataFromServer();
@@ -112,7 +89,6 @@ export default class ListPage extends React.Component {
             detail_view_item: item,
             detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
         })
-        this.toggle();
     }
 
     onTableOptionSelection = (e, opt) => {
@@ -143,7 +119,6 @@ export default class ListPage extends React.Component {
             detail_view_item: item ,
             detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
         });
-        this.toggle();
     };
 
     onDetailViewSubmit = (event, item, option) => {
@@ -166,7 +141,6 @@ export default class ListPage extends React.Component {
             detail_view_options: []
         });
         this.loadDataFromServer();
-        this.toggle();
     }
 
     onPropChange = (event, item, prop) => {
@@ -174,51 +148,51 @@ export default class ListPage extends React.Component {
         var ind = newData.indexOf(item);
         newData[ind][prop] = event.target.value;
         this.setState({ data: newData });
-    };
-
-    render() {
-        return (
-            <div className="list-page">
-                <div className="options-container" id={this.state.simple ? "simple" : "complex"}>
-                        <Filter 
-                            value={this.state.filter_value}
-                            selection={this.state.filter_category} 
-                            categories={this.state.filter_options}
-                            handleValueChange={this.onFilterValueChange}
-                            handleFilterSelection={this.onFilterSelection}>
-                        </Filter>
-                        <TableOptions
-                        table_options={this.state.table_options}
-                        handleTableOptionSelection={this.onTableOptionSelection}
-                        />
+    };               
+                
+    render(){
+        <div>
+            <div className="options-container">
+                <div className="filter-bar"> 
+                    <Filter 
+                        value={this.state.filter_value}
+                        selection={this.state.filter_category} 
+                        categories={this.state.filter_options}
+                        handleValueChange={this.onFilterValueChange}
+                        handleFilterSelection={this.onFilterSelection}>
+                    </Filter>
                 </div>
-                <div>
-                    <PageTable 
-                        columns={this.state.table_columns} 
-                        table_properties={this.state.table_properties} 
-                        list_items={this.state.data}
-                        selected_items={this.state.selected_items}
-                        handleSort={this.onSort}
-                        handleSelect={this.onSelect}
-                        handleDetailViewSelect={this.onDetailViewSelect}
-                    />
-                </div>
-                <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup" className='item-details'>
-                    <ItemDetails
-                            item={this.state.detail_view_item}
-                            item_properties={this.state.item_properties}
-                            item_property_labels={this.state.item_property_labels}
-                            item_property_placeholder={this.state.item_property_placeholder}
-                            detail_view_options={this.state.detail_view_options}
-                            handlePropChange={this.onPropChange}
-                            handleDetailViewSubmit={this.onDetailViewSubmit}
-                        />
-                    <Alert
-                        value={this.state.error}
-                        color='danger'/>
-                </Modal>
+                <TableOptions
+                    table_options={this.state.table_options}
+                    handleTableOptionSelection={this.onTableOptionSelection}
+                />
             </div>
-        );
-    }
+            <div className='table'>
+                <PageTable 
+                    columns={this.state.table_columns} 
+                    table_properties={this.state.table_properties} 
+                    list_items={this.state.data}
+                    selected_items={this.state.selected_items}
+                    handleSort={this.onSort}
+                    handleSelect={this.onSelect}
+                    handleDetailViewSelect={this.onDetailViewSelect}
+                />
+            </div>
+            <div className='item-details'>
+                <ItemDetails
+                    item={this.state.detail_view_item}
+                    item_properties={this.state.item_properties}
+                    item_property_labels={this.state.item_property_labels}
+                    item_property_placeholder={this.state.item_property_placeholder}
+                    detail_view_options={this.state.detail_view_options}
+                    handlePropChange={this.onPropChange}
+                    handleDetailViewSubmit={this.onDetailViewSubmit}
+                />
+                <Alert
+                    value={this.state.error}
+                    color='danger'/>
+            </div>
+        </div>
 
+    };
 }

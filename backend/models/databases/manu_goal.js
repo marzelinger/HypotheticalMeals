@@ -9,11 +9,12 @@ const Schema = mongoose.Schema;
 const Manu_GoalSchema = new Schema({
     name: String,
     user: String,
-    skus:[String],
-    // skus: {
-    //     type: Map,
-    //       of: String
-    // },
+    skus: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'SKU'
+        }
+    ]
 }, { timestamps: true });
 
 // export our module to use in server.js

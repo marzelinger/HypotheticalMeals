@@ -13,7 +13,7 @@ class ManufacturingGoalsBox extends Component {
       data: [],
       error: null,
       name: '',
-      skus: [String],
+      skus: [],
       user: Constants.DEFAULT_USER
     };
     this.pollInterval = null;

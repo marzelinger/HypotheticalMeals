@@ -108,6 +108,7 @@ class SkuHandler{
         }
     }
 
+
     static async deleteSkuByID(req, res){
         try{
             var target_id = req.params.sku_id;
@@ -120,6 +121,7 @@ class SkuHandler{
             return res.json({ success: false, error: err});
         }
     }
+
 }
 
 export default SkuHandler;

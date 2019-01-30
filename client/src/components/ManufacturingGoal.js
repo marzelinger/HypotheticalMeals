@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import ReactMarkdown from 'react-markdown';
 import { UncontrolledCollapse, CardBody, Card } from 'reactstrap';
 import deleteButton from'../resources/delete.png';
+import GoalSkuTable from './GoalSkuTable';
 
 const ManufacturingGoal = props => (
   <div id="singleGoal">
@@ -15,7 +16,7 @@ const ManufacturingGoal = props => (
       <UncontrolledCollapse toggler={'#goal' + props.id}>
             <Card>
                 <CardBody>
-                List of skus and amounts will go here
+                    <GoalSkuTable id={props.id}></GoalSkuTable>
                 </CardBody>
             </Card>
         </UncontrolledCollapse>

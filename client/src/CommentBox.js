@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import 'whatwg-fetch';
 import CommentList from './CommentList';
-import CommentForm from './CommentForm';
+import CommentForm from './components/ManufacturingGoalForm';
 import './CommentBox.css';
-import * as Constants from '../resources/Constants';
+
 
 class CommentBox extends Component {
   constructor() {
