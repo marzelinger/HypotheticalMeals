@@ -95,6 +95,7 @@ class SkuHandler{
             return res.json({ success: true, data: all_skus});
         }
         catch (err) {
+            console.log('something is wrong');
             return res.json({ success: false, error: err});
         }
     }

@@ -1,6 +1,6 @@
 ﻿SKU#,Name,Case UPC,Unit UPC,Unit Size,Count per case,Product Line Name,Comment
-1,Big soup,1,1,1,1,Line 1,1
-2,Small soup,2,2,2,2,Line 2,1
-3,medium soup,3,3,3,3,Line 3,1
-4,kinda big soup,4,4,4,4,Line 4,1
-5,very big soup,5,5,5,5,Line 5,1
+1,Big soup,1,1,1,1,linetoadd,1
+2,Small soup,2,2,2,2,linetoadd,1
+3,medium soup,3,3,3,3,linetoadd,1
+4,kinda big soup,4,4,4,4,linetoadd,1
+5,very big soup,5,5,5,5,linetoadd,1
