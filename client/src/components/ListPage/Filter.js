@@ -34,7 +34,7 @@ export default class Filter extends React.Component {
     render() {
         return (
         <div className='filter-item' style={{width: this.state.width + '%'}}>
-            <InputGroup>
+            <InputGroup id = 'inputGroup'>
                 <Input 
                     type="text"
                     value={this.props.value}

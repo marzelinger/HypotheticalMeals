@@ -16,7 +16,7 @@ class SkuHandler{
             var new_cpc = req.body.cpc;
             var new_prod_line = req.body.prod_line;
             var new_ingredients = req.body.ingredients;
-            var new_comments = req.body.comments;
+            var new_comment = req.body.comment;
             console.log(new_name);
             console.log(new_sku_num);
             console.log(new_case_upc);
@@ -24,6 +24,8 @@ class SkuHandler{
             console.log(new_unit_size);
             console.log(new_cpc);
             console.log(new_prod_line);
+            console.log(new_ingredients);
+
           if(!new_name || !new_sku_num || !new_case_upc || !new_unit_upc || !new_unit_size || !new_cpc || !new_prod_line){
                    return res.json({
                        success: false, error: 'You must provide all required fields'
@@ -34,7 +36,6 @@ class SkuHandler{
             if(conflict.length > 0){
                 return res.json({ success: false, error: 'CONFLICT'});
             }
-            console.log('get shere');
             sku.name = new_name;
             sku.num = new_sku_num;
             sku.case_upc = new_case_upc;
@@ -42,10 +43,11 @@ class SkuHandler{
             sku.unit_size = new_unit_size;
             sku.cpc = new_cpc;
             sku.prod_line = new_prod_line;
-            sku.ingredients = new_ingredients;
-            sku.comments = new_comments;
-
+            sku.ingredients = new Map(JSON.parse(new_ingredients));
+            sku.comment = new_comment;
+            console.log(sku);
             let new_sku = await sku.save();
+            console.log('Sku added to database');
             return res.json({ success: true, data: new_sku});
         }
         catch (err) {
@@ -107,6 +109,7 @@ class SkuHandler{
             return res.json({ success: false, error: err});
         }
     }
+
 
     static async deleteSkuByID(req, res){
         try{

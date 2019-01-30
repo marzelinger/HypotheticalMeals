@@ -85,7 +85,9 @@ export const registerFirstAdmin = (userData, history) => dispatch => {
   console.log(history);
   console.log(userData);
 
-  console.log("this is the regfirstAdmin flag: "+ sessionStorage.getItem("firstAdminCreated"));
+  //console.log("this is the regfirstAdmin flag: "+ sessionStorage.getItem("firstAdminCreated"));
+  console.log("this is the regfirstAdmin flag: "+ localStorage.getItem("firstAdminCreated"));
+
   console.log("this is the adminHasinit value: "+ adminHasInit().isValid);
   if(!adminHasInit().isValid){
   axios
@@ -106,20 +108,23 @@ export const registerFirstAdmin = (userData, history) => dispatch => {
 
 // // Get all Users
 export const getAllUsers = () => dispatch => {
-
-  return axios
+  var count = 0;
+  axios
     .get("/api/users/getall")
     .then(res => {
       console.log("this is the response in authActions: "+ res);
       console.log("this is the length: "+ res.data.data.length);
 
       if(res.data.data.length>0){
-        sessionStorage.setItem("firstAdminCreated", true);
+        //sessionStorage.setItem("firstAdminCreated", true);
+        localStorage.setItem("firstAdminCreated", true);
+        count = res.data.data.length;
      }
      else{
       //sessionStorage.setItem("firstAdminCreated", false);
       }
-      console.log("this is the firstAdminCreated flag: "+ sessionStorage.getItem("firstAdminCreated"));
+      //console.log("this is the firstAdminCreated flag: "+ sessionStorage.getItem("firstAdminCreated"));
+      console.log("this is the firstAdminCreated flag: "+ localStorage.getItem("firstAdminCreated"));
 
           }) // re-direct to login on successful register
     .catch(err =>
@@ -128,4 +133,5 @@ export const getAllUsers = () => dispatch => {
         payload: err.response.data
       })
     );
+    return count;
 };

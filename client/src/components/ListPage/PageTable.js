@@ -23,7 +23,7 @@ export class PageTable extends React.Component{
 
     render() {
       return (
-        <div className="container">
+        <div>
           <Table>
             <thead>
               <tr>

@@ -29,5 +29,4 @@ export const details_delete = 'Delete'
 export const details_cancel = 'Cancel'
 export const details_create = 'Create'
 
-
-//Authorization Constants
+export const create_ingredient = 'Create Ingredient'

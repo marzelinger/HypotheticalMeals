@@ -7,12 +7,10 @@ class Manu_GoalHandler{
 
     static async createManufacturingGoal(req, res){
         try {
-            console.log("creating goal");
             var manu_goal = new Manu_Goal();
             var new_name = req.body.name;
             var new_user = req.body.user || "default_user";
             if(!new_name || !new_user){
-                console.log("??")
                 return res.json({
                     success: false, error: 'You must provide a name'
                 });
@@ -34,18 +32,17 @@ class Manu_GoalHandler{
         }
     }
 
+    // 
     static async updateManufacturingGoalByID(req, res){
         try {
             var target_id = req.params.manu_goal_id;
             if(!target_id){
                 return res.json({ success: false, error: 'No manufacturing goal named provided'});
             }
-            var new_name = req.body.name;
             var new_skus = req.body.skus;
-            var curr_user = req.body.user;
 
             let updated_manu_goal = await Manu_Goal.findOneAndUpdate({_id : target_id},
-                {$set: {name: new_name, user : curr_user, skus: new_skus}}, {upsert: true, new: true});
+                {$set: {skus: new_skus}}, {upsert: true, new: true});
             if(!updated_manu_goal){
                 return res.json({
                     success: true, error: 'This document does not exist'
@@ -62,7 +59,7 @@ class Manu_GoalHandler{
 
     static async getAllManufacturingGoals(req, res){
         try {
-            let all_manu_goals = await Manu_Goal.find();
+            let all_manu_goals = await Manu_Goal.find().populate('skus');
             return res.json({ success: true, data: all_manu_goals});
         }
         catch (err) {
@@ -77,6 +74,19 @@ class Manu_GoalHandler{
 
             if(to_return.length == 0) return res.json({success: false, error: '404'});
             return res.json({ success: true, data: to_return});
+        } catch (err){
+            return res.json({ success: false, error: err});
+        }
+    }
+
+    static async getManufacturingGoalByIDSkus(req, res){
+        try {
+            console.log('here');
+            var target_id = req.params.manu_goal_id;
+            let to_return = await Manu_Goal.find({ _id : target_id}).populate('skus');
+
+            if(to_return.length == 0) return res.json({success: false, error: '404'});
+            return res.json({ success: true, data: to_return[0].skus});
         } catch (err){
             return res.json({ success: false, error: err});
         }
