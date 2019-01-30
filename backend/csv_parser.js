@@ -57,7 +57,7 @@ export default class CSV_parser{
             const jsonArray = await csv().fromFile('testSpreadSheet.csv');
             for(var i = 0; i < jsonArray.length; i++){
                 var obj = jsonArray[i];
-                if(db_skus.has(obj["SKU#"]){
+                if(db_skus.has(obj["SKU#"])){
                     return res.json({ success: false, error: 'Collision occured'});
                 }
                 if(!db_prod_lines.has(obj["Product Line Name"])){
@@ -82,6 +82,7 @@ export default class CSV_parser{
                     sku.unit_size = obj["Unit Size"];
                     sku.cpc = obj["Count per case"];
                     sku.prod_line = obj["Product Line Name"];
+                    sku.comment = obj["Comment"];
                     let new_sku = await sku.save();
                 }
                 else {
@@ -103,18 +104,21 @@ export default class CSV_parser{
                 db_ingredients_names.add(ingredient.name);
                 db_ingredients_nums.add(ingredient.num);
             });
-
+            console.log("gets here1");
             var ingredients_to_add_names = new Set();
             var ingredients_to_add_nums = new Set();
             const jsonArray = await csv().fromFile('testIngredientSheet.csv');
+            console.log("gets here2");
             for(var i = 0; i < jsonArray.length; i++){
+                console.log('gets here once');
                 var obj = jsonArray[i];
-                if(db_ingredients_name.has(obj.Name) || db_ingredients_nums.has(obj.["Ingredient#"])){
+                if(db_ingredients_names.has(obj.Name) || db_ingredients_nums.has(obj["Ingr#"])){
                     return res.json({ success: false, error: 'Collision occured'});
                 }
-                if(!ingredients_to_add_names.has(obj.Name) && !ingredients_to_add_nums(obj["Ingredient#"])){
+                console.log('gets here once2');
+                if(!ingredients_to_add_names.has(obj.Name) || !ingredients_to_add_nums(obj["Ingr#"]) ){
                     ingredients_to_add_names.add(obj.Name);
-                    ingredients_to_add_nums.add(obj["Ingredient#"]);
+                    ingredients_to_add_nums.add(obj["Ingr#"]);
                 }
             }
 
@@ -126,7 +130,7 @@ export default class CSV_parser{
                     added++;
                     var ingredient = new Ingredient();
                     ingredient.name = obj.Name;
-                    ingredient.num = obj["Ingredient#"];
+                    ingredient.num = obj["Ingr#"];
                     ingredient.vendor_info = obj["Vendor Info"];
                     ingredient.pkg_size = obj["Size"]
                     ingredient.pkg_cost = obj["Cost"];
