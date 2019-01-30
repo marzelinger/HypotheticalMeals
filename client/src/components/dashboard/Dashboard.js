@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import PageTemplate from "../PageTemplate";
+import GeneralNavBar from "../GeneralNavBar";
 
 class Dashboard extends Component {
 
@@ -10,6 +11,7 @@ class Dashboard extends Component {
 
     return (
       <div style={{ height: "75vh" }} className="container valign-wrapper">
+                            <GeneralNavBar/>
             <PageTemplate></PageTemplate>
       </div>
     );

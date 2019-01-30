@@ -16,6 +16,7 @@ import {
     Modal} from 'reactstrap';
 import * as Constants from './../../resources/Constants';
 import './../../style/ListPage.css';
+import GeneralNavBar from "../GeneralNavBar";
 
 
 export default class ListPage extends React.Component {
@@ -91,11 +92,6 @@ export default class ListPage extends React.Component {
         }
       }
 
-    onFilterValueChange = (event) => {
-        this.setState({
-            filter_value: event.target.value
-        });
-    }
 
     onFilterSelection = (e, sel) => {
         this.setState({
@@ -146,6 +142,16 @@ export default class ListPage extends React.Component {
         this.toggle();
     };
 
+
+    onFilterValueChange = (event) => {
+        this.setState({
+            filter_value: event.target.value
+        });
+        console.log('this is the current filter_value: '+this.state.filter_value);
+        //SubmitRequest.submitFilterRequest(this.state.page_name, item, this);
+
+
+    }
     onDetailViewSubmit = (event, item, option) => {
         console.log(option);
         switch (option) {
@@ -165,6 +171,7 @@ export default class ListPage extends React.Component {
             detail_view_item: null,
             detail_view_options: []
         });
+        console.log('this print message is from line 156 of listpage.js');
         this.loadDataFromServer();
         this.toggle();
     }

@@ -15,10 +15,16 @@ import GeneralNavBar from "./GeneralNavBar";
 import ManufacturingGoalsPage from "./ManufacturingGoalsPage";
 import * as Constants from './../resources/Constants';
 
-import { setCurrentUser, logoutUser } from "../actions/authActions";
+import { setCurrentUser, logoutUser, getAllUsers } from "../actions/authActions";
 import { Provider } from "react-redux";
 //import store from '../store/configureStore';
 import configureStore from '../store/configureStore';
+
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { Link, withRouter } from "react-router-dom";
+
+//const getAllUsers = require("../actions/authActions");
 
 // Check for token to keep user logged in
 
@@ -27,6 +33,8 @@ const store = configureStore();
 class App extends React.Component{
   constructor() {
     super();
+    //localStorage.clear();
+    //this.determineUserInit();
     this.determineUser();
     this.state = {
       navbar_items: [Constants.SkuTitle, Constants.IngTitle, Constants.ManuGoalTitle],
@@ -81,7 +89,6 @@ class App extends React.Component{
         <Provider store={store}>
           <Router>
             <div className="App">
-            <GeneralNavBar/>
               <Route exact path="/" component={Landing} />
               <Route exact path="/login" component={Login} />
               <Route exact path="/register" component={Register} />
@@ -101,6 +108,4 @@ class App extends React.Component{
 }
 
 export default App
-
-
 
