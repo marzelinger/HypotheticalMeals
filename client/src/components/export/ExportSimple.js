@@ -10,18 +10,14 @@ class ExportSimple extends Component {
     this.onExportSimpleClick = this.onExportSimpleClick.bind(this);
 
     this.state = {
-      name: "",
-      email: "",
-      password: "",
-      password2: "",
-      errors: {}
+      data: []
     };
   }
 
 
   onExportSimpleClick(e){
     e.preventDefault();
-    this.props.exportSimpleData();
+    this.props.exportSimpleData(this.props.data);
   };
 render() {
     const { user } = this.props.auth;
