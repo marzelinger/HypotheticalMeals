@@ -68,9 +68,11 @@ class App extends React.Component{
 
   getSkuRender = () => {
     return () => (
-      <ListPage
-        {...DataStore.getSkuData()}
-      />
+      <div className="container">
+        <ListPage
+          {...DataStore.getSkuData()}
+        />
+      </div>
     );
   }
 
@@ -81,7 +83,7 @@ class App extends React.Component{
         <Provider store={store}>
           <Router>
             <div className="App">
-            <GeneralNavBar/>
+              <GeneralNavBar/>
               <Route exact path="/" component={Landing} />
               <Route exact path="/login" component={Login} />
               <Route exact path="/register" component={Register} />

@@ -30,3 +30,6 @@ export const details_cancel = 'Cancel'
 export const details_create = 'Create'
 
 export const create_ingredient = 'Create Ingredient'
+export const add_to_manu_goals = 'Add to Manufacturing Goal'
+export const manu_goals_modal = 'manu_goal'
+export const details_modal = 'details'

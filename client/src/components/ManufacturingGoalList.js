@@ -31,8 +31,8 @@ ManufacturingGoalList.propTypes = {
     name: PropTypes.string,
     skus: PropTypes.array
   })),
-  handleDeleteGoal: PropTypes.func.isRequired,
-  handleUpdateGoal: PropTypes.func.isRequired,
+  handleDeleteGoal: PropTypes.func,
+  handleUpdateGoal: PropTypes.func,
 };
 
 ManufacturingGoalList.defaultProps = {
