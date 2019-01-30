@@ -171,7 +171,6 @@ export default class ListPage extends React.Component {
             detail_view_item: null,
             detail_view_options: []
         });
-        console.log('this print message is from line 156 of listpage.js');
         this.loadDataFromServer();
         this.toggle();
     }

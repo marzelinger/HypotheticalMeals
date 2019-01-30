@@ -70,10 +70,10 @@ router.get('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.getManufac
 router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteManufacturingGoalByID(req, res));
 router.get('/manugoals/:manu_goal_id/skus', (req, res) => Manu_GoalHandler.getManufacturingGoalByIDSkus(req, res));
 
-router.post('/parseSkus', (req, res) => CSV_parser.parseSKUCSV(req, res));
-router.post('/parseProdLines', (req, res) => CSV_parser.parseProdLineCSV(req,res));
-router.post('/parseIngredients', (req,res) => CSV_parser.parseIngredientsCSV(req, res));
-router.post('/parseFormulas', (req, res) => CSV_parser.parseFormulasCSV(req, res));
+router.options('/parseSkus', (req, res) => CSV_parser.parseSKUCSV(req, res));
+router.options('/parseProdLines', (req, res) => CSV_parser.parseProdLineCSV(req,res));
+router.options('/parseIngredients', (req,res) => CSV_parser.parseIngredientsCSV(req, res));
+router.options('/parseFormulas', (req, res) => CSV_parser.parseFormulasCSV(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);
@@ -98,11 +98,11 @@ router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword
 // @access Public
 router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
 
-
+/*
 https.createServer({
   key: fs.readFileSync('./../server.key'),
   cert: fs.readFileSync('./../server.cert')
 }, app)
-.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
+.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));*/
 
-// app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
+ app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));

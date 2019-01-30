@@ -13,6 +13,8 @@ import setAuthToken from "../utils/setAuthToken";
 import DataStore from "./../helpers/DataStore";
 import GeneralNavBar from "./GeneralNavBar";
 import ManufacturingGoalsPage from "./ManufacturingGoalsPage";
+import ImportPage from "./ImportPage";
+
 import * as Constants from './../resources/Constants';
 
 import { setCurrentUser, logoutUser, getAllUsers } from "../actions/authActions";
@@ -98,6 +100,7 @@ class App extends React.Component{
                 <PrivateRoute exact path="/skus" component={this.getSkuRender()} />
                 <PrivateRoute exact path="/ingredients" component={this.getIngredientRender()} />
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingGoalsPage} />
+                <PrivateRoute exact path="/import" component={ImportPage} />
               </Switch>
             </div>
           </Router>
