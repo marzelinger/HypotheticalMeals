@@ -112,9 +112,17 @@ class IngredientHandler{
     }
 
     // Filtering APIs
-    static async getAllIngredientsByKeyword(req, res){
+    static async getIngredientsBySkus(req, res){
         var query = {};
-        if (req.body.name !== "") { query.name = req.body.name}
+        // var query = {
+        //     $or: [
+        //         { skus: { $elemMatch: req.body.name } }
+        //     ]
+        // };
+        // req.body.skus.map(sku => {
+
+        // });
+        query.skus = req.body.skus ;
         try{
             let all_ingredients = await Ingredient.find({ query });
             return res.json({ success: true, data: all_ingredients});

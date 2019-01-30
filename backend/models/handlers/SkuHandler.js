@@ -120,6 +120,21 @@ class SkuHandler{
             return res.json({ success: false, error: err});
         }
     }
+
+    static async getSkusByIngredients(req, res){
+        try {
+            var ingredients = req.body.ingredients;
+            console.log(ingredients);
+            var query = {};
+            query.skus = {  }
+            var target_id = req.params.sku_id;
+            let to_return = await SKU.find({ _id : target_id });
+            if(to_return.length == 0) return res.json({ success: false, error: '404'});
+            return res.json({ success: true, data: to_return});
+        } catch (err) {
+            return res.json({ success: false, error: err});
+        }
+    }
 }
 
 export default SkuHandler;

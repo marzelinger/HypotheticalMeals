@@ -71,17 +71,6 @@ export default class ListPage extends React.Component {
         console.log(this.state.data);
     }
 
-    //unused!
-    showDetailsView = () => {
-        //there's something fundamentally wrong with how I change CSS/JSX properties
-        //using JS. It doesn't work here or on the item selection
-        if (this.state){
-          console.log(this.state.detail_view_item);
-          return (this.state.detail_view_item ? <ItemDetails/> : null);
-        }
-      }
-
-
     onFilterSelection = (e, sel) => {
         this.setState({
             filter_category: sel

@@ -36,7 +36,6 @@ export default class SubmitRequest{
     });
   }
 
-
   static submitFilterRequest = (route, item, obj) => {
     fetch(`/api/${route}/${item._id}`, {
       method: 'GET',
