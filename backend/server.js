@@ -16,6 +16,8 @@ const passport = require("passport");
 import CSV_parser from './csv_parser';
 var https = require('https');
 var fs = require('fs');
+var multer = require('multer');
+var upload = multer();
 
 
 const dotenv = require('dotenv');
@@ -70,10 +72,15 @@ router.get('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.getManufac
 router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteManufacturingGoalByID(req, res));
 router.get('/manugoals/:manu_goal_id/skus', (req, res) => Manu_GoalHandler.getManufacturingGoalByIDSkus(req, res));
 
-router.options('/parseSkus', (req, res) => CSV_parser.parseSKUCSV(req, res));
-router.options('/parseProdLines', (req, res) => CSV_parser.parseProdLineCSV(req,res));
-router.options('/parseIngredients', (req,res) => CSV_parser.parseIngredientsCSV(req, res));
-router.options('/parseFormulas', (req, res) => CSV_parser.parseFormulasCSV(req, res));
+router.post('/parseSkus', (req, res) => CSV_parser.parseSKUCSV(req, res));
+router.post('/parseProdLines', upload.fields([]), (req, res) => {
+  let formData = req.body;
+  console.log('form data', formData);
+  res.sendStatus(200);
+});
+//router.post('/parseProdLines', (req, res) => CSV_parser.parseProdLineCSV(req,res));
+router.post('/parseIngredients', (req,res) => CSV_parser.parseIngredientsCSV(req, res));
+router.post('/parseFormulas', (req, res) => CSV_parser.parseFormulasCSV(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);

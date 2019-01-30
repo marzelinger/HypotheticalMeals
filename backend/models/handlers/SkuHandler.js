@@ -17,14 +17,6 @@ class SkuHandler{
             var new_prod_line = req.body.prod_line;
             var new_ingredients = req.body.ingredients;
             var new_comment = req.body.comment;
-            console.log(new_name);
-            console.log(new_sku_num);
-            console.log(new_case_upc);
-            console.log(new_unit_upc);
-            console.log(new_unit_size);
-            console.log(new_cpc);
-            console.log(new_prod_line);
-            console.log(new_ingredients);
 
           if(!new_name || !new_sku_num || !new_case_upc || !new_unit_upc || !new_unit_size || !new_cpc || !new_prod_line){
                    return res.json({
