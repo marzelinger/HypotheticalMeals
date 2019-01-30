@@ -111,21 +111,13 @@ class IngredientHandler{
         }
     }
 
-    // Filtering APIs
-    static async getIngredientsBySkus(req, res){
-        var query = {};
-        // var query = {
-        //     $or: [
-        //         { skus: { $elemMatch: req.body.name } }
-        //     ]
-        // };
-        // req.body.skus.map(sku => {
-
-        // });
-        query.skus = req.body.skus ;
+    static async getSkusByIngredientID(req, res){
         try{
-            let all_ingredients = await Ingredient.find({ query });
-            return res.json({ success: true, data: all_ingredients});
+            var target_id = req.params.ingredient_id;
+            let ingredient = await Ingredient.find({ _id : target_id }).populate('skus');
+            console.log(ingredient);
+            if (ingredient.length == 0) return res.json({success: false, error: '404'})
+            return res.json({ success: true, data: ingredient[0].skus});
         }
         catch (err) {
             return res.json({ success: false, error: err});

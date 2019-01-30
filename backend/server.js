@@ -45,6 +45,7 @@ router.put('/skus/:sku_id', (req, res) => SkuHandler.updateSkuByID(req, res));
 router.get('/skus', (req, res) => SkuHandler.getAllSkus(req, res));
 router.get('/skus/:sku_id', (req, res) => SkuHandler.getSkuByID(req, res));
 router.delete('/skus/:sku_id', (req, res) => SkuHandler.deleteSkuByID(req, res));
+router.get('/ingredients_by_sku/:sku_id', (req, res) => SkuHandler.getIngredientsBySkuID(req, res));
 
 // Product Line database APIs
 router.post('/products', (req, res) => Prod_LineHandler.createProductLine(req, res));
@@ -59,6 +60,7 @@ router.put('/ingredients/:ingredient_id', (req, res) => IngredientHandler.update
 router.get('/ingredients', (req, res) => IngredientHandler.getAllIngredients(req, res));
 router.get('/ingredients/:ingredient_id', (req, res) => IngredientHandler.getIngredientByID(req, res));
 router.delete('/ingredients/:ingredient_id', (req, res) => IngredientHandler.deleteIngredientByID(req, res));
+router.get('/skus_by_ingredient/:ingredient_id', (req, res) => IngredientHandler.getSkusByIngredientID(req, res));
 
 // Manufacturing Goals database APIs
 router.post('/manugoals', (req, res) => Manu_GoalHandler.createManufacturingGoal(req, res));
