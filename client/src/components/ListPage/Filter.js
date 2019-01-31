@@ -33,13 +33,16 @@ export default class Filter extends React.Component {
     }
 
     renderOptions() {
+        console.log("yo");
         if (this.props){
+            if (this.props.assisted_search_results){
             console.log(this.props.assisted_search_results);
             return (this.props.assisted_search_results.map(res => 
-                <ul>
+                <h4>
                     {res}
-                </ul>
+                </h4>
             ));
+            }
         }
         return {};
     }
@@ -67,7 +70,7 @@ export default class Filter extends React.Component {
                     </DropdownMenu>
                 </InputGroupButtonDropdown>
             </InputGroup>
-            {this.renderOptions}
+            {/* {this.renderOptions()} */}
         </div>
         );
     }

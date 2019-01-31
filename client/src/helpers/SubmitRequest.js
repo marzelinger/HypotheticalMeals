@@ -49,12 +49,12 @@ export default class SubmitRequest{
   }
 
   static submitGetIngredientsByNameSubstring(substr, obj) {
-    fetch('/api/ingredients_name/thing' /*+ substr*/, { method: 'GET' })
+    fetch('/api/ingredients_name/' + substr)
       .then(data => data.json())
       .then((res) => {
+        console.log(res.data);
         if (!res.success) obj.setState({ error: res.error });
-        if (res.data === undefined) return { data: [] }
-        else return { data: res.data }
+        else return res.data;
       });
 }
 
