@@ -18,7 +18,7 @@ export class PageTable extends React.Component{
 
     rowStyle = (item) => {
       return ({ backgroundColor: this.props.selected_items.includes(item) ? 
-          Constants.unselected_row_color : Constants.selected_row_color});
+          Constants.selected_row_color : Constants.unselected_row_color});
     }
 
     render() {
