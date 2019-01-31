@@ -9,6 +9,7 @@ import * as Constants from '../resources/Constants';
 import '../style/GeneralNavBarStyle.css';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Register from "./auth/Register";
+import ExportSimple from "./export/ExportSimple";
 
 
 
@@ -34,6 +35,7 @@ export default class GeneralNavBar extends React.Component {
           <NavbarBrand id = "title" href="/">{Constants.TITLE}</NavbarBrand>
         
             <Logout></Logout>
+            <ExportSimple></ExportSimple>
 
 
           

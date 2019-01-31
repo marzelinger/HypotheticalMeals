@@ -102,7 +102,10 @@ class SkuHandler{
     static async getSkuByID(req, res){
         try {
             var target_id = req.params.sku_id;
+            console.log("this is the targetid: "+target_id);
+
             let to_return = await SKU.find({ _id : target_id });
+            console.log("this is the to_return: "+to_return);
             if(to_return.length == 0) return res.json({ success: false, error: '404'});
             return res.json({ success: true, data: to_return});
         } catch (err) {
