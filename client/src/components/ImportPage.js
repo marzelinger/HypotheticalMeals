@@ -29,7 +29,7 @@ export default class ImportPage extends React.Component {
             endpoint = "/api/parseProdLines";
         }
         else if(this.state.selectedFile.name.length >= 11 && this.state.selectedFile.name.substring(0,11) === "ingredients"){
-            endpoint = "/api/parseProdLines";
+            endpoint = "/api/parseIngredients";
         }
         else if(this.state.selectedFile.name.length >= 8 && this.state.selectedFile.name.substring(0,8) === "formulas"){
             endpoint = "/api/parseFormulas";

@@ -72,9 +72,9 @@ router.get('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.getManufac
 router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteManufacturingGoalByID(req, res));
 router.get('/manugoals/:manu_goal_id/skus', (req, res) => Manu_GoalHandler.getManufacturingGoalByIDSkus(req, res));
 
-router.post('/parseSkus', (req, res) => CSV_parser.parseSKUCSV(req, res));
+router.post('/parseSkus', upload.single('file'), (req, res) => CSV_parser.parseSKUCSV(req, res));
 router.post('/parseProdLines', upload.single('file'), (req, res) => CSV_parser.parseProdLineCSV(req,res));
-router.post('/parseIngredients', (req,res) => CSV_parser.parseIngredientsCSV(req, res));
+router.post('/parseIngredients', upload.single('file'), (req,res) => CSV_parser.parseIngredientsCSV(req, res));
 router.post('/parseFormulas', (req, res) => CSV_parser.parseFormulasCSV(req, res));
 
 // Use our router configuration when we call /api
