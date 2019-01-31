@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { exportSimpleData, exportSKUS } from "../../actions/exportActions";
+import { exportSimpleData, exportSKUS, exportIngredients, exportProdLines } from "../../actions/exportActions";
 class ExportSimple extends Component {
 
   constructor() {
@@ -19,14 +19,16 @@ class ExportSimple extends Component {
   onExportSimpleClick(e){
     e.preventDefault();
     console.log("this is the fileTitle"+this.props.fileTitle);
-    if(this.props.fileTitle == "skus"){
-      console.log("in if");
-
+    
+    switch(this.props.fileTitle){
+      case ("skus"):
       this.props.exportSKUS(this.props.data, this.props.fileTitle);
-
+      case ("ingredients"):
+      this.props.exportIngredients(this.props.data, this.props.fileTitle);
+      case ("productLines"): //TODO WHAT IS THE ACTUAL SYNTAX HERE
+      this.props.exportProdLines(this.props.data, this.props.fileTitle);
     }
-    //this.props.exportSimpleData(this.props.data, this.props.fileTitle);
-  };
+      };
 render() {
     const { user } = this.props.auth;
 return (
@@ -48,6 +50,7 @@ return (
 ExportSimple.propTypes = {
   exportSimpleData: PropTypes.func.isRequired,
   exportSKUS:PropTypes.func.isRequired,
+  exportIngredients:PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired
 };
 const mapStateToProps = state => ({
@@ -55,5 +58,5 @@ const mapStateToProps = state => ({
 });
 export default connect(
   mapStateToProps,
-  { exportSimpleData, exportSKUS }
+  { exportSimpleData, exportSKUS, exportIngredients, exportProdLines }
 )(ExportSimple);
