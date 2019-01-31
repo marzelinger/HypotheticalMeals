@@ -10,7 +10,7 @@ export const exportSimpleData = (dataIN, fileTitle) => dispatch => {
 //set of ingredients (the selection of which follows the 
 //same rules as the “view options” described in req 2.1.2). 
 //For each ingredient, all SKUs made with the ingredient shall be shown. 
-export const exportDependencyReport = (ingredients) => dispatch => {
+export const exportDependencyReport = (ingredients) => () => {
     var fileTitle = "Ingredient_Dependency_Report";
     var count = ingredients.length;
     var finalData = [];
@@ -43,19 +43,43 @@ export const exportDependencyReport = (ingredients) => dispatch => {
             //SKU number
             //router.get('/skus/:sku_id', (req, res) => SkuHandler.getSkuByID(req, res));
             console.log("in the double for loop of skus s: "+ s);
+            console.log('this is the skusid: '+ curData.skus[s]);
             fetch('/api/skus/'+curData.skus[s], { method: 'GET' })
             .then(data => data.json())
             .then((res) => {
             if (!res.success) this.setState({ error: res.error });
             else 
+            console.log("this is the sku obj.data: "+ res.data.data);
+            var skuData = res.data;
+            //make the sku row
+            var skuLine = [];
+            skuLine.push(skuData.num);
+            console.log("this is the sku num: "+ skuData.num);
 
-            console.log("this is the sku obj: "+ res.data);
+            skuLine.push(skuData.name);
+            console.log("this is the sku name: "+ skuData.name);
+
+            skuLine.push(skuData.case_cpc);
+            console.log("this is the sku case-cpc: "+ skuData.case_cpc);
+
+            skuLine.push(skuData.unit_upc);
+            console.log("this is the sku unitupc: "+ skuData.unit_upc);
+
+            skuLine.push(skuData.unit_size);
+
+            skuLine.push(skuData.cpc);
+
+            skuLine.push(skuData.prod_line);
+
+            skuLine.push(skuData.comment);
+            skuLine.push("\r\n");
+            finalData.push(skuLine);
             });
 
         }
-
+        finalData.push("\r\n");
     }    
-    //fileDownload(finalData, fileTitle+'.csv');
+    fileDownload(finalData, fileTitle+'.csv');
 
 };
 
@@ -83,6 +107,13 @@ export const exportDependencyReport = (ingredients) => dispatch => {
 export const exportIngredients = (dataIN, fileTitle) => dispatch => {
     var count = dataIN.length;
     var finalData = [];
+    console.log("this is the dataIN: "+dataIN);
+    console.log("this is the dataIN[0]: "+dataIN[0]);
+    console.log("this is the dataIN[0].num: "+dataIN[0].num);
+    console.log("this is the ing stringify: "+ JSON.stringify(dataIN[0]));
+
+
+
     for(let i = 0; i<count ; i++){
         var curData = dataIN[i];
         var dataLine = [];
