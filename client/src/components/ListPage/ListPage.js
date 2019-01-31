@@ -58,6 +58,10 @@ export default class ListPage extends React.Component {
                 break;
             case Constants.manu_goals_modal:
                 console.log("here");
+                if(this.state.selected_items.length == 0){
+                    alert("You must select at least one SKU to add it to a manufacturing goal!");
+                    return;
+                }
                 this.setState({manu_goals_modal: !this.state.manu_goals_modal})
                 break;
         }
@@ -259,3 +263,6 @@ export default class ListPage extends React.Component {
     }
 
 }
+
+
+
