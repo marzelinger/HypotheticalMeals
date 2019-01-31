@@ -12,6 +12,7 @@ import {
     DropdownToggle, 
     DropdownMenu, 
     DropdownItem } from 'reactstrap';
+import Select from 'react-select';
 
 
 export default class Filter extends React.Component {
@@ -30,16 +31,20 @@ export default class Filter extends React.Component {
             dropdownOpen: !this.state.dropdownOpen
         });
     }
+
+    onValueChange = (event) => {
+        this.props.handleFilterValueChange(event);
+    }
     
     render() {
         return (
         <div className='filter-item' style={{width: this.state.width + '%'}}>
             <InputGroup id = 'inputGroup'>
-                <Input 
-                    type="text"
+                {/* <Select
                     value={this.props.value}
-                    onChange={this.props.handleValueChange}>
-                </Input>
+                    onChange={this.onValueChange}
+                    options={options}
+                /> */}
                 <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
                     <DropdownToggle caret>
                         {this.props.selection}
@@ -63,6 +68,6 @@ Filter.propTypes = {
     value: PropTypes.string,
     selection: PropTypes.string,
     categories: PropTypes.arrayOf(PropTypes.string),
-    handleValueChange: PropTypes.func,
+    handleFilterValueChange: PropTypes.func,
     handleFilterSelection: PropTypes.func
   };

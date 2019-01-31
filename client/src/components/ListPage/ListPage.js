@@ -136,6 +136,7 @@ export default class ListPage extends React.Component {
     };
 
     onFilterValueChange = (event) => {
+        SubmitRequest.
         this.setState({
             filter_value: event.target.value
         });
@@ -180,7 +181,7 @@ export default class ListPage extends React.Component {
                             value={this.state.filter_value}
                             selection={this.state.filter_category} 
                             categories={this.state.filter_options}
-                            handleValueChange={this.onFilterValueChange}
+                            handleFilterValueChange={this.onFilterValueChange}
                             handleFilterSelection={this.onFilterSelection}
                         />
                         <TableOptions
