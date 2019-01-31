@@ -18,6 +18,7 @@ import * as Constants from './../../resources/Constants';
 import './../../style/ListPage.css';
 import GeneralNavBar from "../GeneralNavBar";
 import ExportSimple from '../export/ExportSimple';
+import DependencyReport from '../export/DependencyReport';
 
 
 export default class ListPage extends React.Component {
@@ -226,6 +227,12 @@ export default class ListPage extends React.Component {
                         color='danger'/>
                 </Modal>
                 <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/>
+                {
+                    this.state.page_name == "ingredients" ?
+                    <DependencyReport data = {this.state.data} />
+                    :
+                    <div/>
+                }
             </div>
         );
     }
