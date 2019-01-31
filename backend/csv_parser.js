@@ -2,7 +2,7 @@ import Prod_Line from './models/databases/prod_line';
 import SKU from './models/databases/sku';
 import Ingredient from './models/databases/ingredient';
 
-let csv = require('csvtojson');
+const csv = require('fast-csv');
 
 
 export default class CSV_parser{
@@ -16,7 +16,10 @@ export default class CSV_parser{
             });
 
             var prod_lines_to_add = new Set();
-            const jsonArray = await csv().fromFile('testProdLineSheet.csv');
+
+            const jsonArray = await csv().fromFile(req.file.path);
+            console.log('its here');
+            console.log(jsonArray);
             for(var i = 0; i < jsonArray.length; i++){
                 var obj = jsonArray[i];
                 if(db_prod_lines.has(obj.Name)){

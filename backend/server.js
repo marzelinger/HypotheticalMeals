@@ -19,7 +19,6 @@ var fs = require('fs');
 var multer = require('multer');
 var upload = multer();
 
-
 const dotenv = require('dotenv');
 dotenv.config();
 // and create our instances
@@ -33,6 +32,7 @@ mongoose.connect(getSecret('dbUri'));
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
+//app.use(express.static(path.join(__dirname, './../client/public')));
 // now we should configure the API to use bodyParser and look for JSON data in the request body
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -73,12 +73,7 @@ router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteM
 router.get('/manugoals/:manu_goal_id/skus', (req, res) => Manu_GoalHandler.getManufacturingGoalByIDSkus(req, res));
 
 router.post('/parseSkus', (req, res) => CSV_parser.parseSKUCSV(req, res));
-router.post('/parseProdLines', upload.fields([]), (req, res) => {
-  let formData = req.body;
-  console.log('form data', formData);
-  res.sendStatus(200);
-});
-//router.post('/parseProdLines', (req, res) => CSV_parser.parseProdLineCSV(req,res));
+router.post('/parseProdLines', (req, res) => CSV_parser.parseProdLineCSV(req,res));
 router.post('/parseIngredients', (req,res) => CSV_parser.parseIngredientsCSV(req, res));
 router.post('/parseFormulas', (req, res) => CSV_parser.parseFormulasCSV(req, res));
 
@@ -106,10 +101,15 @@ router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword
 router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
 
 /*
+router.get('*', (req,res) => {
+  res.sendFile(path.join(__dirname, './../client/public/index.html'))
+});*/
+
+/*
 https.createServer({
   key: fs.readFileSync('./../server.key'),
   cert: fs.readFileSync('./../server.cert')
 }, app)
-.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));*/
-
+.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
+*/
  app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
