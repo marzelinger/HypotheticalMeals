@@ -4,6 +4,18 @@
 
 export default class SubmitRequest{
 
+  static submitGetData = (page_name, obj) => {
+    fetch('/api/' + page_name, { method: 'GET' })
+          .then(data => data.json())
+          .then((res) => {
+            if (!res.success) obj.setState({ error: res.error });
+            else obj.setState({ 
+                data: res.data,
+                loaded: true
+            });
+          });
+  }
+
   static submitCreateItem = (route, item, obj) => {
     fetch(`/api/${route}`, {
       method: 'POST',
@@ -35,5 +47,15 @@ export default class SubmitRequest{
       else console.log(res);
     });
   }
+
+  static submitGetIngredientsByNameSubstring(substr, obj) {
+    fetch('/api/ingredients_name/thing' /*+ substr*/, { method: 'GET' })
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) obj.setState({ error: res.error });
+        if (res.data === undefined) return { data: [] }
+        else return { data: res.data }
+      });
+}
 
 }

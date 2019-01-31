@@ -1,21 +1,20 @@
-// ListPage.js
+// IngredientsPage.js
 // Riley
-// Larger page component to be shown in PageTemplate
-// THIS PAGE IS DEPRICATED
+// Ingredients view
 
 import React from 'react';
 import Filter from './Filter';
 import PageTable from './PageTable'
 import TableOptions from './TableOptions'
-import SubmitRequest from './../../helpers/SubmitRequest'
-import ItemStore from './../../helpers/ItemStore'
+import SubmitRequest from '../../helpers/SubmitRequest'
+import ItemStore from '../../helpers/ItemStore'
 import ItemDetails from './ItemDetails'
 import { 
     Alert,
     Button,
     DropdownToggle,
     Modal} from 'reactstrap';
-import * as Constants from './../../resources/Constants';
+import * as Constants from '../../resources/Constants';
 import './../../style/ListPage.css';
 import GeneralNavBar from "../GeneralNavBar";
 
@@ -25,19 +24,19 @@ export default class ListPage extends React.Component {
         super(props);
 
         this.state = {
-            page_name: props.page_name,
-            page_title: props.page_title,
+            page_name: Constants.ingredients_page_name,
+            page_title: 'Ingredients',
             num_filters: 0,
             filter_value: '',
             filter_category: '',
-            filter_options: props.filter_options,
+            filter_options: [Constants.keyword_label, Constants.sku_label],
             assisted_search_results: [],
-            table_columns: props.table_columns,
-            table_properties: props.table_properties,
-            table_options: props.table_options,
-            item_properties: props.item_properties,
-            item_property_labels: props.item_property_labels,
-            item_property_placeholder: props.item_property_placeholder,
+            table_columns: ['Name', 'Number', 'Package Size', 'Cost per Package (USD)'],
+            table_properties: ['name', 'num', 'pkg_size', 'pkg_cost'],
+            table_options: [Constants.create_item],
+            item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment', 'skus'],
+            item_property_labels: ['Name', 'Number', 'Package Size', 'Package Cost', 'Vendor Info', 'Comments', 'SKUs'],
+            item_property_placeholder: ['White Rice', '12345678', '1lb', '1.50', 'Tam Soy', '...', 'Fried Rice'],
             selected_items: [],
             detail_view_item: null,
             detail_view_options: [],
@@ -63,11 +62,13 @@ export default class ListPage extends React.Component {
         }
     }
 
-    componentDidUpdate = (prevProps, prevState) => {
+    async componentDidUpdate (prevProps, prevState) {
         if (prevState.filter_value !== this.state.filter_value || 
             prevState.filter_category !== this.state.filter_category){
-                this.setState({ 
-                    assisted_search_results: this.props.assisted_search_function(this.state.filter_value, this),
+                let data = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.filter_value, this);
+                console.log(data);
+                this.setState({
+                    assisted_search_results: data,
                     num_filters: 1 
                 });
                 this.loadDataFromServer();
@@ -75,21 +76,19 @@ export default class ListPage extends React.Component {
     }
 
     loadDataFromServer = () => {
-        fetch('/api/' + this.state.page_name, { method: 'GET' })
-          .then(data => data.json())
-          .then((res) => {
-            if (!res.success) this.setState({ error: res.error });
-            else this.setState({ 
-                data: res.data,
-                loaded: true
-            });
-          });
-        console.log(this.state.assisted_search_results);
+        SubmitRequest.submitGetData(this.state.page_name, this);
     }
 
     onFilterSelection = (e, sel) => {
         this.setState({
             filter_category: sel
+        });
+    }
+
+    onFilterValueChange = (e) => {
+        console.log(e.target.value);
+        this.setState({
+            filter_value: e.target.value
         });
     }
 
@@ -136,13 +135,6 @@ export default class ListPage extends React.Component {
         this.toggle();
     };
 
-    onFilterValueChange = (event) => {
-        SubmitRequest.
-        this.setState({
-            filter_value: event.target.value
-        });
-    }
-
     onDetailViewSubmit = (event, item, option) => {
         console.log(option);
         switch (option) {
@@ -162,7 +154,6 @@ export default class ListPage extends React.Component {
             detail_view_item: null,
             detail_view_options: []
         });
-        console.log('this print message is from line 156 of listpage.js');
         this.loadDataFromServer();
         this.toggle();
     }
@@ -182,6 +173,7 @@ export default class ListPage extends React.Component {
                             value={this.state.filter_value}
                             selection={this.state.filter_category} 
                             categories={this.state.filter_options}
+                            assisted_search_results={this.state.assisted_search_results}
                             handleFilterValueChange={this.onFilterValueChange}
                             handleFilterSelection={this.onFilterSelection}
                         />
