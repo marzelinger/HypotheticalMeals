@@ -2,13 +2,12 @@ import Prod_Line from './models/databases/prod_line';
 import SKU from './models/databases/sku';
 import Ingredient from './models/databases/ingredient';
 
-const csv = require('fast-csv');
+const csv = require('csvtojson');
 
 
 export default class CSV_parser{
 
     static async parseProdLineCSV (req, res){
-        try {
             var db_prod_lines = new Set();
             let all_prod_lines = await Prod_Line.find()
             all_prod_lines.forEach(function (prod_line){
@@ -16,7 +15,9 @@ export default class CSV_parser{
             });
 
             var prod_lines_to_add = new Set();
-
+            console.log(req.file);
+            console.log('hello');
+            console.log(req.file.path);
             const jsonArray = await csv().fromFile(req.file.path);
             console.log('its here');
             console.log(jsonArray);
@@ -37,9 +38,6 @@ export default class CSV_parser{
             }
 
             return res.json({ success: true, data: "Success"});
-        } catch(err){
-            return res.json({ success: false, error: err});
-        }
     }
 
     static async parseSKUCSV(req, res){

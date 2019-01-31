@@ -17,7 +17,7 @@ import CSV_parser from './csv_parser';
 var https = require('https');
 var fs = require('fs');
 var multer = require('multer');
-var upload = multer();
+var upload = multer(({ dest : './tmp/csv'}));
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -73,7 +73,7 @@ router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteM
 router.get('/manugoals/:manu_goal_id/skus', (req, res) => Manu_GoalHandler.getManufacturingGoalByIDSkus(req, res));
 
 router.post('/parseSkus', (req, res) => CSV_parser.parseSKUCSV(req, res));
-router.post('/parseProdLines', (req, res) => CSV_parser.parseProdLineCSV(req,res));
+router.post('/parseProdLines', upload.single('file'), (req, res) => CSV_parser.parseProdLineCSV(req,res));
 router.post('/parseIngredients', (req,res) => CSV_parser.parseIngredientsCSV(req, res));
 router.post('/parseFormulas', (req, res) => CSV_parser.parseFormulasCSV(req, res));
 

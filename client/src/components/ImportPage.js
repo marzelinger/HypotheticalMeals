@@ -20,7 +20,7 @@ export default class ImportPage extends React.Component {
 
     handleUpload = () => {
         var fd = new FormData();
-        fd.append('file', this.state.selectedFile);
+        fd.append('file', this.state.selectedFile, this.state.selectedFile.name);
 
         if(this.state.selectedFile.name.length >= 4 && this.state.selectedFile.name.substring(0,4) === "skus"){
             endpoint = "/api/parseSkus";
