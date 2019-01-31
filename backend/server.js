@@ -14,13 +14,19 @@ import UserHandler from './models/handlers/UserHandler';
 import FilterHandler from './models/handlers/FilterHandler';
 import { getSecret } from './secrets';
 const passport = require("passport");
-
+const cors = require('cors');
 
 const dotenv = require('dotenv');
 dotenv.config();
 // and create our instances
 const app = express();
 const router = express.Router();
+var corsOptions = {
+  origin: '*',
+  optionSuccessStatus: 200
+};
+ 
+app.use(cors(corsOptions));
 
 // set our port to either a predetermined port number if you have set it up, or 3001
 const API_PORT = process.env.API_PORT || 3001;
