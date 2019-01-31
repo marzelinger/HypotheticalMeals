@@ -31,6 +31,7 @@
     "office-ui-fabric-react": "^6.129.4",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
+    "path": "^0.12.7",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-redux": "^6.0.0",

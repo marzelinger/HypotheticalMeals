@@ -12,6 +12,7 @@ import IngredientHandler from './models/handlers/IngredientHandler';
 import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
 import UserHandler from './models/handlers/UserHandler';
 import { getSecret } from './secrets';
+var path = require("path");
 const passport = require("passport");
 
 
