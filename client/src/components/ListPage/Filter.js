@@ -76,7 +76,7 @@ Filter.propTypes = {
     id: PropTypes.number,
     value: PropTypes.string,
     selection: PropTypes.string,
-    assisted_search_results: PropTypes.arrayOf(PropTypes.string),
+    assisted_search_results: PropTypes.arrayOf(PropTypes.object),
     categories: PropTypes.arrayOf(PropTypes.string),
     handleFilterValueChange: PropTypes.func,
     handleFilterValueSelection: PropTypes.func,

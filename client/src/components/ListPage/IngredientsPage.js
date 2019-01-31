@@ -62,24 +62,35 @@ export default class IngredientsPage extends React.Component {
 
     async componentDidUpdate (prevProps, prevState) {
         console.log("update!");
-        if (prevState.sku_substr !== this.state.sku_substr){
-            var asr = this.state.assisted_search_results.slice();
-            for(var i = 0; i < prevState.sku_substr.length; i++){
-                let data = await SubmitRequest.submitGetSkusByNameSubstring(this.state.sku_substr[i], this);
-                if (data === undefined){
+        console.log(prevState.filter_category[0] + '___' + this.state.filter_category[0]);
+        if (prevState.sku_substr !== this.state.sku_substr || prevState.filter_value !== this.state.filter_value || 
+            prevState.filter_category !== this.state.filter_category) {
+            await this.updateFilterState(prevState);
+            this.loadDataFromServer();
+        }
+    }
+
+    async updateFilterState(prevState) {
+        var asr = this.state.assisted_search_results.slice();
+        for (var i = 0; i < prevState.sku_substr.length; i++) {
+            if (this.state.filter_category[i] === Constants.sku_label
+                && this.state.sku_substr[i].length > 0) {
+                let data = await SubmitRequest.submitGetSkusByNameSubstring(this.state.sku_substr[i]);
+                if (data === undefined || data[0].sucess === false) {
                     data = [];
                 }
                 asr[i] = data;
             }
-            this.setState({
-                assisted_search_results: asr
-            });
-            this.loadDataFromServer();
+            else if (this.state.filter_category[i] === Constants.keyword_label) {
+                asr[i] = [];
+            }
+            else {
+                asr[i] = [];
+            }
         }
-        if (prevState.filter_value !== this.state.filter_value || 
-            prevState.filter_category !== this.state.filter_category){
-                //TODO:
-        }
+        this.setState({
+            assisted_search_results: asr
+        });
     }
 
     async loadDataFromServer() {
@@ -110,10 +121,10 @@ export default class IngredientsPage extends React.Component {
                 final_sku_filter, final_keyword_filter);
         }
         console.log(res);
-            this.setState({
-                data: res.data,
-                loaded: res.loaded
-            })
+        this.setState({
+            data: res.data,
+            loaded: res.loaded
+        })
     }
 
     onFilterSelection = (e, sel, id) => {
