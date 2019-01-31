@@ -147,6 +147,18 @@ class SkuHandler{
             return res.json({ success: false, error: err});
         }
     }
+
+    static async getSkusByNameSubstring(req, res){
+        try{
+            var search_substr = req.params.search_substr;
+            let results = await SKU.find({ name: { $regex: search_substr, $options: 'i' } });
+            if (results.length == 0) return res.json({success: false, error: '404'})
+            return res.json({ success: true, data: results});
+        }
+        catch (err) {
+            return res.json({ success: false, error: err});
+        }
+    }
 }
 
 export default SkuHandler;

@@ -47,6 +47,8 @@ router.get('/skus', (req, res) => SkuHandler.getAllSkus(req, res));
 router.get('/skus/:sku_id', (req, res) => SkuHandler.getSkuByID(req, res));
 router.delete('/skus/:sku_id', (req, res) => SkuHandler.deleteSkuByID(req, res));
 router.get('/ingredients_by_sku/:sku_id', (req, res) => SkuHandler.getIngredientsBySkuID(req, res));
+router.get('/skus_name/:search_substr', (req, res) => SkuHandler.getSkusByNameSubstring(req, res));
+
 
 // Product Line database APIs
 router.post('/products', (req, res) => Prod_LineHandler.createProductLine(req, res));
@@ -62,7 +64,7 @@ router.get('/ingredients', (req, res) => IngredientHandler.getAllIngredients(req
 router.get('/ingredients/:ingredient_id', (req, res) => IngredientHandler.getIngredientByID(req, res));
 router.delete('/ingredients/:ingredient_id', (req, res) => IngredientHandler.deleteIngredientByID(req, res));
 router.get('/skus_by_ingredient/:ingredient_id', (req, res) => IngredientHandler.getSkusByIngredientID(req, res));
-router.get('/ingredient_name_substring', (req, res) => IngredientHandler.getIngredientByNameSubstring(req, res));
+router.get('/ingredients_name/:search_substr', (req, res) => IngredientHandler.getIngredientsByNameSubstring(req, res));
 
 // Manufacturing Goals database APIs
 router.post('/manugoals', (req, res) => Manu_GoalHandler.createManufacturingGoal(req, res));
@@ -73,8 +75,8 @@ router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteM
 router.get('/manugoals/:manu_goal_id/skus', (req, res) => Manu_GoalHandler.getManufacturingGoalByIDSkus(req, res));
 
 // Multiple database APIs
-router.get('/ingredient_filter', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
-router.get('/sku_filter', (req, res) => FilterHandler.getSkusByFilter(req, res));
+router.get('/ingredients_filter/:sku_ids/:keyword', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
+router.get('/skus_filter/:ingredient_ids/:keyword/:prod_line_id', (req, res) => FilterHandler.getSkusByFilter(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);

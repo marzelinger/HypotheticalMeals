@@ -111,22 +111,9 @@ class IngredientHandler{
         }
     }
 
-    static async getIngredientByKeyword(req, res){
+    static async getIngredientsByNameSubstring(req, res){
         try{
-            var search_str = req.body.search_str;
-            let results = await Ingredient.find( {$text: {$search: search_str } } );
-            console.log(results);
-            if (results.length == 0) return res.json({success: false, error: '404'})
-            return res.json({ success: true, data: results});
-        }
-        catch (err) {
-            return res.json({ success: false, error: err});
-        }
-    }
-
-    static async getIngredientByNameSubstring(req, res){
-        try{
-            var search_substr = req.body.search_substr;
+            var search_substr = req.params.search_substr;
             let results = await Ingredient.find({ name: { $regex: search_substr, $options: 'i' } });
             if (results.length == 0) return res.json({success: false, error: '404'})
             return res.json({ success: true, data: results});
