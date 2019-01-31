@@ -11,7 +11,9 @@ import {
     InputGroupButtonDropdown,
     DropdownToggle, 
     DropdownMenu, 
-    DropdownItem } from 'reactstrap';
+    DropdownItem,
+    ListGroup,
+    ListGroupItem} from 'reactstrap';
 import Select from 'react-select';
 
 
@@ -20,9 +22,11 @@ export default class Filter extends React.Component {
         super(props);
 
         this.toggleDropDown = this.toggleDropDown.bind(this);
+        this.togglePopover = this.togglePopover.bind(this);
         this.state = {
             width: 100,
-            dropdownOpen: false
+            dropdownOpen: false,
+            popoverOpen: false,
         };
     }
     
@@ -32,30 +36,40 @@ export default class Filter extends React.Component {
         });
     }
 
-    renderOptions() {
-        console.log("yo");
-        if (this.props){
-            if (this.props.assisted_search_results){
-            console.log(this.props.assisted_search_results);
-            return (this.props.assisted_search_results.map(res => 
-                <h4>
-                    {res}
-                </h4>
-            ));
-            }
+    togglePopover() {
+        this.setState({
+            popoverOpen: !this.state.popoverOpen
+        });
+    }
+
+    filterFocus() {
+        if (this){
+            this.setState({
+                popoverOpen: true
+            });
         }
-        return {};
     }
 
     render() {
         return (
         <div className='filter-item' style={{width: this.state.width + '%'}}>
+            <ListGroup>
+                {(this.props.assisted_search_results.map(res => 
+                <ListGroupItem
+                    key={res.name}
+                    tag="button"
+                    onClick={(e) => this.props.handleFilterValueSelection(e, res._id)}
+                >{res.name}</ListGroupItem>
+            ))}
+            </ListGroup>
             <InputGroup id = 'inputGroup'>
                 <Input 
                     type="text"
                     value={this.props.value}
-                    onChange={this.props.handleFilterValueChange}>
-                </Input>
+                    onChange={this.props.handleFilterValueChange}
+                    onFocus={this.filterFocus}
+                    id="Popover1"
+                />
                 <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
                     <DropdownToggle caret>
                         {this.props.selection}
@@ -88,5 +102,6 @@ Filter.propTypes = {
     assisted_search_results: PropTypes.arrayOf(PropTypes.string),
     categories: PropTypes.arrayOf(PropTypes.string),
     handleFilterValueChange: PropTypes.func,
+    handleFilterValueSelection: PropTypes.func,
     handleFilterSelection: PropTypes.func
   };

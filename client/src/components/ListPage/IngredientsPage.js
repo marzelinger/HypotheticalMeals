@@ -19,7 +19,7 @@ import './../../style/ListPage.css';
 import GeneralNavBar from "../GeneralNavBar";
 
 
-export default class ListPage extends React.Component {
+export default class IngredientsPage extends React.Component {
     constructor(props) {
         super(props);
 
@@ -27,6 +27,7 @@ export default class ListPage extends React.Component {
             page_name: Constants.ingredients_page_name,
             page_title: 'Ingredients',
             num_filters: 0,
+            sku_substr: '',
             filter_value: '',
             filter_category: '',
             filter_options: [Constants.keyword_label, Constants.sku_label],
@@ -63,15 +64,20 @@ export default class ListPage extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
-        if (prevState.filter_value !== this.state.filter_value || 
-            prevState.filter_category !== this.state.filter_category){
-                let data = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.filter_value, this);
-                console.log(data);
+        if (prevState.sku_substr !== this.state.sku_substr){
+                let data = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.sku_substr, this);
+                if (data === undefined){
+                    data = [];
+                }
                 this.setState({
                     assisted_search_results: data,
                     num_filters: 1 
                 });
                 this.loadDataFromServer();
+        }
+        if (prevState.filter_value !== this.state.filter_value || 
+            prevState.filter_category !== this.state.filter_category){
+                //TODO:
         }
     }
 
@@ -88,8 +94,12 @@ export default class ListPage extends React.Component {
     onFilterValueChange = (e) => {
         console.log(e.target.value);
         this.setState({
-            filter_value: e.target.value
+            sku_substr: e.target.value
         });
+    }
+
+    onFilterValueSelection = (e, id) => {
+        console.log(id);
     }
 
     onCreateNewItem = () => {
@@ -170,11 +180,12 @@ export default class ListPage extends React.Component {
             <div className="list-page">
                 <div className="options-container" id={this.state.simple ? "simple" : "complex"}>
                         <Filter 
-                            value={this.state.filter_value}
+                            value={this.state.sku_substr}
                             selection={this.state.filter_category} 
                             categories={this.state.filter_options}
                             assisted_search_results={this.state.assisted_search_results}
                             handleFilterValueChange={this.onFilterValueChange}
+                            handleFilterValueSelection={this.onFilterValueSelection}
                             handleFilterSelection={this.onFilterSelection}
                         />
                         <TableOptions

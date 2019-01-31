@@ -48,14 +48,19 @@ export default class SubmitRequest{
     });
   }
 
-  static submitGetIngredientsByNameSubstring(substr, obj) {
-    fetch('/api/ingredients_name/' + substr)
+  static async submitGetIngredientsByNameSubstring(substr, obj) {
+    try {
+      return fetch('/api/ingredients_name/' + substr)
       .then(data => data.json())
       .then((res) => {
         console.log(res.data);
         if (!res.success) obj.setState({ error: res.error });
         else return res.data;
       });
-}
+    }
+    catch (err) {
+      return err;
+  }
+  }
 
 }
