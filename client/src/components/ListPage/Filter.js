@@ -32,19 +32,30 @@ export default class Filter extends React.Component {
         });
     }
 
-    onValueChange = (event) => {
-        this.props.handleFilterValueChange(event);
+    renderOptions() {
+        console.log("yo");
+        if (this.props){
+            if (this.props.assisted_search_results){
+            console.log(this.props.assisted_search_results);
+            return (this.props.assisted_search_results.map(res => 
+                <h4>
+                    {res}
+                </h4>
+            ));
+            }
+        }
+        return {};
     }
-    
+
     render() {
         return (
         <div className='filter-item' style={{width: this.state.width + '%'}}>
             <InputGroup id = 'inputGroup'>
-                {/* <Select
+                <Input 
+                    type="text"
                     value={this.props.value}
-                    onChange={this.onValueChange}
-                    options={options}
-                /> */}
+                    onChange={this.props.handleFilterValueChange}>
+                </Input>
                 <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
                     <DropdownToggle caret>
                         {this.props.selection}
@@ -59,14 +70,22 @@ export default class Filter extends React.Component {
                     </DropdownMenu>
                 </InputGroupButtonDropdown>
             </InputGroup>
+            {/* {this.renderOptions()} */}
         </div>
         );
     }
 }
 
+const options = [
+    { value: 'chocolate', label: 'Chocolate' },
+    { value: 'strawberry', label: 'Strawberry' },
+    { value: 'vanilla', label: 'Vanilla' }
+  ];
+
 Filter.propTypes = {
     value: PropTypes.string,
     selection: PropTypes.string,
+    assisted_search_results: PropTypes.arrayOf(PropTypes.string),
     categories: PropTypes.arrayOf(PropTypes.string),
     handleFilterValueChange: PropTypes.func,
     handleFilterSelection: PropTypes.func
