@@ -16,9 +16,7 @@ class FilterHandler{
                 let skus = await SKU.find({ _id : { $in : param_ids } });
                 if (skus.length == 0) return res.json({success: false, error: '404 SKU'})
                 skus.map(sku => sku.ingredients.map(ing => ids.push(ing._id)));
-                if (ids.length !== 0){
-                    and_query.push( {_id: { $in: ids } } );
-                }
+                and_query.push( {_id: { $in: ids } } );
             }
             var keyword = req.params.keyword;
             if (keyword !== undefined && keyword !== "_"){
@@ -44,9 +42,7 @@ class FilterHandler{
                 let ingredients = await Ingredient.find({ _id : { $in : param_ids } });
                 if (ingredients.length == 0) return res.json({success: false, error: '404 Ingredient'})
                 ingredients.map(ing => ing.skus.map(sku => ids.push(sku._id)));
-                if (ids.length !== 0){
-                    and_query.push( {_id: { $in: ids } } );
-                }
+                and_query.push( {_id: { $in: ids } } );
             }
             var keyword = req.params.keyword;
             if (keyword !== undefined && keyword !== "_"){
