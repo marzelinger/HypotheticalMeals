@@ -59,7 +59,7 @@ class Manu_GoalHandler{
 
     static async getAllManufacturingGoals(req, res){
         try {
-            let all_manu_goals = await Manu_Goal.find().populate('skus');
+            let all_manu_goals = await Manu_Goal.find();
             return res.json({ success: true, data: all_manu_goals});
         }
         catch (err) {
