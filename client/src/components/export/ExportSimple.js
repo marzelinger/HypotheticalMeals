@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { exportSimpleData } from "../../actions/exportActions";
+import { exportSimpleData, exportSKUS } from "../../actions/exportActions";
 class ExportSimple extends Component {
 
   constructor() {
@@ -10,14 +10,22 @@ class ExportSimple extends Component {
     this.onExportSimpleClick = this.onExportSimpleClick.bind(this);
 
     this.state = {
-      data: []
+      data: [],
+      fileTitle: ""
     };
   }
 
 
   onExportSimpleClick(e){
     e.preventDefault();
-    this.props.exportSimpleData(this.props.data);
+    console.log("this is the fileTitle"+this.props.fileTitle);
+    if(this.props.fileTitle == "skus"){
+      console.log("in if");
+
+      this.props.exportSKUS(this.props.data, this.props.fileTitle);
+
+    }
+    //this.props.exportSimpleData(this.props.data, this.props.fileTitle);
   };
 render() {
     const { user } = this.props.auth;
@@ -39,6 +47,7 @@ return (
 }
 ExportSimple.propTypes = {
   exportSimpleData: PropTypes.func.isRequired,
+  exportSKUS:PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired
 };
 const mapStateToProps = state => ({
@@ -46,5 +55,5 @@ const mapStateToProps = state => ({
 });
 export default connect(
   mapStateToProps,
-  { exportSimpleData }
+  { exportSimpleData, exportSKUS }
 )(ExportSimple);

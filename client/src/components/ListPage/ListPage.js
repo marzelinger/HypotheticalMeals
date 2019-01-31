@@ -225,7 +225,7 @@ export default class ListPage extends React.Component {
                         value={this.state.error}
                         color='danger'/>
                 </Modal>
-                <ExportSimple data = {this.state.data}/>
+                <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/>
             </div>
         );
     }

@@ -92,5 +92,16 @@ router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword
 router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
 
 
+// Gives constant name to long directory home page.
+// const appPage = path.join(__dirname, '../client/build/index.html');
+
+// // Allows the use of files.
+// app.use(express.static('../client/build'));
+
+// // SERVES STATIC HOMEPAGE at '/' URL
+// app.get('*', function(req, res) {
+//   res.sendFile(appPage)
+// })
+
 
 app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
