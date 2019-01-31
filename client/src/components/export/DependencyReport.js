@@ -32,13 +32,6 @@ loadDataFromServerForReport = (ingredients) => {
     var fileTitle = "Ingredient_Dependency_Report";
     var count = ingredients.length;
     var finalData = [];
-
-    //to start let's simply show the ingredient followed by it's SKUs
-    //ie
-    //ingredient
-    //sku
-    //ingredient
-    //sku
     for(let ing = 0; ing<count ; ing++){
         var curData = ingredients[ing];
         var dataLine = [];
@@ -55,47 +48,47 @@ loadDataFromServerForReport = (ingredients) => {
         console.log("this is the ingSkus: "+ingSKUS);
 
         for(let s = 0; s<ingSKUS; s++){
-            //need to make a call to the db for each
-            //SKU number
-            //router.get('/skus/:sku_id', (req, res) => SkuHandler.getSkuByID(req, res));
-            var skuLine = [];
-            var skuObj;
             console.log('this is the skusid: '+ curData.skus[s]);
-            fetch('/api/skus/'+curData.skus[s], { method: 'GET' })
-            .then(data => data.json())
-            .then((res) => {
-                console.log("in the then");
-                if (!res.success) {
-                    this.setState({ error: res.error });
-                    console.log("there was an error: "+res.error);
-                }
-                else 
-
-                console.log("this is the sku obj.data: "+ res.data.data);
-                console.log("this is the sku obj.: "+ res.data);
-                console.log("this is the sku stringify: "+ JSON.stringify(res.data[0]));
-                var skuData = res.data[0];
-                //make the sku row
-                skuLine.push(skuData.num);
-                skuLine.push(skuData.name);
-                skuLine.push(skuData.case_cpc);
-                skuLine.push(skuData.unit_upc);
-                skuLine.push(skuData.unit_size);
-                skuLine.push(skuData.cpc);
-                skuLine.push(skuData.prod_line);
-                skuLine.push(skuData.comment);
-                skuLine.push("\r\n");
-                console.log("this is the skuLine: "+ skuLine);
-                //finalData.push(skuLine);
-            });
-            finalData.push(skuLine);
+            var skulineFunc = this.getSKULine(curData.skus[s]);               
+            console.log("this is the skuLinefuncreturn: "+ skulineFunc);   
+            finalData.push(skulineFunc);
             console.log("this is the finalData: "+ finalData);
         }
-        finalData.push("\r\n");
+        //finalData.push("\r\n");
     }    
     fileDownload(finalData, fileTitle+'.csv');
 };
 
+
+getSKULine  = (skuID) => {
+    console.log('this is the skusid: '+ skuID);
+
+    fetch('/api/skus/'+skuID, { method: 'GET' })
+    .then(data => data.json())
+    .then((res) => {
+      if (!res.success) {
+      //this.setState({ error: res.error });
+      }
+      else {
+        var skuLine = [];
+        var skuData = res.data[0];
+        console.log("this is the skuData: "+skuData);
+        console.log("this is the skuData string: "+JSON.stringify(skuData));
+
+        skuLine.push(skuData.num);
+        skuLine.push(skuData.name);
+        skuLine.push(skuData.case_cpc);
+        skuLine.push(skuData.unit_upc);
+        skuLine.push(skuData.unit_size);
+        skuLine.push(skuData.cpc);
+        skuLine.push(skuData.prod_line);
+        skuLine.push(skuData.comment);
+        skuLine.push("\r\n");
+        console.log("this is the skuLine: "+ skuLine);
+        return skuLine;
+      }
+    });
+}
 
 
 
