@@ -26,12 +26,11 @@ export default class IngredientsPage extends React.Component {
         this.state = {
             page_name: Constants.ingredients_page_name,
             page_title: 'Ingredients',
-            num_filters: 0,
-            sku_substr: '',
-            filter_value: '',
-            filter_category: '',
+            sku_substr: [''],
+            filter_value: [''],
+            filter_category: [''],
             filter_options: [Constants.keyword_label, Constants.sku_label],
-            assisted_search_results: [],
+            assisted_search_results: [[]],
             table_columns: ['Name', 'Number', 'Package Size', 'Cost per Package (USD)'],
             table_properties: ['name', 'num', 'pkg_size', 'pkg_cost'],
             table_options: [Constants.create_item],
@@ -48,6 +47,7 @@ export default class IngredientsPage extends React.Component {
             simple: props.simple || false
         };
         this.toggle = this.toggle.bind(this);
+        this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
     }
 
     toggle(){
@@ -58,22 +58,23 @@ export default class IngredientsPage extends React.Component {
 
     componentDidMount = () => {
         this.loadDataFromServer();
-        if (this.state.data === []){
-            this.loadDataFromServer();
-        }
     }
 
     async componentDidUpdate (prevProps, prevState) {
+        console.log("update!");
         if (prevState.sku_substr !== this.state.sku_substr){
-                let data = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.sku_substr, this);
+            var asr = this.state.assisted_search_results.slice();
+            for(var i = 0; i < prevState.sku_substr.length; i++){
+                let data = await SubmitRequest.submitGetSkusByNameSubstring(this.state.sku_substr[i], this);
                 if (data === undefined){
                     data = [];
                 }
-                this.setState({
-                    assisted_search_results: data,
-                    num_filters: 1 
-                });
-                this.loadDataFromServer();
+                asr[i] = data;
+            }
+            this.setState({
+                assisted_search_results: asr
+            });
+            this.loadDataFromServer();
         }
         if (prevState.filter_value !== this.state.filter_value || 
             prevState.filter_category !== this.state.filter_category){
@@ -81,25 +82,70 @@ export default class IngredientsPage extends React.Component {
         }
     }
 
-    loadDataFromServer = () => {
-        SubmitRequest.submitGetData(this.state.page_name, this);
+    async loadDataFromServer() {
+        console.log("filt: " + this.state.filter_value);
+        if (this.state.filter_value === undefined) return;
+        var final_sku_filter = '';
+        var final_keyword_filter = '';
+        for (var i = 0; i < this.state.filter_value.length; i++){
+            if (this.state.filter_value[i].length === Constants.obj_id_length 
+                && this.state.filter_category[i] === Constants.sku_label) {
+                    final_sku_filter += (final_sku_filter.length == 0 ? '' : ',');
+                    final_sku_filter += this.state.filter_value[i];
+            }
+            else if (this.state.filter_category[i] === Constants.keyword_label) {
+                    final_keyword_filter = this.state.filter_value[i];
+            }
+        }
+        console.log(final_sku_filter + '/' + final_keyword_filter);
+        //this first if can be depricated!!!!!
+        if ((final_sku_filter === '' && final_keyword_filter === '') || this.state.filter_category == ''){
+            var res = await SubmitRequest.submitGetData(this.state.page_name);
+        }
+        else {
+            if (final_sku_filter === '') final_sku_filter = '_';
+            if (final_keyword_filter === '') final_keyword_filter = '_';
+            console.log(final_sku_filter + "/" + final_keyword_filter);
+            var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
+                final_sku_filter, final_keyword_filter);
+        }
+        console.log(res);
+            this.setState({
+                data: res.data,
+                loaded: res.loaded
+            })
     }
 
-    onFilterSelection = (e, sel) => {
+    onFilterSelection = (e, sel, id) => {
+        var fil_cat = this.state.filter_category.slice();
+        fil_cat[id] = sel;
         this.setState({
-            filter_category: sel
+            filter_category: fil_cat
         });
     }
 
-    onFilterValueChange = (e) => {
-        console.log(e.target.value);
+    onFilterValueChange = (e, id) => {
+        console.log(e.target.value, id);
+        var sku_sub = this.state.sku_substr.slice();
+        sku_sub[id] = e.target.value;
         this.setState({
-            sku_substr: e.target.value
+            sku_substr: sku_sub
         });
     }
 
-    onFilterValueSelection = (e, id) => {
-        console.log(id);
+    onFilterValueSelection (e, item, id) {
+        console.log(item._id + '/' + id);
+        var sku_sub = this.state.sku_substr.slice();
+        sku_sub[id] = item.name;
+        var fil_val = this.state.filter_value.slice();
+        fil_val[id] = item._id;
+        var asr = this.state.assisted_search_results.slice();
+        asr[id] = [];
+        this.setState({
+            sku_substr: sku_sub,
+            filter_value: fil_val,
+            assisted_search_results: asr
+        });
     }
 
     onCreateNewItem = () => {
@@ -179,15 +225,19 @@ export default class IngredientsPage extends React.Component {
         return (
             <div className="list-page">
                 <div className="options-container" id={this.state.simple ? "simple" : "complex"}>
+                    {this.state.sku_substr.map((ss,index) => 
                         <Filter 
-                            value={this.state.sku_substr}
-                            selection={this.state.filter_category} 
-                            categories={this.state.filter_options}
-                            assisted_search_results={this.state.assisted_search_results}
-                            handleFilterValueChange={this.onFilterValueChange}
-                            handleFilterValueSelection={this.onFilterValueSelection}
-                            handleFilterSelection={this.onFilterSelection}
-                        />
+                        key={'filter'+index}
+                        id={index}
+                        value={ss}
+                        selection={this.state.filter_category[index]} 
+                        categories={this.state.filter_options}
+                        assisted_search_results={this.state.assisted_search_results[index]}
+                        handleFilterValueChange={this.onFilterValueChange}
+                        handleFilterValueSelection={this.onFilterValueSelection}
+                        handleFilterSelection={this.onFilterSelection}
+                    />
+                    )}
                         <TableOptions
                         table_options={this.state.table_options}
                         handleTableOptionSelection={this.onTableOptionSelection}

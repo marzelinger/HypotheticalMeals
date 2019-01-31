@@ -4,16 +4,16 @@
 
 export default class SubmitRequest{
 
-  static submitGetData = (page_name, obj) => {
-    fetch('/api/' + page_name, { method: 'GET' })
-          .then(data => data.json())
-          .then((res) => {
-            if (!res.success) obj.setState({ error: res.error });
-            else obj.setState({ 
-                data: res.data,
-                loaded: true
-            });
-          });
+  static submitGetData = (page_name) => {
+    return fetch('/api/' + page_name, { method: 'GET' })
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return ({ error: res.error });
+        else return ({ 
+            data: res.data,
+            loaded: true
+        });
+      });
   }
 
   static submitCreateItem = (route, item, obj) => {
@@ -53,14 +53,54 @@ export default class SubmitRequest{
       return fetch('/api/ingredients_name/' + substr)
       .then(data => data.json())
       .then((res) => {
-        console.log(res.data);
         if (!res.success) obj.setState({ error: res.error });
         else return res.data;
       });
     }
     catch (err) {
       return err;
+    }
   }
+
+  static async submitGetSkusByNameSubstring(substr, obj) {
+    try {
+      return fetch('/api/skus_name/' + substr)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) obj.setState({ error: res.error });
+        else return res.data;
+      });
+    }
+    catch (err) {
+      return err;
+    }
+  }
+
+  static async submitGetIngredientsByID(id) {
+    try {
+      return fetch('/api/ingredients/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        console.log(res.data);
+        if (!res.success) return ({ error: res.error });
+        else return { data: res.data} ;
+      });
+    }
+    catch (err) {
+      return err;
+    }
+  }
+
+  static submitGetFilterData = (path, filter_value, keyword) => {
+    return fetch('/api/' + path + '/' + filter_value + '/' + keyword, { method: 'GET' })
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return ({ error: res.error });
+        else return ({ 
+            data: res.data,
+            loaded: true
+        });
+      });
   }
 
 }

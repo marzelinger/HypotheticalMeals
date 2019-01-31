@@ -11,6 +11,7 @@ export const SkuTitle = "SKUs"
 export const ManuGoalTitle = "MANUFACTURING GOALS"
 
 export const ingredients_page_name = 'ingredients';
+export const ing_filter_path = 'ingredients_filter';
 export const skus_page_name = 'skus';
 
 export const options = 'Options'
@@ -30,3 +31,5 @@ export const details_cancel = 'Cancel'
 export const details_create = 'Create'
 
 export const create_ingredient = 'Create Ingredient'
+
+export const obj_id_length = 24

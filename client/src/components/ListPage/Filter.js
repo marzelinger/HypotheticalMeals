@@ -22,11 +22,9 @@ export default class Filter extends React.Component {
         super(props);
 
         this.toggleDropDown = this.toggleDropDown.bind(this);
-        this.togglePopover = this.togglePopover.bind(this);
         this.state = {
             width: 100,
-            dropdownOpen: false,
-            popoverOpen: false,
+            dropdownOpen: false
         };
     }
     
@@ -34,20 +32,6 @@ export default class Filter extends React.Component {
         this.setState({
             dropdownOpen: !this.state.dropdownOpen
         });
-    }
-
-    togglePopover() {
-        this.setState({
-            popoverOpen: !this.state.popoverOpen
-        });
-    }
-
-    filterFocus() {
-        if (this){
-            this.setState({
-                popoverOpen: true
-            });
-        }
     }
 
     render() {
@@ -58,7 +42,7 @@ export default class Filter extends React.Component {
                 <ListGroupItem
                     key={res.name}
                     tag="button"
-                    onClick={(e) => this.props.handleFilterValueSelection(e, res._id)}
+                    onClick={(e) => this.props.handleFilterValueSelection(e, res, this.props.id)}
                 >{res.name}</ListGroupItem>
             ))}
             </ListGroup>
@@ -66,9 +50,7 @@ export default class Filter extends React.Component {
                 <Input 
                     type="text"
                     value={this.props.value}
-                    onChange={this.props.handleFilterValueChange}
-                    onFocus={this.filterFocus}
-                    id="Popover1"
+                    onChange={(e) => this.props.handleFilterValueChange(e, this.props.id)}
                 />
                 <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
                     <DropdownToggle caret>
@@ -78,7 +60,7 @@ export default class Filter extends React.Component {
                         {this.props.categories.map(cat => 
                             <DropdownItem 
                                 key={cat}
-                                onClick={e => this.props.handleFilterSelection(e, cat)}
+                                onClick={e => this.props.handleFilterSelection(e, cat, this.props.id)}
                             >{cat}</DropdownItem>
                         )}
                     </DropdownMenu>
@@ -90,13 +72,8 @@ export default class Filter extends React.Component {
     }
 }
 
-const options = [
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' }
-  ];
-
 Filter.propTypes = {
+    id: PropTypes.number,
     value: PropTypes.string,
     selection: PropTypes.string,
     assisted_search_results: PropTypes.arrayOf(PropTypes.string),
