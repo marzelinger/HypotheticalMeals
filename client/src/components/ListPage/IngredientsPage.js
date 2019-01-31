@@ -17,9 +17,10 @@ import {
 import * as Constants from '../../resources/Constants';
 import './../../style/ListPage.css';
 import GeneralNavBar from "../GeneralNavBar";
+import DependencyReport from "../export/DependencyReport";
 
 
-export default class ListPage extends React.Component {
+export default class IngredientsPage extends React.Component {
     constructor(props) {
         super(props);
 
@@ -206,7 +207,8 @@ export default class ListPage extends React.Component {
                     <Alert
                         value={this.state.error}
                         color='danger'/>
-                </Modal>
+                </Modal>               
+                    <DependencyReport data = {this.state.data} />
             </div>
         );
     }

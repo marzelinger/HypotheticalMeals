@@ -43,51 +43,57 @@ loadDataFromServerForReport = (ingredients) => {
         dataLine.push(curData.comment);
         dataLine.push("\r\n");
         finalData.push(dataLine);
-        var ingSKUS = curData.skus.length;
+        //var ingSKUS = curData.skus.length;
         console.log("this is the dataline: "+dataLine);
-        console.log("this is the ingSkus: "+ingSKUS);
+        //console.log("this is the ingSkus: "+ingSKUS);
+        var ingSKUs = this.getSKUSbyIngId(curData._id);
+        console.log("this is the ingSkus: "+ ingSKUs);
 
-        for(let s = 0; s<ingSKUS; s++){
-            console.log('this is the skusid: '+ curData.skus[s]);
-            var skulineFunc = this.getSKULine(curData.skus[s]);               
-            console.log("this is the skuLinefuncreturn: "+ skulineFunc);   
-            finalData.push(skulineFunc);
-            console.log("this is the finalData: "+ finalData);
-        }
-        //finalData.push("\r\n");
+        finalData.push(ingSKUs);
+        console.log("this is the finalData: "+ finalData);
+        finalData.push("\r\n");
     }    
     fileDownload(finalData, fileTitle+'.csv');
 };
 
 
-getSKULine  = (skuID) => {
-    console.log('this is the skusid: '+ skuID);
-
-    fetch('/api/skus/'+skuID, { method: 'GET' })
+getSKUSbyIngId = (ingID) => {
+    console.log('this is the ingID: '+ ingID);
+    var skuData = [];
+    fetch('/api/skus_by_ingredient/'+ingID, { method: 'GET' })
     .then(data => data.json())
     .then((res) => {
+      console.log("this is the response: "+res);
+
       if (!res.success) {
-      //this.setState({ error: res.error });
+      this.setState({ error: res.error });
       }
       else {
-        var skuLine = [];
-        var skuData = res.data[0];
-        console.log("this is the skuData: "+skuData);
-        console.log("this is the skuData string: "+JSON.stringify(skuData));
-
-        skuLine.push(skuData.num);
-        skuLine.push(skuData.name);
-        skuLine.push(skuData.case_cpc);
-        skuLine.push(skuData.unit_upc);
-        skuLine.push(skuData.unit_size);
-        skuLine.push(skuData.cpc);
-        skuLine.push(skuData.prod_line);
-        skuLine.push(skuData.comment);
-        skuLine.push("\r\n");
-        console.log("this is the skuLine: "+ skuLine);
-        return skuLine;
+        var resData = res.data;
+        console.log("this is the skuData: "+resData);
+        console.log("this is the skuData string: "+JSON.stringify(resData));
+        for(let s = 0; s<resData.length; s++){
+          var curSku = [];
+          var curSkuObj = resData[s];
+          curSku.push(curSkuObj.num);
+          console.log("this is the num: "+curSkuObj.num);
+          curSku.push(curSkuObj.name);
+          curSku.push(curSkuObj.case_cpc);
+          curSku.push(curSkuObj.unit_upc);
+          curSku.push(curSkuObj.unit_size);
+          curSku.push(curSkuObj.cpc);
+          curSku.push(curSkuObj.prod_line);
+          curSku.push(curSkuObj.comment);
+          curSku.push("\r\n");
+          console.log("this is the curSku: "+curSku);
+          skuData.push(curSku);
+          console.log("this is the skuData: "+skuData);
+        }
+        console.log("this is the skuLine: "+ curSku);
       }
     });
+    return skuData;
+
 }
 
 

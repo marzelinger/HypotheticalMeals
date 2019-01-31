@@ -14,6 +14,7 @@ import DataStore from "./../helpers/DataStore";
 import GeneralNavBar from "./GeneralNavBar";
 import ManufacturingGoalsPage from "./ManufacturingGoalsPage";
 import IngredientsPage from "./ListPage/IngredientsPage";
+import ProductLinePage from "../ProductLine/ProductLinePage";
 import * as Constants from './../resources/Constants';
 
 import { setCurrentUser, logoutUser, getAllUsers } from "../actions/authActions";
@@ -36,7 +37,7 @@ class App extends React.Component{
     super();
     //localStorage.clear();
     //this.determineUserInit();
-    //this.determineUser();
+    this.determineUser();
     this.state = {
       navbar_items: [Constants.SkuTitle, Constants.IngTitle, Constants.ManuGoalTitle],
     }
@@ -82,9 +83,14 @@ class App extends React.Component{
         <Provider store={store}>
           <Router>
             <div className="App">
-            <Route exact path="/ingredients" component={IngredientsPage} />
 
+                <PrivateRoute component={GeneralNavBar}/>
+
+               <Route exact path="/login" component={Login} />
+               <Route exact path="/register" component={Register} />
+               <Route exact path="/adminregister" component={AdminRegister} />
               <Switch>
+                <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
                 <PrivateRoute exact path="/skus" component={this.getSkuRender()} />
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingGoalsPage} />
