@@ -43,7 +43,6 @@ export default class Filter extends React.Component {
     }
 
     showResults = (state) => {
-        console.log('yo')
         if (state.focus){
             return (<ListGroup>
                 {(this.props.assisted_search_results.map(res => 
