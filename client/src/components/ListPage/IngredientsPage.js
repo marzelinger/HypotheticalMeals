@@ -1,74 +1,60 @@
-// ListPage.js
+// IngredientsPage.js
 // Riley
-// Larger page component to be shown in PageTemplate
-// THIS PAGE IS DEPRICATED
+// Ingredients view
 
 import React from 'react';
 import Filter from './Filter';
 import PageTable from './PageTable'
 import TableOptions from './TableOptions'
-import SubmitRequest from './../../helpers/SubmitRequest'
-import ItemStore from './../../helpers/ItemStore'
+import SubmitRequest from '../../helpers/SubmitRequest'
+import ItemStore from '../../helpers/ItemStore'
 import ItemDetails from './ItemDetails'
-import AddToManuGoal from './AddToManuGoal'
 import { 
     Alert,
     Button,
     DropdownToggle,
     Modal} from 'reactstrap';
-import * as Constants from './../../resources/Constants';
+import * as Constants from '../../resources/Constants';
 import './../../style/ListPage.css';
 import GeneralNavBar from "../GeneralNavBar";
+import DependencyReport from "../export/DependencyReport";
 import ExportSimple from '../export/ExportSimple';
-import DependencyReport from '../export/DependencyReport';
 
 
-export default class ListPage extends React.Component {
+export default class IngredientsPage extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            page_name: props.page_name,
-            page_title: props.page_title,
+            page_name: Constants.ingredients_page_name,
+            page_title: 'Ingredients',
             num_filters: 0,
             filter_value: '',
             filter_category: '',
-            filter_options: props.filter_options,
+            filter_options: [Constants.keyword_label, Constants.sku_label],
             assisted_search_results: [],
-            table_columns: props.table_columns,
-            table_properties: props.table_properties,
-            table_options: props.table_options,
-            item_properties: props.item_properties,
-            item_property_labels: props.item_property_labels,
-            item_property_placeholder: props.item_property_placeholder,
+            table_columns: ['Name', 'Number', 'Package Size', 'Cost per Package (USD)'],
+            table_properties: ['name', 'num', 'pkg_size', 'pkg_cost'],
+            table_options: [Constants.create_item],
+            item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment', 'skus'],
+            item_property_labels: ['Name', 'Number', 'Package Size', 'Package Cost', 'Vendor Info', 'Comments', 'SKUs'],
+            item_property_placeholder: ['White Rice', '12345678', '1lb', '1.50', 'Tam Soy', '...', 'Fried Rice'],
             selected_items: [],
             detail_view_item: null,
             detail_view_options: [],
             data: [],
             loaded: false,
             error: null,
-            details_modal: false,
-            manu_goals_modal: false,
-            manu_goals_data: [],
+            modal: false,
             simple: props.simple || false
         };
         this.toggle = this.toggle.bind(this);
     }
 
-    toggle = (modalType) => {
-        switch(modalType){
-            case Constants.details_modal:
-                this.setState({details_modal: !this.state.details_modal})
-                break;
-            case Constants.manu_goals_modal:
-                console.log("here");
-                if(this.state.selected_items.length == 0){
-                    alert("You must select at least one SKU to add it to a manufacturing goal!");
-                    return;
-                }
-                this.setState({manu_goals_modal: !this.state.manu_goals_modal})
-                break;
-        }
+    toggle(){
+        this.setState({
+            modal: !this.state.modal
+        });
     }   
 
     componentDidMount = () => {
@@ -78,11 +64,13 @@ export default class ListPage extends React.Component {
         }
     }
 
-    componentDidUpdate = (prevProps, prevState) => {
+    async componentDidUpdate (prevProps, prevState) {
         if (prevState.filter_value !== this.state.filter_value || 
             prevState.filter_category !== this.state.filter_category){
-                this.setState({ 
-                    assisted_search_results: this.props.assisted_search_function(this.state.filter_value, this),
+                let data = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.filter_value, this);
+                console.log(data);
+                this.setState({
+                    assisted_search_results: data,
                     num_filters: 1 
                 });
                 this.loadDataFromServer();
@@ -90,21 +78,19 @@ export default class ListPage extends React.Component {
     }
 
     loadDataFromServer = () => {
-        fetch('/api/' + this.state.page_name, { method: 'GET' })
-          .then(data => data.json())
-          .then((res) => {
-            if (!res.success) this.setState({ error: res.error });
-            else this.setState({ 
-                data: res.data,
-                loaded: true
-            });
-          });
-        console.log(this.state.assisted_search_results);
+        SubmitRequest.submitGetData(this.state.page_name, this);
     }
 
     onFilterSelection = (e, sel) => {
         this.setState({
             filter_category: sel
+        });
+    }
+
+    onFilterValueChange = (e) => {
+        console.log(e.target.value);
+        this.setState({
+            filter_value: e.target.value
         });
     }
 
@@ -117,37 +103,16 @@ export default class ListPage extends React.Component {
             detail_view_item: item,
             detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
         })
-        this.toggle(Constants.details_modal);
+        this.toggle();
     }
 
-    onTableOptionSelection = async(e, opt) => {
+    onTableOptionSelection = (e, opt) => {
         console.log(opt);
         switch (opt){
             case Constants.create_item:
                 this.onCreateNewItem();
                 break;
-            case Constants.add_to_manu_goals:
-                await this.onAddManuGoals();
-                break;
         }
-    }
-
-    onAddManuGoals =  async() => {
-        this.toggle(Constants.manu_goals_modal);
-        await this.getManuGoalsData();
-    }
-
-    getManuGoalsData = () => {
-        fetch('/api/manugoals', { method: 'GET' })
-          .then(data => data.json())
-          .then((res) => {
-            console.log(res.data);
-            if (!res.success) this.setState({ error: res.error });
-            else this.setState({ 
-                manu_goals_data: res.data
-            });
-            
-          });
     }
 
     onSort = (event, sortKey) => {
@@ -156,11 +121,12 @@ export default class ListPage extends React.Component {
         this.setState({data})
     };
 
-    onSelect = async (event, item) => {
+    onSelect = (event, item) => {
         var newState = this.state.selected_items.slice();
         var loc = newState.indexOf(item);
         (loc > -1) ? newState.splice(loc, 1) : newState.push(item);
-        await this.setState({ selected_items: newState});
+        this.setState({ selected_items: newState});
+        console.log(this.state.selected_items);
     };
 
     onDetailViewSelect = (event, item) => {
@@ -168,15 +134,8 @@ export default class ListPage extends React.Component {
             detail_view_item: item ,
             detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
         });
-        this.toggle(Constants.details_modal);
+        this.toggle();
     };
-
-    onFilterValueChange = (event) => {
-        SubmitRequest.
-        this.setState({
-            filter_value: event.target.value
-        });
-    }
 
     onDetailViewSubmit = (event, item, option) => {
         console.log(option);
@@ -197,9 +156,8 @@ export default class ListPage extends React.Component {
             detail_view_item: null,
             detail_view_options: []
         });
-        console.log('this print message is from line 156 of listpage.js');
         this.loadDataFromServer();
-        this.toggle(Constants.details_modal);
+        this.toggle();
     }
 
     onPropChange = (event, item, prop) => {
@@ -212,12 +170,12 @@ export default class ListPage extends React.Component {
     render() {
         return (
             <div className="list-page">
-            <GeneralNavBar></GeneralNavBar>
                 <div className="options-container" id={this.state.simple ? "simple" : "complex"}>
                         <Filter 
                             value={this.state.filter_value}
                             selection={this.state.filter_category} 
                             categories={this.state.filter_options}
+                            assisted_search_results={this.state.assisted_search_results}
                             handleFilterValueChange={this.onFilterValueChange}
                             handleFilterSelection={this.onFilterSelection}
                         />
@@ -237,7 +195,7 @@ export default class ListPage extends React.Component {
                         handleDetailViewSelect={this.onDetailViewSelect}
                     />
                 </div>
-                <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
+                <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup" className='item-details'>
                     <ItemDetails
                             item={this.state.detail_view_item}
                             item_properties={this.state.item_properties}
@@ -250,9 +208,9 @@ export default class ListPage extends React.Component {
                     <Alert
                         value={this.state.error}
                         color='danger'/>
-                </Modal>
-                <AddToManuGoal selected_skus={this.state.selected_items} isOpen={this.state.manu_goals_modal} toggle={(toggler) => this.toggle(toggler)} manu_goals_data={this.state.manu_goals_data}></AddToManuGoal>
-                <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/>               
+                </Modal>   
+                <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/>                           
+                    <DependencyReport data = {this.state.data} />
             </div>
         );
     }

@@ -111,18 +111,46 @@ class IngredientHandler{
         }
     }
 
-    // Filtering APIs
-    static async getAllIngredientsByKeyword(req, res){
-        var query = {};
-        if (req.body.name !== "") { query.name = req.body.name}
+    static async getIngredientByKeyword(req, res){
         try{
-            let all_ingredients = await Ingredient.find({ query });
-            return res.json({ success: true, data: all_ingredients});
+            var search_str = req.body.search_str;
+            let results = await Ingredient.find( {$text: {$search: search_str } } );
+            console.log(results);
+            if (results.length == 0) return res.json({success: false, error: '404'})
+            return res.json({ success: true, data: results});
         }
         catch (err) {
             return res.json({ success: false, error: err});
         }
     }
+
+    static async getIngredientByNameSubstring(req, res){
+        try{
+            var search_substr = req.body.search_substr;
+            let results = await Ingredient.find({ name: { $regex: search_substr, $options: 'i' } });
+            if (results.length == 0) return res.json({success: false, error: '404'})
+            return res.json({ success: true, data: results});
+        }
+        catch (err) {
+            return res.json({ success: false, error: err});
+        }
+    }
+
+    static async getSkusByIngredientID(req, res){
+        try{
+            var target_id = req.params.ingredient_id;
+            console.log("this is the target_id: "+target_id)
+            let ingredient = await Ingredient.find({ _id : target_id }).populate('skus');
+            console.log("this is the ingredients "+ingredient);
+
+            if (ingredient.length == 0) return res.json({success: false, error: '404'})
+            return res.json({ success: true, data: ingredient[0].skus});
+        }
+        catch (err) {
+            return res.json({ success: false, error: err});
+        }
+    }
+
 }
 
 export default IngredientHandler;
