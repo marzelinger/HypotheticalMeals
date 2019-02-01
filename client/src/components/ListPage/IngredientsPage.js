@@ -103,19 +103,14 @@ export default class IngredientsPage extends React.Component {
                     final_sku_filter += this.state.filter_value[i];
             }
             else if (this.state.filter_category[i] === Constants.keyword_label) {
-                    final_keyword_filter = this.state.filter_value[i];
+                final_keyword_filter = this.state.filter_value[i];
             }
         }
-        //this first if can be depricated!!!!!
-        if ((final_sku_filter === '' && final_keyword_filter === '') || this.state.filter_category == ''){
-            var res = await SubmitRequest.submitGetData(this.state.page_name);
-        }
-        else {
-            if (final_sku_filter === '') final_sku_filter = '_';
-            if (final_keyword_filter === '') final_keyword_filter = '_';
-            var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-                final_sku_filter, final_keyword_filter);
-        }
+        if (final_sku_filter === '') final_sku_filter = '_';
+        if (final_keyword_filter === '') final_keyword_filter = '_';
+        var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
+            final_sku_filter, final_keyword_filter);
+
         if (res === undefined || !res.success) {
             res.data = [];
             res.loaded = true;
@@ -150,12 +145,12 @@ export default class IngredientsPage extends React.Component {
 
     onKeyDown (e, id) {
         if (e.keyCode === 13) {
-          if (this.state.filter_category[id] == Constants.keyword_label){
-            var fil_val = this.state.filter_value.slice();
-            fil_val[id] = this.state.sku_substr;
-            this.setState({
-                filter_value: fil_val
-            });
+            if (this.state.filter_category[id] == Constants.keyword_label){
+                var fil_val = this.state.filter_value.slice();
+                fil_val[id] = this.state.sku_substr[id];
+                this.setState({
+                    filter_value: fil_val
+                });
           }
         }
       }

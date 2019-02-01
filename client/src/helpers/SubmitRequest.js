@@ -97,6 +97,7 @@ export default class SubmitRequest{
   }
 
   static submitGetFilterData = (path, filter_value, keyword) => {
+    console.log('/api/' + path + '/' + filter_value + '/' + keyword);
     return fetch('/api/' + path + '/' + filter_value + '/' + keyword, { method: 'GET' })
       .then(data => data.json())
       .then((res) => {
