@@ -28,19 +28,19 @@ export default class ListPage extends React.Component {
         super(props);
 
         this.state = {
-            page_name: props.page_name,
-            page_title: props.page_title,
+            page_name: Constants.skus_page_name,
+            page_title: 'SKUs',
             num_filters: 0,
             filter_value: '',
             filter_category: '',
-            filter_options: props.filter_options,
+            filter_options: [Constants.keyword_label, Constants.ingredient_label, Constants.prod_line_label],
             assisted_search_results: [],
-            table_columns: props.table_columns,
-            table_properties: props.table_properties,
-            table_options: props.table_options,
-            item_properties: props.item_properties,
-            item_property_labels: props.item_property_labels,
-            item_property_placeholder: props.item_property_placeholder,
+            table_columns: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line'],
+            table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line'],
+            table_options: [Constants.create_item, Constants.add_to_manu_goals],
+            item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', 'comment', 'ingredients'],
+            item_property_labels: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line', 'Comment', 'Ingredients'],
+            item_property_placeholder: ["Campbell's Chicken Noodle Soup", '12345678', '12345678', '12345678', '12oz', '8.5', 'Soups', 'n/a', "['']"],
             selected_items: [],
             detail_view_item: null,
             detail_view_options: [],
@@ -73,9 +73,6 @@ export default class ListPage extends React.Component {
 
     componentDidMount = () => {
         this.loadDataFromServer();
-        if (this.state.data === []){
-            this.loadDataFromServer();
-        }
     }
 
     componentDidUpdate = (prevProps, prevState) => {
@@ -212,7 +209,6 @@ export default class ListPage extends React.Component {
     render() {
         return (
             <div className="list-page">
-            <GeneralNavBar></GeneralNavBar>
                 <div className="options-container" id={this.state.simple ? "simple" : "complex"}>
                         <Filter 
                             value={this.state.filter_value}

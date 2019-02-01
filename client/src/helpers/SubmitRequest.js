@@ -109,4 +109,14 @@ export default class SubmitRequest{
       });
   }
 
+  static submitSkusByIngredientIDRequest = (item_id, obj) => {
+    fetch(`/api/skus_by_ingredient/${item_id}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    }).then(res => res.json()).then((res) => {
+      if (!res.success) obj.setState({ error: res.error.message || res.error });
+      else return { data: res.data };
+    });
+  }
+
 }
