@@ -18,28 +18,61 @@ export default class Filter extends React.Component {
     constructor(props) {
         super(props);
 
+        this.toggleFocus = this.toggleFocus.bind(this);
+        this.toggleBlur = this.toggleBlur.bind(this);
         this.state = {
-            width: 100
+            width: 100,
+            focus: false
         };
+    }
+
+    toggleFocus() {
+        if (this){
+            this.setState({
+                focus: true
+            })
+        }
+    }
+
+    toggleBlur() {
+        if (this){
+            this.setState({
+                focus: false
+            })
+        }
+    }
+
+    showResults = (state) => {
+        console.log('yo')
+        if (state.focus){
+            return (<ListGroup>
+                {(this.props.assisted_search_results.map(res => 
+                <ListGroupItem
+                    key={res.name}
+                    tag="button"
+                    onMouseDown={(e) => this.props.handleFilterValueSelection(e, res, this.props.id)}
+                >{res.name}</ListGroupItem>
+            ))}
+            </ListGroup>
+            )
+        }
+        else {
+            return;
+        }
+        
     }
 
     render() {
         return (
         <div className='filter-item' style={{width: this.state.width + '%'}}>
-            <ListGroup>
-                {(this.props.assisted_search_results.map(res => 
-                <ListGroupItem
-                    key={res.name}
-                    tag="button"
-                    onClick={(e) => this.props.handleFilterValueSelection(e, res, this.props.id)}
-                >{res.name}</ListGroupItem>
-            ))}
-            </ListGroup>
+            {this.showResults(this.state)}
             <InputGroup id = 'inputGroup'>
                 <Input 
                     type="text"
                     value={this.props.value}
                     onChange={(e) => this.props.handleFilterValueChange(e, this.props.id)}
+                    onFocus={this.toggleFocus}
+                    onBlur={this.toggleBlur}
                 />
                 <InputGroupAddon addonType="append">{this.props.filter_category}</InputGroupAddon>
                 <InputGroupAddon addonType="append">
