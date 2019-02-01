@@ -9,6 +9,7 @@ import TableOptions from './TableOptions'
 import SubmitRequest from './../../helpers/SubmitRequest'
 import ItemStore from './../../helpers/ItemStore'
 import ItemDetails from './ItemDetails'
+import AddToManuGoal from './AddToManuGoal'
 import { 
     Alert,
     Button,
@@ -42,16 +43,28 @@ export default class ListPage extends React.Component {
             data: [],
             loaded: false,
             error: null,
-            modal: false,
+            details_modal: false,
+            manu_goals_modal: false,
+            manu_goals_data: [],
             simple: props.simple || false
         };
         this.toggle = this.toggle.bind(this);
     }
 
-    toggle(){
-        this.setState({
-            modal: !this.state.modal
-        });
+    toggle = (modalType) => {
+        switch(modalType){
+            case Constants.details_modal:
+                this.setState({details_modal: !this.state.details_modal})
+                break;
+            case Constants.manu_goals_modal:
+                console.log("here");
+                if(this.state.selected_items.length == 0){
+                    alert("You must select at least one SKU to add it to a manufacturing goal!");
+                    return;
+                }
+                this.setState({manu_goals_modal: !this.state.manu_goals_modal})
+                break;
+        }
     }   
 
     componentDidMount = () => {
@@ -108,16 +121,37 @@ export default class ListPage extends React.Component {
             detail_view_item: item,
             detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
         })
-        this.toggle();
+        this.toggle(Constants.details_modal);
     }
 
-    onTableOptionSelection = (e, opt) => {
+    onTableOptionSelection = async(e, opt) => {
         console.log(opt);
         switch (opt){
             case Constants.create_item:
                 this.onCreateNewItem();
                 break;
+            case Constants.add_to_manu_goals:
+                await this.onAddManuGoals();
+                break;
         }
+    }
+
+    onAddManuGoals =  async() => {
+        this.toggle(Constants.manu_goals_modal);
+        await this.getManuGoalsData();
+    }
+
+    getManuGoalsData = () => {
+        fetch('/api/manugoals', { method: 'GET' })
+          .then(data => data.json())
+          .then((res) => {
+            console.log(res.data);
+            if (!res.success) this.setState({ error: res.error });
+            else this.setState({ 
+                manu_goals_data: res.data
+            });
+            
+          });
     }
 
     onSort = (event, sortKey) => {
@@ -126,12 +160,11 @@ export default class ListPage extends React.Component {
         this.setState({data})
     };
 
-    onSelect = (event, item) => {
+    onSelect = async (event, item) => {
         var newState = this.state.selected_items.slice();
         var loc = newState.indexOf(item);
         (loc > -1) ? newState.splice(loc, 1) : newState.push(item);
-        this.setState({ selected_items: newState});
-        console.log(this.state.selected_items);
+        await this.setState({ selected_items: newState});
     };
 
     onDetailViewSelect = (event, item) => {
@@ -139,7 +172,7 @@ export default class ListPage extends React.Component {
             detail_view_item: item ,
             detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
         });
-        this.toggle();
+        this.toggle(Constants.details_modal);
     };
 
 
@@ -173,7 +206,7 @@ export default class ListPage extends React.Component {
         });
         console.log('this print message is from line 156 of listpage.js');
         this.loadDataFromServer();
-        this.toggle();
+        this.toggle(Constants.details_modal);
     }
 
     onPropChange = (event, item, prop) => {
@@ -211,7 +244,7 @@ export default class ListPage extends React.Component {
                         handleDetailViewSelect={this.onDetailViewSelect}
                     />
                 </div>
-                <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup" className='item-details'>
+                <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
                     <ItemDetails
                             item={this.state.detail_view_item}
                             item_properties={this.state.item_properties}
@@ -225,8 +258,12 @@ export default class ListPage extends React.Component {
                         value={this.state.error}
                         color='danger'/>
                 </Modal>
+                <AddToManuGoal selected_skus={this.state.selected_items} isOpen={this.state.manu_goals_modal} toggle={(toggler) => this.toggle(toggler)} manu_goals_data={this.state.manu_goals_data}></AddToManuGoal>
             </div>
         );
     }
 
 }
+
+
+

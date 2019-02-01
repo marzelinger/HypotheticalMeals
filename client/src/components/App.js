@@ -76,9 +76,11 @@ class App extends React.Component{
 
   getSkuRender = () => {
     return () => (
-      <ListPage
-        {...DataStore.getSkuData()}
-      />
+      <div className="container">
+        <ListPage
+          {...DataStore.getSkuData()}
+        />
+      </div>
     );
   }
 
