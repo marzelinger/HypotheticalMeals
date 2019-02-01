@@ -18,34 +18,9 @@ export default class Filter extends React.Component {
     constructor(props) {
         super(props);
 
-        this.toggleFocus = this.toggleFocus.bind(this);
-        this.toggleBlur = this.toggleBlur.bind(this);
         this.state = {
-            width: 100,
-            focus: false
+            width: 100
         };
-    }
-
-    toggleFocus() {
-        if (this){
-            this.setState({
-                focus: true
-            })
-        }
-    }
-
-    toggleBlur() {
-        if (this){
-            this.setState({
-                focus: false
-            })
-        }
-    }
-
-    keyDown(e) {
-        if (this.state.focus && e.keyCode === 13){
-            this.props.handleKeywordSubmit(this.props.id)
-        }
     }
 
     render() {
@@ -65,9 +40,6 @@ export default class Filter extends React.Component {
                     type="text"
                     value={this.props.value}
                     onChange={(e) => this.props.handleFilterValueChange(e, this.props.id)}
-                    onFocus={this.toggleFocus}
-                    onBlur={this.toggleBlur}
-                    onKeyDown={(e) => this.keyDown(e)}
                 />
                 <InputGroupAddon addonType="append">{this.props.filter_category}</InputGroupAddon>
                 <InputGroupAddon addonType="append">
@@ -89,6 +61,5 @@ Filter.propTypes = {
     assisted_search_results: PropTypes.arrayOf(PropTypes.object),
     handleFilterValueChange: PropTypes.func,
     handleFilterValueSelection: PropTypes.func,
-    handleKeywordSubmit: PropTypes.func,
     handleRemoveFilter: PropTypes.func
   };

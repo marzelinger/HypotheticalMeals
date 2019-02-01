@@ -84,7 +84,6 @@ export default class IngredientsPage extends React.Component {
             }
             else if (this.state.filter_category[i] === Constants.keyword_label) {
                 if (prevState.sku_substr[i] !== this.state.sku_substr[i]){
-                    console.log(this.state.sku_substr);
                     this.onKeywordSubmit(i);
                 }
                 asr[i] = [];
@@ -193,7 +192,6 @@ export default class IngredientsPage extends React.Component {
     }
 
     onRemoveFilter = (e, id) => {
-        console.log(id);
         var sku_sub = this.state.sku_substr.slice();
         sku_sub[id] = '';
         var fil_val = this.state.filter_value.slice();
@@ -247,7 +245,6 @@ export default class IngredientsPage extends React.Component {
     };
 
     onDetailViewSubmit = (event, item, option) => {
-        console.log(option);
         switch (option) {
             case Constants.details_create:
                 SubmitRequest.submitCreateItem(this.state.page_name, item, this);
@@ -307,7 +304,6 @@ export default class IngredientsPage extends React.Component {
                                         assisted_search_results={this.state.assisted_search_results[index]}
                                         handleFilterValueChange={this.onFilterValueChange}
                                         handleFilterValueSelection={this.onFilterValueSelection}
-                                        handleKeywordSubmit={this.onKeywordSubmit}
                                         handleRemoveFilter={this.onRemoveFilter}
                                     />)
                         }
