@@ -190,7 +190,7 @@ export default class ListPage extends React.Component {
             detail_view_item: item,
             detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
         })
-        this.toggleModal();
+        this.toggle(Constants.details_modal);
     }
 
     onAddFilter = (type) => {
