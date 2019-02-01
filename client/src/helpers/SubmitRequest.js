@@ -53,7 +53,10 @@ export default class SubmitRequest{
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error.message || res.error};
-        else return res.data;
+        else return {
+          success: res.success,
+          data: res.data
+        }
       });
     }
     catch (err) {

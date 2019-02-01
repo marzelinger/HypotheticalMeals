@@ -85,6 +85,7 @@ export default class ListPage extends React.Component {
 
     async updateFilterState(prevState) {
         var asr = this.state.assisted_search_results.slice();
+        console.log(asr);
         for (var i = 0; i < prevState.ing_substr.length; i++) {
             if (this.state.filter_category[i] === Constants.ingredient_label
                 && this.state.ing_substr[i].length > 0) {
@@ -92,12 +93,12 @@ export default class ListPage extends React.Component {
                 if (res === undefined || !res.success) {
                     res.data = [];
                 }
+                console.log(res)
                 asr[i] = res.data;
             }
             if (this.state.filter_category[i] === Constants.prod_line_label
                 && this.state.ing_substr[i].length > 0) {
                 let res = await SubmitRequest.submitGetProductLinesByNameSubstring(this.state.ing_substr[i]);
-                console.log(res)
                 if (res === undefined || !res.success) {
                     res.data = [];
                 }
