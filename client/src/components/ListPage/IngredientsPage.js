@@ -37,7 +37,6 @@ export default class IngredientsPage extends React.Component {
             table_options: [Constants.create_item, Constants.add_keyword_filter, Constants.add_sku_filter],
             item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment', 'skus'],
             item_property_labels: ['Name', 'Number', 'Package Size', 'Package Cost', 'Vendor Info', 'Comments', 'SKUs'],
-            item_property_placeholder: ['White Rice', '12345678', '1lb', '1.50', 'Tam Soy', '...', 'Fried Rice'],
             selected_items: [],
             detail_view_item: null,
             detail_view_options: [],
@@ -50,7 +49,6 @@ export default class IngredientsPage extends React.Component {
         this.toggleModal = this.toggleModal.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onKeywordSubmit = this.onKeywordSubmit.bind(this);
-        this.filterRender = this.filterRender.bind(this);
     }
 
     toggleModal(){
@@ -156,7 +154,7 @@ export default class IngredientsPage extends React.Component {
                 filter_value: fil_val
             });
         }
-      }
+    }
 
     onCreateNewItem = () => {
         var item = ItemStore.getEmptyItem(this.state.page_name, this.state.data, this);
@@ -174,15 +172,15 @@ export default class IngredientsPage extends React.Component {
         if (type == Constants.keyword_label && this.state.filter_category.includes(type)){
             return;
         }
-        var curr_ind = this.state.sku_substr.length;
+        var ind = this.state.sku_substr.length;
         var sku_sub = this.state.sku_substr.slice();
-        sku_sub[curr_ind] = '';
+        sku_sub[ind] = '';
         var fil_val = this.state.filter_value.slice();
-        fil_val[curr_ind] = '';
+        fil_val[ind] = '';
         var fil_cat = this.state.filter_category.slice();
-        fil_cat[curr_ind] = type;
+        fil_cat[ind] = type;
         var asr = this.state.assisted_search_results.slice();
-        asr[curr_ind] = [];
+        asr[ind] = [];
         this.setState({ 
             sku_substr: sku_sub,
             filter_value: fil_val,
@@ -228,12 +226,11 @@ export default class IngredientsPage extends React.Component {
         this.setState({data})
     };
 
-    onSelect = (event, item) => {
+    onSelect = async (event, item) => {
         var newState = this.state.selected_items.slice();
         var loc = newState.indexOf(item);
         (loc > -1) ? newState.splice(loc, 1) : newState.push(item);
-        this.setState({ selected_items: newState});
-        console.log(this.state.selected_items);
+        await this.setState({ selected_items: newState});
     };
 
     onDetailViewSelect = (event, item) => {
@@ -272,23 +269,6 @@ export default class IngredientsPage extends React.Component {
         newData[ind][prop] = event.target.value;
         this.setState({ data: newData });
     };
-
-    filterRender = () => {
-        this.state.sku_substr.map((ss,index) => {
-            if (this.state.filter_category[index] != Constants.filter_removed){
-                return (<Filter 
-                    key={'filter'+index}
-                    id={index}
-                    value={ss}
-                    filter_category={this.state.filter_category[index]} 
-                    assisted_search_results={this.state.assisted_search_results[index]}
-                    handleFilterValueChange={this.onFilterValueChange}
-                    handleFilterValueSelection={this.onFilterValueSelection}
-                    handleKeyDown={this.onKeyDown}
-                    />)
-            }
-        })
-    }
 
     render() {
         return (
@@ -329,7 +309,6 @@ export default class IngredientsPage extends React.Component {
                             item={this.state.detail_view_item}
                             item_properties={this.state.item_properties}
                             item_property_labels={this.state.item_property_labels}
-                            item_property_placeholder={this.state.item_property_placeholder}
                             detail_view_options={this.state.detail_view_options}
                             handlePropChange={this.onPropChange}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
@@ -339,7 +318,7 @@ export default class IngredientsPage extends React.Component {
                         color='danger'/>
                 </Modal>   
                 <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/>                           
-                    <DependencyReport data = {this.state.data} />
+                <DependencyReport data = {this.state.data} />
             </div>
         );
     }

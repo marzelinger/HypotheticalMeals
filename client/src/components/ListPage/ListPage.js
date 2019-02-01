@@ -30,17 +30,16 @@ export default class ListPage extends React.Component {
         this.state = {
             page_name: Constants.skus_page_name,
             page_title: 'SKUs',
-            num_filters: 0,
-            filter_value: '',
-            filter_category: '',
-            filter_options: [Constants.keyword_label, Constants.ingredient_label, Constants.prod_line_label],
-            assisted_search_results: [],
+            ing_substr: [],
+            filter_value: [],
+            filter_category: [],
+            assisted_search_results: [[]],
             table_columns: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line'],
             table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line'],
-            table_options: [Constants.create_item, Constants.add_to_manu_goals],
+            table_options: [Constants.create_item, Constants.add_to_manu_goals, Constants.add_keyword_filter, 
+                Constants.add_ing_filter, Constants.add_prod_filter],
             item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', 'comment', 'ingredients'],
             item_property_labels: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line', 'Comment', 'Ingredients'],
-            item_property_placeholder: ["Campbell's Chicken Noodle Soup", '12345678', '12345678', '12345678', '12oz', '8.5', 'Soups', 'n/a', "['']"],
             selected_items: [],
             detail_view_item: null,
             detail_view_options: [],
@@ -53,6 +52,8 @@ export default class ListPage extends React.Component {
             simple: props.simple || false
         };
         this.toggle = this.toggle.bind(this);
+        this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
+        this.onKeywordSubmit = this.onFilterValueSubmit.bind(this);
     }
 
     toggle = (modalType) => {
@@ -61,7 +62,6 @@ export default class ListPage extends React.Component {
                 this.setState({details_modal: !this.state.details_modal})
                 break;
             case Constants.manu_goals_modal:
-                console.log("here");
                 if(this.state.selected_items.length == 0){
                     alert("You must select at least one SKU to add it to a manufacturing goal!");
                     return;
@@ -75,34 +75,102 @@ export default class ListPage extends React.Component {
         this.loadDataFromServer();
     }
 
-    componentDidUpdate = (prevProps, prevState) => {
-        if (prevState.filter_value !== this.state.filter_value || 
-            prevState.filter_category !== this.state.filter_category){
-                this.setState({ 
-                    assisted_search_results: this.props.assisted_search_function(this.state.filter_value, this),
-                    num_filters: 1 
-                });
-                this.loadDataFromServer();
+    async componentDidUpdate (prevProps, prevState) {
+        if (prevState.ing_substr !== this.state.ing_substr || prevState.filter_value !== this.state.filter_value || 
+            prevState.filter_category !== this.state.filter_category) {
+            await this.updateFilterState(prevState);
+            this.loadDataFromServer();
         }
     }
 
-    loadDataFromServer = () => {
-        fetch('/api/' + this.state.page_name, { method: 'GET' })
-          .then(data => data.json())
-          .then((res) => {
-            if (!res.success) this.setState({ error: res.error });
-            else this.setState({ 
-                data: res.data,
-                loaded: true
-            });
-          });
-        console.log(this.state.assisted_search_results);
+    async updateFilterState(prevState) {
+        var asr = this.state.assisted_search_results.slice();
+        for (var i = 0; i < prevState.ing_substr.length; i++) {
+            if (this.state.filter_category[i] === Constants.ingredient_label
+                && this.state.ing_substr[i].length > 0) {
+                let res = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.ing_substr[i]);
+                if (res === undefined || !res.success) {
+                    res.data = [];
+                }
+                asr[i] = res.data;
+            }
+            else if ([Constants.keyword_label, Constants.prod_line_label].includes(this.state.filter_category[i])) {
+                if (prevState.ing_substr[i] !== this.state.ing_substr[i]){
+                    this.onFilterValueSubmit(i);
+                }
+                asr[i] = [];
+            }
+        }
+        this.setState({
+            assisted_search_results: asr
+        });
     }
 
-    onFilterSelection = (e, sel) => {
+    async loadDataFromServer() {
+        if (this.state.filter_value === undefined) return;
+        var final_ing_filter = '';
+        var final_keyword_filter = '';
+        var final_prod_line_filter = '';
+        for (var i = 0; i < this.state.filter_value.length; i++){
+            if (this.state.filter_value[i].length === Constants.obj_id_length 
+                && this.state.filter_category[i] === Constants.ingredient_label) {
+                    final_ing_filter += (final_ing_filter.length == 0 ? '' : ',');
+                    final_ing_filter += this.state.filter_value[i];
+            }
+            else if (this.state.filter_category[i] === Constants.keyword_label) {
+                final_keyword_filter = this.state.filter_value[i];
+            }
+            else if (this.state.filter_category[i] === Constants.prod_line_label) {
+                final_prod_line_filter += (final_prod_line_filter.length == 0 ? '' : ',');
+                final_prod_line_filter += this.state.filter_value[i];
+            }
+        }
+        if (final_ing_filter === '') final_ing_filter = '_';
+        if (final_keyword_filter === '') final_keyword_filter = '_';
+        if (final_prod_line_filter === '') final_prod_line_filter = '_';
+        var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
+            final_ing_filter, final_keyword_filter, final_prod_line_filter);
+
+        if (res === undefined || !res.success) {
+            res.data = [];
+            res.loaded = true;
+        }
         this.setState({
-            filter_category: sel
+            data: res.data,
+            loaded: res.loaded
+        })
+    }
+
+    onFilterValueChange = (e, id) => {
+        var ing_sub = this.state.ing_substr.slice();
+        ing_sub[id] = e.target.value;
+        this.setState({
+            ing_substr: ing_sub
         });
+    }
+
+    onFilterValueSelection (e, item, id) {
+        var ing_sub = this.state.ing_substr.slice();
+        ing_sub[id] = item.name;
+        var fil_val = this.state.filter_value.slice();
+        fil_val[id] = item._id;
+        var asr = this.state.assisted_search_results.slice();
+        asr[id] = [];
+        this.setState({
+            ing_substr: ing_sub,
+            filter_value: fil_val,
+            assisted_search_results: asr
+        });
+    }
+
+    onFilterValueSubmit (id) {
+        if ([Constants.keyword_label, Constants.prod_line_label].includes(this.state.filter_category[id])){
+            var fil_val = this.state.filter_value.slice();
+            fil_val[id] = this.state.ing_substr[id];
+            this.setState({
+                filter_value: fil_val
+            });
+        }
     }
 
     onCreateNewItem = () => {
@@ -114,14 +182,60 @@ export default class ListPage extends React.Component {
             detail_view_item: item,
             detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
         })
-        this.toggle(Constants.details_modal);
+        this.toggleModal();
+    }
+
+    onAddFilter = (type) => {
+        if (type == Constants.keyword_label && this.state.filter_category.includes(type)){
+            return;
+        }
+        var ind = this.state.ing_substr.length;
+        var ing_sub = this.state.ing_substr.slice();
+        ing_sub[ind] = '';
+        var fil_val = this.state.filter_value.slice();
+        fil_val[ind] = '';
+        var fil_cat = this.state.filter_category.slice();
+        fil_cat[ind] = type;
+        var asr = this.state.assisted_search_results.slice();
+        asr[ind] = [];
+        this.setState({ 
+            ing_substr: ing_sub,
+            filter_value: fil_val,
+            filter_category: fil_cat,
+            assisted_search_results: asr,
+        })
+    }
+
+    onRemoveFilter = (e, id) => {
+        var ing_sub = this.state.ing_substr.slice();
+        ing_sub[id] = '';
+        var fil_val = this.state.filter_value.slice();
+        fil_val[id] = '';
+        var fil_cat = this.state.filter_category.slice();
+        fil_cat[id] = Constants.filter_removed;
+        var asr = this.state.assisted_search_results.slice();
+        asr[id] = [];
+        this.setState({ 
+            ing_substr: ing_sub,
+            filter_value: fil_val,
+            filter_category: fil_cat,
+            assisted_search_results: asr,
+        })
     }
 
     onTableOptionSelection = async(e, opt) => {
-        console.log(opt);
         switch (opt){
             case Constants.create_item:
                 this.onCreateNewItem();
+                break;
+            case Constants.add_ing_filter:
+                this.onAddFilter(Constants.ingredient_label);
+                break;
+            case Constants.add_keyword_filter:
+                this.onAddFilter(Constants.keyword_label);
+                break;
+            case Constants.add_prod_filter:
+                this.onAddFilter(Constants.prod_line_label);
                 break;
             case Constants.add_to_manu_goals:
                 await this.onAddManuGoals();
@@ -149,7 +263,17 @@ export default class ListPage extends React.Component {
 
     onSort = (event, sortKey) => {
         const data = this.state.data;
-        data.sort((a,b) => a[sortKey].toString().localeCompare(b[sortKey]))
+        data.sort((a,b) => {
+            if (/^\d+$/.test(a[sortKey]) && /^\d+$/.test(b[sortKey])) {
+                return parseInt(a[sortKey])-parseInt(b[sortKey]);
+            }
+            else {
+                if (a[sortKey] === undefined && b[sortKey] === undefined) return a;
+                else if (a[sortKey] === undefined) return b;
+                else if (b[sortKey] === undefined) return a;
+                return a[sortKey].toString().localeCompare(b[sortKey]);
+            }
+        })
         this.setState({data})
     };
 
@@ -168,15 +292,7 @@ export default class ListPage extends React.Component {
         this.toggle(Constants.details_modal);
     };
 
-    onFilterValueChange = (event) => {
-        SubmitRequest.
-        this.setState({
-            filter_value: event.target.value
-        });
-    }
-
     onDetailViewSubmit = (event, item, option) => {
-        console.log(option);
         switch (option) {
             case Constants.details_create:
                 SubmitRequest.submitCreateItem(this.state.page_name, item, this);
@@ -194,7 +310,6 @@ export default class ListPage extends React.Component {
             detail_view_item: null,
             detail_view_options: []
         });
-        console.log('this print message is from line 156 of listpage.js');
         this.loadDataFromServer();
         this.toggle(Constants.details_modal);
     }
@@ -210,13 +325,20 @@ export default class ListPage extends React.Component {
         return (
             <div className="list-page">
                 <div className="options-container" id={this.state.simple ? "simple" : "complex"}>
-                        <Filter 
-                            value={this.state.filter_value}
-                            selection={this.state.filter_category} 
-                            categories={this.state.filter_options}
-                            handleFilterValueChange={this.onFilterValueChange}
-                            handleFilterSelection={this.onFilterSelection}
-                        />
+                {this.state.ing_substr.map((is,index) => {
+                        if (this.state.filter_category[index] != Constants.filter_removed){
+                            return (<Filter 
+                                        key={'filter'+index}
+                                        id={index}
+                                        value={is}
+                                        filter_category={this.state.filter_category[index]} 
+                                        assisted_search_results={this.state.assisted_search_results[index]}
+                                        handleFilterValueChange={this.onFilterValueChange}
+                                        handleFilterValueSelection={this.onFilterValueSelection}
+                                        handleRemoveFilter={this.onRemoveFilter}
+                                    />)
+                        }
+                    })}
                         <TableOptions
                         table_options={this.state.table_options}
                         handleTableOptionSelection={this.onTableOptionSelection}
@@ -238,7 +360,6 @@ export default class ListPage extends React.Component {
                             item={this.state.detail_view_item}
                             item_properties={this.state.item_properties}
                             item_property_labels={this.state.item_property_labels}
-                            item_property_placeholder={this.state.item_property_placeholder}
                             detail_view_options={this.state.detail_view_options}
                             handlePropChange={this.onPropChange}
                             handleDetailViewSubmit={this.onDetailViewSubmit}

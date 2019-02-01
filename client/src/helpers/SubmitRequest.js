@@ -83,7 +83,6 @@ export default class SubmitRequest{
       return fetch('/api/ingredients/' + id)
       .then(data => data.json())
       .then((res) => {
-        console.log(res.data);
         if (!res.success) return { success: res.success, error: res.error.message || res.error};
         else return { 
           success: res.success,
@@ -96,8 +95,11 @@ export default class SubmitRequest{
     }
   }
 
-  static submitGetFilterData = (path, filter_value, keyword) => {
-    return fetch('/api/' + path + '/' + filter_value + '/' + keyword, { method: 'GET' })
+  static submitGetFilterData = (route, filter_value, keyword, prod_line) => {
+    var path = '/api/' + route + '/' + filter_value + '/' + keyword;
+    path += (prod_line === undefined) ? '' : ('/' + prod_line);
+    console.log(path);
+    return fetch(path, { method: 'GET' })
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error.message || res.error};

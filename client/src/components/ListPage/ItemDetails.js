@@ -21,17 +21,12 @@ export default class ItemDetails extends React.Component {
         return this.props.item_property_labels[this.props.item_properties.indexOf(prop)];
     }
 
-    getPropertyPlaceholder = (prop) => {
-        return this.props.item_property_placeholder[this.props.item_properties.indexOf(prop)];
-    }
-
     injectProperties = () => {
         if (this.props.item){
             return (this.props.item_properties.map(prop => 
                 <InputGroup key={prop}>
                     <InputGroupAddon addonType="prepend">{this.getPropertyLabel(prop)}</InputGroupAddon>
                     <Input 
-                        placeholder={ this.getPropertyPlaceholder(prop) } 
                         value={ this.props.item[prop] }
                         onChange={ (e) => this.props.handlePropChange(e, this.props.item, prop) }
                     />
@@ -65,7 +60,6 @@ ItemDetails.propTypes = {
     item: PropTypes.object,
     item_properties: PropTypes.arrayOf(PropTypes.string),
     item_property_labels: PropTypes.arrayOf(PropTypes.string),
-    item_property_placeholder: PropTypes.arrayOf(PropTypes.string),
     detail_view_options: PropTypes.arrayOf(PropTypes.string),
     handlePropChange: PropTypes.func,
     handleDetailViewSubmit: PropTypes.func
