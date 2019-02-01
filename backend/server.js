@@ -14,13 +14,19 @@ import UserHandler from './models/handlers/UserHandler';
 import FilterHandler from './models/handlers/FilterHandler';
 import { getSecret } from './secrets';
 const passport = require("passport");
-
+const cors = require('cors');
 
 const dotenv = require('dotenv');
 dotenv.config();
 // and create our instances
 const app = express();
 const router = express.Router();
+var corsOptions = {
+  origin: '*',
+  optionSuccessStatus: 200
+};
+ 
+app.use(cors(corsOptions));
 
 // set our port to either a predetermined port number if you have set it up, or 3001
 const API_PORT = process.env.API_PORT || 3001;
@@ -101,6 +107,17 @@ router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword
 // @access Public
 router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
 
+
+// Gives constant name to long directory home page.
+// const appPage = path.join(__dirname, '../client/build/index.html');
+
+// // Allows the use of files.
+// app.use(express.static('../client/build'));
+
+// // SERVES STATIC HOMEPAGE at '/' URL
+// app.get('*', function(req, res) {
+//   res.sendFile(appPage)
+// })
 
 
 app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));

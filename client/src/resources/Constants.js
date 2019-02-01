@@ -5,6 +5,11 @@ export const TITLE="ALLIGATOR"
 export const MANUFACTURING_TITLE="Manufacturing Goals"
 export const DEFAULT_USER="default_user"
 
+export const product_line_title="Product Lines"
+export const prod_line_page_name = 'productlines';
+
+
+
 //List Pages
 export const IngTitle = "INGREDIENTS"
 export const SkuTitle = "SKUs"
@@ -13,6 +18,7 @@ export const ManuGoalTitle = "MANUFACTURING GOALS"
 export const ingredients_page_name = 'ingredients';
 export const ing_filter_path = 'ingredients_filter';
 export const skus_page_name = 'skus';
+
 
 export const options = 'Options'
 export const keyword_label = "Keyword"
@@ -35,3 +41,7 @@ export const remove_filter_label = 'Remove'
 export const filter_removed = 'removed'
 
 export const obj_id_length = 24
+export const create_ingredient = 'Create Ingredient'
+export const add_to_manu_goals = 'Add to Manufacturing Goal'
+export const manu_goals_modal = 'manu_goal'
+export const details_modal = 'details'

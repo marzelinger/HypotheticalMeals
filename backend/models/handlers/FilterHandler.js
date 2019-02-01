@@ -61,6 +61,5 @@ class FilterHandler{
             return res.json({ success: false, error: err});
         }
     }
-
 }
 export default FilterHandler;

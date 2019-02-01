@@ -29,7 +29,7 @@ class Register extends Component {
 
     // If logged in and user navigates to Register page, should redirect them to dashboard
     if (this.props.auth.isAuthenticated && !currentUserIsAdmin().isValid) {
-      this.props.history.push("/skus"); //if they are not an admin, get redirected to skus.
+      this.props.history.push("/ingredients"); //if they are not an admin, get redirected to skus.
       console.log("mounted" +this.props.history);
     }
 

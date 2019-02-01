@@ -126,7 +126,10 @@ class IngredientHandler{
     static async getSkusByIngredientID(req, res){
         try{
             var target_id = req.params.ingredient_id;
+            console.log("this is the target_id: "+target_id)
             let ingredient = await Ingredient.find({ _id : target_id }).populate('skus');
+            console.log("this is the ingredients "+ingredient);
+
             if (ingredient.length == 0) return res.json({success: false, error: '404'})
             return res.json({ success: true, data: ingredient[0].skus});
         }
