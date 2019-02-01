@@ -82,7 +82,7 @@ router.get('/manugoals/:manu_goal_id/skus', (req, res) => Manu_GoalHandler.getMa
 
 // Multiple database APIs
 router.get('/ingredients_filter/:sku_ids/:keyword', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
-router.get('/skus_filter/:ingredient_ids/:keyword/:prod_line_id', (req, res) => FilterHandler.getSkusByFilter(req, res));
+router.get('/skus_filter/:ingredient_ids/:keyword/:prod_line_ids', (req, res) => FilterHandler.getSkusByFilter(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);
