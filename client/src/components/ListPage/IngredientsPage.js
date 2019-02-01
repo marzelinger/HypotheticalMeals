@@ -33,7 +33,7 @@ export default class IngredientsPage extends React.Component {
             filter_category: [],
             assisted_search_results: [[]],
             table_columns: ['Name', 'Number', 'Package Size', 'Cost per Package (USD)', 'Associated SKUs'],
-            table_properties: ['name', 'num', 'pkg_size', 'pkg_cost'],
+            table_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'sku_count'],
             table_options: [Constants.create_item, Constants.add_keyword_filter, Constants.add_sku_filter],
             item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment', 'skus'],
             item_property_labels: ['Name', 'Number', 'Package Size', 'Package Cost', 'Vendor Info', 'Comments', 'SKUs'],
@@ -70,14 +70,19 @@ export default class IngredientsPage extends React.Component {
             this.loadDataFromServer();
         }
         if (prevState.data !== this.state.data){
+            console.log(this.state.data);
             //this is where we recount the number of skus for each data item
-            // var newData = this.state.data.slice();
-            // newData.map(item => {
-            //     item.sku_count = item.skus.length
-            // })
-            // this.setState({ data: newData })
-            //console.log(this.state.data)
-            //this is causing the page to crash
+            var newData = this.state.data.slice();
+            let changed = false;
+            newData.map(item => {
+                if (item.sku_count !== item.skus.length){
+                    item.sku_count = item.skus.length;
+                    changed = true;
+                }
+            })
+            if (changed){
+                this.setState({ data: newData })
+            }
         }
     }
 
