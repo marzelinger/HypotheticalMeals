@@ -24,7 +24,7 @@ class FilterHandler{
             }
             let results = (and_query.length === 0) ? await Ingredient.find( ) : 
                                                await Ingredient.find( {$and: and_query });
-            if (results.length == 0) return res.json({success: false, error: '404 Keyword'})
+            if (results.length == 0) return res.json({success: false, error: '404 Results'})
             return res.json({ success: true, data: results});
         }
         catch (err) {
@@ -54,7 +54,7 @@ class FilterHandler{
             }
             let results = (and_query.length === 0) ? await SKU.find( ) : 
                                                      await SKU.find( {$and: and_query });
-            if (results.length == 0) return res.json({success: false, error: '404 Keyword'})
+            if (results.length == 0) return res.json({success: false, error: '404 Results'})
             return res.json({ success: true, data: results});
         }
         catch (err) {

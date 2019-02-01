@@ -61,6 +61,23 @@ export default class SubmitRequest{
     }
   }
 
+  static async submitGetProductLinesByNameSubstring(substr) {
+    try {
+      return fetch('/api/products_name/' + substr)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error.message || res.error};
+        else return {
+          success: res.success,
+          data: res.data
+        }
+      });
+    }
+    catch (err) {
+      return err;
+    }
+  }
+
   static async submitGetSkusByNameSubstring(substr) {
     try {
       return fetch('/api/skus_name/' + substr)

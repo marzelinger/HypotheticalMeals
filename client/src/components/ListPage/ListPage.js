@@ -94,7 +94,16 @@ export default class ListPage extends React.Component {
                 }
                 asr[i] = res.data;
             }
-            else if ([Constants.keyword_label, Constants.prod_line_label].includes(this.state.filter_category[i])) {
+            if (this.state.filter_category[i] === Constants.prod_line_label
+                && this.state.ing_substr[i].length > 0) {
+                let res = await SubmitRequest.submitGetProductLinesByNameSubstring(this.state.ing_substr[i]);
+                console.log(res)
+                if (res === undefined || !res.success) {
+                    res.data = [];
+                }
+                asr[i] = res.data;
+            }
+            else if (this.state.filter_category[i] === Constants.keyword_label) {
                 if (prevState.ing_substr[i] !== this.state.ing_substr[i]){
                     this.onFilterValueSubmit(i);
                 }
@@ -164,13 +173,11 @@ export default class ListPage extends React.Component {
     }
 
     onFilterValueSubmit (id) {
-        if ([Constants.keyword_label, Constants.prod_line_label].includes(this.state.filter_category[id])){
-            var fil_val = this.state.filter_value.slice();
-            fil_val[id] = this.state.ing_substr[id];
-            this.setState({
-                filter_value: fil_val
-            });
-        }
+        var fil_val = this.state.filter_value.slice();
+        fil_val[id] = this.state.ing_substr[id];
+        this.setState({
+            filter_value: fil_val
+        });
     }
 
     onCreateNewItem = () => {
