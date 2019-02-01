@@ -29,7 +29,6 @@ export const details_save = 'Save'
 export const details_delete = 'Delete'
 export const details_cancel = 'Cancel'
 export const details_create = 'Create'
-
-export const create_ingredient = 'Create Ingredient'
+export const add_filter = 'Add Filter'
 
 export const obj_id_length = 24

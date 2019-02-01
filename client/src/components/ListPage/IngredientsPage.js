@@ -26,14 +26,14 @@ export default class IngredientsPage extends React.Component {
         this.state = {
             page_name: Constants.ingredients_page_name,
             page_title: 'Ingredients',
-            sku_substr: [''],
-            filter_value: [''],
-            filter_category: [''],
+            sku_substr: [],
+            filter_value: [],
+            filter_category: [],
             filter_options: [Constants.keyword_label, Constants.sku_label],
             assisted_search_results: [[]],
             table_columns: ['Name', 'Number', 'Package Size', 'Cost per Package (USD)'],
             table_properties: ['name', 'num', 'pkg_size', 'pkg_cost'],
-            table_options: [Constants.create_item],
+            table_options: [Constants.create_item, Constants.add_filter],
             item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment', 'skus'],
             item_property_labels: ['Name', 'Number', 'Package Size', 'Package Cost', 'Vendor Info', 'Comments', 'SKUs'],
             item_property_placeholder: ['White Rice', '12345678', '1lb', '1.50', 'Tam Soy', '...', 'Fried Rice'],
@@ -76,7 +76,7 @@ export default class IngredientsPage extends React.Component {
             if (this.state.filter_category[i] === Constants.sku_label
                 && this.state.sku_substr[i].length > 0) {
                 let data = await SubmitRequest.submitGetSkusByNameSubstring(this.state.sku_substr[i]);
-                if (data === undefined || data[0].sucess === false) {
+                if (data === undefined || !data.sucess) {
                     data = [];
                 }
                 asr[i] = data;
@@ -177,10 +177,31 @@ export default class IngredientsPage extends React.Component {
         this.toggleModal();
     }
 
+    onAddFilter = () => {
+        var curr_ind = this.state.sku_substr.length;
+        var sku_sub = this.state.sku_substr.slice();
+        sku_sub[curr_ind] = '';
+        var fil_val = this.state.filter_value.slice();
+        fil_val[curr_ind] = '';
+        var fil_cat = this.state.filter_category.slice();
+        fil_cat[curr_ind] = [''];
+        var asr = this.state.assisted_search_results.slice();
+        asr[curr_ind] = [];
+        this.setState({ 
+            sku_substr: sku_sub,
+            filter_value: fil_val,
+            filter_category: fil_cat,
+            assisted_search_results: asr,
+        })
+    }
+
     onTableOptionSelection = (e, opt) => {
         switch (opt){
             case Constants.create_item:
                 this.onCreateNewItem();
+                break;
+            case Constants.add_filter:
+                this.onAddFilter();
                 break;
         }
     }
