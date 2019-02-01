@@ -43,8 +43,8 @@ export default class Filter extends React.Component {
     }
 
     keyDown(e) {
-        if (this.state.focus){
-            this.props.handleKeyDown(e, this.props.id)
+        if (this.state.focus && e.keyCode === 13){
+            this.props.handleKeywordSubmit(this.props.id)
         }
     }
 
@@ -67,7 +67,7 @@ export default class Filter extends React.Component {
                     onChange={(e) => this.props.handleFilterValueChange(e, this.props.id)}
                     onFocus={this.toggleFocus}
                     onBlur={this.toggleBlur}
-                    onKeyDown={(e) => this.keyDown(e, this.props.id)}
+                    onKeyDown={(e) => this.keyDown(e)}
                 />
                 <InputGroupAddon addonType="append">{this.props.filter_category}</InputGroupAddon>
                 <InputGroupAddon addonType="append">
@@ -89,6 +89,6 @@ Filter.propTypes = {
     assisted_search_results: PropTypes.arrayOf(PropTypes.object),
     handleFilterValueChange: PropTypes.func,
     handleFilterValueSelection: PropTypes.func,
-    handleKeyDown: PropTypes.func,
+    handleKeywordSubmit: PropTypes.func,
     handleRemoveFilter: PropTypes.func
   };

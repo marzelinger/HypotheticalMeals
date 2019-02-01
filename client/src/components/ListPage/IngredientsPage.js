@@ -47,7 +47,7 @@ export default class IngredientsPage extends React.Component {
         };
         this.toggleModal = this.toggleModal.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
-        this.onKeyDown = this.onKeyDown.bind(this);
+        this.onKeywordSubmit = this.onKeywordSubmit.bind(this);
         this.filterRender = this.filterRender.bind(this);
     }
 
@@ -81,6 +81,10 @@ export default class IngredientsPage extends React.Component {
                 asr[i] = res.data;
             }
             else if (this.state.filter_category[i] === Constants.keyword_label) {
+                if (prevState.sku_substr[i] !== this.state.sku_substr[i]){
+                    console.log(this.state.sku_substr);
+                    this.onKeywordSubmit(i);
+                }
                 asr[i] = [];
             }
             else {
@@ -143,15 +147,13 @@ export default class IngredientsPage extends React.Component {
         });
     }
 
-    onKeyDown (e, id) {
-        if (e.keyCode === 13) {
-            if (this.state.filter_category[id] == Constants.keyword_label){
-                var fil_val = this.state.filter_value.slice();
-                fil_val[id] = this.state.sku_substr[id];
-                this.setState({
-                    filter_value: fil_val
-                });
-          }
+    onKeywordSubmit (id) {
+        if (this.state.filter_category[id] == Constants.keyword_label){
+            var fil_val = this.state.filter_value.slice();
+            fil_val[id] = this.state.sku_substr[id];
+            this.setState({
+                filter_value: fil_val
+            });
         }
       }
 
@@ -303,7 +305,7 @@ export default class IngredientsPage extends React.Component {
                                         assisted_search_results={this.state.assisted_search_results[index]}
                                         handleFilterValueChange={this.onFilterValueChange}
                                         handleFilterValueSelection={this.onFilterValueSelection}
-                                        handleKeyDown={this.onKeyDown}
+                                        handleKeywordSubmit={this.onKeywordSubmit}
                                         handleRemoveFilter={this.onRemoveFilter}
                                     />)
                         }
