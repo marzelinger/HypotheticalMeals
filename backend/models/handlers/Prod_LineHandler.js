@@ -91,6 +91,18 @@ class Prod_LineHandler{
     }
   }
 
+  static async getProductLinesByNameSubstring(req, res){
+    try{
+        var search_substr = req.params.search_substr;
+        let results = await Prod_Line.find({ name: { $regex: search_substr, $options: 'i' } });
+        if (results.length == 0) return res.json({success: false, error: '404'})
+        return res.json({ success: true, data: results});
+    }
+    catch (err) {
+        return res.json({ success: false, error: err});
+    }
+}
+
 }
 
 export default Prod_LineHandler;

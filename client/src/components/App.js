@@ -10,7 +10,6 @@ import PrivateRoute from "./private-route/PrivateRoute";
 import Dashboard from "./dashboard/Dashboard";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "../utils/setAuthToken";
-import DataStore from "./../helpers/DataStore";
 import GeneralNavBar from "./GeneralNavBar";
 import ManufacturingGoalsPage from "./ManufacturingGoalsPage";
 import IngredientsPage from "./ListPage/IngredientsPage";
@@ -66,16 +65,6 @@ class App extends React.Component{
     }
   }
 
-  getSkuRender = () => {
-    return () => (
-      <div className="container">
-        <ListPage
-          {...DataStore.getSkuData()}
-        />
-      </div>
-    );
-  }
-
   render(){
     let props = {};
     return(
@@ -92,7 +81,7 @@ class App extends React.Component{
               <Switch>
                 <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
-                <PrivateRoute exact path="/skus" component={this.getSkuRender()} />
+                <PrivateRoute exact path="/skus" component={ListPage} />
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingGoalsPage} />
               </Switch>
             </div>

@@ -10,10 +10,10 @@ class FilterHandler{
         try{
             var and_query = [];
             var ids = [];
-            var param_ids = req.params.sku_ids;
-            if (param_ids !== undefined && param_ids !== "_"){
-                param_ids = param_ids.replace(/\s/g, "").split(',');
-                let skus = await SKU.find({ _id : { $in : param_ids } });
+            var sku_ids = req.params.sku_ids;
+            if (sku_ids !== undefined && sku_ids !== "_"){
+                sku_ids = sku_ids.replace(/\s/g, "").split(',');
+                let skus = await SKU.find({ _id : { $in : sku_ids } });
                 if (skus.length == 0) return res.json({success: false, error: '404 SKU'})
                 skus.map(sku => sku.ingredients.map(ing => ids.push(ing._id)));
                 and_query.push( {_id: { $in: ids } } );
@@ -24,7 +24,7 @@ class FilterHandler{
             }
             let results = (and_query.length === 0) ? await Ingredient.find( ) : 
                                                await Ingredient.find( {$and: and_query });
-            if (results.length == 0) return res.json({success: false, error: '404 Keyword'})
+            if (results.length == 0) return res.json({success: false, error: '404 Results'})
             return res.json({ success: true, data: results});
         }
         catch (err) {
@@ -36,10 +36,10 @@ class FilterHandler{
         try{
             var and_query = [];
             var ids = [];
-            var param_ids = req.params.ingredient_ids;
-            if (param_ids !== undefined && param_ids !== "_"){
-                param_ids = param_ids.replace(/\s/g, "").split(',');
-                let ingredients = await Ingredient.find({ _id : { $in : param_ids } });
+            var ingredient_ids = req.params.ingredient_ids;
+            if (ingredient_ids !== undefined && ingredient_ids !== "_"){
+                ingredient_ids = ingredient_ids.replace(/\s/g, "").split(',');
+                let ingredients = await Ingredient.find({ _id : { $in : ingredient_ids } });
                 if (ingredients.length == 0) return res.json({success: false, error: '404 Ingredient'})
                 ingredients.map(ing => ing.skus.map(sku => ids.push(sku._id)));
                 and_query.push( {_id: { $in: ids } } );
@@ -48,13 +48,15 @@ class FilterHandler{
             if (keyword !== undefined && keyword !== "_"){
                 and_query.push({$text: { $search: keyword } }); 
             }
-            var prod_line_id = req.params.prod_line_id;
-            if (prod_line_id !== undefined && prod_line_id !== "_"){
-                and_query.push({ prod_line: prod_line_id }); 
+            var prod_line_ids = req.params.prod_line_ids;
+            console.log(prod_line_ids)
+            if (prod_line_ids !== undefined && prod_line_ids !== "_"){
+                prod_line_ids = prod_line_ids.replace(/\s/g, "").split(',');
+                and_query.push({ prod_line: prod_line_ids }); 
             }
             let results = (and_query.length === 0) ? await SKU.find( ) : 
                                                      await SKU.find( {$and: and_query });
-            if (results.length == 0) return res.json({success: false, error: '404 Keyword'})
+            if (results.length == 0) return res.json({success: false, error: '404 Results'})
             return res.json({ success: true, data: results});
         }
         catch (err) {

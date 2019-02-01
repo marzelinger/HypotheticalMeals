@@ -55,13 +55,13 @@ router.delete('/skus/:sku_id', (req, res) => SkuHandler.deleteSkuByID(req, res))
 router.get('/ingredients_by_sku/:sku_id', (req, res) => SkuHandler.getIngredientsBySkuID(req, res));
 router.get('/skus_name/:search_substr', (req, res) => SkuHandler.getSkusByNameSubstring(req, res));
 
-
 // Product Line database APIs
 router.post('/products', (req, res) => Prod_LineHandler.createProductLine(req, res));
 router.put('/products/:prod_line_id', (req, res) => Prod_LineHandler.updateProductLineByID(req, res));
 router.get('/products', (req, res) => Prod_LineHandler.getAllProductLines(req, res));
 router.get('/products/:prod_line_id', (req, res) => Prod_LineHandler.getProductLineByID(req, res));
 router.delete('/products/:prod_line_id', (req, res) => Prod_LineHandler.deleteProductLineByID(req, res));
+router.get('/products_name/:search_substr', (req, res) => Prod_LineHandler.getProductLinesByNameSubstring(req, res));
 
 // Ingredient database APIs
 router.post('/ingredients', (req, res) => IngredientHandler.createIngredient(req, res));
@@ -82,7 +82,7 @@ router.get('/manugoals/:manu_goal_id/skus', (req, res) => Manu_GoalHandler.getMa
 
 // Multiple database APIs
 router.get('/ingredients_filter/:sku_ids/:keyword', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
-router.get('/skus_filter/:ingredient_ids/:keyword/:prod_line_id', (req, res) => FilterHandler.getSkusByFilter(req, res));
+router.get('/skus_filter/:ingredient_ids/:keyword/:prod_line_ids', (req, res) => FilterHandler.getSkusByFilter(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);
