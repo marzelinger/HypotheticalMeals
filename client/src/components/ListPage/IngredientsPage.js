@@ -46,11 +46,12 @@ export default class IngredientsPage extends React.Component {
             modal: false,
             simple: props.simple || false
         };
-        this.toggle = this.toggle.bind(this);
+        this.toggleModal = this.toggleModal.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
+        this.onKeyDown = this.onKeyDown.bind(this);
     }
 
-    toggle(){
+    toggleModal(){
         this.setState({
             modal: !this.state.modal
         });
@@ -62,7 +63,6 @@ export default class IngredientsPage extends React.Component {
 
     async componentDidUpdate (prevProps, prevState) {
         console.log("update!");
-        console.log(prevState.filter_category[0] + '___' + this.state.filter_category[0]);
         if (prevState.sku_substr !== this.state.sku_substr || prevState.filter_value !== this.state.filter_value || 
             prevState.filter_category !== this.state.filter_category) {
             await this.updateFilterState(prevState);
@@ -94,7 +94,6 @@ export default class IngredientsPage extends React.Component {
     }
 
     async loadDataFromServer() {
-        console.log("filt: " + this.state.filter_value);
         if (this.state.filter_value === undefined) return;
         var final_sku_filter = '';
         var final_keyword_filter = '';
@@ -108,7 +107,6 @@ export default class IngredientsPage extends React.Component {
                     final_keyword_filter = this.state.filter_value[i];
             }
         }
-        console.log(final_sku_filter + '/' + final_keyword_filter);
         //this first if can be depricated!!!!!
         if ((final_sku_filter === '' && final_keyword_filter === '') || this.state.filter_category == ''){
             var res = await SubmitRequest.submitGetData(this.state.page_name);
@@ -116,11 +114,9 @@ export default class IngredientsPage extends React.Component {
         else {
             if (final_sku_filter === '') final_sku_filter = '_';
             if (final_keyword_filter === '') final_keyword_filter = '_';
-            console.log(final_sku_filter + "/" + final_keyword_filter);
             var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
                 final_sku_filter, final_keyword_filter);
         }
-        console.log(res);
         this.setState({
             data: res.data,
             loaded: res.loaded
@@ -136,7 +132,6 @@ export default class IngredientsPage extends React.Component {
     }
 
     onFilterValueChange = (e, id) => {
-        console.log(e.target.value, id);
         var sku_sub = this.state.sku_substr.slice();
         sku_sub[id] = e.target.value;
         this.setState({
@@ -145,7 +140,6 @@ export default class IngredientsPage extends React.Component {
     }
 
     onFilterValueSelection (e, item, id) {
-        console.log(item._id + '/' + id);
         var sku_sub = this.state.sku_substr.slice();
         sku_sub[id] = item.name;
         var fil_val = this.state.filter_value.slice();
@@ -159,6 +153,18 @@ export default class IngredientsPage extends React.Component {
         });
     }
 
+    onKeyDown (e, id) {
+        if (e.keyCode === 13) {
+          if (this.state.filter_category[id] == Constants.keyword_label){
+            var fil_val = this.state.filter_value.slice();
+            fil_val[id] = this.state.sku_substr;
+            this.setState({
+                filter_value: fil_val
+            });
+          }
+        }
+      }
+
     onCreateNewItem = () => {
         var item = ItemStore.getEmptyItem(this.state.page_name, this.state.data, this);
         const newData = this.state.data.slice();
@@ -168,11 +174,10 @@ export default class IngredientsPage extends React.Component {
             detail_view_item: item,
             detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
         })
-        this.toggle();
+        this.toggleModal();
     }
 
     onTableOptionSelection = (e, opt) => {
-        console.log(opt);
         switch (opt){
             case Constants.create_item:
                 this.onCreateNewItem();
@@ -199,7 +204,7 @@ export default class IngredientsPage extends React.Component {
             detail_view_item: item ,
             detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
         });
-        this.toggle();
+        this.toggleModal();
     };
 
     onDetailViewSubmit = (event, item, option) => {
@@ -222,7 +227,7 @@ export default class IngredientsPage extends React.Component {
             detail_view_options: []
         });
         this.loadDataFromServer();
-        this.toggle();
+        this.toggleModal();
     }
 
     onPropChange = (event, item, prop) => {
@@ -247,6 +252,7 @@ export default class IngredientsPage extends React.Component {
                         handleFilterValueChange={this.onFilterValueChange}
                         handleFilterValueSelection={this.onFilterValueSelection}
                         handleFilterSelection={this.onFilterSelection}
+                        handleKeyDown={this.onKeyDown}
                     />
                     )}
                         <TableOptions
@@ -265,7 +271,7 @@ export default class IngredientsPage extends React.Component {
                         handleDetailViewSelect={this.onDetailViewSelect}
                     />
                 </div>
-                <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup" className='item-details'>
+                <Modal isOpen={this.state.modal} toggle={this.toggleModal} id="popup" className='item-details'>
                     <ItemDetails
                             item={this.state.detail_view_item}
                             item_properties={this.state.item_properties}

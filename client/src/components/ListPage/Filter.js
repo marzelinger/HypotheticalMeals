@@ -22,9 +22,12 @@ export default class Filter extends React.Component {
         super(props);
 
         this.toggleDropDown = this.toggleDropDown.bind(this);
+        this.toggleFocus = this.toggleFocus.bind(this);
+        this.toggleBlur = this.toggleBlur.bind(this);
         this.state = {
             width: 100,
-            dropdownOpen: false
+            dropdownOpen: false,
+            focus: false
         };
     }
     
@@ -32,6 +35,28 @@ export default class Filter extends React.Component {
         this.setState({
             dropdownOpen: !this.state.dropdownOpen
         });
+    }
+
+    toggleFocus() {
+        if (this){
+            this.setState({
+                focus: true
+            })
+        }
+    }
+
+    toggleBlur() {
+        if (this){
+            this.setState({
+                focus: false
+            })
+        }
+    }
+
+    keyDown(e) {
+        if (this.state.focus){
+            this.props.handleKeyDown(e, this.props.id)
+        }
     }
 
     render() {
@@ -51,6 +76,9 @@ export default class Filter extends React.Component {
                     type="text"
                     value={this.props.value}
                     onChange={(e) => this.props.handleFilterValueChange(e, this.props.id)}
+                    onFocus={this.toggleFocus}
+                    onBlur={this.toggleBlur}
+                    onKeyDown={(e) => this.keyDown(e, this.props.id)}
                 />
                 <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
                     <DropdownToggle caret>
@@ -80,5 +108,6 @@ Filter.propTypes = {
     categories: PropTypes.arrayOf(PropTypes.string),
     handleFilterValueChange: PropTypes.func,
     handleFilterValueSelection: PropTypes.func,
-    handleFilterSelection: PropTypes.func
+    handleFilterSelection: PropTypes.func,
+    handleKeyDown: PropTypes.func
   };

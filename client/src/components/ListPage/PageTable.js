@@ -35,9 +35,9 @@ export class PageTable extends React.Component{
               </tr>
             </thead>
             <tbody>
-              {this.props.list_items.map(item => 
+              {this.props.list_items.map((item, index) => 
                 <tr 
-                  key={item.num}
+                  key={item.num + index}
                   style={this.rowStyle(item)}
                 >
                   {this.props.table_properties.map(prop => 
