@@ -31,5 +31,7 @@ export const details_cancel = 'Cancel'
 export const details_create = 'Create'
 export const add_sku_filter = 'Add SKU Filter'
 export const add_keyword_filter = 'Add Keyword Filter'
+export const remove_filter_label = 'Remove'
+export const filter_removed = 'removed'
 
 export const obj_id_length = 24

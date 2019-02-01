@@ -5,11 +5,13 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 import { 
+    Button,
     Input,
     InputGroupAddon,
     InputGroup, 
     ListGroup,
     ListGroupItem} from 'reactstrap';
+import * as Constants from '../../resources/Constants';
 
 
 export default class Filter extends React.Component {
@@ -68,6 +70,11 @@ export default class Filter extends React.Component {
                     onKeyDown={(e) => this.keyDown(e, this.props.id)}
                 />
                 <InputGroupAddon addonType="append">{this.props.filter_category}</InputGroupAddon>
+                <InputGroupAddon addonType="append">
+                    <Button color="secondary" onClick={(e) => this.props.handleRemoveFilter(e, this.props.id)}> 
+                        {Constants.remove_filter_label}
+                    </Button>
+                </InputGroupAddon>
             </InputGroup>
             {/* {this.renderOptions()} */}
         </div>
@@ -82,5 +89,6 @@ Filter.propTypes = {
     assisted_search_results: PropTypes.arrayOf(PropTypes.object),
     handleFilterValueChange: PropTypes.func,
     handleFilterValueSelection: PropTypes.func,
-    handleKeyDown: PropTypes.func
+    handleKeyDown: PropTypes.func,
+    handleRemoveFilter: PropTypes.func
   };

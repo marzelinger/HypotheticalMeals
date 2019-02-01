@@ -48,6 +48,7 @@ export default class IngredientsPage extends React.Component {
         this.toggleModal = this.toggleModal.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onKeyDown = this.onKeyDown.bind(this);
+        this.filterRender = this.filterRender.bind(this);
     }
 
     toggleModal(){
@@ -192,6 +193,24 @@ export default class IngredientsPage extends React.Component {
         })
     }
 
+    onRemoveFilter = (e, id) => {
+        console.log(id);
+        var sku_sub = this.state.sku_substr.slice();
+        sku_sub[id] = '';
+        var fil_val = this.state.filter_value.slice();
+        fil_val[id] = '';
+        var fil_cat = this.state.filter_category.slice();
+        fil_cat[id] = Constants.filter_removed;
+        var asr = this.state.assisted_search_results.slice();
+        asr[id] = [];
+        this.setState({ 
+            sku_substr: sku_sub,
+            filter_value: fil_val,
+            filter_category: fil_cat,
+            assisted_search_results: asr,
+        })
+    }
+
     onTableOptionSelection = (e, opt) => {
         switch (opt){
             case Constants.create_item:
@@ -258,26 +277,46 @@ export default class IngredientsPage extends React.Component {
         this.setState({ data: newData });
     };
 
+    filterRender = () => {
+        this.state.sku_substr.map((ss,index) => {
+            if (this.state.filter_category[index] != Constants.filter_removed){
+                return (<Filter 
+                    key={'filter'+index}
+                    id={index}
+                    value={ss}
+                    filter_category={this.state.filter_category[index]} 
+                    assisted_search_results={this.state.assisted_search_results[index]}
+                    handleFilterValueChange={this.onFilterValueChange}
+                    handleFilterValueSelection={this.onFilterValueSelection}
+                    handleKeyDown={this.onKeyDown}
+                    />)
+            }
+        })
+    }
+
     render() {
         return (
             <div className="list-page">
                 <div className="options-container" id={this.state.simple ? "simple" : "complex"}>
-                    {this.state.sku_substr.map((ss,index) => 
-                        <Filter 
-                        key={'filter'+index}
-                        id={index}
-                        value={ss}
-                        filter_category={this.state.filter_category[index]} 
-                        assisted_search_results={this.state.assisted_search_results[index]}
-                        handleFilterValueChange={this.onFilterValueChange}
-                        handleFilterValueSelection={this.onFilterValueSelection}
-                        handleKeyDown={this.onKeyDown}
-                    />
-                    )}
-                        <TableOptions
+                    {this.state.sku_substr.map((ss,index) => {
+                        if (this.state.filter_category[index] != Constants.filter_removed){
+                            return (<Filter 
+                                        key={'filter'+index}
+                                        id={index}
+                                        value={ss}
+                                        filter_category={this.state.filter_category[index]} 
+                                        assisted_search_results={this.state.assisted_search_results[index]}
+                                        handleFilterValueChange={this.onFilterValueChange}
+                                        handleFilterValueSelection={this.onFilterValueSelection}
+                                        handleKeyDown={this.onKeyDown}
+                                        handleRemoveFilter={this.onRemoveFilter}
+                                    />)
+                        }
+                    })}
+                    <TableOptions
                         table_options={this.state.table_options}
                         handleTableOptionSelection={this.onTableOptionSelection}
-                        />
+                    />
                 </div>
                 <div>
                     <PageTable 
