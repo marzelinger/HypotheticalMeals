@@ -4,58 +4,110 @@
 
 export default class SubmitRequest{
 
-  static submitGetData = (page_name, obj) => {
-    fetch('/api/' + page_name, { method: 'GET' })
-          .then(data => data.json())
-          .then((res) => {
-            if (!res.success) obj.setState({ error: res.error });
-            else obj.setState({ 
-                data: res.data,
-                loaded: true
-            });
-          });
+  static submitGetData = (page_name) => {
+    return fetch('/api/' + page_name, { method: 'GET' })
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { error: res.error.message || res.error };
+        else return ({ 
+            success: res.success,
+            data: res.data,
+            loaded: true
+        });
+      });
   }
 
   static submitCreateItem = (route, item, obj) => {
-    fetch(`/api/${route}`, {
+    return fetch(`/api/${route}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(item),
     }).then(res => res.json()).then((res) => {
-      if (!res.success) obj.setState({ error: res.error.message || res.error });
+      if (!res.success) return { error: res.error.message || res.error };
       else console.log(res);
     });
   }
 
   static submitUpdateItem = (route, item, obj) => {
-    fetch(`/api/${route}/${item._id}`, {
+    return fetch(`/api/${route}/${item._id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(item),
     }).then(res => res.json()).then((res) => {
-      if (!res.success) obj.setState({ error: res.error.message || res.error });
-      else console.log(res);
+      if (!res.success) return { error: res.error.message || res.error };
     });
   }
 
-  static submitDeleteItem = (route, item, obj) => {
-    fetch(`/api/${route}/${item._id}`, {
+  static submitDeleteItem = (route, item) => {
+    return fetch(`/api/${route}/${item._id}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' }
     }).then(res => res.json()).then((res) => {
-      if (!res.success) obj.setState({ error: res.error.message || res.error });
-      else console.log(res);
+      if (!res.success) return { error: res.error.message || res.error };
     });
   }
 
-  static submitGetIngredientsByNameSubstring(substr, obj) {
-    fetch('/api/ingredients_name/' + substr)
+  static async submitGetIngredientsByNameSubstring(substr) {
+    try {
+      return fetch('/api/ingredients_name/' + substr)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error.message || res.error};
+        else return res.data;
+      });
+    }
+    catch (err) {
+      return err;
+    }
+  }
+
+  static async submitGetSkusByNameSubstring(substr) {
+    try {
+      return fetch('/api/skus_name/' + substr)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error.message || res.error};
+        else return {
+          success: res.success,
+          data: res.data
+        }
+      });
+    }
+    catch (err) {
+      return err;
+    }
+  }
+
+  static async submitGetIngredientsByID(id) {
+    try {
+      return fetch('/api/ingredients/' + id)
       .then(data => data.json())
       .then((res) => {
         console.log(res.data);
-        if (!res.success) obj.setState({ error: res.error });
-        else return res.data;
+        if (!res.success) return { success: res.success, error: res.error.message || res.error};
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
       });
-}
+    }
+    catch (err) {
+      return err;
+    }
+  }
+
+  static submitGetFilterData = (path, filter_value, keyword) => {
+    console.log('/api/' + path + '/' + filter_value + '/' + keyword);
+    return fetch('/api/' + path + '/' + filter_value + '/' + keyword, { method: 'GET' })
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error.message || res.error};
+        else return ({ 
+            success: res.success,
+            data: res.data,
+            loaded: true
+        });
+      });
+  }
 
 }
