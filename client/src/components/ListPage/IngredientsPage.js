@@ -29,11 +29,10 @@ export default class IngredientsPage extends React.Component {
             sku_substr: [],
             filter_value: [],
             filter_category: [],
-            filter_options: [Constants.keyword_label, Constants.sku_label],
             assisted_search_results: [[]],
             table_columns: ['Name', 'Number', 'Package Size', 'Cost per Package (USD)'],
             table_properties: ['name', 'num', 'pkg_size', 'pkg_cost'],
-            table_options: [Constants.create_item, Constants.add_filter],
+            table_options: [Constants.create_item, Constants.add_keyword_filter, Constants.add_sku_filter],
             item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment', 'skus'],
             item_property_labels: ['Name', 'Number', 'Package Size', 'Package Cost', 'Vendor Info', 'Comments', 'SKUs'],
             item_property_placeholder: ['White Rice', '12345678', '1lb', '1.50', 'Tam Soy', '...', 'Fried Rice'],
@@ -123,14 +122,6 @@ export default class IngredientsPage extends React.Component {
         })
     }
 
-    onFilterSelection = (e, sel, id) => {
-        var fil_cat = this.state.filter_category.slice();
-        fil_cat[id] = sel;
-        this.setState({
-            filter_category: fil_cat
-        });
-    }
-
     onFilterValueChange = (e, id) => {
         var sku_sub = this.state.sku_substr.slice();
         sku_sub[id] = e.target.value;
@@ -177,14 +168,17 @@ export default class IngredientsPage extends React.Component {
         this.toggleModal();
     }
 
-    onAddFilter = () => {
+    onAddFilter = (type) => {
+        if (type == Constants.keyword_label && this.state.filter_category.includes(type)){
+            return;
+        }
         var curr_ind = this.state.sku_substr.length;
         var sku_sub = this.state.sku_substr.slice();
         sku_sub[curr_ind] = '';
         var fil_val = this.state.filter_value.slice();
         fil_val[curr_ind] = '';
         var fil_cat = this.state.filter_category.slice();
-        fil_cat[curr_ind] = [''];
+        fil_cat[curr_ind] = type;
         var asr = this.state.assisted_search_results.slice();
         asr[curr_ind] = [];
         this.setState({ 
@@ -200,8 +194,11 @@ export default class IngredientsPage extends React.Component {
             case Constants.create_item:
                 this.onCreateNewItem();
                 break;
-            case Constants.add_filter:
-                this.onAddFilter();
+            case Constants.add_sku_filter:
+                this.onAddFilter(Constants.sku_label);
+                break;
+            case Constants.add_keyword_filter:
+                this.onAddFilter(Constants.keyword_label);
                 break;
         }
     }
@@ -267,12 +264,10 @@ export default class IngredientsPage extends React.Component {
                         key={'filter'+index}
                         id={index}
                         value={ss}
-                        selection={this.state.filter_category[index]} 
-                        categories={this.state.filter_options}
+                        filter_category={this.state.filter_category[index]} 
                         assisted_search_results={this.state.assisted_search_results[index]}
                         handleFilterValueChange={this.onFilterValueChange}
                         handleFilterValueSelection={this.onFilterValueSelection}
-                        handleFilterSelection={this.onFilterSelection}
                         handleKeyDown={this.onKeyDown}
                     />
                     )}

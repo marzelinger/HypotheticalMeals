@@ -4,37 +4,24 @@
 
 import React from 'react'
 import PropTypes from 'prop-types';
-import * as Constants from '../../resources/Constants';
 import { 
     Input,
+    InputGroupAddon,
     InputGroup, 
-    InputGroupButtonDropdown,
-    DropdownToggle, 
-    DropdownMenu, 
-    DropdownItem,
     ListGroup,
     ListGroupItem} from 'reactstrap';
-import Select from 'react-select';
 
 
 export default class Filter extends React.Component {
     constructor(props) {
         super(props);
 
-        this.toggleDropDown = this.toggleDropDown.bind(this);
         this.toggleFocus = this.toggleFocus.bind(this);
         this.toggleBlur = this.toggleBlur.bind(this);
         this.state = {
             width: 100,
-            dropdownOpen: false,
             focus: false
         };
-    }
-    
-    toggleDropDown() {
-        this.setState({
-            dropdownOpen: !this.state.dropdownOpen
-        });
     }
 
     toggleFocus() {
@@ -80,19 +67,7 @@ export default class Filter extends React.Component {
                     onBlur={this.toggleBlur}
                     onKeyDown={(e) => this.keyDown(e, this.props.id)}
                 />
-                <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
-                    <DropdownToggle caret>
-                        {this.props.selection}
-                    </DropdownToggle>
-                    <DropdownMenu>
-                        {this.props.categories.map(cat => 
-                            <DropdownItem 
-                                key={cat}
-                                onClick={e => this.props.handleFilterSelection(e, cat, this.props.id)}
-                            >{cat}</DropdownItem>
-                        )}
-                    </DropdownMenu>
-                </InputGroupButtonDropdown>
+                <InputGroupAddon addonType="append">{this.props.filter_category}</InputGroupAddon>
             </InputGroup>
             {/* {this.renderOptions()} */}
         </div>
@@ -103,11 +78,9 @@ export default class Filter extends React.Component {
 Filter.propTypes = {
     id: PropTypes.number,
     value: PropTypes.string,
-    selection: PropTypes.string,
+    filter_category: PropTypes.string,
     assisted_search_results: PropTypes.arrayOf(PropTypes.object),
-    categories: PropTypes.arrayOf(PropTypes.string),
     handleFilterValueChange: PropTypes.func,
     handleFilterValueSelection: PropTypes.func,
-    handleFilterSelection: PropTypes.func,
     handleKeyDown: PropTypes.func
   };
