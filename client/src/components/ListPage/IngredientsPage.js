@@ -61,7 +61,6 @@ export default class IngredientsPage extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
-        console.log("update!");
         if (prevState.sku_substr !== this.state.sku_substr || prevState.filter_value !== this.state.filter_value || 
             prevState.filter_category !== this.state.filter_category) {
             await this.updateFilterState(prevState);
@@ -74,11 +73,11 @@ export default class IngredientsPage extends React.Component {
         for (var i = 0; i < prevState.sku_substr.length; i++) {
             if (this.state.filter_category[i] === Constants.sku_label
                 && this.state.sku_substr[i].length > 0) {
-                let data = await SubmitRequest.submitGetSkusByNameSubstring(this.state.sku_substr[i]);
-                if (data === undefined || !data.sucess) {
-                    data = [];
+                let res = await SubmitRequest.submitGetSkusByNameSubstring(this.state.sku_substr[i]);
+                if (res === undefined || !res.success) {
+                    res.data = [];
                 }
-                asr[i] = data;
+                asr[i] = res.data;
             }
             else if (this.state.filter_category[i] === Constants.keyword_label) {
                 asr[i] = [];
@@ -115,6 +114,10 @@ export default class IngredientsPage extends React.Component {
             if (final_keyword_filter === '') final_keyword_filter = '_';
             var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
                 final_sku_filter, final_keyword_filter);
+        }
+        if (res === undefined || !res.success) {
+            res.data = [];
+            res.loaded = true;
         }
         this.setState({
             data: res.data,
