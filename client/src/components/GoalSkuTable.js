@@ -20,9 +20,6 @@ const GoalSkuTable = props => {
     item_property_placeholder,
     simple: true
   }
-  console.log(props.id);
-  console.log(`manugoals/${props.user}/${props.id}/skus`);
-  console.log(skuTableData)
   return (
     <div>
       <ListPage

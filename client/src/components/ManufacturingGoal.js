@@ -5,7 +5,8 @@ import PropTypes from 'prop-types';
 import ReactMarkdown from 'react-markdown';
 import { UncontrolledCollapse, CardBody, Card } from 'reactstrap';
 import deleteButton from'../resources/delete.png';
-import GoalSkuTable from './GoalSkuTable';
+import calculatorButton from'../resources/calculator.png';
+import ManuGoalsTables from './ListPage/ManuGoalsTables';
 
 const ManufacturingGoal = props => (
   <div id="singleGoal">
@@ -16,7 +17,7 @@ const ManufacturingGoal = props => (
       <UncontrolledCollapse toggler={'#goal' + props.id}>
             <Card>
                 <CardBody>
-                    <GoalSkuTable user = {props.user} id={props.id}></GoalSkuTable>
+                    <ManuGoalsTables query = {`api/manugoals/${props.user}/${props.id}/skus`}></ManuGoalsTables>
                 </CardBody>
             </Card>
         </UncontrolledCollapse>
@@ -24,6 +25,7 @@ const ManufacturingGoal = props => (
       <div className="singleGoalButtons">
         {/* <a onClick={() => { props.handleUpdateGoal(props.id); }}>update</a> */}
         <img id ="deleteButton" onClick={() => { props.handleDeleteGoal(props.id); }} src= {deleteButton}></img>
+        <img id = "calculatorButton" src = {calculatorButton}></img>
       </div>
 
   </div>

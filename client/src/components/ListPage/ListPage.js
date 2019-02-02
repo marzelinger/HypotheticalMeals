@@ -21,6 +21,7 @@ import './../../style/ListPage.css';
 import GeneralNavBar from "../GeneralNavBar";
 import ExportSimple from '../export/ExportSimple';
 import DependencyReport from '../export/DependencyReport';
+const jwt_decode = require('jwt-decode');
 
 
 export default class ListPage extends React.Component {
@@ -49,8 +50,14 @@ export default class ListPage extends React.Component {
             details_modal: false,
             manu_goals_modal: false,
             manu_goals_data: [],
-            simple: props.simple || false
+            simple: props.simple || false,
+            user:''
         };
+        if(localStorage != null){
+            if(localStorage.getItem("jwtToken")!= null){
+              this.state.user = jwt_decode(localStorage.getItem("jwtToken")).id;
+            }
+          }
         this.toggle = this.toggle.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onKeywordSubmit = this.onFilterValueSubmit.bind(this);
@@ -257,7 +264,8 @@ export default class ListPage extends React.Component {
     }
 
     getManuGoalsData = () => {
-        fetch('/api/manugoals', { method: 'GET' })
+
+        fetch(`/api/manugoals/${this.state.user}`, { method: 'GET' })
           .then(data => data.json())
           .then((res) => {
             console.log(res.data);
