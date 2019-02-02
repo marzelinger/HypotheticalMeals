@@ -43,7 +43,7 @@ class SkuHandler{
             sku.unit_size = new_unit_size;
             sku.cpc = new_cpc;
             sku.prod_line = new_prod_line;
-            sku.ingredients = new Map(JSON.parse(new_ingredients));
+            sku.ingredients = new_ingredients;
             sku.comment = new_comment;
             console.log(sku);
             let new_sku = await sku.save();
@@ -102,7 +102,10 @@ class SkuHandler{
     static async getSkuByID(req, res){
         try {
             var target_id = req.params.sku_id;
+            console.log("this is the targetid: "+target_id);
+
             let to_return = await SKU.find({ _id : target_id });
+            console.log("this is the to_return: "+to_return);
             if(to_return.length == 0) return res.json({ success: false, error: '404'});
             return res.json({ success: true, data: to_return});
         } catch (err) {
@@ -124,6 +127,41 @@ class SkuHandler{
         }
     }
 
+    static async getIngredientsBySkuID(req, res){
+        try{
+            var target_id = req.params.sku_id;
+            let sku = await SKU.find({ _id : target_id }).populate('ingredients');
+            if (sku.length == 0) return res.json({success: false, error: '404'})
+            return res.json({ success: true, data: sku[0].ingredients});
+        }
+        catch (err) {
+            return res.json({ success: false, error: err});
+        }
+    }
+
+    static async getSkusBySkuKeyword(req, res){
+        try{
+            var target_id = req.params.sku_id;
+            let sku = await SKU.find({ _id : target_id }).populate('ingredients');
+            if (sku.length == 0) return res.json({success: false, error: '404'})
+            return res.json({ success: true, data: sku[0].ingredients});
+        }
+        catch (err) {
+            return res.json({ success: false, error: err});
+        }
+    }
+
+    static async getSkusByNameSubstring(req, res){
+        try{
+            var search_substr = req.params.search_substr;
+            let results = await SKU.find({ name: { $regex: search_substr, $options: 'i' } });
+            if (results.length == 0) return res.json({success: false, error: '404'})
+            return res.json({ success: true, data: results});
+        }
+        catch (err) {
+            return res.json({ success: false, error: err});
+        }
+    }
 }
 
 export default SkuHandler;
