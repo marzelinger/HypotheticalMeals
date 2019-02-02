@@ -14,7 +14,8 @@ class ManufacturingGoalsBox extends Component {
       error: null,
       name: '',
       skus: [],
-      user: ''
+      user: '',
+      quantities: []
     };
     if(localStorage != null){
       if(localStorage.getItem("jwtToken")!= null){
@@ -31,15 +32,18 @@ class ManufacturingGoalsBox extends Component {
     this.setState(newState);
   }
 
-  onUpdateGoal = (id) => {
+  onUpdateGoal = async (id) => {
+    console.log('updating goal')
     const oldGoal = this.state.data.find(c => c._id === id);
+    console.log(oldGoal.quantities)
     if (!oldGoal) return;
-    this.setState({
+    await this.setState({
         name: oldGoal.name,
         skus: oldGoal.skus,
         updateId: id,
-        user: Constants.DEFAULT_USER
+        quantities: oldGoal.quantities
     });
+    this.submitUpdatedGoal();
   }
 
   onDeleteGoal= (id) => {
@@ -79,14 +83,14 @@ class ManufacturingGoalsBox extends Component {
   }
 
   submitUpdatedGoal = () => {
-    const { name, skus, user, updateId } = this.state;
+    const { name, skus, user, updateId, quantities} = this.state;
     fetch(`/api/manugoals/${this.state.user}/${updateId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, skus, user }),
+      body: JSON.stringify({ name, skus, user, quantities }),
     }).then(res => res.json()).then((res) => {
       if (!res.success) this.setState({ error: res.error.message || res.error });
-      else this.setState({ name: '', skus: '', user: '', error:null });
+      else this.setState({ name: '', skus: '', quantities: '', error:null });
     });
   }
 
