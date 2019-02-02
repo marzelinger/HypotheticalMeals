@@ -4,7 +4,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Table } from 'reactstrap';
+import { Button, Table, Input } from 'reactstrap';
 import * as Constants from './../../resources/Constants';
 
 export class GoalSkuTable extends React.Component{
@@ -15,9 +15,10 @@ export class GoalSkuTable extends React.Component{
       return this.props.columns[this.props.table_properties.indexOf(col)];
     }
 
-    createQuantityElement = (item) => {
-        return item['quantity'];
+    createQuantityElement = (item, index) => {
+        return <Input onChange = {(e) => this.props.onQuantityChange(e, index)} placeholder={item['quantity']} type="number" step="1" />
     }
+    
     render() {
         console.log(this.props.list_items)
         let tablebody = (
@@ -27,7 +28,7 @@ export class GoalSkuTable extends React.Component{
             >
               {this.props.table_properties.map(prop => 
                 <td key={prop}>
-                  {prop == 'quantity' ? this.createQuantityElement(item) : item[prop]}
+                  {prop == 'quantity' ? this.createQuantityElement(item, index) : item[prop]}
                 </td>
               )}
             </tr>
@@ -63,7 +64,8 @@ GoalSkuTable.propTypes = {
   selected_items: PropTypes.arrayOf(PropTypes.object),
   handleSort: PropTypes.func,
   handleSelect: PropTypes.func,
-  handleDetailViewSelect: PropTypes.func
+  handleDetailViewSelect: PropTypes.func,
+  onQuantityChange: PropTypes.func
 };
 
 

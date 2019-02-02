@@ -75,6 +75,7 @@ export default class ListPage extends React.Component {
             <div className="list-page">
                 <div>
                     <GoalsSkuTable
+                        onQuantityChange = {this.props.onQuantityChange}
                         columns={this.state.table_columns} 
                         table_properties={this.state.table_properties} 
                         list_items={this.state.data}
