@@ -16,7 +16,7 @@ const ManufacturingGoal = props => (
       <UncontrolledCollapse toggler={'#goal' + props.id}>
             <Card>
                 <CardBody>
-                    <GoalSkuTable id={props.id}></GoalSkuTable>
+                    <GoalSkuTable user = {props.user} id={props.id}></GoalSkuTable>
                 </CardBody>
             </Card>
         </UncontrolledCollapse>

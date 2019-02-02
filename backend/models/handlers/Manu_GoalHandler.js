@@ -40,7 +40,6 @@ class Manu_GoalHandler{
                 return res.json({ success: false, error: 'No manufacturing goal named provided'});
             }
             var new_skus = req.body.skus;
-
             let updated_manu_goal = await Manu_Goal.findOneAndUpdate({_id : target_id},
                 {$set: {skus: new_skus}}, {upsert: true, new: true});
             if(!updated_manu_goal){
@@ -59,7 +58,8 @@ class Manu_GoalHandler{
 
     static async getAllManufacturingGoals(req, res){
         try {
-            let all_manu_goals = await Manu_Goal.find();
+            var user_id = req.params.user_id;
+            let all_manu_goals = await Manu_Goal.find({user: user_id});
             return res.json({ success: true, data: all_manu_goals});
         }
         catch (err) {
@@ -70,7 +70,8 @@ class Manu_GoalHandler{
     static async getManufacturingGoalByID(req, res){
         try {
             var target_id = req.params.manu_goal_id;
-            let to_return = await Manu_Goal.find({ _id : target_id});
+            var user_id = req.params.user_id;
+            let to_return = await Manu_Goal.find({ _id : target_id, user:user_id});
 
             if(to_return.length == 0) return res.json({success: false, error: '404'});
             return res.json({ success: true, data: to_return});
@@ -83,7 +84,8 @@ class Manu_GoalHandler{
         try {
             console.log('here');
             var target_id = req.params.manu_goal_id;
-            let to_return = await Manu_Goal.find({ _id : target_id}).populate('skus');
+            var user_id = req.params.user_id
+            let to_return = await Manu_Goal.find({ _id : target_id, user: user_id}).populate('skus');
 
             if(to_return.length == 0) return res.json({success: false, error: '404'});
             return res.json({ success: true, data: to_return[0].skus});
