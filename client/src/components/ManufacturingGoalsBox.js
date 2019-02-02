@@ -4,7 +4,7 @@ import ManufacturingGoalList from './ManufacturingGoalList';
 import ManufacturingGoalForm from './ManufacturingGoalForm';
 import '../style/ManufacturingGoalsBox.css';
 import * as Constants from '../resources/Constants';
-
+const jwt_decode = require('jwt-decode');
 
 class ManufacturingGoalsBox extends Component {
   constructor() {
@@ -14,8 +14,14 @@ class ManufacturingGoalsBox extends Component {
       error: null,
       name: '',
       skus: [],
-      user: Constants.DEFAULT_USER
+      user: ''
     };
+    if(localStorage != null){
+      if(localStorage.getItem("jwtToken")!= null){
+        this.state.user = jwt_decode(localStorage.getItem("jwtToken")).id;
+      }
+    }
+
     this.pollInterval = null;
   }
 
@@ -62,29 +68,19 @@ class ManufacturingGoalsBox extends Component {
 
   submitNewGoal = () => {
     const { name, skus, user } = this.state;
-    const data = [
-      ...this.state.data,
-      {
-          name,
-          _id: Date.now().toString(),
-          skus: [],
-          user: Constants.DEFAULT_USER
-      },
-    ];
-    this.setState({ data });
     fetch('/api/manugoals', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, skus, user }),
     }).then(res => res.json()).then((res) => {
       if (!res.success) this.setState({ error: res.error.message || res.error });
-      else this.setState({ name: '', skus: '', user: '', error: null });
+      else this.setState({ name: '', skus: '', error: null });
     });
   }
 
   submitUpdatedGoal = () => {
     const { name, skus, user, updateId } = this.state;
-    fetch(`/api/manugoals/${updateId}`, {
+    fetch(`/api/manugoals/${this.state.user}/${updateId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, skus, user }),
@@ -109,7 +105,7 @@ class ManufacturingGoalsBox extends Component {
   loadGoalsFromServer = () => {
     // fetch returns a promise. If you are not familiar with promises, see
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
-    fetch('/api/manugoals')
+    fetch(`/api/manugoals/${this.state.user}`)
       .then(data => data.json())
       .then((res) => {
         if (!res.success) this.setState({ error: res.error });
