@@ -50,9 +50,9 @@ export class PageTable extends React.Component{
                       key={prop}
                       onClick={e => this.props.handleSelect(e, item) }
                     >
-                      {((typeof item[prop]) === 'string' || item[prop] === null || item[prop] === undefined) 
+                      {(['string','number'].includes(typeof item[prop]) || item[prop] === null || item[prop] === undefined) 
                           ? item[prop] : item[prop].name}
-                      {console.log(item)}
+                      {console.log(item.name + ': ' + prop + '/' + item[prop])}
                     </td>
                   )}
                   {([undefined,null].includes(this.props.quantities)) ? 

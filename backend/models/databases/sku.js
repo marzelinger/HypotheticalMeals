@@ -8,9 +8,9 @@ const Schema = mongoose.Schema;
 // object that shows the shape of your database entries.
 const SkusSchema = new Schema({
   name: String,
-  num: String,
+  num: Number,
   case_upc: Number,
-  unit_upc: String,
+  unit_upc: Number,
   unit_size: String,
   cpc: String,
   prod_line: 
@@ -24,7 +24,7 @@ const SkusSchema = new Schema({
       ref: 'Ingredient'
     }
   ],
-  ingredient_quantities:[String],
+  ingredient_quantities:[Number],
   comment: String
 }, { timestamps: true });
 
