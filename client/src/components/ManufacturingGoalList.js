@@ -5,8 +5,6 @@ import ManufacturingGoal from './ManufacturingGoal';
 import GoalForm from './ManufacturingGoalForm';
 
 const ManufacturingGoalList = (props) => {
-  console.log('manufacturing goal list: ')
-  console.log(props.data)
   const goalNodes = props.data.map(goal => (
     <ManufacturingGoal
       user={goal.user}

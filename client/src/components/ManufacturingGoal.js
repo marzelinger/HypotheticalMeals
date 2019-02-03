@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import ReactMarkdown from 'react-markdown';
 import { UncontrolledCollapse, CardBody, Card } from 'reactstrap';
 import deleteButton from'../resources/delete.png';
-import calculatorButton from'../resources/calculator.png';
+import ManufacturingGoalCalculator from'./ManufacturingGoalCalculator';
 import ManuGoalsTables from './ListPage/ManuGoalsTables';
 
 export default class ManufacturingGoal extends React.Component{
@@ -36,7 +36,7 @@ export default class ManufacturingGoal extends React.Component{
           <div className="singleGoalButtons">
             {/* <a onClick={() => { props.handleUpdateGoal(props.id); }}>update</a> */}
             <img id ="deleteButton" onClick={() => {this.props.handleDeleteGoal(this.props.id); }} src= {deleteButton}></img>
-            <img id = "calculatorButton" src = {calculatorButton}></img>
+            <ManufacturingGoalCalculator name = {this.props.name} skus = {this.props.skus} quantities = {this.props.quantities}></ManufacturingGoalCalculator>
           </div>
       </div>
     )

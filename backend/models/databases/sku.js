@@ -9,7 +9,7 @@ const Schema = mongoose.Schema;
 const SkusSchema = new Schema({
   name: String,
   num: String,
-  case_upc: String,
+  case_upc: Number,
   unit_upc: String,
   unit_size: String,
   cpc: String,
