@@ -34,7 +34,6 @@ export default class IngredientsViewSimple extends React.Component {
 
     async componentDidUpdate (prevProps, prevState) {
         if (prevState.data !== this.state.data){
-            console.log('y')
         }
     }
 
