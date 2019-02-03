@@ -21,11 +21,12 @@ export default class IngredientsViewSimple extends React.Component {
   
 
         this.state = {
-            data: [],
+            data: props.sku.ingredients,
             table_columns,
             table_properties,
             selected_items: []
         };
+        this.onQuantityChange = this.onQuantityChange.bind(this);
     }
 
     async componentDidMount() {
@@ -38,9 +39,6 @@ export default class IngredientsViewSimple extends React.Component {
     }
 
     async loadDataFromServer() {
-        this.setState({
-            data: this.props.sku.ingredients
-        })
     }
 
     onSort = () => {}
@@ -49,12 +47,11 @@ export default class IngredientsViewSimple extends React.Component {
 
     onDetailViewSelect = () => {}
 
-    onPropChange = (value, item, prop) => {
-        var newData = this.state.data.slice();
-        var ind = newData.indexOf(item);
-        newData[ind][prop] = value;
-        this.setState({ data: newData });
-    };
+    onQuantityChange (e, index) {
+        var ing_quant = this.props.sku.ingredient_quantities.slice();
+        ing_quant[index] = e.target.value;
+        this.props.handlePropChange(ing_quant, this.props.sku, 'ingredient_quantities');
+    }
 
     render() {
         return (
@@ -64,10 +61,12 @@ export default class IngredientsViewSimple extends React.Component {
                         columns={this.state.table_columns} 
                         table_properties={this.state.table_properties} 
                         list_items={this.state.data}
+                        quantities={(this.props.sku !== null) ? this.props.sku.ingredient_quantities : null}
                         selected_items={this.state.selected_items}
                         handleSort={this.onSort}
                         handleSelect={this.onSelect}
                         handleDetailViewSelect={this.onDetailViewSelect}
+                        handleQuantityChange={this.onQuantityChange}
                     />
                 </div>
             </div>
@@ -77,5 +76,6 @@ export default class IngredientsViewSimple extends React.Component {
 }
 
 IngredientsViewSimple.propTypes = {
-    sku: PropTypes.object
+    sku: PropTypes.object,
+    handlePropChange: PropTypes.func,
 }

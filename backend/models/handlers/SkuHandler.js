@@ -16,6 +16,7 @@ class SkuHandler{
             var new_cpc = req.body.cpc;
             var new_prod_line = req.body.prod_line;
             var new_ingredients = req.body.ingredients;
+            var new_ingredient_quantities = req.body.ingredient_quantities;
             var new_comment = req.body.comment;
             console.log(new_name);
             console.log(new_sku_num);
@@ -25,11 +26,17 @@ class SkuHandler{
             console.log(new_cpc);
             console.log(new_prod_line);
             console.log(new_ingredients);
+            console.log(new_ingredient_quantities);
 
-          if(!new_name || !new_sku_num || !new_case_upc || !new_unit_upc || !new_unit_size || !new_cpc || !new_prod_line){
-                   return res.json({
-                       success: false, error: 'You must provide all required fields'
-                   });
+            if(!new_name || !new_sku_num || !new_case_upc || !new_unit_upc || !new_unit_size || !new_cpc || !new_prod_line){
+                return res.json({
+                    success: false, error: 'You must provide all required fields'
+                });
+            }
+            if (new_ingredients.length !== new_ingredient_quantities.length) {
+                return res.json({
+                    success: false, error: "Ingredient quantities don't match ingredients list"
+                });
             }
 
             let conflict = await SKU.find({ num : new_sku_num});
@@ -44,6 +51,7 @@ class SkuHandler{
             sku.cpc = new_cpc;
             sku.prod_line = new_prod_line;
             sku.ingredients = new_ingredients;
+            sku.ingredient_quantities = new_ingredient_quantities;
             sku.comment = new_comment;
             console.log(sku);
             let new_sku = await sku.save();
@@ -69,12 +77,14 @@ class SkuHandler{
             var new_cpc = req.body.cpc;
             var new_prod_line = req.body.prod_line;
             var new_ingredients = req.body.ingredients;
+            var new_ingredient_quantities = req.body.ingredient_quantities;
             var new_comment = req.body.comment;
 
             let updated_sku = await SKU.findOneAndUpdate({ _id : target_id},
                 {$set: {name : new_name, num : new_sku_num, case_upc : new_case_upc, unit_upc : new_unit_upc,
                         unit_size : new_unit_size, cpc: new_cpc, prod_line: new_prod_line,
-                        ingredients : new_ingredients, comment : new_comment}}, {upsert : true, new : true});
+                        ingredients : new_ingredients, ingredient_quantities: new_ingredient_quantities, 
+                        comment : new_comment}}, {upsert : true, new : true});
             if(!updated_sku) {
                 return res.json({
                     success: true, error: 'This document does not exist'

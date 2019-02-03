@@ -4,7 +4,10 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Table } from 'reactstrap';
+import { 
+  Button, 
+  Table,
+  Input } from 'reactstrap';
 import * as Constants from './../../resources/Constants';
 
 export class PageTable extends React.Component{
@@ -32,6 +35,8 @@ export class PageTable extends React.Component{
                     {this.getPropertyLabel(prop)}
                   </th>
                 )}
+                {(this.props.quantities === undefined) ? 
+                  null : ( <th>Ingredient quantitites</th> )}
               </tr>
             </thead>
             <tbody>
@@ -49,12 +54,15 @@ export class PageTable extends React.Component{
                           ? item[prop] : item[prop].name}
                     </td>
                   )}
-                  <td
-                    color='link'
-                    onClick={(e) => this.props.handleDetailViewSelect(e, item) }
-                  >
-                    ...
-                  </td>
+                  {([undefined,null].includes(this.props.quantities)) ? 
+                    (<td color='link' onClick={(e) => this.props.handleDetailViewSelect(e, item) }>...</td>) : 
+                    (<td>
+                      <Input 
+                        type="text"
+                        value={this.props.quantities[index]}
+                        onChange={(e) => this.props.handleQuantityChange(e, index)}
+                      />
+                    </td>)}
                 </tr>
               )}
             </tbody>
@@ -69,10 +77,12 @@ PageTable.propTypes = {
   columns: PropTypes.arrayOf(PropTypes.string),
   table_properties: PropTypes.arrayOf(PropTypes.string),
   list_items: PropTypes.arrayOf(PropTypes.object),
+  quantities: PropTypes.arrayOf(PropTypes.string),
   selected_items: PropTypes.arrayOf(PropTypes.object),
   handleSort: PropTypes.func,
   handleSelect: PropTypes.func,
-  handleDetailViewSelect: PropTypes.func
+  handleDetailViewSelect: PropTypes.func,
+  handleQuantityChange: PropTypes.func
 };
 
 

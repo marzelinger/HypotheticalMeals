@@ -30,7 +30,7 @@ export default class SubmitRequest{
   }
 
   static submitUpdateItem = (route, item, obj) => {
-    console.log(route + ": " + item);
+    console.log(item);
     return fetch(`/api/${route}/${item._id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },

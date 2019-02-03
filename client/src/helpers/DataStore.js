@@ -43,8 +43,8 @@ export default class DataStore{
 
     static getIngredientDataSimple() {
       var results = DataStore.getIngredientData();
-      results.table_columns = ['Name', 'Number', 'Quantity'];
-      results.table_properties = ['name', 'num', 'qty'];
+      results.table_columns = ['Name', 'Number'];
+      results.table_properties = ['name', 'num'];
       return results;
     }
   }

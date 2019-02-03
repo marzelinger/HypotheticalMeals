@@ -345,6 +345,9 @@ export default class ListPage extends React.Component {
     }
 
     onPropChange = (value, item, prop) => {
+        console.log(value)
+        console.log(item)
+        console.log(prop)
         var newData = this.state.data.slice();
         var ind = newData.indexOf(item);
         newData[ind][prop] = value;

@@ -128,7 +128,10 @@ export default class SkuDetails extends React.Component {
                     options={[Constants.details_add, Constants.details_remove]}
                     handleModifyList={this.onModifyList}
                 />
-                <IngredientsViewSimple sku={this.props.item}/>
+                <IngredientsViewSimple 
+                    sku={this.props.item} 
+                    handlePropChange={this.props.handlePropChange}
+                />
             </div>
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 

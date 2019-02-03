@@ -24,7 +24,7 @@ const SkusSchema = new Schema({
       ref: 'Ingredient'
     }
   ],
-  ingredient_quantities:[],
+  ingredient_quantities:[String],
   comment: String
 }, { timestamps: true });
 
