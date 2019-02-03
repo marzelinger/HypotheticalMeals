@@ -3,6 +3,7 @@
 // Ingredients view
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import Filter from './Filter';
 import PageTable from './PageTable'
 import TableOptions from './TableOptions'
@@ -64,7 +65,11 @@ export default class IngredientsPage extends React.Component {
         });
     }   
 
-    componentDidMount = () => {
+    async componentDidMount() {
+        if (this.props.default_sku_filter !== undefined){
+            await this.onAddFilter(Constants.sku_label)
+            await this.onFilterValueSelection(undefined, this.props.default_sku_filter, 0);
+        }
         this.loadDataFromServer();
     }
 
@@ -343,4 +348,8 @@ export default class IngredientsPage extends React.Component {
         );
     }
 
+}
+
+IngredientsPage.propTypes = {
+    default_sku_filter: PropTypes.object
 }

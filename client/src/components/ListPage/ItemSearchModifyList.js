@@ -1,20 +1,21 @@
-// ItemSearchInput.js
+// ItemSearchModifyList.js
 // Riley
-// Individual search component to add to field
+// Individual search component to add/delete items to a list
 
 import React from 'react'
 import PropTypes from 'prop-types';
 import { 
+    Button,
     Input,
     Label,
     FormGroup, 
     ListGroup,
     ListGroupItem} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
-import SubmitRequest from './../../helpers/SubmitRequest'
+import SubmitRequest from '../../helpers/SubmitRequest'
 
 
-export default class ItemSearchInput extends React.Component {
+export default class ItemSearchModifyList extends React.Component {
     constructor(props) {
         super(props);
 
@@ -34,21 +35,11 @@ export default class ItemSearchInput extends React.Component {
         if (prevState.substr !== this.state.substr) {
             await this.updateResults();
         }
-        if (this.props.curr_item.name !== undefined && this.state.substr != this.props.curr_item.name) {
-            this.setState({
-                substr: this.props.curr_item.name,
-                value: this.props.curr_item._id,
-                assisted_search_results: []
-            })
-        }
     }
 
     async updateResults() {
         if (this.props.item_type === Constants.ingredient_label && this.state.substr.length > 0) {
             var res = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.substr);
-        }
-        else if (this.props.item_type === Constants.prod_line_label && this.state.substr.length > 0) {
-            var res = await SubmitRequest.submitGetProductLinesByNameSubstring(this.state.substr);
         }
         else {
             var res = {};
@@ -75,23 +66,18 @@ export default class ItemSearchInput extends React.Component {
     }
 
     onFilterValueChange = (e) => {
-        var new_item = this.props.curr_item
-        if (new_item !== e.target.value){
-            new_item = {};
-        }
-        this.props.handleSelectItem(new_item);
         this.setState({
             substr: e.target.value
         });
     }
 
-    onFilterValueSelection (e, item) {
-        this.setState({
+    async onFilterValueSelection (e, item) {
+        await this.setState({
             substr: item.name,
             value: item._id,
             assisted_search_results: []
         });
-        this.props.handleSelectItem(item);
+        console.log(this.state.value)
     }
 
     showResults = (state) => {
@@ -126,14 +112,20 @@ export default class ItemSearchInput extends React.Component {
                     onFocus={this.toggleFocus}
                     onBlur={this.toggleBlur}
                 />
+                {this.props.options.map(opt => 
+                    <Button key={opt} onClick={(e) => this.props.handleModifyList(opt, this.state.value)}>
+                        {opt}
+                    </Button>
+                )}
             </FormGroup>
         </div>
         );
     }
 }
 
-ItemSearchInput.propTypes = {
-    curr_item: PropTypes.object,
+ItemSearchModifyList.propTypes = {
+    api_route: PropTypes.string,
     item_type: PropTypes.string,
-    handleSelectItem: PropTypes.func
+    options: PropTypes.arrayOf(PropTypes.string),
+    handleModifyList: PropTypes.func
   };

@@ -11,8 +11,9 @@ import {
     FormGroup,
     Label } from 'reactstrap';
 import DataStore from '../../helpers/DataStore'
-import DetailsViewSkuTable from './DetailsViewSkuTable'
+import DetailsViewIngredientTable from './DetailsViewIngredientTable'
 import ItemSearchInput from './ItemSearchInput';
+import ItemSearchModifyList from './ItemSearchModifyList';
 import SubmitRequest from '../../helpers/SubmitRequest';
 
 
@@ -60,6 +61,20 @@ export default class SkuDetails extends React.Component {
         })
     }
 
+    onModifyList = (option, value) => {
+        console.log(value)
+        var item = this.props.item;
+        switch (option) {
+            case Constants.details_add:
+                if (!item.ingredients.includes(value)) item.ingredients.push(value);
+                break;
+            case Constants.details_remove:
+                if (item.ingredients.includes(value)) item.ingredients.splice(item.ingredients.indexOf(value), 1);
+                break;
+        }
+        console.log(item.ingredients);
+    }
+
     injectProperties = () => {
         if (this.props.item){
             return (this.state.item_properties.map(prop => 
@@ -87,6 +102,13 @@ export default class SkuDetails extends React.Component {
                     item_type={Constants.prod_line_label}
                     handleSelectItem={this.onSelectProductLine}
                 />
+                <ItemSearchModifyList
+                    api_route={Constants.ingredients_page_name}
+                    item_type={Constants.ingredient_label}
+                    options={[Constants.details_add, Constants.details_remove]}
+                    handleModifyList={this.onModifyList}
+                />
+                <DetailsViewIngredientTable id='1' sku={this.props.item}/>
             </div>
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 

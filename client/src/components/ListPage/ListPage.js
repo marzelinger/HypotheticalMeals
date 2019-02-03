@@ -107,7 +107,6 @@ export default class ListPage extends React.Component {
                 if (res === undefined || !res.success) {
                     res.data = [];
                 }
-                console.log(res)
                 asr[i] = res.data;
             }
             if (this.state.filter_category[i] === Constants.prod_line_label
