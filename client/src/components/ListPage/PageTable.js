@@ -65,7 +65,7 @@ export class PageTable extends React.Component{
 };
 
 PageTable.propTypes = {
-  table_columns: PropTypes.arrayOf(PropTypes.string),
+  columns: PropTypes.arrayOf(PropTypes.string),
   table_properties: PropTypes.arrayOf(PropTypes.string),
   list_items: PropTypes.arrayOf(PropTypes.object),
   selected_items: PropTypes.arrayOf(PropTypes.object),

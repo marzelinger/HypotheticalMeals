@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import calculatorButton from '../resources/calculator.png';
+import ManuGoalsCalculatorTable from './ManuGoalsCalculatorTable';
 
 // * 1. need to iterate through each sku and get the quantity, calculate the quantity of the sku units
 // * 2. for each sku need to iterate through each ingredient
@@ -24,6 +25,8 @@ export default class ManufacturingGoalCalculator extends React.Component{
     this.setState({
       modal: !this.state.modal
     });
+
+    await this.setState({ingredients_info: [], current_ingredient_ids: []});
     await this.getIngredientInfo();
   }
 
@@ -56,8 +59,9 @@ export default class ManufacturingGoalCalculator extends React.Component{
             ...ingredient, 
             goalQuantity: quantity * ingredient.quantity
         }
-        console.log(newIngredient);
-        await this.setState({ingredients_info: [...this.state.ingredients_info, newIngredient], current_ingredient_ids: [...this.state.current_ingredient_ids, ingredient.id]})
+        let info = this.state.ingredients_info;
+        info.push(newIngredient);
+        await this.setState({ingredients_info: info, current_ingredient_ids: [...this.state.current_ingredient_ids, ingredient.id]})
     }
   }
 
@@ -72,16 +76,18 @@ export default class ManufacturingGoalCalculator extends React.Component{
         })
         index++;
       })
-      console.log(this.state.ingredients_info);
+      return this.state.ingredients_info
   }
 
   render(){
+    
     return (
       <div>
         <img id = "button" src={calculatorButton} onClick={this.toggle}></img>
         <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup">
           <ModalHeader toggle={this.toggle}>Calculator Results</ModalHeader>
           <ModalBody>
+              <ManuGoalsCalculatorTable data = {this.state.ingredients_info}></ManuGoalsCalculatorTable>
           </ModalBody>
         </Modal>
       </div>
