@@ -91,6 +91,7 @@ export default class ListPage extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
+        console.log(this.state.data)
         if (prevState.ing_substr !== this.state.ing_substr || prevState.filter_value !== this.state.filter_value || 
             prevState.filter_category !== this.state.filter_category) {
             await this.updateFilterState(prevState);

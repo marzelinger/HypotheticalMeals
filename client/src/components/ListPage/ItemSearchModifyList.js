@@ -74,7 +74,7 @@ export default class ItemSearchModifyList extends React.Component {
     async onFilterValueSelection (e, item) {
         await this.setState({
             substr: item.name,
-            value: item._id,
+            value: item,
             assisted_search_results: []
         });
         console.log(this.state.value)

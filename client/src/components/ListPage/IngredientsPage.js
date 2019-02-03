@@ -80,7 +80,6 @@ export default class IngredientsPage extends React.Component {
             this.loadDataFromServer();
         }
         if (prevState.data !== this.state.data){
-            console.log(this.state.data);
             //this is where we recount the number of skus for each data item
             var newData = this.state.data.slice();
             let changed = false;

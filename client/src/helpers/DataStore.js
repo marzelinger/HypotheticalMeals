@@ -40,4 +40,11 @@ export default class DataStore{
       results.table_properties = ['name', 'num', 'case_upc', 'unit_upc', 'prod_line'];
       return results;
     }
+
+    static getIngredientDataSimple() {
+      var results = DataStore.getIngredientData();
+      results.table_columns = ['Name', 'Number', 'Quantity'];
+      results.table_properties = ['name', 'num', 'qty'];
+      return results;
+    }
   }

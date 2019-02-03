@@ -1,6 +1,7 @@
 // ItemDetails.js
 // Riley
 // Item details popup that is used for viewing, editing and creating items
+//depricated!!!!
 
 import React from 'react'
 import PropTypes from 'prop-types';

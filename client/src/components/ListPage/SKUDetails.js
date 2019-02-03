@@ -11,7 +11,7 @@ import {
     FormGroup,
     Label } from 'reactstrap';
 import DataStore from '../../helpers/DataStore'
-import DetailsViewIngredientTable from './DetailsViewIngredientTable'
+import IngredientsViewSimple from './IngredientsViewSimple'
 import ItemSearchInput from './ItemSearchInput';
 import ItemSearchModifyList from './ItemSearchModifyList';
 import SubmitRequest from '../../helpers/SubmitRequest';
@@ -39,8 +39,8 @@ export default class SkuDetails extends React.Component {
 
     async fillProductLine() {
         var res = {};
-        if (this.props.item.prod_line !== '') {
-            res = await SubmitRequest.submitGetProductLineByID(this.props.item.prod_line);
+        if (this.props.item.prod_line !== null && this.props.item.prod_line !== '') { //??? is this chill
+            res = await SubmitRequest.submitGetProductLineByID(this.props.item.prod_line._id);
             if (res === undefined || !res.success) res.data[0] = {};
         }
         else {
@@ -62,17 +62,26 @@ export default class SkuDetails extends React.Component {
     }
 
     onModifyList = (option, value) => {
-        console.log(value)
         var item = this.props.item;
         switch (option) {
             case Constants.details_add:
-                if (!item.ingredients.includes(value)) item.ingredients.push(value);
+                let contains = false;
+                item.ingredients.map(ing => {
+                    if (ing._id === value._id) contains = true;
+                })
+                if (!contains) item.ingredients.push(value);
                 break;
             case Constants.details_remove:
-                if (item.ingredients.includes(value)) item.ingredients.splice(item.ingredients.indexOf(value), 1);
+                let ind = -1
+                item.ingredients.map((ing, index) => {
+                    if (ing._id === value._id) ind = index;
+                })
+                if (ind > -1) {
+                    item.ingredients.splice(ind, 1);
+                }
                 break;
         }
-        console.log(item.ingredients);
+        this.setState({ item: item })
     }
 
     injectProperties = () => {
@@ -108,7 +117,7 @@ export default class SkuDetails extends React.Component {
                     options={[Constants.details_add, Constants.details_remove]}
                     handleModifyList={this.onModifyList}
                 />
-                <DetailsViewIngredientTable id='1' sku={this.props.item}/>
+                <IngredientsViewSimple sku={this.props.item}/>
             </div>
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 

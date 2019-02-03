@@ -37,7 +37,7 @@ export class PageTable extends React.Component{
             <tbody>
               {this.props.list_items.map((item, index) => 
                 <tr 
-                  key={item.num + index}
+                  key={index}
                   style={this.rowStyle(item)}
                 >
                   {this.props.table_properties.map(prop => 
@@ -45,7 +45,8 @@ export class PageTable extends React.Component{
                       key={prop}
                       onClick={e => this.props.handleSelect(e, item) }
                     >
-                      {item[prop]}
+                      {((typeof item[prop]) === 'string' || item[prop] === null || item[prop] === undefined) 
+                          ? item[prop] : item[prop].name}
                     </td>
                   )}
                   <td
