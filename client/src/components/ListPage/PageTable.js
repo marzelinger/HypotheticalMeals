@@ -52,7 +52,7 @@ export class PageTable extends React.Component{
                     >
                       {(['string','number'].includes(typeof item[prop]) || item[prop] === null || item[prop] === undefined) 
                           ? item[prop] : item[prop].name}
-                      {console.log(item.name + ': ' + prop + '/' + item[prop])}
+                      {/* {console.log(item.name + ': ' + prop + '/' + item[prop])} */}
                     </td>
                   )}
                   {([undefined,null].includes(this.props.quantities)) ? 
