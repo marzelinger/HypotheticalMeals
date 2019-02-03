@@ -8,7 +8,7 @@ import PageTable from './PageTable'
 import TableOptions from './TableOptions'
 import SubmitRequest from '../../helpers/SubmitRequest'
 import ItemStore from '../../helpers/ItemStore'
-import ItemDetails from './ItemDetails'
+import IngredientDetails from './IngredientDetails'
 import { 
     Alert,
     Button,
@@ -19,24 +19,31 @@ import './../../style/ListPage.css';
 import GeneralNavBar from "../GeneralNavBar";
 import DependencyReport from "../export/DependencyReport";
 import ExportSimple from '../export/ExportSimple';
+import DataStore from './../../helpers/DataStore'
 
 
 export default class IngredientsPage extends React.Component {
     constructor(props) {
         super(props);
 
+        let {
+            page_name, 
+            page_title, 
+            table_columns, 
+            table_properties, 
+            table_options } = DataStore.getIngredientData();
+  
+
         this.state = {
-            page_name: Constants.ingredients_page_name,
-            page_title: 'Ingredients',
+            page_name,
+            page_title,
             sku_substr: [],
             filter_value: [],
             filter_category: [],
             assisted_search_results: [[]],
-            table_columns: ['Name', 'Number', 'Package Size', 'Cost per Package (USD)', 'Associated SKUs'],
-            table_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'sku_count'],
-            table_options: [Constants.create_item, Constants.add_keyword_filter, Constants.add_sku_filter],
-            item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment', 'skus'],
-            item_property_labels: ['Name', 'Number', 'Package Size', 'Package Cost', 'Vendor Info', 'Comments', 'SKUs'],
+            table_columns,
+            table_properties,
+            table_options,
             selected_items: [],
             detail_view_item: null,
             detail_view_options: [],
@@ -320,10 +327,8 @@ export default class IngredientsPage extends React.Component {
                     />
                 </div>
                 <Modal isOpen={this.state.modal} toggle={this.toggleModal} id="popup" className='item-details'>
-                    <ItemDetails
+                    <IngredientDetails
                             item={this.state.detail_view_item}
-                            item_properties={this.state.item_properties}
-                            item_property_labels={this.state.item_property_labels}
                             detail_view_options={this.state.detail_view_options}
                             handlePropChange={this.onPropChange}
                             handleDetailViewSubmit={this.onDetailViewSubmit}

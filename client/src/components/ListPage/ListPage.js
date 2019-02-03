@@ -4,6 +4,7 @@
 // THIS PAGE IS DEPRICATED
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import Filter from './Filter';
 import PageTable from './PageTable'
 import TableOptions from './TableOptions'
@@ -21,25 +22,34 @@ import './../../style/ListPage.css';
 import GeneralNavBar from "../GeneralNavBar";
 import ExportSimple from '../export/ExportSimple';
 import DependencyReport from '../export/DependencyReport';
+import DataStore from './../../helpers/DataStore'
 
 
 export default class ListPage extends React.Component {
     constructor(props) {
         super(props);
 
+        let {
+            page_name, 
+            page_title, 
+            table_columns, 
+            table_properties, 
+            table_options, 
+            item_properties, 
+            item_property_labels } = props.simple ? DataStore.getSkuDataSimple() : DataStore.getSkuData();
+
         this.state = {
-            page_name: Constants.skus_page_name,
-            page_title: 'SKUs',
+            page_name,
+            page_title,
             ing_substr: [],
             filter_value: [],
             filter_category: [],
             assisted_search_results: [[]],
-            table_columns: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line'],
-            table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line'],
-            table_options: [Constants.create_item, Constants.add_to_manu_goals, Constants.add_keyword_filter, 
-                Constants.add_ing_filter, Constants.add_prod_filter],
-            item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', 'comment', 'ingredients'],
-            item_property_labels: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line', 'Comment', 'Ingredients'],
+            table_columns,
+            table_properties,
+            table_options,
+            item_properties,
+            item_property_labels,
             selected_items: [],
             detail_view_item: null,
             detail_view_options: [],
@@ -71,7 +81,11 @@ export default class ListPage extends React.Component {
         }
     }   
 
-    componentDidMount = () => {
+    async componentDidMount() {
+        if (this.props.default_ing_filter !== undefined){
+            await this.onAddFilter(Constants.ingredient_label)
+            await this.onFilterValueSelection(undefined, this.props.default_ing_filter, 0);
+        }
         this.loadDataFromServer();
     }
 
@@ -85,7 +99,6 @@ export default class ListPage extends React.Component {
 
     async updateFilterState(prevState) {
         var asr = this.state.assisted_search_results.slice();
-        console.log(asr);
         for (var i = 0; i < prevState.ing_substr.length; i++) {
             if (this.state.filter_category[i] === Constants.ingredient_label
                 && this.state.ing_substr[i].length > 0) {
@@ -194,7 +207,7 @@ export default class ListPage extends React.Component {
     }
 
     onAddFilter = (type) => {
-        if (type == Constants.keyword_label && this.state.filter_category.includes(type)){
+        if (type == Constants.keyword_label && this.state.filter_category.includes(Constants.keyword_label)){
             return;
         }
         var ind = this.state.ing_substr.length;
@@ -382,4 +395,8 @@ export default class ListPage extends React.Component {
         );
     }
 
+}
+
+ListPage.propTypes = {
+    default_ing_filter: PropTypes.object
 }

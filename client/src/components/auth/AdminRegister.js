@@ -25,7 +25,7 @@ class AdminRegister extends Component {
 
     // If logged in and user navigates to Register page, should redirect them to skus
     if (this.props.auth.isAuthenticated) {
-      this.props.history.push("/skus");
+      this.props.history.push("/ingredients");
       console.log("mounted" +this.props.history);
     }
 
