@@ -23,7 +23,7 @@ import ExportSimple from '../export/ExportSimple';
 import DependencyReport from '../export/DependencyReport';
 
 
-export default class ListPage extends React.Component {
+export default class ManuGoalsTables extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -89,5 +89,4 @@ export default class ListPage extends React.Component {
             </div>
         );
     }
-
 }
