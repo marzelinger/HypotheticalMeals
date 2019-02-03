@@ -3,7 +3,6 @@
 
 import Ingredient from '../databases/ingredient';
 import SKU from '../databases/sku';
-const {ObjectId} = require('mongodb');
 
 class FilterHandler{
 
@@ -40,21 +39,9 @@ class FilterHandler{
             var ingredient_ids = req.params.ingredient_ids;
             if (ingredient_ids !== undefined && ingredient_ids !== "_"){
                 ingredient_ids = ingredient_ids.replace(/\s/g, "").split(',');
-                let assoc_skus = [];
-                console.log(ObjectId(ingredient_ids[0]))
-                let skus = await SKU.find({ ingredients : ObjectId(ingredient_ids[0]) });
-                console.log(skus)
-                assoc_skus.push(skus)
-                // ingredient_ids.map(async (ing_id) => {
-                //     let skus = await SKU.find({ ingredients : ing_id });
-                //     console.log(skus)
-                //     assoc_skus.push(skus)
-                // })
-                console.log(skus);
-                // let ingredients = await Ingredient.find({ _id : { $in : ingredient_ids } });
-                // if (ingredients.length == 0) return res.json({success: false, error: '404 Ingredient'})
-                // ingredients.map(ing => ing.skus.map(sku => ids.push(sku._id)));
-                and_query.push( {_id: { $in: ingredient_ids } } );
+                let skus = await SKU.find({ ingredients : {$in : ingredient_ids } });
+                skus.map(sku => ids.push(sku._id));
+                and_query.push( {_id: { $in: ids } } );
             }
             var keyword = req.params.keyword;
             if (keyword !== undefined && keyword !== "_"){
