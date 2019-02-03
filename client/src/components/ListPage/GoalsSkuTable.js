@@ -20,7 +20,6 @@ export class GoalSkuTable extends React.Component{
     }
     
     render() {
-        console.log(this.props.list_items)
         let tablebody = (
             this.props.list_items.map((item, index) => 
             <tr 
