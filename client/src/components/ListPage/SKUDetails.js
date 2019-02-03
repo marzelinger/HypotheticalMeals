@@ -61,38 +61,52 @@ export default class SkuDetails extends React.Component {
         })
     }
 
-    onModifyList = (option, value) => {
+    onModifyList = (option, value, qty) => {
         var item = this.props.item;
         switch (option) {
             case Constants.details_add:
-                this.addIngredient(item, value);
+                this.addIngredient(item, value, qty);
                 break;
             case Constants.details_remove:
-                this.removeIngredient(item, value);
+                this.removeIngredient(item, value, qty);
                 break;
         }
         this.setState({ item: item })
     }
 
-    removeIngredient(item, value) {
+    removeIngredient(item, value, qty) {
         let ind = -1;
         item.ingredients.map((ing, index) => {
             if (ing._id === value._id)
                 ind = index;
         });
         if (ind > -1) {
-            item.ingredients.splice(ind, 1);
+            let curr_qty = item.ingredient_quantities[ind];
+            curr_qty = parseInt(curr_qty) - parseInt(qty);
+            console.log(curr_qty)
+            if (curr_qty > 0) item.ingredient_quantities[ind] = '' + curr_qty;
+            else {
+                item.ingredients.splice(ind,1);
+                item.ingredient_quantities.splice(ind,1);
+            }
         }
     }
 
-    addIngredient(item, value) {
-        let contains = false;
-        item.ingredients.map(ing => {
+    addIngredient(item, value, qty) {
+        let ind = -1;
+        item.ingredients.map((ing, index) => {
             if (ing._id === value._id)
-                contains = true;
+                ind = index;
         });
-        if (!contains)
+        if (ind > -1){
+            let curr_qty = item.ingredient_quantities[ind];
+            curr_qty = parseInt(curr_qty) + parseInt(qty);
+            item.ingredient_quantities[ind] = '' + curr_qty;
+        }
+        else {
             item.ingredients.push(value);
+            item.ingredient_quantities.push(qty);
+        }
     }
 
     injectProperties = () => {

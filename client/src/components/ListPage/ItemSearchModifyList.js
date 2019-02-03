@@ -27,6 +27,7 @@ export default class ItemSearchModifyList extends React.Component {
             focus: false,
             substr: '',
             value: '',
+            qty: '',
             assisted_search_results: []
         };
     }
@@ -71,13 +72,18 @@ export default class ItemSearchModifyList extends React.Component {
         });
     }
 
+    onQuantityChange = (e) => {
+        this.setState({
+            qty: e.target.value
+        });
+    }
+
     async onFilterValueSelection (e, item) {
         await this.setState({
             substr: item.name,
             value: item,
             assisted_search_results: []
         });
-        console.log(this.state.value)
     }
 
     showResults = (state) => {
@@ -112,8 +118,14 @@ export default class ItemSearchModifyList extends React.Component {
                     onFocus={this.toggleFocus}
                     onBlur={this.toggleBlur}
                 />
+                <Label>{'Ingredient Quantity'}</Label>
+                <Input 
+                    type="text"
+                    value={this.state.qty}
+                    onChange={(e) => this.onQuantityChange(e)}
+                />
                 {this.props.options.map(opt => 
-                    <Button key={opt} onClick={(e) => this.props.handleModifyList(opt, this.state.value)}>
+                    <Button key={opt} onClick={(e) => this.props.handleModifyList(opt, this.state.value, this.state.qty)}>
                         {opt}
                     </Button>
                 )}
