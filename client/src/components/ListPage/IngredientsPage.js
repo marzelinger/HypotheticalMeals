@@ -49,6 +49,7 @@ export default class IngredientsPage extends React.Component {
             detail_view_item: null,
             detail_view_options: [],
             data: [],
+            sort_field: '_',
             loaded: false,
             error: null,
             modal: false,
@@ -57,6 +58,7 @@ export default class IngredientsPage extends React.Component {
         this.toggleModal = this.toggleModal.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onKeywordSubmit = this.onKeywordSubmit.bind(this);
+        this.onSort = this.onSort.bind(this);
     }
 
     toggleModal(){
@@ -129,7 +131,7 @@ export default class IngredientsPage extends React.Component {
         if (final_sku_filter === '') final_sku_filter = '_';
         if (final_keyword_filter === '') final_keyword_filter = '_';
         var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-            final_sku_filter, final_keyword_filter);
+            this.state.sort_field, final_sku_filter, final_keyword_filter);
 
         if (res === undefined || !res.success) {
             res.data = [];
@@ -144,7 +146,7 @@ export default class IngredientsPage extends React.Component {
 
     updateSkuCounts(data) {
         data.map(async (item) => {
-            let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, item._id, '_', '_');
+            let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', '_');
             item.sku_count = '' + skus.data.length;
             }
         );
@@ -246,10 +248,9 @@ export default class IngredientsPage extends React.Component {
         }
     }
 
-    onSort = (event, sortKey) => {
-        const data = this.state.data;
-        data.sort((a,b) => a[sortKey].toString().localeCompare(b[sortKey]))
-        this.setState({data})
+    async onSort(event, sortKey) {
+        await this.setState({sort_field: sortKey})
+        this.loadDataFromServer();
     };
 
     onSelect = async (event, item) => {

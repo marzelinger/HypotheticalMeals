@@ -10,6 +10,7 @@ class FilterHandler{
         try{
             var and_query = [];
             var ids = [];
+            var sort_field = req.params.sort_field;
             var sku_ids = req.params.sku_ids;
             if (sku_ids !== undefined && sku_ids !== "_"){
                 sku_ids = sku_ids.replace(/\s/g, "").split(',');
@@ -22,8 +23,8 @@ class FilterHandler{
             if (keyword !== undefined && keyword !== "_"){
                 and_query.push({$text: { $search: keyword } }); 
             }
-            let results = (and_query.length === 0) ? await Ingredient.find( ).populate('skus') : 
-                                               await Ingredient.find( {$and: and_query }).populate('skus');
+            let results = (and_query.length === 0) ? await Ingredient.find( ).populate('skus').sort(sort_field) : 
+                                                     await Ingredient.find( {$and: and_query }).populate('skus').sort(sort_field);
             if (results.length == 0) return results = [];
             return res.json({ success: true, data: results});
         }
@@ -36,6 +37,7 @@ class FilterHandler{
         try{
             var and_query = [];
             var ids = [];
+            var sort_field = req.params.sort_field;
             var ingredient_ids = req.params.ingredient_ids;
             if (ingredient_ids !== undefined && ingredient_ids !== "_"){
                 ingredient_ids = ingredient_ids.replace(/\s/g, "").split(',');
@@ -52,8 +54,8 @@ class FilterHandler{
                 prod_line_ids = prod_line_ids.replace(/\s/g, "").split(',');
                 and_query.push({ prod_line: prod_line_ids }); 
             }
-            let results = (and_query.length === 0) ? await SKU.find( ).populate('ingredients').populate('prod_line') : 
-                                                     await SKU.find( {$and: and_query }).populate('ingredients').populate('prod_line');
+            let results = (and_query.length === 0) ? await SKU.find( ).populate('ingredients').populate('prod_line').sort(sort_field) : 
+                                                     await SKU.find( {$and: and_query }).populate('ingredients').populate('prod_line').sort(sort_field);
             if (results.length == 0) results = [];
             return res.json({ success: true, data: results});
         }

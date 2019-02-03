@@ -55,6 +55,7 @@ export default class ListPage extends React.Component {
             detail_view_item: {},
             detail_view_options: [],
             data: [],
+            sort_field: '_',
             loaded: false,
             error: null,
             details_modal: false,
@@ -72,6 +73,7 @@ export default class ListPage extends React.Component {
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onKeywordSubmit = this.onFilterValueSubmit.bind(this);
         this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
+        this.onSort = this.onSort.bind(this);
     }
 
     toggle = (modalType) => {
@@ -159,7 +161,7 @@ export default class ListPage extends React.Component {
         if (final_keyword_filter === '') final_keyword_filter = '_';
         if (final_prod_line_filter === '') final_prod_line_filter = '_';
         var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
-            final_ing_filter, final_keyword_filter, final_prod_line_filter);
+            this.state.sort_field, final_ing_filter, final_keyword_filter, final_prod_line_filter);
 
         if (res === undefined || !res.success) {
             res.data = [];
@@ -290,20 +292,9 @@ export default class ListPage extends React.Component {
           });
     }
 
-    onSort = (event, sortKey) => {
-        const data = this.state.data;
-        data.sort((a,b) => {
-            if (/^\d+$/.test(a[sortKey]) && /^\d+$/.test(b[sortKey])) {
-                return parseInt(a[sortKey])-parseInt(b[sortKey]);
-            }
-            else {
-                if (a[sortKey] === undefined && b[sortKey] === undefined) return a;
-                else if (a[sortKey] === undefined) return b;
-                else if (b[sortKey] === undefined) return a;
-                return a[sortKey].toString().localeCompare(b[sortKey]);
-            }
-        })
-        this.setState({data})
+    async onSort(event, sortKey) {
+        await this.setState({sort_field: sortKey})
+        this.loadDataFromServer();
     };
 
     onSelect = async (event, item) => {
