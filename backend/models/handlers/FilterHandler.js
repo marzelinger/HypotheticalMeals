@@ -39,9 +39,8 @@ class FilterHandler{
             var ingredient_ids = req.params.ingredient_ids;
             if (ingredient_ids !== undefined && ingredient_ids !== "_"){
                 ingredient_ids = ingredient_ids.replace(/\s/g, "").split(',');
-                let ingredients = await Ingredient.find({ _id : { $in : ingredient_ids } });
-                if (ingredients.length == 0) return res.json({success: false, error: '404 Ingredient'})
-                ingredients.map(ing => ing.skus.map(sku => ids.push(sku._id)));
+                let skus = await SKU.find({ ingredients : {$in : ingredient_ids } });
+                skus.map(sku => ids.push(sku._id));
                 and_query.push( {_id: { $in: ids } } );
             }
             var keyword = req.params.keyword;

@@ -37,7 +37,8 @@ export default class ItemStore{
           cpc: '',
           prod_line: '',
           comment: '',
-          ingredients: []
+          ingredients: [],
+          ingredient_quantities: []
         };
     }
     

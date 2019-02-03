@@ -10,7 +10,6 @@ import PageTable from './PageTable'
 import TableOptions from './TableOptions'
 import SubmitRequest from './../../helpers/SubmitRequest'
 import ItemStore from './../../helpers/ItemStore'
-import ItemDetails from './ItemDetails'
 import AddToManuGoal from './AddToManuGoal'
 import { 
     Alert,
