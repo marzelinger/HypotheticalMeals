@@ -10,7 +10,7 @@ export const exportSimpleData = (dataIN, fileTitle) => dispatch => {
 //set of ingredients (the selection of which follows the 
 //same rules as the “view options” described in req 2.1.2). 
 //For each ingredient, all SKUs made with the ingredient shall be shown. 
-export const exportDependencyReport = (ingredients) => () => {
+export const exportDependencyReport = (ingredients) => {
     var fileTitle = "Ingredient_Dependency_Report";
     var count = ingredients.length;
     var finalData = [];
@@ -84,7 +84,7 @@ export const exportDependencyReport = (ingredients) => () => {
 };
 
 
- export const exportSKUS = (dataIN, fileTitle) => dispatch => {
+ export const exportSKUS = (dataIN, fileTitle)  => {
     var count = dataIN.length;
     var finalData = [];
     for(let i = 0; i<count ; i++){
@@ -104,7 +104,7 @@ export const exportDependencyReport = (ingredients) => () => {
     fileDownload(finalData, fileTitle+'.csv');
 }
 
-export const exportIngredients = (dataIN, fileTitle) => dispatch => {
+export const exportIngredients = (dataIN, fileTitle)  => {
     var count = dataIN.length;
     var finalData = [];
     console.log("this is the dataIN: "+dataIN);
@@ -129,7 +129,26 @@ export const exportIngredients = (dataIN, fileTitle) => dispatch => {
     fileDownload(finalData, fileTitle+'.csv');
 }
 
-export const exportProdLines = (dataIN, fileTitle) => dispatch => {
+export const exportCalculator = (dataIN, fileTitle) => {
+    var count = dataIN.length;
+    var finalData = [];
+    for(let i = 0; i<count ; i++){
+        var currData = dataIN[i];
+        var dataLine = [];
+        dataLine.push(currData.num);
+        dataLine.push(currData.name);
+        dataLine.push(currData.vendor_info);
+        dataLine.push(currData.pkg_size);
+        dataLine.push(currData.pkg_cost);
+        dataLine.push(currData.comment);
+        dataLine.push(currData.goalQuantity);
+        dataLine.push("\r\n");
+        finalData[i] = dataLine;
+    }    
+    fileDownload(finalData, fileTitle+'.csv');
+}
+
+export const exportProdLines = (dataIN, fileTitle)  => {
     var count = dataIN.length;
     var finalData = [];
     for(let i = 0; i<count ; i++){

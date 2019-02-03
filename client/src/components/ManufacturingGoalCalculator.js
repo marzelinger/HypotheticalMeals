@@ -54,7 +54,7 @@ export default class ManufacturingGoalCalculator extends React.Component{
     }   
     else{
         console.log('setting state');
-        console.log(quantity);
+        console.log(ingredient.quantity);
         var newIngredient = {
             ...ingredient, 
             goalQuantity: quantity * ingredient.quantity
