@@ -28,8 +28,8 @@ export default class DataStore{
           table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line'],
           table_options: [Constants.create_item, Constants.add_to_manu_goals, Constants.add_keyword_filter, 
             Constants.add_ing_filter, Constants.add_prod_filter],
-          item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', 'comment', 'ingredients'],
-          item_property_labels: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line', 'Comment', 'Ingredients'],
+          item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'comment'],
+          item_property_labels: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Comment'],
           item_property_placeholder: ["Campbell's Chicken Noodle Soup", '12345678', '12345678', '12345678', '12oz', '8.5', 'Soups', 'n/a', "['']"],
         };
     }

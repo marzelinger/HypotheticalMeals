@@ -69,12 +69,12 @@ class SkuHandler{
             var new_cpc = req.body.cpc;
             var new_prod_line = req.body.prod_line;
             var new_ingredients = req.body.ingredients;
-            var new_comments = req.body.comments;
+            var new_comment = req.body.comment;
 
             let updated_sku = await SKU.findOneAndUpdate({ _id : target_id},
                 {$set: {name : new_name, num : new_sku_num, case_upc : new_case_upc, unit_upc : new_unit_upc,
                         unit_size : new_unit_size, cpc: new_cpc, prod_line: new_prod_line,
-                        ingredients : new_ingredients, comments : new_comments}}, {upsert : true, new : true});
+                        ingredients : new_ingredients, comment : new_comment}}, {upsert : true, new : true});
             if(!updated_sku) {
                 return res.json({
                     success: true, error: 'This document does not exist'

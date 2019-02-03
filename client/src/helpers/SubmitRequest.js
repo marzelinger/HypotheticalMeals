@@ -35,6 +35,7 @@ export default class SubmitRequest{
       body: JSON.stringify(item),
     }).then(res => res.json()).then((res) => {
       if (!res.success) return { error: res.error.message || res.error };
+      else console.log(res);
     });
   }
 
@@ -57,6 +58,23 @@ export default class SubmitRequest{
           success: res.success,
           data: res.data
         }
+      });
+    }
+    catch (err) {
+      return err;
+    }
+  }
+
+  static async submitGetProductLineByID(id) {
+    try {
+      return fetch('/api/products/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error.message || res.error};
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
       });
     }
     catch (err) {
@@ -98,7 +116,7 @@ export default class SubmitRequest{
     }
   }
 
-  static async submitGetIngredientsByID(id) {
+  static async submitGetIngredientByID(id) {
     try {
       return fetch('/api/ingredients/' + id)
       .then(data => data.json())

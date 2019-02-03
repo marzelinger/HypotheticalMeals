@@ -39,7 +39,7 @@ export default class IngredientDetails extends React.Component {
                     <InputGroupAddon addonType="prepend">{this.getPropertyLabel(prop)}</InputGroupAddon>
                     <Input 
                         value={ this.props.item[prop] }
-                        onChange={ (e) => this.props.handlePropChange(e, this.props.item, prop) }
+                        onChange={ (e) => this.props.handlePropChange(e.target.value, this.props.item, prop) }
                     />
                 </InputGroup>));
         }

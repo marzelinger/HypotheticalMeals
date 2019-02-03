@@ -10,8 +10,10 @@ import {
     Input,
     InputGroup,
     InputGroupAddon} from 'reactstrap';
-import DataStore from './../../helpers/DataStore'
+import DataStore from '../../helpers/DataStore'
 import DetailsViewSkuTable from './DetailsViewSkuTable'
+import ItemSearchInput from './ItemSearchInput';
+import SubmitRequest from '../../helpers/SubmitRequest';
 
 
 export default class SkuDetails extends React.Component {
@@ -20,16 +22,42 @@ export default class SkuDetails extends React.Component {
 
         let {
             item_properties, 
-            item_property_labels } = DataStore.getIngredientData();
+            item_property_labels } = DataStore.getSkuData();
 
         this.state = {
             item_properties,
-            item_property_labels
+            item_property_labels,
+            assisted_search_results: [],
+            prod_line_item: {}
         }
+    }
+
+    async componentDidMount() {
+        await this.fillProductLine();
+    }
+
+    async fillProductLine() {
+        var res = {};
+        if (this.props.item.prod_line !== '') {
+            res = await SubmitRequest.submitGetProductLineByID(this.props.item.prod_line);
+            if (res === undefined || !res.success) res.data[0] = {};
+        }
+        else {
+            res.data = {}
+            res.data[0] = {}
+        }
+        this.setState({ prod_line_item: res.data[0] });
     }
 
     getPropertyLabel = (prop) => {
         return this.state.item_property_labels[this.state.item_properties.indexOf(prop)];
+    }
+
+    onSelectProductLine = (pl) => {
+        this.props.handlePropChange(pl._id, this.props.item, 'prod_line');
+        this.setState({
+            prod_line_item: pl
+        })
     }
 
     injectProperties = () => {
@@ -39,13 +67,13 @@ export default class SkuDetails extends React.Component {
                     <InputGroupAddon addonType="prepend">{this.getPropertyLabel(prop)}</InputGroupAddon>
                     <Input 
                         value={ this.props.item[prop] }
-                        onChange={ (e) => this.props.handlePropChange(e, this.props.item, prop) }
+                        onChange={ (e) => this.props.handlePropChange(e.target.value, this.props.item, prop) }
                     />
                 </InputGroup>));
         }
-        return null;
+        return;
     }
-    
+
     render() {
         return (
         <div className='item-details'>
@@ -54,7 +82,11 @@ export default class SkuDetails extends React.Component {
             </div>
             <div className='item-properties'>
                 { this.injectProperties() }
-                <DetailsViewSkuTable id='1' ingredient={this.props.item}/>
+                <ItemSearchInput
+                    curr_item={this.state.prod_line_item}
+                    item_type={Constants.prod_line_label}
+                    handleSelectItem={this.onSelectProductLine}
+                />
             </div>
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
@@ -68,7 +100,7 @@ export default class SkuDetails extends React.Component {
     }
 }
 
-ItemDetails.propTypes = {
+SkuDetails.propTypes = {
     item: PropTypes.object,
     detail_view_options: PropTypes.arrayOf(PropTypes.string),
     handlePropChange: PropTypes.func,

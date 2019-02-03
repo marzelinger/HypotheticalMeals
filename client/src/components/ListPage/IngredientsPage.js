@@ -285,10 +285,10 @@ export default class IngredientsPage extends React.Component {
         this.toggleModal();
     }
 
-    onPropChange = (event, item, prop) => {
+    onPropChange = (value, item, prop) => {
         var newData = this.state.data.slice();
         var ind = newData.indexOf(item);
-        newData[ind][prop] = event.target.value;
+        newData[ind][prop] = value;
         this.setState({ data: newData });
     };
 

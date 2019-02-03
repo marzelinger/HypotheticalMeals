@@ -23,6 +23,7 @@ import GeneralNavBar from "../GeneralNavBar";
 import ExportSimple from '../export/ExportSimple';
 import DependencyReport from '../export/DependencyReport';
 import DataStore from './../../helpers/DataStore'
+import SkuDetails from './SkuDetails';
 
 
 export default class ListPage extends React.Component {
@@ -51,7 +52,7 @@ export default class ListPage extends React.Component {
             item_properties,
             item_property_labels,
             selected_items: [],
-            detail_view_item: null,
+            detail_view_item: {},
             detail_view_options: [],
             data: [],
             loaded: false,
@@ -203,7 +204,7 @@ export default class ListPage extends React.Component {
             detail_view_item: item,
             detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
         })
-        this.toggleModal();
+        this.toggle(Constants.details_modal);
     }
 
     onAddFilter = (type) => {
@@ -335,10 +336,10 @@ export default class ListPage extends React.Component {
         this.toggle(Constants.details_modal);
     }
 
-    onPropChange = (event, item, prop) => {
+    onPropChange = (value, item, prop) => {
         var newData = this.state.data.slice();
         var ind = newData.indexOf(item);
-        newData[ind][prop] = event.target.value;
+        newData[ind][prop] = value;
         this.setState({ data: newData });
     };
 
@@ -377,7 +378,7 @@ export default class ListPage extends React.Component {
                     />
                 </div>
                 <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
-                    <ItemDetails
+                    <SkuDetails
                             item={this.state.detail_view_item}
                             item_properties={this.state.item_properties}
                             item_property_labels={this.state.item_property_labels}
