@@ -14,6 +14,7 @@ import DataStore from "./../helpers/DataStore";
 import GeneralNavBar from "./GeneralNavBar";
 import ManufacturingGoalsPage from "./ManufacturingGoalsPage";
 import IngredientsPage from "./ListPage/IngredientsPage";
+import IngredientsPagePagination from "./ListPage/IngredientsPagePagination";
 import ProductLinePage from "../ProductLine/ProductLinePage";
 import * as Constants from './../resources/Constants';
 
@@ -91,6 +92,7 @@ class App extends React.Component{
                <Route exact path="/adminregister" component={AdminRegister} />
               <Switch>
                 <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
+                <PrivateRoute exact path="/ingredientspag" component={IngredientsPagePagination} />
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
                 <PrivateRoute exact path="/skus" component={this.getSkuRender()} />
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingGoalsPage} />
