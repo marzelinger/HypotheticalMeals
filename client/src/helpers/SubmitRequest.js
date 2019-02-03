@@ -23,19 +23,21 @@ export default class SubmitRequest{
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(item),
     }).then(res => res.json()).then((res) => {
+      console.log(res)
       if (!res.success) return { error: res.error.message || res.error };
       else console.log(res);
     });
   }
 
   static submitUpdateItem = (route, item, obj) => {
-    console.log(route + ": " + item);
+    console.log(item);
     return fetch(`/api/${route}/${item._id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(item),
     }).then(res => res.json()).then((res) => {
       if (!res.success) return { error: res.error.message || res.error };
+      else console.log(res);
     });
   }
 
@@ -58,6 +60,23 @@ export default class SubmitRequest{
           success: res.success,
           data: res.data
         }
+      });
+    }
+    catch (err) {
+      return err;
+    }
+  }
+
+  static async submitGetProductLineByID(id) {
+    try {
+      return fetch('/api/products/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error.message || res.error};
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
       });
     }
     catch (err) {
@@ -99,7 +118,7 @@ export default class SubmitRequest{
     }
   }
 
-  static async submitGetIngredientsByID(id) {
+  static async submitGetIngredientByID(id) {
     try {
       return fetch('/api/ingredients/' + id)
       .then(data => data.json())
@@ -119,7 +138,6 @@ export default class SubmitRequest{
   static submitGetFilterData = (route, filter_value, keyword, prod_line) => {
     var path = '/api/' + route + '/' + filter_value + '/' + keyword;
     path += (prod_line === undefined) ? '' : ('/' + prod_line);
-    console.log(path);
     return fetch(path, { method: 'GET' })
       .then(data => data.json())
       .then((res) => {

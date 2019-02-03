@@ -23,8 +23,8 @@ class FilterHandler{
             if (keyword !== undefined && keyword !== "_"){
                 and_query.push({$text: { $search: keyword } }); 
             }
-            let results = (and_query.length === 0) ? await Ingredient.find( ) : 
-                                               await Ingredient.find( {$and: and_query });
+            let results = (and_query.length === 0) ? await Ingredient.find( ).populate('skus') : 
+                                               await Ingredient.find( {$and: and_query }).populate('skus');
             if (results.length == 0) return res.json({success: false, error: '404 Results'})
             return res.json({ success: true, data: results});
         }
@@ -61,13 +61,12 @@ class FilterHandler{
                 and_query.push({$text: { $search: keyword } }); 
             }
             var prod_line_ids = req.params.prod_line_ids;
-            console.log(prod_line_ids)
             if (prod_line_ids !== undefined && prod_line_ids !== "_"){
                 prod_line_ids = prod_line_ids.replace(/\s/g, "").split(',');
                 and_query.push({ prod_line: prod_line_ids }); 
             }
-            let results = (and_query.length === 0) ? await SKU.find( ) : 
-                                                     await SKU.find( {$and: and_query });
+            let results = (and_query.length === 0) ? await SKU.find( ).populate('ingredients').populate('prod_line') : 
+                                                     await SKU.find( {$and: and_query }).populate('ingredients').populate('prod_line');
             if (results.length == 0) return res.json({success: false, error: '404 Results'})
             return res.json({ success: true, data: results});
         }
