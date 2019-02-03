@@ -138,7 +138,7 @@ export default class SkuDetails extends React.Component {
                 />
                 <ItemSearchModifyList
                     api_route={Constants.ingredients_page_name}
-                    item_type={Constants.ingredient_label}
+                    item_type={Constants.details_modify_ingredient}
                     options={[Constants.details_add, Constants.details_remove]}
                     handleModifyList={this.onModifyList}
                 />

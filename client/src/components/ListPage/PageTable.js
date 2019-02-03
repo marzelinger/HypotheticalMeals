@@ -36,7 +36,7 @@ export class PageTable extends React.Component{
                   </th>
                 )}
                 {(this.props.quantities === undefined) ? 
-                  null : ( <th>Ingredient quantitites</th> )}
+                  null : ( <th>Ingredient Quantitites</th> )}
               </tr>
             </thead>
             <tbody>

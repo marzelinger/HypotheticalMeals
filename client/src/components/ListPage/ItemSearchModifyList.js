@@ -39,7 +39,7 @@ export default class ItemSearchModifyList extends React.Component {
     }
 
     async updateResults() {
-        if (this.props.item_type === Constants.ingredient_label && this.state.substr.length > 0) {
+        if (this.props.item_type === Constants.details_modify_ingredient && this.state.substr.length > 0) {
             var res = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.substr);
         }
         else {
@@ -118,7 +118,7 @@ export default class ItemSearchModifyList extends React.Component {
                     onFocus={this.toggleFocus}
                     onBlur={this.toggleBlur}
                 />
-                <Label>{'Ingredient Quantity'}</Label>
+                <Label>{Constants.details_modify_ingredient_quantities}</Label>
                 <Input 
                     type="text"
                     value={this.state.qty}
