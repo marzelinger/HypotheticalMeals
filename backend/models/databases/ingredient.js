@@ -12,12 +12,12 @@ const IngredientsSchema = new Schema({
   vendor_info: String,
   pkg_size: String,
   pkg_cost: String,
-  skus: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'SKU'
-    }
-  ],
+  // skus: [
+  //   {
+  //     type: Schema.Types.ObjectId,
+  //     ref: 'SKU'
+  //   }
+  // ],
   comment: String
 }, { timestamps: true });
 
