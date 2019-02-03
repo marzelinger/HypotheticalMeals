@@ -82,9 +82,9 @@ export default class SkuDetails extends React.Component {
         });
         if (ind > -1) {
             let curr_qty = item.ingredient_quantities[ind];
-            curr_qty = parseInt(curr_qty) - parseInt(qty);
+            curr_qty = curr_qty - qty;
             console.log(curr_qty)
-            if (curr_qty > 0) item.ingredient_quantities[ind] = '' + curr_qty;
+            if (curr_qty > 0) item.ingredient_quantities[ind] = curr_qty;
             else {
                 item.ingredients.splice(ind,1);
                 item.ingredient_quantities.splice(ind,1);
@@ -100,8 +100,8 @@ export default class SkuDetails extends React.Component {
         });
         if (ind > -1){
             let curr_qty = item.ingredient_quantities[ind];
-            curr_qty = parseInt(curr_qty) + parseInt(qty);
-            item.ingredient_quantities[ind] = '' + curr_qty;
+            curr_qty = curr_qty + qty;
+            item.ingredient_quantities[ind] = curr_qty;
         }
         else {
             item.ingredients.push(value);
