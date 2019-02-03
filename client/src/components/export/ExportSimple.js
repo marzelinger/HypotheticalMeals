@@ -49,7 +49,7 @@ return (
               onClick={this.onExportSimpleClick}
               className="btn btn-small waves-effect waves-light hoverable blue accent-3"
             >
-              Export
+              {this.props.name || 'Export'}
             </button>
     );
   }
