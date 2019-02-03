@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { exportSimpleData, exportSKUS, exportIngredients, exportProdLines } from "../../actions/exportActions";
+import { exportSimpleData, exportSKUS, exportIngredients, exportProdLines, exportCalculator } from "../../actions/exportActions";
 class ExportSimple extends Component {
 
   constructor() {
@@ -22,12 +22,19 @@ class ExportSimple extends Component {
     
     switch(this.props.fileTitle){
       case ("skus"):
-      this.props.exportSKUS(this.props.data, this.props.fileTitle);
+        exportSKUS(this.props.data, this.props.fileTitle);
+        break;
+      case("calculator"):
+        exportCalculator(this.props.data, this.props.fileTitle);
+        break;
       case ("ingredients"):
-      this.props.exportIngredients(this.props.data, this.props.fileTitle);
+        exportIngredients(this.props.data, this.props.fileTitle);
+        break;
       case ("productLines"): //TODO WHAT IS THE ACTUAL SYNTAX HERE
-      this.props.exportProdLines(this.props.data, this.props.fileTitle);
+        exportProdLines(this.props.data, this.props.fileTitle);
+        break;
     }
+
       };
 render() {
     const { user } = this.props.auth;
@@ -42,7 +49,7 @@ return (
               onClick={this.onExportSimpleClick}
               className="btn btn-small waves-effect waves-light hoverable blue accent-3"
             >
-              Export
+              {this.props.name || 'Export'}
             </button>
     );
   }

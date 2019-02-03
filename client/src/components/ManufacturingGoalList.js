@@ -2,6 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ManufacturingGoal from './ManufacturingGoal';
+import GoalForm from './ManufacturingGoalForm';
 
 const ManufacturingGoalList = (props) => {
   const goalNodes = props.data.map(goal => (
@@ -13,6 +14,7 @@ const ManufacturingGoalList = (props) => {
       skus={goal.skus}
       handleUpdateGoal={props.handleUpdateGoal}
       handleDeleteGoal={props.handleDeleteGoal}
+      quantities = {goal.quantities}
     >
       { goal.name}
     </ManufacturingGoal>
