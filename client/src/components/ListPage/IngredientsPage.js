@@ -76,6 +76,7 @@ export default class IngredientsPage extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
+        console.log(this.state.data)
         if (prevState.sku_substr !== this.state.sku_substr || prevState.filter_value !== this.state.filter_value || 
             prevState.filter_category !== this.state.filter_category) {
             await this.updateFilterState(prevState);
@@ -137,15 +138,15 @@ export default class IngredientsPage extends React.Component {
             res.data = [];
             res.loaded = true;
         }
-        this.updateSkuCounts(res.data);
-        this.setState({
+        await this.updateSkuCounts(res.data);
+        await this.setState({
             data: res.data,
             loaded: res.loaded
         })
     }
 
-    updateSkuCounts(data) {
-        data.map(async (item) => {
+    async updateSkuCounts(data) {
+        await data.map(async (item) => {
             let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', '_');
             item.sku_count = '' + skus.data.length;
             }
