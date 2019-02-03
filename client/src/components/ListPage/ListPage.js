@@ -35,9 +35,7 @@ export default class ListPage extends React.Component {
             page_title, 
             table_columns, 
             table_properties, 
-            table_options, 
-            item_properties, 
-            item_property_labels } = props.simple ? DataStore.getSkuDataSimple() : DataStore.getSkuData();
+            table_options,  } = props.simple ? DataStore.getSkuDataSimple() : DataStore.getSkuData();
 
         this.state = {
             page_name,
@@ -49,8 +47,6 @@ export default class ListPage extends React.Component {
             table_columns,
             table_properties,
             table_options,
-            item_properties,
-            item_property_labels,
             selected_items: [],
             detail_view_item: {},
             detail_view_options: [],
@@ -378,8 +374,6 @@ export default class ListPage extends React.Component {
                 <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
                     <SkuDetails
                             item={this.state.detail_view_item}
-                            item_properties={this.state.item_properties}
-                            item_property_labels={this.state.item_property_labels}
                             detail_view_options={this.state.detail_view_options}
                             handlePropChange={this.onPropChange}
                             handleDetailViewSubmit={this.onDetailViewSubmit}

@@ -23,11 +23,13 @@ export default class SkuDetails extends React.Component {
 
         let {
             item_properties, 
-            item_property_labels } = DataStore.getSkuData();
+            item_property_labels,
+            item_property_patterns } = DataStore.getSkuData();
 
         this.state = {
             item_properties,
             item_property_labels,
+            item_property_patterns,
             assisted_search_results: [],
             prod_line_item: {}
         }
@@ -54,6 +56,10 @@ export default class SkuDetails extends React.Component {
         return this.state.item_property_labels[this.state.item_properties.indexOf(prop)];
     }
 
+    getPropertyPattern = (prop) => {
+        return this.state.item_property_patterns[this.state.item_properties.indexOf(prop)];
+    }
+
     onSelectProductLine = (pl) => {
         this.props.handlePropChange(pl._id, this.props.item, 'prod_line');
         this.setState({
@@ -71,7 +77,11 @@ export default class SkuDetails extends React.Component {
                 this.removeIngredient(item, value, qty);
                 break;
         }
-        this.setState({ item: item })
+        this.setState({ 
+            item: item,
+            item_changed: true 
+        })
+
     }
 
     removeIngredient(item, value, qty) {
@@ -108,6 +118,23 @@ export default class SkuDetails extends React.Component {
         else {
             item.ingredients.push(value);
             item.ingredient_quantities.push(qty);
+        }
+    }
+
+    determineButtonDisplay(state, option) { //I need to get the cases of this function to actually fire
+        switch (option) {
+            case Constants.details_save:
+                let valid = true;
+                state.item_properties.map(prop => {
+                    if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) {
+                        console.log(prop);
+                        valid = false;
+                    }
+                })
+                return (!valid);
+            case Constants.details_delete:
+            case Constants.details_cancel:
+                return false;
         }
     }
 
@@ -151,9 +178,11 @@ export default class SkuDetails extends React.Component {
             </div>
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
-                    <Button key={opt} onClick={(e) => this.props.handleDetailViewSubmit(e, this.props.item, opt)}>
-                        {opt}
-                    </Button>
+                    <Button 
+                        disabled={this.determineButtonDisplay(this.state, opt)}
+                        key={opt} 
+                        onClick={(e) => this.props.handleDetailViewSubmit(e, this.props.item, opt)}
+                    >{opt}</Button>
                 )}
             </div>
         </div>
