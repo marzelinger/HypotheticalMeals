@@ -5,10 +5,9 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 import { 
-    Button,
     Input,
-    InputGroupAddon,
-    InputGroup, 
+    Label,
+    FormGroup, 
     ListGroup,
     ListGroupItem} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
@@ -118,8 +117,8 @@ export default class ItemSearchInput extends React.Component {
         return (
         <div className='filter-item' style={{width: this.state.width + '%'}}>
             {this.showResults(this.state)}
-            <InputGroup>
-                <InputGroupAddon addonType="prepend">{this.props.item_type}</InputGroupAddon>
+            <FormGroup>
+                <Label>{this.props.item_type}</Label>
                 <Input 
                     type="text"
                     value={this.state.substr}
@@ -127,7 +126,7 @@ export default class ItemSearchInput extends React.Component {
                     onFocus={this.toggleFocus}
                     onBlur={this.toggleBlur}
                 />
-            </InputGroup>
+            </FormGroup>
         </div>
         );
     }

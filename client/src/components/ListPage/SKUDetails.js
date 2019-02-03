@@ -8,8 +8,8 @@ import * as Constants from '../../resources/Constants';
 import { 
     Button,
     Input,
-    InputGroup,
-    InputGroupAddon} from 'reactstrap';
+    FormGroup,
+    Label } from 'reactstrap';
 import DataStore from '../../helpers/DataStore'
 import DetailsViewSkuTable from './DetailsViewSkuTable'
 import ItemSearchInput from './ItemSearchInput';
@@ -63,13 +63,13 @@ export default class SkuDetails extends React.Component {
     injectProperties = () => {
         if (this.props.item){
             return (this.state.item_properties.map(prop => 
-                <InputGroup key={prop}>
-                    <InputGroupAddon addonType="prepend">{this.getPropertyLabel(prop)}</InputGroupAddon>
+                <FormGroup key={prop}>
+                    <Label>{this.getPropertyLabel(prop)}</Label>
                     <Input 
                         value={ this.props.item[prop] }
                         onChange={ (e) => this.props.handlePropChange(e.target.value, this.props.item, prop) }
                     />
-                </InputGroup>));
+                </FormGroup>));
         }
         return;
     }
