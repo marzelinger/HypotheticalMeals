@@ -17,20 +17,18 @@ export default class SubmitRequest{
       });
   }
 
-  static submitCreateItem = (route, item, obj) => {
+  static submitCreateItem = (route, item) => {
     return fetch(`/api/${route}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(item),
     }).then(res => res.json()).then((res) => {
-      console.log(res)
       if (!res.success) return { error: res.error.message || res.error };
       else console.log(res);
     });
   }
 
-  static submitUpdateItem = (route, item, obj) => {
-    console.log(item);
+  static submitUpdateItem = (route, item) => {
     return fetch(`/api/${route}/${item._id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },

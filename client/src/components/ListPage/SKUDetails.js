@@ -76,6 +76,7 @@ export default class SkuDetails extends React.Component {
 
     removeIngredient(item, value, qty) {
         let ind = -1;
+        qty = parseInt(qty);
         item.ingredients.map((ing, index) => {
             if (ing._id === value._id)
                 ind = index;
@@ -94,6 +95,7 @@ export default class SkuDetails extends React.Component {
 
     addIngredient(item, value, qty) {
         let ind = -1;
+        qty = parseInt(qty);
         item.ingredients.map((ing, index) => {
             if (ing._id === value._id)
                 ind = index;
