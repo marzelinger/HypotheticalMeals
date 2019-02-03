@@ -14,7 +14,7 @@ class FilterHandler{
             if (sku_ids !== undefined && sku_ids !== "_"){
                 sku_ids = sku_ids.replace(/\s/g, "").split(',');
                 let skus = await SKU.find({ _id : { $in : sku_ids } });
-                if (skus.length == 0) return res.json({success: false, error: '404 SKU'})
+                if (skus.length == 0) return res.json({success: true, data: []})
                 skus.map(sku => sku.ingredients.map(ing => ids.push(ing._id)));
                 and_query.push( {_id: { $in: ids } } );
             }
@@ -24,7 +24,7 @@ class FilterHandler{
             }
             let results = (and_query.length === 0) ? await Ingredient.find( ).populate('skus') : 
                                                await Ingredient.find( {$and: and_query }).populate('skus');
-            if (results.length == 0) return res.json({success: false, error: '404 Results'})
+            if (results.length == 0) return results = [];
             return res.json({ success: true, data: results});
         }
         catch (err) {
@@ -54,7 +54,7 @@ class FilterHandler{
             }
             let results = (and_query.length === 0) ? await SKU.find( ).populate('ingredients').populate('prod_line') : 
                                                      await SKU.find( {$and: and_query }).populate('ingredients').populate('prod_line');
-            if (results.length == 0) return res.json({success: false, error: '404 Results'})
+            if (results.length == 0) results = [];
             return res.json({ success: true, data: results});
         }
         catch (err) {

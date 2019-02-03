@@ -52,6 +52,7 @@ export class PageTable extends React.Component{
                     >
                       {((typeof item[prop]) === 'string' || item[prop] === null || item[prop] === undefined) 
                           ? item[prop] : item[prop].name}
+                      {console.log(item)}
                     </td>
                   )}
                   {([undefined,null].includes(this.props.quantities)) ? 

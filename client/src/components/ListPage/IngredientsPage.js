@@ -78,20 +78,11 @@ export default class IngredientsPage extends React.Component {
             prevState.filter_category !== this.state.filter_category) {
             await this.updateFilterState(prevState);
             this.loadDataFromServer();
+            console.log(this.state.data)
         }
         if (prevState.data !== this.state.data){
             //this is where we recount the number of skus for each data item
-            var newData = this.state.data.slice();
-            let changed = false;
-            newData.map(item => {
-                if (item.sku_count !== item.skus.length){
-                    item.sku_count = item.skus.length;
-                    changed = true;
-                }
-            })
-            if (changed){
-                this.setState({ data: newData })
-            }
+            
         }
     }
 
@@ -144,10 +135,19 @@ export default class IngredientsPage extends React.Component {
             res.data = [];
             res.loaded = true;
         }
+        this.updateSkuCounts(res.data);
         this.setState({
             data: res.data,
             loaded: res.loaded
         })
+    }
+
+    updateSkuCounts(data) {
+        data.map(async (item) => {
+            let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, item._id, '_', '_');
+            item.sku_count = '' + skus.data.length;
+            }
+        );
     }
 
     onFilterValueChange = (e, id) => {
