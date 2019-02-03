@@ -65,6 +65,7 @@ export default class ListPage extends React.Component {
         this.toggle = this.toggle.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onKeywordSubmit = this.onFilterValueSubmit.bind(this);
+        this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
     }
 
     toggle = (modalType) => {
@@ -91,7 +92,6 @@ export default class ListPage extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
-        console.log(this.state.data)
         if (prevState.ing_substr !== this.state.ing_substr || prevState.filter_value !== this.state.filter_value || 
             prevState.filter_category !== this.state.filter_category) {
             await this.updateFilterState(prevState);
@@ -314,16 +314,16 @@ export default class ListPage extends React.Component {
         this.toggle(Constants.details_modal);
     };
 
-    onDetailViewSubmit = (event, item, option) => {
+    async onDetailViewSubmit(event, item, option) {
         switch (option) {
             case Constants.details_create:
-                SubmitRequest.submitCreateItem(this.state.page_name, item, this);
+                await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_save:
-                SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
+                await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_delete:
-                SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
+                await SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
                 break;
             case Constants.details_cancel:
                 break;

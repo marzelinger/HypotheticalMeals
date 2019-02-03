@@ -23,6 +23,7 @@ export default class SubmitRequest{
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(item),
     }).then(res => res.json()).then((res) => {
+      console.log(res)
       if (!res.success) return { error: res.error.message || res.error };
       else console.log(res);
     });
