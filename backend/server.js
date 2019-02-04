@@ -15,6 +15,11 @@ import { getSecret } from './secrets';
 var path = require("path");
 const passport = require("passport");
 
+const cors = require('cors');
+
+
+
+
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -24,6 +29,16 @@ const router = express.Router();
 
 // set our port to either a predetermined port number if you have set it up, or 3001
 const API_PORT = process.env.API_PORT || 3001;
+
+
+
+var corsOptions = {
+  origin: '*',
+  optionSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+
 
 
 mongoose.connect(getSecret('dbUri'));
