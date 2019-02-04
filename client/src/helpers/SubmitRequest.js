@@ -2,6 +2,8 @@
 // Riley
 // Simple functions for submitting HTTP requests from the front end
 
+import * as Constants from './../resources/Constants';
+
 export default class SubmitRequest{
 
   static submitGetData = (page_name) => {
@@ -161,9 +163,7 @@ export default class SubmitRequest{
     });
   }
 
-
-
-static submitGetPagination(obj) {
+  static submitGetPagination(obj) {
 
     fetch('/api/ingredientspagget', { method: 'GET' })
           .then(data => data.json())

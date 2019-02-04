@@ -24,7 +24,7 @@ const DetailsViewSkuTable = props => {
 
 DetailsViewSkuTable.propTypes = {
   id: PropTypes.string.isRequired,
-  ingredient: PropTypes.object.isRequired
+  ingredient: PropTypes.object
 };
 
 export default DetailsViewSkuTable;

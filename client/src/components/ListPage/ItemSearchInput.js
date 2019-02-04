@@ -12,6 +12,7 @@ import {
     ListGroupItem} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import SubmitRequest from './../../helpers/SubmitRequest'
+import { prototype } from 'stream';
 
 
 export default class ItemSearchInput extends React.Component {
@@ -122,6 +123,7 @@ export default class ItemSearchInput extends React.Component {
                 <Input 
                     type="text"
                     value={this.state.substr}
+                    invalid={this.props.invalid_inputs.includes('prod_line')}
                     onChange={(e) => this.onFilterValueChange(e)}
                     onFocus={this.toggleFocus}
                     onBlur={this.toggleBlur}
@@ -135,5 +137,6 @@ export default class ItemSearchInput extends React.Component {
 ItemSearchInput.propTypes = {
     curr_item: PropTypes.object,
     item_type: PropTypes.string,
+    invalid_inputs: PropTypes.arrayOf(PropTypes.string),
     handleSelectItem: PropTypes.func
   };

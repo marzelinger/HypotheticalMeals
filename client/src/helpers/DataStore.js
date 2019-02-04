@@ -16,6 +16,7 @@ export default class DataStore{
         table_options: [Constants.create_item, Constants.add_keyword_filter, Constants.add_sku_filter],
         item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment'],
         item_property_labels: ['Name', 'Number', 'Package Size', 'Package Cost', 'Vendor Info', 'Comments'],
+        item_property_patterns: ['.+', '^[0-9]{10}$', '.+', '^[0-9]+(\.[0-9][0-9]?)?$', '.*', '.*'], 
       };
     }
 
@@ -30,7 +31,7 @@ export default class DataStore{
             Constants.add_ing_filter, Constants.add_prod_filter],
           item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'comment'],
           item_property_labels: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Comment'],
-          item_property_placeholder: ["Campbell's Chicken Noodle Soup", '12345678', '12345678', '12345678', '12oz', '8.5', 'Soups', 'n/a', "['']"],
+          item_property_patterns: ['.+', '^[0-9]{10}$', '^[016789][0-9]{11}$', '^[016789][0-9]{11}$', '.+', '^[0-9]+(\.[0-9][0-9]?)?$', '.*'], 
         };
     }
 

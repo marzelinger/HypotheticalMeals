@@ -23,11 +23,14 @@ export default class SKUDetails extends React.Component {
 
         let {
             item_properties, 
-            item_property_labels } = DataStore.getSkuData();
+            item_property_labels,
+            item_property_patterns } = DataStore.getSkuData();
 
         this.state = {
             item_properties,
             item_property_labels,
+            item_property_patterns,
+            invalid_inputs: [],
             assisted_search_results: [],
             prod_line_item: {}
         }
@@ -54,6 +57,10 @@ export default class SKUDetails extends React.Component {
         return this.state.item_property_labels[this.state.item_properties.indexOf(prop)];
     }
 
+    getPropertyPattern = (prop) => {
+        return this.state.item_property_patterns[this.state.item_properties.indexOf(prop)];
+    }
+
     onSelectProductLine = (pl) => {
         this.props.handlePropChange(pl._id, this.props.item, 'prod_line');
         this.setState({
@@ -71,7 +78,10 @@ export default class SKUDetails extends React.Component {
                 this.removeIngredient(item, value, qty);
                 break;
         }
-        this.setState({ item: item })
+        this.setState({ 
+            item: item,
+            item_changed: true 
+        })
     }
 
     removeIngredient(item, value, qty) {
@@ -84,7 +94,6 @@ export default class SKUDetails extends React.Component {
         if (ind > -1) {
             let curr_qty = item.ingredient_quantities[ind];
             curr_qty = curr_qty - qty;
-            console.log(curr_qty)
             if (curr_qty > 0) item.ingredient_quantities[ind] = curr_qty;
             else {
                 item.ingredients.splice(ind,1);
@@ -111,6 +120,25 @@ export default class SKUDetails extends React.Component {
         }
     }
 
+    async handleSubmit(e, opt) {
+        if (![Constants.details_save, Constants.details_create].includes(opt)) {
+            this.props.handleDetailViewSubmit(e, this.props.item, opt);
+            return;
+        }
+        await this.validateInputs();
+        if (this.state.invalid_inputs.length === 0) this.props.handleDetailViewSubmit(e, this.props.item, opt)
+        else alert('Invalid Fields');
+    }
+
+    async validateInputs() { 
+        var inv_in = [];
+        this.state.item_properties.map(prop => {
+            if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
+        })
+        if (this.state.prod_line_item.name === undefined) inv_in.push('prod_line')
+        await this.setState({ invalid_inputs: inv_in });
+    }
+
     injectProperties = () => {
         if (this.props.item){
             return (this.state.item_properties.map(prop => 
@@ -118,7 +146,8 @@ export default class SKUDetails extends React.Component {
                     <Label>{this.getPropertyLabel(prop)}</Label>
                     <Input 
                         value={ this.props.item[prop] }
-                        onChange={ (e) => this.props.handlePropChange(e.target.value, this.props.item, prop) }
+                        invalid={ this.state.invalid_inputs.includes(prop) }
+                        onChange={ (e) => this.props.handlePropChange(e.target.value, this.props.item, prop)}
                     />
                 </FormGroup>));
         }
@@ -136,6 +165,7 @@ export default class SKUDetails extends React.Component {
                 <ItemSearchInput
                     curr_item={this.state.prod_line_item}
                     item_type={Constants.prod_line_label}
+                    invalid_inputs={this.state.invalid_inputs}
                     handleSelectItem={this.onSelectProductLine}
                 />
                 <ItemSearchModifyList
@@ -151,9 +181,10 @@ export default class SKUDetails extends React.Component {
             </div>
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
-                    <Button key={opt} onClick={(e) => this.props.handleDetailViewSubmit(e, this.props.item, opt)}>
-                        {opt}
-                    </Button>
+                    <Button 
+                        key={opt} 
+                        onClick={(e) => this.handleSubmit(e, opt)}
+                    >{opt}</Button>
                 )}
             </div>
         </div>
