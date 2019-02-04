@@ -11,6 +11,9 @@ import {
     InputGroup, 
     ListGroup,
     ListGroupItem} from 'reactstrap';
+import Popover from 'material-ui/Popover';
+import Menu from 'material-ui/Menu';
+import MenuItem from 'material-ui/MenuItem';
 import * as Constants from '../../resources/Constants';
 
 
@@ -26,10 +29,11 @@ export default class Filter extends React.Component {
         };
     }
 
-    toggleFocus() {
+    toggleFocus(e) {
         if (this){
             this.setState({
-                focus: true
+                focus: true,
+                anchorEl: e.currentTarget,
             })
         }
     }
@@ -80,6 +84,19 @@ export default class Filter extends React.Component {
                     </Button>
                 </InputGroupAddon>
             </InputGroup>
+            <Popover
+                open={this.state.focus}
+                anchorEl={this.state.anchorEl}
+                anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                >
+                <Menu>
+                    <MenuItem primaryText="Refresh" />
+                    <MenuItem primaryText="Help &amp; feedback" />
+                    <MenuItem primaryText="Settings" />
+                    <MenuItem primaryText="Sign out" />
+                </Menu>
+                </Popover>
             {/* {this.renderOptions()} */}
         </div>
         );
