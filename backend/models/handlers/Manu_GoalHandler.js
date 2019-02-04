@@ -40,9 +40,9 @@ class Manu_GoalHandler{
                 return res.json({ success: false, error: 'No manufacturing goal named provided'});
             }
             var new_skus = req.body.skus;
-
+            var new_quantities = req.body.quantities
             let updated_manu_goal = await Manu_Goal.findOneAndUpdate({_id : target_id},
-                {$set: {skus: new_skus}}, {upsert: true, new: true});
+                {$set: {skus: new_skus, quantities: new_quantities}}, {upsert: true, new: true});
             if(!updated_manu_goal){
                 return res.json({
                     success: true, error: 'This document does not exist'
@@ -59,7 +59,8 @@ class Manu_GoalHandler{
 
     static async getAllManufacturingGoals(req, res){
         try {
-            let all_manu_goals = await Manu_Goal.find();
+            var user_id = req.params.user_id;
+            let all_manu_goals = await Manu_Goal.find({user: user_id});
             return res.json({ success: true, data: all_manu_goals});
         }
         catch (err) {
@@ -70,7 +71,8 @@ class Manu_GoalHandler{
     static async getManufacturingGoalByID(req, res){
         try {
             var target_id = req.params.manu_goal_id;
-            let to_return = await Manu_Goal.find({ _id : target_id});
+            var user_id = req.params.user_id;
+            let to_return = await Manu_Goal.find({ _id : target_id, user:user_id});
 
             if(to_return.length == 0) return res.json({success: false, error: '404'});
             return res.json({ success: true, data: to_return});
@@ -81,12 +83,20 @@ class Manu_GoalHandler{
 
     static async getManufacturingGoalByIDSkus(req, res){
         try {
-            console.log('here');
             var target_id = req.params.manu_goal_id;
-            let to_return = await Manu_Goal.find({ _id : target_id}).populate('skus');
-
+            var user_id = req.params.user_id
+            let to_return = await Manu_Goal.find({ _id : target_id, user: user_id}).populate('skus');
+            var { skus, quantities } = to_return[0];
+            let adjust_skus = [];
+            for(var i = 0; i < quantities.length; i ++){
+                var newsku = {
+                    ...skus[i]._doc,
+                    quantity: quantities[i]
+                }
+                adjust_skus.push(newsku);
+            }
             if(to_return.length == 0) return res.json({success: false, error: '404'});
-            return res.json({ success: true, data: to_return[0].skus});
+            return res.json({ success: true, data: adjust_skus});
         } catch (err){
             return res.json({ success: false, error: err});
         }

@@ -1,37 +1,47 @@
-// ItemDetails.js
+// IngredientItemDetails.js
 // Riley
-// Item details popup that is used for viewing, editing and creating items
-//depricated!!!!
+// Item details popup that is used for viewing, editing and creating Ingredients
 
 import React from 'react'
 import PropTypes from 'prop-types';
-import * as Constants from './../../resources/Constants';
+import * as Constants from '../../resources/Constants';
 import { 
     Button,
     Input,
-    InputGroup,
-    InputGroupAddon} from 'reactstrap';
+    FormGroup,
+    Label } from 'reactstrap';
+import DataStore from './../../helpers/DataStore'
+import DetailsViewSkuTable from './DetailsViewSkuTable'
 
 
-export default class ItemDetails extends React.Component {
+export default class IngredientDetails extends React.Component {
     constructor(props) {
         super(props);
+
+        let {
+            item_properties, 
+            item_property_labels } = DataStore.getIngredientData();
+
+        this.state = {
+            item_properties,
+            item_property_labels
+        }
     }
 
     getPropertyLabel = (prop) => {
-        return this.props.item_property_labels[this.props.item_properties.indexOf(prop)];
+        return this.state.item_property_labels[this.state.item_properties.indexOf(prop)];
     }
 
     injectProperties = () => {
         if (this.props.item){
-            return (this.props.item_properties.map(prop => 
-                <InputGroup key={prop}>
-                    <InputGroupAddon addonType="prepend">{this.getPropertyLabel(prop)}</InputGroupAddon>
+            return (this.state.item_properties.map(prop => 
+                <FormGroup key={prop}>
+                    <Label>{this.getPropertyLabel(prop)}</Label>
                     <Input 
                         value={ this.props.item[prop] }
                         onChange={ (e) => this.props.handlePropChange(e.target.value, this.props.item, prop) }
                     />
-                </InputGroup>));
+                </FormGroup>));
         }
         return null;
     }
@@ -44,6 +54,7 @@ export default class ItemDetails extends React.Component {
             </div>
             <div className='item-properties'>
                 { this.injectProperties() }
+                <DetailsViewSkuTable id='1' ingredient={this.props.item}/>
             </div>
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
@@ -57,10 +68,8 @@ export default class ItemDetails extends React.Component {
     }
 }
 
-ItemDetails.propTypes = {
+IngredientDetails.propTypes = {
     item: PropTypes.object,
-    item_properties: PropTypes.arrayOf(PropTypes.string),
-    item_property_labels: PropTypes.arrayOf(PropTypes.string),
     detail_view_options: PropTypes.arrayOf(PropTypes.string),
     handlePropChange: PropTypes.func,
     handleDetailViewSubmit: PropTypes.func

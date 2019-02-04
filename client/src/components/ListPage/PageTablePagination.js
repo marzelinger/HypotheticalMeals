@@ -8,9 +8,9 @@ import {
   Button, 
   Table,
   Input } from 'reactstrap';
-import * as Constants from './../../resources/Constants';
+import * as Constants from '../../resources/Constants';
 
-export class PageTable extends React.Component{
+export class PageTablePagination extends React.Component{
     constructor(props) {
       super(props);
     }
@@ -73,7 +73,7 @@ export class PageTable extends React.Component{
 
 };
 
-PageTable.propTypes = {
+PageTablePagination.propTypes = {
   columns: PropTypes.arrayOf(PropTypes.string),
   table_properties: PropTypes.arrayOf(PropTypes.string),
   list_items: PropTypes.arrayOf(PropTypes.object),
@@ -86,4 +86,4 @@ PageTable.propTypes = {
 };
 
 
-export default PageTable;
+export default PageTablePagination;

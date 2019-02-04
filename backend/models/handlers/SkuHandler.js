@@ -16,6 +16,7 @@ class SkuHandler{
             var new_cpc = req.body.cpc;
             var new_prod_line = req.body.prod_line;
             var new_ingredients = req.body.ingredients;
+            var new_ingredient_quantities = req.body.ingredient_quantities;
             var new_comment = req.body.comment;
             console.log(new_name);
             console.log(new_sku_num);
@@ -25,12 +26,19 @@ class SkuHandler{
             console.log(new_cpc);
             console.log(new_prod_line);
             console.log(new_ingredients);
+            console.log(new_ingredient_quantities);
 
-          if(!new_name || !new_sku_num || !new_case_upc || !new_unit_upc || !new_unit_size || !new_cpc || !new_prod_line){
-                   return res.json({
-                       success: false, error: 'You must provide all required fields'
-                   });
+            if(!new_name || !new_sku_num || !new_case_upc || !new_unit_upc || !new_unit_size || !new_cpc || !new_prod_line){
+                return res.json({
+                    success: false, error: 'You must provide all required fields'
+                });
             }
+            if (new_ingredients.length !== new_ingredient_quantities.length) {
+                return res.json({
+                    success: false, error: "Ingredient quantities don't match ingredients list"
+                });
+            }
+            SkuHandler.checkForZeroQtys(new_ingredient_quantities, new_ingredients);
 
             let conflict = await SKU.find({ num : new_sku_num});
             if(conflict.length > 0){
@@ -44,6 +52,7 @@ class SkuHandler{
             sku.cpc = new_cpc;
             sku.prod_line = new_prod_line;
             sku.ingredients = new_ingredients;
+            sku.ingredient_quantities = new_ingredient_quantities;
             sku.comment = new_comment;
             console.log(sku);
             let new_sku = await sku.save();
@@ -53,6 +62,15 @@ class SkuHandler{
         catch (err) {
             return res.json({ success: false, error: err});
         }
+    }
+
+    static checkForZeroQtys(new_ingredient_quantities, new_ingredients) {
+        var toRemove = [];
+        new_ingredient_quantities.map((qty, index) => {if (parseInt(qty) <= 0) toRemove.push(index)});
+        toRemove.map(ind => {
+            new_ingredients.splice(ind, 1);
+            new_ingredient_quantities.splice(ind, 1);
+        });
     }
 
     static async updateSkuByID(req, res){
@@ -69,12 +87,15 @@ class SkuHandler{
             var new_cpc = req.body.cpc;
             var new_prod_line = req.body.prod_line;
             var new_ingredients = req.body.ingredients;
-            var new_comments = req.body.comments;
+            var new_ingredient_quantities = req.body.ingredient_quantities;
+            var new_comment = req.body.comment;
+            SkuHandler.checkForZeroQtys(new_ingredient_quantities, new_ingredients);
 
             let updated_sku = await SKU.findOneAndUpdate({ _id : target_id},
                 {$set: {name : new_name, num : new_sku_num, case_upc : new_case_upc, unit_upc : new_unit_upc,
                         unit_size : new_unit_size, cpc: new_cpc, prod_line: new_prod_line,
-                        ingredients : new_ingredients, comments : new_comments}}, {upsert : true, new : true});
+                        ingredients : new_ingredients, ingredient_quantities: new_ingredient_quantities, 
+                        comment : new_comment}}, {upsert : true, new : true});
             if(!updated_sku) {
                 return res.json({
                     success: true, error: 'This document does not exist'
@@ -130,11 +151,23 @@ class SkuHandler{
     static async getIngredientsBySkuID(req, res){
         try{
             var target_id = req.params.sku_id;
-            let sku = await SKU.find({ _id : target_id }).populate('ingredients');
-            if (sku.length == 0) return res.json({success: false, error: '404'})
-            return res.json({ success: true, data: sku[0].ingredients});
+            console.log(`targetid : ${target_id}`);
+            let response = await SKU.find({ _id : target_id }).populate('ingredients');
+            console.log(sku);
+            let sku = response[0];
+            var { ingredients, ingredient_quantities } = sku;
+            let adj_ingredients = [];
+            for(var i = 0; i < ingredients.length; i ++){
+                var new_ing = {
+                    ...ingredients[i]._doc,
+                    quantity: ingredient_quantities[i]
+                }
+                adj_ingredients.push(new_ing);
+            }
+            return res.json({ success: true, data: adj_ingredients, skuData: sku});
         }
         catch (err) {
+            console.log(err);
             return res.json({ success: false, error: err});
         }
     }
@@ -145,6 +178,18 @@ class SkuHandler{
             let sku = await SKU.find({ _id : target_id }).populate('ingredients');
             if (sku.length == 0) return res.json({success: false, error: '404'})
             return res.json({ success: true, data: sku[0].ingredients});
+        }
+        catch (err) {
+            return res.json({ success: false, error: err});
+        }
+    }
+
+    static async getSkusByNameSubstring(req, res){
+        try{
+            var search_substr = req.params.search_substr;
+            let results = await SKU.find({ name: { $regex: search_substr, $options: 'i' } });
+            if (results.length == 0) return res.json({success: false, error: '404'})
+            return res.json({ success: true, data: results});
         }
         catch (err) {
             return res.json({ success: false, error: err});

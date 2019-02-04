@@ -41,7 +41,7 @@ export default class AddToManuGoal extends React.Component {
             }
           });
         console.log(goal);
-        fetch(`/api/manugoals/${goal._id}`, {
+        fetch(`/api/manugoals/${goal.user}/${goal._id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(goal),
