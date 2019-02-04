@@ -76,6 +76,7 @@ router.post('/parseSkus', upload.single('file'), (req, res) => CSV_parser.parseS
 router.post('/parseProdLines', upload.single('file'), (req, res) => CSV_parser.parseProdLineCSV(req,res));
 router.post('/parseIngredients', upload.single('file'), (req,res) => CSV_parser.parseIngredientsCSV(req, res));
 router.post('/parseFormulas', (req, res) => CSV_parser.parseFormulasCSV(req, res));
+router.post('/parseUpdateSkus', (req, res) => CSV_parser.parseUpdateSKU(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);
