@@ -20,16 +20,47 @@ export default class IngredientDetails extends React.Component {
 
         let {
             item_properties, 
-            item_property_labels } = DataStore.getIngredientData();
+            item_property_labels,
+            item_property_patterns } = DataStore.getIngredientData();
 
         this.state = {
             item_properties,
-            item_property_labels
+            item_property_labels,
+            item_property_patterns,
+            invalid_inputs: []
         }
     }
 
     getPropertyLabel = (prop) => {
         return this.state.item_property_labels[this.state.item_properties.indexOf(prop)];
+    }
+
+    getPropertyPattern = (prop) => {
+        return this.state.item_property_patterns[this.state.item_properties.indexOf(prop)];
+    }
+
+    async handleSubmit(e, opt) {
+        if (opt !== Constants.details_save) {
+            this.props.handleDetailViewSubmit(e, this.props.item, opt);
+            return;
+        }
+        await this.validateInputs();
+        if (this.state.invalid_inputs.length === 0) {
+            this.props.handleDetailViewSubmit(e, this.props.item, opt);
+        }
+        else {
+            alert('Invalid Fields');
+        }
+    }
+
+    async validateInputs() { 
+        var inv_in = [];
+        this.state.item_properties.map(prop => {
+            if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) {
+                inv_in.push(prop);
+            }
+        })
+        await this.setState({ invalid_inputs: inv_in });
     }
 
     injectProperties = () => {
@@ -39,6 +70,7 @@ export default class IngredientDetails extends React.Component {
                     <Label>{this.getPropertyLabel(prop)}</Label>
                     <Input 
                         value={ this.props.item[prop] }
+                        invalid={ this.state.invalid_inputs.includes(prop) }
                         onChange={ (e) => this.props.handlePropChange(e.target.value, this.props.item, prop) }
                     />
                 </FormGroup>));
@@ -58,9 +90,10 @@ export default class IngredientDetails extends React.Component {
             </div>
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
-                    <Button key={opt} onClick={(e) => this.props.handleDetailViewSubmit(e, this.props.item, opt)}>
-                        {opt}
-                    </Button>
+                    <Button 
+                        key={opt} 
+                        onClick={(e) => this.handleSubmit(e, opt)}
+                    >{opt}</Button>
                 )}
             </div>
         </div>

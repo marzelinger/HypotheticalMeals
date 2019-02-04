@@ -82,7 +82,6 @@ export default class SkuDetails extends React.Component {
             item: item,
             item_changed: true 
         })
-
     }
 
     removeIngredient(item, value, qty) {
@@ -95,7 +94,6 @@ export default class SkuDetails extends React.Component {
         if (ind > -1) {
             let curr_qty = item.ingredient_quantities[ind];
             curr_qty = curr_qty - qty;
-            console.log(curr_qty)
             if (curr_qty > 0) item.ingredient_quantities[ind] = curr_qty;
             else {
                 item.ingredients.splice(ind,1);
@@ -122,24 +120,31 @@ export default class SkuDetails extends React.Component {
         }
     }
 
-    determineButtonDisplay(option) { //I need to get the cases of this function to actually fire
-        var inv_in = this.state.invalid_inputs.slice();
-        var ret = true;
-        switch (option) {
-            case Constants.details_save:
-                ret = true;
-                this.state.item_properties.map(prop => {
-                    if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) {
-                        inv_in.push(prop);
-                        ret = false;
-                    }
-                })
-            case Constants.details_delete:
-            case Constants.details_cancel:
-                ret = false;
+    async handleSubmit(e, opt) {
+        if (opt !== Constants.details_save) {
+            this.props.handleDetailViewSubmit(e, this.props.item, opt);
+            return;
         }
-        this.setState({ invalid_inputs: inv_in });
-        return ret;
+        await this.validateInputs();
+        if (this.state.invalid_inputs.length === 0) {
+            this.props.handleDetailViewSubmit(e, this.props.item, opt);
+        }
+        else {
+            alert('Invalid Fields');
+        }
+    }
+
+    async validateInputs() { 
+        var inv_in = [];
+        this.state.item_properties.map(prop => {
+            if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) {
+                inv_in.push(prop);
+            }
+        })
+        if (this.state.prod_line_item.name === undefined) {
+            inv_in.push('prod_line');
+        }
+        await this.setState({ invalid_inputs: inv_in });
     }
 
     injectProperties = () => {
@@ -149,8 +154,8 @@ export default class SkuDetails extends React.Component {
                     <Label>{this.getPropertyLabel(prop)}</Label>
                     <Input 
                         value={ this.props.item[prop] }
-                        valid={ this.state.invalid_inputs.includes(prop) }
-                        onChange={ (e) => this.props.handlePropChange(e.target.value, this.props.item, prop) }
+                        invalid={ this.state.invalid_inputs.includes(prop) }
+                        onChange={ (e) => this.props.handlePropChange(e.target.value, this.props.item, prop)}
                     />
                 </FormGroup>));
         }
@@ -168,6 +173,7 @@ export default class SkuDetails extends React.Component {
                 <ItemSearchInput
                     curr_item={this.state.prod_line_item}
                     item_type={Constants.prod_line_label}
+                    invalid_inputs={this.state.invalid_inputs}
                     handleSelectItem={this.onSelectProductLine}
                 />
                 <ItemSearchModifyList
@@ -184,9 +190,8 @@ export default class SkuDetails extends React.Component {
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
                     <Button 
-                        disabled={this.determineButtonDisplay(opt)}
                         key={opt} 
-                        onClick={(e) => this.props.handleDetailViewSubmit(e, this.props.item, opt)}
+                        onClick={(e) => this.handleSubmit(e, opt)}
                     >{opt}</Button>
                 )}
             </div>
