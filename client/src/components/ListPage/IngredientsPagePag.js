@@ -34,8 +34,8 @@ export default class IngredientsPagePag extends React.Component {
             page_title, 
             table_columns, 
             table_properties, 
-            table_options,
-            currentPage } = DataStore.getIngredientData();
+            table_options
+             } = DataStore.getIngredientData();
   
 
         this.state = {
@@ -57,9 +57,9 @@ export default class IngredientsPagePag extends React.Component {
             error: null,
             modal: false,
             simple: props.simple || false,
-            currentPage,
-            pageSize: 2,
-            pagesCount: 0
+            currentPage: 0,
+            pageSize: 1,
+            pagesCount: 5
         };
         this.toggleModal = this.toggleModal.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
@@ -82,6 +82,8 @@ export default class IngredientsPagePag extends React.Component {
         }
         await this.loadDataFromServer();
         await this.updateSkuCounts();
+        //this.setNumberPages();
+
     }
 
     async componentDidUpdate (prevProps, prevState) {
@@ -166,18 +168,20 @@ export default class IngredientsPagePag extends React.Component {
     setNumberPages = () =>{
         console.log('this is the data: '+this.data);
         //this.pagesCount = Math.ceil(this.data.length/this.pageSize);
-        //this.pagesCount = 4;
+        this.state.pagesCount = 5;
         this.state = {
-            currentPage: 0
+            currentPage: 0    
         };
-
     }
 
     handlePageClick = (e, index) =>{
         e.preventDefault();
+        console.log("this is current page1; "+this.state.currentPage);
+
         this.setState({
             currentPage: index
         });
+        console.log("this is current page; "+this.state.currentPage);
     }
 
     onFilterValueChange = (e, id) => {
@@ -375,22 +379,24 @@ export default class IngredientsPagePag extends React.Component {
             
                 <div className = "pagination-wrapper">
                     <Pagination aria-label = "Page navigation example">
-                    <PaginationItem disabled = {this.currentPage <=0}>
-                    <PaginationLink onClick = {e => this.handlePageClick(e, this.currentPage -1)}
+                    <PaginationItem disabled = {this.state.currentPage <=0}>
+                    <PaginationLink onClick = {e => this.handlePageClick(e, this.state.currentPage -1)}
                     previous href = "#"/>
                     </PaginationItem>
-                    {[...Array(this.pagesCount)].map((page,i) =>
-                        <PaginationItem active = {i === this.currentPage} key = {i}>
+
+
+                    {[...Array(this.state.pagesCount)].map((page,i) =>
+                        <PaginationItem active = {i === this.state.currentPage} key = {i}>
                         <PaginationLink onClick = { e => this.handlePageClick(e, i)} href = "#">
                             {i+1}
                             </PaginationLink>
                             </PaginationItem>
                     )}
 
-                    <PaginationItem disabled={this.currentPage >= this.pagesCount - 1}>
+                    <PaginationItem disabled={this.state.currentPage >= this.state.pagesCount - 1}>
               
                     <PaginationLink
-                    onClick={e => this.handlePageClick(e, this.currentPage + 1)}
+                    onClick={e => this.handlePageClick(e, this.state.currentPage + 1)}
                     next
                     href="#"
                     />
@@ -401,12 +407,19 @@ export default class IngredientsPagePag extends React.Component {
                 </div>
                 
 
-                                {/* {this.data.slice(this.currentPage *this.pageSize, (this.currentPage +1) * this.pageSize)
+                { this.data != undefined ? (
+                    this.data.slice(this.state.currentPage *this.state.pageSize, 
+                        (this.state.currentPage +1) * this.pageSize)
             .map((data, i)=>
                 <div className = "data-slice" key={i}>
                     {data}
                     </div>
-                    )}  */}
+                    )
+                )
+                : (<div/>)
+                }
+                    
+                    
             
             
             
