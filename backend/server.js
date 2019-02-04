@@ -34,6 +34,16 @@ app.use(cors(corsOptions));
 const API_PORT = process.env.API_PORT || 3001;
 
 
+
+var corsOptions = {
+  origin: '*',
+  optionSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+
+
+
 mongoose.connect(getSecret('dbUri'));
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
