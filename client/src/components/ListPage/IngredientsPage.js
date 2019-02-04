@@ -83,10 +83,6 @@ export default class IngredientsPage extends React.Component {
             this.loadDataFromServer();
             console.log(this.state.data)
         }
-        if (prevState.data !== this.state.data){
-            //this is where we recount the number of skus for each data item
-            
-        }
     }
 
     async updateFilterState(prevState) {
