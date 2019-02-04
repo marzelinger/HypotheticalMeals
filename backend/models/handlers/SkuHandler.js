@@ -18,18 +18,6 @@ class SkuHandler{
             var new_ingredients = req.body.ingredients;
             var new_ingredient_quantities = req.body.ingredient_quantities;
             var new_comment = req.body.comment;
-<<<<<<< HEAD
-=======
-            console.log(new_name);
-            console.log(new_sku_num);
-            console.log(new_case_upc);
-            console.log(new_unit_upc);
-            console.log(new_unit_size);
-            console.log(new_cpc);
-            console.log(new_prod_line);
-            console.log(new_ingredients);
-            console.log(new_ingredient_quantities);
->>>>>>> master
 
             if(!new_name || !new_sku_num || !new_case_upc || !new_unit_upc || !new_unit_size || !new_cpc || !new_prod_line){
                 return res.json({
@@ -89,24 +77,15 @@ class SkuHandler{
             var new_unit_size = req.body.unit_size;
             var new_cpc = req.body.cpc;
             var new_prod_line = req.body.prod_line;
-            var new_ingredients = req.body.ingredients;
-<<<<<<< HEAD
-            var new_comment = req.body.comment;
-=======
             var new_ingredient_quantities = req.body.ingredient_quantities;
             var new_comment = req.body.comment;
             SkuHandler.checkForZeroQtys(new_ingredient_quantities, new_ingredients);
->>>>>>> master
 
             let updated_sku = await SKU.findOneAndUpdate({ _id : target_id},
                 {$set: {name : new_name, num : new_sku_num, case_upc : new_case_upc, unit_upc : new_unit_upc,
                         unit_size : new_unit_size, cpc: new_cpc, prod_line: new_prod_line,
-<<<<<<< HEAD
-                        ingredients : new_ingredients, comment : new_comment}}, {upsert : true, new : true});
-=======
                         ingredients : new_ingredients, ingredient_quantities: new_ingredient_quantities, 
                         comment : new_comment}}, {upsert : true, new : true});
->>>>>>> master
             if(!updated_sku) {
                 return res.json({
                     success: true, error: 'This document does not exist'

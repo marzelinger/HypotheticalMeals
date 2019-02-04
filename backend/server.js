@@ -17,13 +17,10 @@ const passport = require("passport");
 import CSV_parser from './csv_parser';
 var https = require('https');
 var fs = require('fs');
-<<<<<<< HEAD
 var multer = require('multer');
 var upload = multer(({ dest : './tmp/csv'}));
-=======
 
 const cors = require('cors');
->>>>>>> master
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -98,6 +95,7 @@ router.post('/parseProdLines', upload.single('file'), (req, res) => CSV_parser.p
 router.post('/parseIngredients', upload.single('file'), (req,res) => CSV_parser.parseIngredientsCSV(req, res));
 router.post('/parseFormulas', (req, res) => CSV_parser.parseFormulasCSV(req, res));
 router.post('/parseUpdateSkus', (req, res) => CSV_parser.parseUpdateSKU(req, res));
+router.post('/parseUpdateIngredients', (req, res) => CSV_parser.parseUpdateIngredients(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);
@@ -132,25 +130,6 @@ https.createServer({
   key: fs.readFileSync('./../server.key'),
   cert: fs.readFileSync('./../server.cert')
 }, app)
-<<<<<<< HEAD
 .listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
 */
  app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
-=======
-.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));*/
-
-// app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
-// Gives constant name to long directory home page.
-// const appPage = path.join(__dirname, '../client/build/index.html');
-
-// // Allows the use of files.
-// app.use(express.static('../client/build'));
-
-// // SERVES STATIC HOMEPAGE at '/' URL
-// app.get('*', function(req, res) {
-//   res.sendFile(appPage)
-// })
-
-
-app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
->>>>>>> master
