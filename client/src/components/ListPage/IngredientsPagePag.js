@@ -52,7 +52,6 @@ export default class IngredientsPagePag extends React.Component {
             detail_view_item: null,
             detail_view_options: [],
             data: [],
-            currentData: [],
             sort_field: '_',
             loaded: false,
             error: null,
@@ -60,14 +59,14 @@ export default class IngredientsPagePag extends React.Component {
             simple: props.simple || false,
             currentPage: 0,
             pageSize: 2,
-            pagesCount: 5
+            pagesCount: 0
         };
         this.toggleModal = this.toggleModal.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onKeywordSubmit = this.onKeywordSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
-        this.handlePageClick=this.handlePageClick.bind(this);
-
+        //this.handlePageClick=this.handlePageClick.bind(this);
+        this.setNumberPages();
     }
 
     toggleModal(){
@@ -83,7 +82,6 @@ export default class IngredientsPagePag extends React.Component {
         }
         await this.loadDataFromServer();
         await this.updateSkuCounts();
-        //this.setNumberPages();
 
     }
 
@@ -160,12 +158,11 @@ export default class IngredientsPagePag extends React.Component {
         this.setState({
             data: res.data,
             loaded: res.loaded,
-            //added below line
-            currentData: res.data
         })
     }
 
     async updateSkuCounts() {
+        console.log('this is the data in updateSkuCounts: '+this.state.data);
         let data = this.state.data.slice();
         await data.map(async (item) => {
             //let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', '_');
@@ -177,24 +174,32 @@ export default class IngredientsPagePag extends React.Component {
         );
     }
 
-    setNumberPages = () =>{
-        console.log('this is the data: '+this.state.data);
-        //this.pagesCount = Math.ceil(this.data.length/this.pageSize);
-        this.state.pagesCount = 5;
-        this.state = {
-            currentPage: 0    
-        };
+    async setNumberPages(){
+        let allData = await SubmitRequest.submitGetData(this.state.page_name);
+        console.log('this is the allData: '+allData);
+        console.log('this is the allData length: '+allData.data.length);
+
+        console.log('this is the pageSize: '+this.state.pageSize);
+
+        var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
+        console.log('this is the pagesCount1: '+this.state.pagesCount);
+
+        this.setState({
+            currentPage: 0,
+            pagesCount: curCount
+        }); 
+               console.log('this is the pagesCount: '+this.state.pagesCount);
+
     }
 
-    handlePageClick = (e, index) =>{
+    handlePageClick(e, index){
         e.preventDefault();
         console.log("this is current page1; "+this.state.currentPage);
 
         this.setState({
             currentPage: index
         });
-        console.log("this is current page; "+this.state.currentPage);
-        this.loadDataFromServer();
+        //this.loadDataFromServer();
     }
 
     onFilterValueChange = (e, id) => {
@@ -343,6 +348,9 @@ export default class IngredientsPagePag extends React.Component {
     };
 
     render() {
+        console.log("This is the curpage value; "+this.state.currentPage);
+        console.log("this is the pagesCount: " +this.state.pagesCount); 
+        
         return (
             <div className="list-page">
                 <div className="options-container" id={this.state.simple ? "simple" : "complex"}>
@@ -391,73 +399,38 @@ export default class IngredientsPagePag extends React.Component {
                 <DependencyReport data = {this.state.data} />
             
                 <div className = "pagination-wrapper">
-                    <Pagination aria-label = "Page navigation example">
-                    <PaginationItem disabled = {this.state.currentPage <=0}>
-                    <PaginationLink onClick = {e => this.handlePageClick(e, this.state.currentPage -1)}
-                    previous href = "#"/>
-                    </PaginationItem>
-
-
-                    {[...Array(this.state.pagesCount)].map((page,i) =>
-                        <PaginationItem active = {i === this.state.currentPage} key = {i}>
-                        <PaginationLink onClick = { e => this.handlePageClick(e, i)} href = "#">
-                            {i+1}
-                            </PaginationLink>
-                            </PaginationItem>
-                    )}
-
-                    <PaginationItem disabled={this.state.currentPage >= this.state.pagesCount - 1}>
+                <Pagination aria-label="Page navigation example">
+            
+            <PaginationItem disabled={this.state.currentPage <= 0}>
               
-                    <PaginationLink
-                    onClick={e => this.handlePageClick(e, this.state.currentPage + 1)}
-                    next
-                    href="#"
-                    />
+              <PaginationLink
+                onClick={e => this.handlePageClick(e, this.state.currentPage - 1)}
+                previous
+                href="#"
+              />
               
-                    </PaginationItem>
-            
-                    </Pagination>
-                </div>
-                
-                {/* {this.state.currentData} */}
+            </PaginationItem>
 
+            {[...Array(this.state.pagesCount)].map((page, i) => 
+              <PaginationItem active={i === this.state.currentPage} key={i}>
+                <PaginationLink onClick={e => this.handlePageClick(e, i)} href="#">
+                  {i + 1}
+                </PaginationLink>
+              </PaginationItem>
+            )}
 
-                {/* {
-                    this.data.slice(this.state.currentPage *this.state.pageSize, 
-                        (this.state.currentPage +1) * this.state.pageSize)
-            .map((data, i)=>
-                <div className = "data-slice" key={i}>
-                    {data}
-                    </div>
-                    )
-                
-                    } */}
-
-
-
-                {/* { this.data != undefined ? (
-                    this.data.slice(this.state.currentPage *this.state.pageSize, 
-                        (this.state.currentPage +1) * this.state.pageSize)
-            .map((data, i)=>
-                <div className = "data-slice" key={i}>
-                    {data}
-                    </div>
-                    )
-                )
-                : (<div/>) */}
-
-
-                    
-                    
+            <PaginationItem disabled={this.state.currentPage >= this.state.pagesCount - 1}>
+              
+              <PaginationLink
+                onClick={e => this.handlePageClick(e, this.state.currentPage + 1)}
+                next
+                href="#"
+              />
+              
+            </PaginationItem>
             
-            
-            
-            
-            
-            
-            
-            
-            
+          </Pagination>
+                </div>            
             </div>
         );
     }

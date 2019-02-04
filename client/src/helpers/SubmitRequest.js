@@ -178,19 +178,4 @@ export default class SubmitRequest{
       else return { data: res.data };
     });
   }
-
-
-
-static submitGetPagination(obj) {
-
-    fetch('/api/ingredientspagget', { method: 'GET' })
-          .then(data => data.json())
-          .then((res) => {
-            if (!res.success) obj.setState({ error: res.error });
-            else obj.setState({ 
-                data: res.data,
-                loaded: true
-            });
-          });
-  }
 }
