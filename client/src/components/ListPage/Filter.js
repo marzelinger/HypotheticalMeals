@@ -4,65 +4,94 @@
 
 import React from 'react'
 import PropTypes from 'prop-types';
-import * as Constants from '../../resources/Constants';
 import { 
+    Button,
     Input,
+    InputGroupAddon,
     InputGroup, 
-    InputGroupButtonDropdown,
-    DropdownToggle, 
-    DropdownMenu, 
-    DropdownItem } from 'reactstrap';
+    ListGroup,
+    ListGroupItem} from 'reactstrap';
+import * as Constants from '../../resources/Constants';
 
 
 export default class Filter extends React.Component {
     constructor(props) {
         super(props);
 
-        this.toggleDropDown = this.toggleDropDown.bind(this);
+        this.toggleFocus = this.toggleFocus.bind(this);
+        this.toggleBlur = this.toggleBlur.bind(this);
         this.state = {
             width: 100,
-            dropdownOpen: false
+            focus: false
         };
     }
-    
-    toggleDropDown() {
-        this.setState({
-            dropdownOpen: !this.state.dropdownOpen
-        });
+
+    toggleFocus() {
+        if (this){
+            this.setState({
+                focus: true
+            })
+        }
     }
-    
+
+    toggleBlur() {
+        if (this){
+            this.setState({
+                focus: false
+            })
+        }
+    }
+
+    showResults = (state) => {
+        if (state.focus){
+            return (<ListGroup>
+                {(this.props.assisted_search_results.map(res => 
+                <ListGroupItem
+                    key={res.name}
+                    tag="button"
+                    onMouseDown={(e) => this.props.handleFilterValueSelection(e, res, this.props.id)}
+                >{res.name}</ListGroupItem>
+            ))}
+            </ListGroup>
+            )
+        }
+        else {
+            return;
+        }
+        
+    }
+
     render() {
         return (
         <div className='filter-item' style={{width: this.state.width + '%'}}>
+            {this.showResults(this.state)}
             <InputGroup id = 'inputGroup'>
                 <Input 
                     type="text"
                     value={this.props.value}
-                    onChange={this.props.handleValueChange}>
-                </Input>
-                <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownOpen} toggle={this.toggleDropDown}>
-                    <DropdownToggle caret>
-                        {this.props.selection}
-                    </DropdownToggle>
-                    <DropdownMenu>
-                        {this.props.categories.map(cat => 
-                            <DropdownItem 
-                                key={cat}
-                                onClick={e => this.props.handleFilterSelection(e, cat)}
-                            >{cat}</DropdownItem>
-                        )}
-                    </DropdownMenu>
-                </InputGroupButtonDropdown>
+                    onChange={(e) => this.props.handleFilterValueChange(e, this.props.id)}
+                    onFocus={this.toggleFocus}
+                    onBlur={this.toggleBlur}
+                />
+                <InputGroupAddon addonType="append">{this.props.filter_category}</InputGroupAddon>
+                <InputGroupAddon addonType="append">
+                    <Button color="secondary" onClick={(e) => this.props.handleRemoveFilter(e, this.props.id)}> 
+                        {Constants.remove_filter_label}
+                    </Button>
+                </InputGroupAddon>
             </InputGroup>
+            {/* {this.renderOptions()} */}
         </div>
         );
     }
 }
 
 Filter.propTypes = {
+    id: PropTypes.number,
     value: PropTypes.string,
-    selection: PropTypes.string,
-    categories: PropTypes.arrayOf(PropTypes.string),
-    handleValueChange: PropTypes.func,
-    handleFilterSelection: PropTypes.func
+    filter_category: PropTypes.string,
+    assisted_search_results: PropTypes.arrayOf(PropTypes.object),
+    handleFilterValueChange: PropTypes.func,
+    handleFilterValueSelection: PropTypes.func,
+    handleRemoveFilter: PropTypes.func
   };

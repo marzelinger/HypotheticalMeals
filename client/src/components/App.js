@@ -10,11 +10,11 @@ import PrivateRoute from "./private-route/PrivateRoute";
 import Dashboard from "./dashboard/Dashboard";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "../utils/setAuthToken";
-import DataStore from "./../helpers/DataStore";
 import GeneralNavBar from "./GeneralNavBar";
 import ManufacturingGoalsPage from "./ManufacturingGoalsPage";
 import ImportPage from "./ImportPage";
-
+import IngredientsPage from "./ListPage/IngredientsPage";
+import ProductLinePage from "../ProductLine/ProductLinePage";
 import * as Constants from './../resources/Constants';
 
 import { setCurrentUser, logoutUser, getAllUsers } from "../actions/authActions";
@@ -66,24 +66,6 @@ class App extends React.Component{
     }
   }
 
-  getIngredientRender = () => {
-    return () => (
-      <div className="container">
-        <ListPage
-          {...DataStore.getIngredientData()}
-        />
-      </div>
-    );
-  }
-
-  getSkuRender = () => {
-    return () => (
-      <ListPage
-        {...DataStore.getSkuData()}
-      />
-    );
-  }
-
   render(){
     let props = {};
     return(
@@ -91,14 +73,16 @@ class App extends React.Component{
         <Provider store={store}>
           <Router>
             <div className="App">
-              <Route exact path="/" component={Landing} />
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/register" component={Register} />
-              <Route exact path="/adminregister" component={AdminRegister} />
+
+                <PrivateRoute component={GeneralNavBar}/>
+
+               <Route exact path="/login" component={Login} />
+               <Route exact path="/register" component={Register} />
+               <Route exact path="/adminregister" component={AdminRegister} />
               <Switch>
+                <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
-                <PrivateRoute exact path="/skus" component={this.getSkuRender()} />
-                <PrivateRoute exact path="/ingredients" component={this.getIngredientRender()} />
+                <PrivateRoute exact path="/skus" component={ListPage} />
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingGoalsPage} />
                 <PrivateRoute exact path="/import" component={ImportPage} />
               </Switch>
@@ -112,3 +96,7 @@ class App extends React.Component{
 
 export default App
 
+// <Route exact path="/" component={Landing} />
+//               <Route exact path="/login" component={Login} />
+//               <Route exact path="/register" component={Register} />
+//               <Route exact path="/adminregister" component={AdminRegister} />

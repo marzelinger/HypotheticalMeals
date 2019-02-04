@@ -3,13 +3,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Table } from 'reactstrap';
 import * as Constants from '../resources/Constants';
-import ListPage from './ListPage/ListPage';
+import ListPage from '../components/ListPage/ListPage';
 import DataStore from '../helpers/DataStore';
 
-const GoalSkuTable = props => {
+const ProductLineSkuTable = props => {
   let {page_name, page_title, filter_options, table_columns, table_properties, table_options, item_properties, item_property_labels, item_property_placeholder } = DataStore.getSkuData();
   const skuTableData = {
-    page_name: 'manugoals/' + props.id + '/skus',
+    page_name: 'prodlines/' + props.id + '/skus',
     page_title: '',
     filter_options,
     table_columns,
@@ -20,7 +20,7 @@ const GoalSkuTable = props => {
     item_property_placeholder,
     simple: true
   }
-  console.log('manugoals/' + props.id + '/skus');
+  console.log('prodlines/' + props.id + '/skus');
   console.log(skuTableData)
   return (
     <div>
@@ -32,11 +32,11 @@ const GoalSkuTable = props => {
 
 };
 
-GoalSkuTable.propTypes = {
+ProductLineSkuTable.propTypes = {
   user: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   skus: PropTypes.array.isRequired,
   id: PropTypes.string.isRequired,
 };
 
-export default GoalSkuTable;
+export default ProductLineSkuTable;
