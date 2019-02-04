@@ -52,6 +52,7 @@ export default class IngredientsPagePag extends React.Component {
             detail_view_item: null,
             detail_view_options: [],
             data: [],
+            exportData: [],
             sort_field: '_',
             loaded: false,
             error: null,
@@ -60,7 +61,7 @@ export default class IngredientsPagePag extends React.Component {
             currentPage: 0,
             pageSize: 2,
             pagesCount: 0
-        };
+                };
         this.toggleModal = this.toggleModal.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onKeywordSubmit = this.onKeywordSubmit.bind(this);
@@ -127,6 +128,9 @@ export default class IngredientsPagePag extends React.Component {
     }
 
     async loadDataFromServer() {
+
+        let allData = await SubmitRequest.submitGetData(this.state.page_name);
+
         if (this.state.filter_value === undefined) return;
         var final_sku_filter = '';
         var final_keyword_filter = '';
@@ -148,16 +152,21 @@ export default class IngredientsPagePag extends React.Component {
 
           var res = await SubmitRequest.submitGetFilterDataPag(Constants.ing_filter_path, 
             this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
-
-
-
+            var resALL = await SubmitRequest.submitGetFilterDataPag(Constants.ing_filter_path, 
+                this.state.sort_field, final_sku_filter, final_keyword_filter, 0, allData.data.length);
+            console.log("this is the res: "+res);
+    
         if (res === undefined || !res.success) {
             res.data = [];
             res.loaded = true;
+            resALL.data = [];
+            resALL.loaded = true;
         }
         this.setState({
             data: res.data,
             loaded: res.loaded,
+            exportData: resALL.data
+
         })
     }
 
@@ -186,7 +195,7 @@ export default class IngredientsPagePag extends React.Component {
 
         this.setState({
             currentPage: 0,
-            pagesCount: curCount
+            pagesCount: curCount,
         }); 
                console.log('this is the pagesCount: '+this.state.pagesCount);
 
@@ -200,6 +209,36 @@ export default class IngredientsPagePag extends React.Component {
             currentPage: index
         });
         this.loadDataFromServer();
+    }
+
+    async loadExportData(e){
+        e.preventDefault();
+        let allData = await SubmitRequest.submitGetData(this.state.page_name);
+
+        if (this.state.filter_value === undefined) return;
+        var final_sku_filter = '';
+        var final_keyword_filter = '';
+        for (var i = 0; i < this.state.filter_value.length; i++){
+            if (this.state.filter_value[i].length === Constants.obj_id_length 
+                && this.state.filter_category[i] === Constants.sku_label) {
+                    final_sku_filter += (final_sku_filter.length == 0 ? '' : ',');
+                    final_sku_filter += this.state.filter_value[i];
+            }
+            else if (this.state.filter_category[i] === Constants.keyword_label) {
+                final_keyword_filter = this.state.filter_value[i];
+            }
+        }
+        if (final_sku_filter === '') final_sku_filter = '_';
+        if (final_keyword_filter === '') final_keyword_filter = '_';
+        
+        console.log("this is the all data length: "+allData.data.length);
+        var res = await SubmitRequest.submitGetFilterDataPag(Constants.ing_filter_path, 
+            this.state.sort_field, final_sku_filter, final_keyword_filter, 0, allData.data.length);
+        console.log("this is the res: "+res);
+
+        this.setState({
+            exportData: res.data
+        });
     }
 
     onFilterValueChange = (e, id) => {
@@ -395,7 +434,7 @@ export default class IngredientsPagePag extends React.Component {
                         value={this.state.error}
                         color='danger'/>
                 </Modal>   
-                <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/>                           
+                <ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/>                           
                 <DependencyReport data = {this.state.data} />
             
                 <div className = "pagination-wrapper">
