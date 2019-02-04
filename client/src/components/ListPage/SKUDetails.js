@@ -30,6 +30,7 @@ export default class SkuDetails extends React.Component {
             item_properties,
             item_property_labels,
             item_property_patterns,
+            invalid_inputs: [],
             assisted_search_results: [],
             prod_line_item: {}
         }
@@ -121,21 +122,24 @@ export default class SkuDetails extends React.Component {
         }
     }
 
-    determineButtonDisplay(state, option) { //I need to get the cases of this function to actually fire
+    determineButtonDisplay(option) { //I need to get the cases of this function to actually fire
+        var inv_in = this.state.invalid_inputs.slice();
+        var ret = true;
         switch (option) {
             case Constants.details_save:
-                let valid = true;
-                state.item_properties.map(prop => {
+                ret = true;
+                this.state.item_properties.map(prop => {
                     if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) {
-                        console.log(prop);
-                        valid = false;
+                        inv_in.push(prop);
+                        ret = false;
                     }
                 })
-                return (!valid);
             case Constants.details_delete:
             case Constants.details_cancel:
-                return false;
+                ret = false;
         }
+        this.setState({ invalid_inputs: inv_in });
+        return ret;
     }
 
     injectProperties = () => {
@@ -145,6 +149,7 @@ export default class SkuDetails extends React.Component {
                     <Label>{this.getPropertyLabel(prop)}</Label>
                     <Input 
                         value={ this.props.item[prop] }
+                        valid={ this.state.invalid_inputs.includes(prop) }
                         onChange={ (e) => this.props.handlePropChange(e.target.value, this.props.item, prop) }
                     />
                 </FormGroup>));
@@ -179,7 +184,7 @@ export default class SkuDetails extends React.Component {
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
                     <Button 
-                        disabled={this.determineButtonDisplay(this.state, opt)}
+                        disabled={this.determineButtonDisplay(opt)}
                         key={opt} 
                         onClick={(e) => this.props.handleDetailViewSubmit(e, this.props.item, opt)}
                     >{opt}</Button>
