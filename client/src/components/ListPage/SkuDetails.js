@@ -17,7 +17,7 @@ import ItemSearchModifyList from './ItemSearchModifyList';
 import SubmitRequest from '../../helpers/SubmitRequest';
 
 
-export default class SkuDetails extends React.Component {
+export default class SKUDetails extends React.Component {
     constructor(props) {
         super(props);
 
@@ -161,7 +161,7 @@ export default class SkuDetails extends React.Component {
     }
 }
 
-SkuDetails.propTypes = {
+SKUDetails.propTypes = {
     item: PropTypes.object,
     detail_view_options: PropTypes.arrayOf(PropTypes.string),
     handlePropChange: PropTypes.func,
