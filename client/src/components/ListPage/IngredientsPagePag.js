@@ -1,4 +1,4 @@
-// IngredientsPagePagination.js
+// IngredientsPagePag.js
 // Riley
 // Ingredients view
 
@@ -25,7 +25,7 @@ import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 
 
 
-export default class IngredientsPagePagination extends React.Component {
+export default class IngredientsPagePag extends React.Component {
     constructor(props) {
         super(props);
 
@@ -58,7 +58,7 @@ export default class IngredientsPagePagination extends React.Component {
             modal: false,
             simple: props.simple || false,
             currentPage,
-            pageSize: 5,
+            pageSize: 2,
             pagesCount: 0
         };
         this.toggleModal = this.toggleModal.bind(this);
@@ -67,8 +67,6 @@ export default class IngredientsPagePagination extends React.Component {
         this.onSort = this.onSort.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
 
-        //this.loadDataFromServer();
-        //this.setNumberPages();
     }
 
     toggleModal(){
@@ -84,8 +82,6 @@ export default class IngredientsPagePagination extends React.Component {
         }
         await this.loadDataFromServer();
         await this.updateSkuCounts();
-        this.setNumberPages();
-
     }
 
     async componentDidUpdate (prevProps, prevState) {
@@ -157,8 +153,6 @@ export default class IngredientsPagePagination extends React.Component {
         })
     }
 
-
-
     async updateSkuCounts() {
         let data = this.state.data.slice();
         await data.map(async (item) => {
@@ -172,7 +166,7 @@ export default class IngredientsPagePagination extends React.Component {
     setNumberPages = () =>{
         console.log('this is the data: '+this.data);
         //this.pagesCount = Math.ceil(this.data.length/this.pageSize);
-        this.pagesCount = 4;
+        //this.pagesCount = 4;
         this.state = {
             currentPage: 0
         };
@@ -185,7 +179,6 @@ export default class IngredientsPagePagination extends React.Component {
             currentPage: index
         });
     }
-
 
     onFilterValueChange = (e, id) => {
         var sku_sub = this.state.sku_substr.slice();
@@ -379,7 +372,7 @@ export default class IngredientsPagePagination extends React.Component {
                 </Modal>   
                 <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/>                           
                 <DependencyReport data = {this.state.data} />
-
+            
                 <div className = "pagination-wrapper">
                     <Pagination aria-label = "Page navigation example">
                     <PaginationItem disabled = {this.currentPage <=0}>
@@ -406,19 +399,29 @@ export default class IngredientsPagePagination extends React.Component {
             
                     </Pagination>
                 </div>
-                {/* {this.data.slice(this.currentPage *this.pageSize, (this.currentPage +1) * this.pageSize)
+                
+
+                                {/* {this.data.slice(this.currentPage *this.pageSize, (this.currentPage +1) * this.pageSize)
             .map((data, i)=>
                 <div className = "data-slice" key={i}>
                     {data}
                     </div>
                     )}  */}
-
+            
+            
+            
+            
+            
+            
+            
+            
+            
             </div>
         );
     }
 
 }
 
-IngredientsPagePagination.propTypes = {
+IngredientsPagePag.propTypes = {
     default_sku_filter: PropTypes.object
 }

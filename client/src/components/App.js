@@ -13,7 +13,7 @@ import setAuthToken from "../utils/setAuthToken";
 import GeneralNavBar from "./GeneralNavBar";
 import ManufacturingGoalsPage from "./ManufacturingGoalsPage";
 import IngredientsPage from "./ListPage/IngredientsPage";
-import IngredientsPagePagination from "./ListPage/IngredientsPagePagination";
+import IngredientsPagePag from "./ListPage/IngredientsPagePag";
 import ProductLinePage from "../ProductLine/ProductLinePage";
 import * as Constants from './../resources/Constants';
 
@@ -81,6 +81,7 @@ class App extends React.Component{
                <Route exact path="/adminregister" component={AdminRegister} />
               <Switch>
                 <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
+                <PrivateRoute exact path="/ingredientspagepag" component={IngredientsPagePag} />
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
                 <PrivateRoute exact path="/skus" component={ListPage} />
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingGoalsPage} />
@@ -99,5 +100,3 @@ export default App
 //               <Route exact path="/login" component={Login} />
 //               <Route exact path="/register" component={Register} />
 //               <Route exact path="/adminregister" component={AdminRegister} />
-//                <PrivateRoute exact path="/ingredientspag" component={IngredientsPagePagination} />
-
