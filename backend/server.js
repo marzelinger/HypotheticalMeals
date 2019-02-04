@@ -93,7 +93,7 @@ router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:prod_line_ids', (
 router.post('/parseSkus', upload.single('file'), (req, res) => CSV_parser.parseSKUCSV(req, res));
 router.post('/parseProdLines', upload.single('file'), (req, res) => CSV_parser.parseProdLineCSV(req,res));
 router.post('/parseIngredients', upload.single('file'), (req,res) => CSV_parser.parseIngredientsCSV(req, res));
-router.post('/parseFormulas', (req, res) => CSV_parser.parseFormulasCSV(req, res));
+router.post('/parseFormulas', upload.single('file'), (req, res) => CSV_parser.parseFormulasCSV(req, res));
 router.post('/parseUpdateSkus', (req, res) => CSV_parser.parseUpdateSKU(req, res));
 router.post('/parseUpdateIngredients', (req, res) => CSV_parser.parseUpdateIngredients(req, res));
 

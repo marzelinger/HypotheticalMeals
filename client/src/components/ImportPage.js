@@ -18,6 +18,7 @@ export default class ImportPage extends React.Component {
 
             // Duplicates
             duplicate: false,
+            collision: false,
             rowIssue: -1,
 
             // Incorrect number of headers
@@ -53,6 +54,8 @@ export default class ImportPage extends React.Component {
             update_list_type: "",
             update_list_items_new: [],
             update_list_no_collisions: [],
+
+            aborted: false,
         }
     }
 
@@ -107,6 +110,12 @@ export default class ImportPage extends React.Component {
                             duplicate: true,
                             rowIssue: res.data.duplicate
                         });
+                    }
+                    else if(typeof res.data.collision!= 'undefined'){
+                        this.setState({
+                            collision: true,
+                            rowIssue: res.data.collision
+                        })
                     }
                     else if(typeof res.data.numFields != 'undefined'){
                         this.setState({
@@ -167,6 +176,13 @@ export default class ImportPage extends React.Component {
     onDismissDuplicate = () => {
         this.setState({
             duplicate: false,
+            rowIssue: -1
+        })
+    }
+
+    onDismissCollision = () => {
+        this.setState({
+            collision: false,
             rowIssue: -1
         })
     }
@@ -239,6 +255,9 @@ export default class ImportPage extends React.Component {
 
     handleReject = () => {
         this.resetState();
+        this.setState({
+            aborted: true,
+        })
     }
 
     resetState = () => {
@@ -249,6 +268,7 @@ export default class ImportPage extends React.Component {
             // Duplicates
             duplicate: false,
             rowIssue: -1,
+            collision: false,
 
             // Incorrect number of headers
             incorrectNumHeaders: false,
@@ -283,6 +303,8 @@ export default class ImportPage extends React.Component {
             update_list_type: "",
             update_list_items_new: [],
             update_list_no_collisions: [],
+
+            aborted: false,
         })
     }
 
@@ -302,6 +324,10 @@ export default class ImportPage extends React.Component {
 
                 <Alert color="danger" isOpen={this.state.duplicate} toggle={this.onDismissDuplicate}>
                     A duplicate occured on row {this.state.rowIssue+1}
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.collision} toggle={this.onDismissCollision}>
+                    An ambiguous collision occured on row {this.state.rowIssue+1}
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.incorrectNumHeaders} toggle={this.onDismissHeaderCount}>
@@ -330,6 +356,10 @@ export default class ImportPage extends React.Component {
 
                 <Alert color="danger" isOpen={this.state.invalidFileName} toggle={this.onDismissFileName}>
                     The file provided was named incorrectly
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.aborted} toggle={this.resetState}>
+                    The import was aborted
                 </Alert>
                 
 

@@ -122,23 +122,36 @@ export default class CSV_parser{
                 // If the specified product line doesn't exist, indicate to the user
                 if(!db_prod_lines.has(obj["Product Line Name"])) {
                     return res.json({ success: false, row: i+1, prod_line_name: obj["Product Line Name"]});
-                } // Check for a duplicate in the same CSV file
+                } 
+                // Check for a duplicate in the same CSV file
                 else if(skus_to_add.has(obj["SKU#"]) || skus_to_add_names.has(obj["Name"])){
                     return res.json({ success: false, duplicate: i});
-                }  // Check for a collision based on primary key
-                else if(db_skus.has(obj["SKU#"])){
+                }  
+                // If a unique identifier of the object is in the db but the primary key is not, return an error
+                else if( db_caseUPCs.has(Number(obj["Case UPC"])) && !db_skus.has(Number(obj["SKU#"])) ){
+                    return res.json({ success: false, collision: i});
+                } 
+                // Checking for collisions with the primary key
+                else if(db_skus.has(Number(obj["SKU#"]))){
                     var db_sku = await SKU.find({ num : Number(obj["SKU#"]) });
 
                     // If it is a duplicate from something in the database, ignore it
-                    if(compareSKUs(db_sku, obj)) {
+                    if(db_sku.name == obj["Name"] &&
+                    db_sku.num == obj["SKU#"] &&
+                    db_sku.case_upc == obj["Case UPC"] &&
+                    db_sku.unit_upc == obj["Unit UPC"] &&
+                    db_sku.unit_size == obj["Unit size"] &&
+                    db_sku.cpc == obj["Count per case"] &&
+                    db_sku.prod_line == obj["Product Line Name"] &&
+                    db_sku.comment == obj["Comment"]) {
                         skus_to_ignore.add(obj["SKU#"])
-                    } // If a unique identifier of the object is in the db but the primary key is not, return an error
-                    else if(db_caseUPCs.has(obj["Case UPC"]) && !db_skus.has(obj["SKU#"])){
+                    }
+                    // If its an ambiguous collision, indicate to the user
+                    else if(db_skus.get(Number(obj["SKU#"])) != obj["Case UPC"] && db_caseUPCs.has(Number(obj["Case UPC"]))) {
                         return res.json({ success: false, collision: i});
                     }
-                    else if(isAmbiguousCollisionSKUs(obj, db_skus, db_caseUPCs)){
-                        return res.json({ success: false, collision: i});
-                    } else {
+                    // Otherwise indicate that this record will be added and use the *_to_add* to check for duplicates in the same CSV
+                    else {
                         skus_to_update.add(obj["SKU#"]);
                         skus_to_add.add(obj["SKU#"]);
                         skus_to_add_names.add(obj.Name);
@@ -170,10 +183,7 @@ export default class CSV_parser{
                     obj.unit_upc = obj["Unit UPC"];
                     obj.unit_size = obj["Unit size"];
                     obj.cpc = obj["Count per case"];
-                    var curr_prod_line_name = obj["Product Line Name"];
-                    var curr_prod_line = await Prod_Line.find({ name : curr_prod_line_name });
-                    var curr_prod_line_id = curr_prod_line._id;
-                    obj.prod_line = curr_prod_line_id;
+                    obj.prod_line = obj["Product Line Name"];
                     obj.comment = obj["Comment"];
                     delete obj["Name"];
                     delete obj["SKU#"];
@@ -194,11 +204,9 @@ export default class CSV_parser{
                     sku.case_upc = Number(obj["Case UPC"]);
                     sku.unit_upc = Number(obj["Unit UPC"]);
                     sku.unit_size = obj["Unit Size"];
-                    var curr_prod_line_name = obj["Product Line Name"];
-                    var curr_prod_line = await Prod_Line.find({ name : curr_prod_line_name});
-                    var curr_prod_line_id = curr_prod_line._id;
+                    let prod_line = await Prod_Line.find({ name : obj["Product Line Name"]});
+                    sku.prod_line = prod_line[0]._id;
                     sku.cpc = Number(obj["Count per case"]);
-                    sku.prod_line = curr_prod_line_id;
                     sku.comment = obj["Comment"];
                     intermediate_skus_added.push(sku);
                     //let new_sku = await sku.save();
@@ -213,6 +221,7 @@ export default class CSV_parser{
                 for(var i = 0; i < intermediate_skus_added.length; i++){
                     let new_sku = await intermediate_skus_added[i].save();
                     skus_added.push(new_sku);
+                    console.log(new_sku);
                 }
                 return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: skus_added});
             } else{
@@ -226,15 +235,15 @@ export default class CSV_parser{
         }*/
     }
 
-    static async compareSKUs(db_sku, sku_to_add){
-        return (db_sku.name == sku_to_add["Name"] &&
-                db_sku.num == sku_to_add["SKU#"] &&
-                db_sku.case_upc == sku_to_add["Case UPC"] &&
-                db_sku.unit_upc == sku_to_add["Unit UPC"] &&
-                db_sku.unit_size == sku_to_add["Unit size"] &&
-                db_sku.cpc == sku_to_add["Count per case"] &&
-                db_sku.prod_line == sku_to_add["Product Line Name"] &&
-                db_sku.comment == sku_to_add["Comment"]);
+   /* static async compareSKUs(db_sku, obj){
+        return (db_sku.name == obj["Name"] &&
+                db_sku.num == obj["SKU#"] &&
+                db_sku.case_upc == obj["Case UPC"] &&
+                db_sku.unit_upc == obj["Unit UPC"] &&
+                db_sku.unit_size == obj["Unit size"] &&
+                db_sku.cpc == obj["Count per case"] &&
+                db_sku.prod_line == obj["Product Line Name"] &&
+                db_sku.comment == obj["Comment"]);
     }
 
     static async isAmbiguousCollisionSKUs(sku_to_add, db_sku_num_caseUPC, db_sku_caseUPC){
@@ -244,7 +253,7 @@ export default class CSV_parser{
             return true;
         }
         return false;
-    }
+    }*/
 
     static async parseUpdateSKU(req, res){
         var all_skus = [];
@@ -252,7 +261,7 @@ export default class CSV_parser{
         var addArray = JSON.parse(req.body.adds);
         for(var i = 0; i < updateArray.length; i++){
             let updated_sku = await SKU.findOneAndUpdate({ num : Number(updateArray[i].num)},
-                {$set: {case_upc : updateArray[i].case_upc, unit_upc : updateArray[i].unit_upc,
+                {$set: {name : updateArray[i].name, case_upc : updateArray[i].case_upc, unit_upc : updateArray[i].unit_upc,
                         unit_size : updateArray[i].unit_size, cpc: updateArray[i].cpc, prod_line: updateArray[i].prod_line,
                         comment : updateArray[i].comment}}, {upsert : true, new : true});
             all_skus.push(updated_sku);
@@ -313,21 +322,26 @@ export default class CSV_parser{
             for(var i = 0; i < jsonArray.length; i++){
                 var obj = jsonArray[i];
                 // Check for a duplicate in the same CSV file
-                if(ingrs_to_add_nums.has(obj["Ingr#"]) || ingrs_to_add_names.has(obj["Name"])) {
+                if(ingrs_to_add_nums.has(Number(obj["Ingr#"])) || ingrs_to_add_names.has(obj["Name"])) {
                     return res.json({ success: false, duplicate: i});
+                } // If a unique identifier of the object is in the db but the primary key is not, return an error
+                else if(db_ingredients_name.has(obj["Name"]) && !db_ingredients_nums.has(Number(obj["Ingr#"]))){
+                    return res.json({ success: false, collision: i});
                 // Check for a collision based on the primary key
-                } else if(db_ingredients_nums.has(obj["Ingr#"])) {
+                } else if(db_ingredients_nums.has(Number(obj["Ingr#"]))) {
                     var db_ingredient = await Ingredient.find({ num : obj["Ingr#"]});
 
                     // If it is a duplicate from something in the database, ignore it
-                    if(compareIngredients(db_ingredient, obj)){
+                    if(db_ingredient.name == obj["Name"] && 
+                        db_ingredient.num == obj["Ingr#"] &&
+                        db_ingredient.vendor_info == obj["Vendor Info"] &&
+                        db_ingredient.pkg_size == obj["Size"] &&
+                        db_ingredient.pkg_cost == obj["Cost"] &&
+                        db_ingredient.comment == obj["Comment"]){
                         ingrs_to_ignore.add(obj["Ingr#"]);
-                    }// If a unique identifier of the object is in the db but the primary key is not, return an error
-                    else if(db_ingredients_name.has(obj["Name"]) && !db_ingredients_nums.has(obj["Ingr#"])) {
-                        return res.json({ success: false, collision: i});
-                    }// If it is an ambiguous collision with something in the database, return an error
-                    else if(isAmbiguousCollisionIngrs(obj, db_ingredients_nums, db_ingredients_name)){
-                        return res.json({ success: false, collision: i});
+                    } // If it is an ambiguous collision with something in the database, return an error
+                    else if(db_ingredients_nums.get(Number(obj["Ingr#"])) != obj["Name"] && db_ingredients_name.has(obj["Name"])) {
+                        return res.json({ success: false, collision: i})
                     } // If it is neither, indicate that it will be updated, its added to *_to_add_* to indicate it exists in the file
                     else {
                         ingrs_to_update.add(obj["Ingr#"]);
@@ -337,7 +351,7 @@ export default class CSV_parser{
                 // If it wasn't a collision or duplicate, then just add it straight to the database
                 } else {
                     ingrs_to_add_nums.add(obj["Ingr#"]);
-                    ingrs_to_update_names.add(obj["Name"]);
+                    ingrs_to_add_names.add(obj["Name"]);
                 }
             }
 
@@ -391,7 +405,7 @@ export default class CSV_parser{
                 return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: ingrs_added});
             }
             else {
-                return res.json({ success: true, added: added, ignored: ignored, data: intermediate_ingrs_added, old_data: skus_to_update_old, new_data: skus_to_update_new});
+                return res.json({ success: true, added: added, ignored: ignored, data: intermediate_ingrs_added, old_data: ingrs_to_update_old, new_data: ingrs_to_update_new});
             }
      //   }
    /*     catch (err) {
@@ -399,14 +413,14 @@ export default class CSV_parser{
             return res.json({ success: false, error : err});
         }*/
     }
-
-    static async compareIngredients(db_ingredient, ingredient_to_add){
-        return(db_ingredient.name == ingredient_to_add["Name"] && 
-               db_ingredient.num == ingredient_to_add["Ingr#"] &&
-               db_ingredient.vendor_info == ingredient_to_add["Vendor Info"] &&
-               db_ingredient.pkg_size == ingredient_to_add["Size"] &&
-               db_ingredient.pkg_cost == ingredient_to_add["Cost"] &&
-               db_ingredient.comment == ingredient_to_add["Comment"]);
+/*
+    static async compareIngredients(db_ingredient, obj){
+        return(db_ingredient.name == obj["Name"] && 
+               db_ingredient.num == obj["Ingr#"] &&
+               db_ingredient.vendor_info == obj["Vendor Info"] &&
+               db_ingredient.pkg_size == obj["Size"] &&
+               db_ingredient.pkg_cost == obj["Cost"] &&
+               db_ingredient.comment == obj["Comment"]);
     }
 
     static async isAmbiguousCollisionIngrs(ingredient_to_add, db_ingredient_num_name, db_ingredients_name){
@@ -416,17 +430,19 @@ export default class CSV_parser{
             return true;
         }
         return false;
-    }
+    }*/
 
     static async parseUpdateIngredients(req, res){
         var all_ingredients = [];
         var updateArray = JSON.parse(req.body.updates);
+        console.log(updateArray);
         var addArray = JSON.parse(req.body.adds);
         for(var i = 0; i < updateArray.length; i++){
-            let updated_ingr = await Ingredient.findOneAndUpdate({ num:  Number(updateArray[i].num)},
-                {$set: {vendor_info : updateArray[i].vendor_info, pkg_size: updateArray[i].pkg_size, 
-                        pkg_cost: Number(updateArray[i].pkg_cost), comment: updateArray[i].comment}}, 
+            let updated_ingr = await Ingredient.findOneAndUpdate({ num: Number(updateArray[i].num)},
+                {$set: {name: updateArray[i].name, vendor_info : updateArray[i].vendor_info, pkg_size: updateArray[i].pkg_size, 
+                        pkg_cost: updateArray[i].pkg_cost, comment: updateArray[i].comment}}, 
                         {upsert : true, new : true});
+            console.log(updated_ingr);
             all_ingredients.push(updated_ingr);
         }
         for(var i = 0; i < addArray.length; i++){
