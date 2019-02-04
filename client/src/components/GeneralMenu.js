@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, NavLink } from 'reactstrap';
 import { Link } from "react-router-dom";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Register from "./auth/Register";
@@ -31,9 +31,52 @@ export default class GeneralMenu extends React.Component {
         <DropdownToggle id = "menubutton">
         </DropdownToggle>
         <DropdownMenu>
-          <DropdownItem>Manufacturing Goals</DropdownItem>
-          <DropdownItem>User Settings</DropdownItem>
-          
+          <DropdownItem>
+          <Link
+                to="/manu_goals"
+                className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+              >
+ Manufacturing Goals
+               </Link>
+            
+            
+            </DropdownItem>
+            <DropdownItem>
+          <Link
+                to="/ingredients"
+                style={{
+                  width: "140px",
+                  borderRadius: "3px",
+                  letterSpacing: "1px"
+                }}
+                className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+
+              >
+ Ingredients
+               </Link>
+            
+            
+            </DropdownItem>
+            <DropdownItem>
+              </DropdownItem>
+
+
+            <DropdownItem>
+          <Link
+                to="/skus"
+                className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+              >
+ SKUs
+               </Link>
+            
+            
+            </DropdownItem>      
+            
+            <DropdownItem>
+ Product Lines
+            
+            
+            </DropdownItem>      
           <DropdownItem>
             <div>
               {
@@ -42,11 +85,6 @@ export default class GeneralMenu extends React.Component {
                 <div>
                 <Link
                 to="/register"
-                style={{
-                  width: "140px",
-                  borderRadius: "3px",
-                  letterSpacing: "1.5px"
-                }}
                 className="btn btn-large waves-effect waves-light hoverable blue accent-3"
               >
                 Register New User

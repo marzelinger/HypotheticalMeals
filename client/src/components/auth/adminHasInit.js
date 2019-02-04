@@ -1,10 +1,8 @@
 
 const jwt_decode = require('jwt-decode');
 const isEmpty = require("is-empty");
-const getAllUsers = require('../../actions/authActions');
 
 module.exports = function adminHasInit(){
-  //var response = getAllUsers();
 
     let errors = {};
     console.log("this is the adminHasinit flag: "+ localStorage.getItem("firstAdminCreated"));
