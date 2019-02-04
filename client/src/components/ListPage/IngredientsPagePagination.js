@@ -22,6 +22,7 @@ import ExportSimple from '../export/ExportSimple';
 import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 var mongoose         = require('mongoose');
 var mongoosePaginate = require('mongoose-paginate-v2');
+const per_page = "4";
 
 
 export default class IngredientsPagePagination extends React.Component {
@@ -46,12 +47,17 @@ export default class IngredientsPagePagination extends React.Component {
             detail_view_item: null,
             detail_view_options: [],
             data: [],
+            curPageData: [],
+            currentPage: null,
             loaded: false,
             error: null,
             modal: false,
-            simple: props.simple || false
+            simple: props.simple || false,
+            itemsPerPage: null
         };
         this.toggle = this.toggle.bind(this);
+        this.handlePageChange=this.handlePageChange.bind(this);
+
     }
 
 
@@ -63,7 +69,11 @@ export default class IngredientsPagePagination extends React.Component {
 
     componentDidMount = () => {
         this.loadDataFromServer();
-        if (this.state.data === []){
+        //if (this.state.data === []){
+        if (this.currentPage === null) this.currentPage = 1;
+        if (this.itemsPerPage === null) this.itemsPerPage = 5;
+
+        if (this.state.data === [] || this.state.curPageData === []){
             this.loadDataFromServer();
         }
     }
@@ -84,6 +94,12 @@ export default class IngredientsPagePagination extends React.Component {
     loadDataFromServer = () => {
         //SubmitRequest.submitGetData(this.state.page_name, this);
         console.log("this is the data: "+this.data);
+        SubmitRequest.submitGetPagination(this);
+        console.log("this is the data2: "+this.data);
+
+    }
+
+    loadDataFromServerPag = () => {
         SubmitRequest.submitGetPagination(this);
         console.log("this is the data2: "+this.data);
 
@@ -127,6 +143,7 @@ export default class IngredientsPagePagination extends React.Component {
         const data = this.state.data;
         data.sort((a,b) => a[sortKey].toString().localeCompare(b[sortKey]))
         this.setState({data})
+        //NEED TO CHECK THE PAGINATION HERE 
     };
 
     onSelect = (event, item) => {
@@ -165,6 +182,7 @@ export default class IngredientsPagePagination extends React.Component {
             detail_view_options: []
         });
         this.loadDataFromServer();
+        //NEED TO CHECK THE PAGINATE CALL HERE.
         this.toggle();
     }
 
@@ -175,7 +193,57 @@ export default class IngredientsPagePagination extends React.Component {
         this.setState({ data: newData });
     };
 
+    // getNumPages = (currentPage) =>{
+    //     { this.handlePageChange } 
+    //     this.setState(
+    //         { per_page: this.props.results , 
+    //             currentPage: currentPage + 1 , 
+    //             previousPage: currentPage - 1  
+    //         });
+    //     }
+
+    handlePageChange = (page, evt) => {
+        const currentPage = this.state.currentPage || 1;
+        //const numPages = this.getNumPages();
+        let numPages = Math.ceil(this.data.length / this.itemsPerPage);
+        const pageLinks = [];
+        if (currentPage > 1) {
+            if (currentPage > 2) {
+                pageLinks.push(1);
+                pageLinks.push(' ');
+            }
+            pageLinks.push(currentPage - 1);
+            pageLinks.push(' ');
+        }
+        for (let i = 1; i <= numPages; i++) {
+            const page = i;
+            pageLinks.push(page);
+        }
+        if (currentPage < numPages) {
+            pageLinks.push(' ');
+            pageLinks.push(currentPage + 1);
+            if (currentPage < numPages - 1) {
+                pageLinks.push(' ');
+                pageLinks.push(numPages);
+            }
+        }
+        this.setState({ currentPage: currentPage + 1  } );
+        this.setState({ previousPage: currentPage - 1  } );
+    }
+
     render() {
+
+         const paginationData = this.props.data;
+         console.log("paginationData : "+paginationData);
+ let numPages = Math.ceil(paginationData.length / per_page);
+     if (paginationData.length % per_page > 0) {
+     numPages++;
+     }
+//     const per_page=10;
+// const pages = Math.ceil(this.props.items.length / per_page);
+// const current_page = this.props.current_Page || 1 ;
+// const start_offset = (current_page - 1) * per_page;
+// let start_count =0;
         return (
             <div className="list-page">
                 <div className="options-container" id={this.state.simple ? "simple" : "complex"}>

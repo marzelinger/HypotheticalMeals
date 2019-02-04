@@ -111,7 +111,7 @@ router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
 //pagination router api calls
 router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
 
-router.get('/ingredientspagget', (req, res, next) => PaginationHandler.getIngredientsPagV2(req, res, next));
+router.get('/ingredientspagget', (req, res, next) => PaginationHandler.getIngredientsPag(req, res, next));
 // Gives constant name to long directory home page.
 // const appPage = path.join(__dirname, '../client/build/index.html');
 

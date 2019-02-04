@@ -46,47 +46,9 @@ class IngredientHandler{
     }
 
     static async getIngredientsPag(req, res, next){
-        var perPage = 10;
+        var perPage = 4;
         var page = req.params.page || 1;
         console.log("this is in the pagination handler");
-        Ingredient.find({})
-                  .skip((perPage*page) - perPage)
-                  .limit(perPage)
-                  .exec(function(err, ingredients){
-                      Ingredient.count().exec(function(err, count){
-                        console.log("this ingredient.count"+res);
-
-                        if (err) return next(err)
-                        // res.render('main/ingredientspag', {
-                        //     ingredients: ingredients,
-                        //     current: page,
-                        //     pages: Math.ceil(count/perPage)
-                        // })
-                        res.json({
-                            ingredients: ingredients,
-                            current: page,
-                            pages: Math.ceil(count/perPage)
-                        })
-
-                        console.log("this is the res.json"+res);
-                      })
-                  })
-    }
-
-
-        static async getAllIngredients(req, res){
-        try{
-            let all_ingredients = await Ingredient.find();
-            return res.json({ success: true, data: all_ingredients});
-        }
-        catch (err) {
-            return res.json({ success: false, error: err});
-        }
-    }
-
-    static async getIngredientsPagV2(req, res, next){
-        var perPage = 10;
-        var page = req.params.page || 1;
         
         try{
             console.log("this is in the pagination handler");
@@ -94,7 +56,9 @@ class IngredientHandler{
         // Ingredient.find( { createdOn: { $lte: request.createdOnBefore } } )
         // .limit( 10 )
         // .sort( '-createdOn' )
-        let cur_ingredients = await Ingredient.find({}).limit( 3 ).sort( '1' )
+        let cur_ingredients = await Ingredient.find({})
+        .skip((perPage*page) - perPage)
+        .limit(perPage).sort( '1' )
         return res.json({ success: true, data: cur_ingredients});
         }
         catch(err){
