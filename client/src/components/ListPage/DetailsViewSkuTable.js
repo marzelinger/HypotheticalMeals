@@ -15,7 +15,9 @@ const DetailsViewSkuTable = props => {
   return (
     <div>
       <ListPage
-        {...skuTableData}
+        {
+        ...skuTableData
+        } simple = {true}
       />
     </div>
   );

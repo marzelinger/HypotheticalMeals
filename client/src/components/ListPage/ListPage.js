@@ -23,6 +23,7 @@ import ExportSimple from '../export/ExportSimple';
 import DependencyReport from '../export/DependencyReport';
 import DataStore from './../../helpers/DataStore'
 import SkuDetails from './SkuDetails';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 const jwt_decode = require('jwt-decode');
 
 
@@ -52,6 +53,7 @@ export default class ListPage extends React.Component {
             item_properties,
             item_property_labels,
             selected_items: [],
+            selected_indexes: [],
             detail_view_item: {},
             detail_view_options: [],
             data: [],
@@ -298,11 +300,21 @@ export default class ListPage extends React.Component {
         this.loadDataFromServer();
     };
 
-    onSelect = async (event, item) => {
-        var newState = this.state.selected_items.slice();
-        var loc = newState.indexOf(item);
-        (loc > -1) ? newState.splice(loc, 1) : newState.push(item);
-        await this.setState({ selected_items: newState});
+    // onSelect = async (event, item) => {
+    //     var newState = this.state.selected_items.slice();
+    //     var loc = newState.indexOf(item);
+    //     (loc > -1) ? newState.splice(loc, 1) : newState.push(item);
+    //     await this.setState({ selected_items: newState});
+    // };
+
+    onSelect = (rowIndexes) => {
+        console.log(rowIndexes);
+        var newState = [];
+        rowIndexes.forEach( index => {
+            newState.push(this.state.data[index]);
+        });
+        console.log(newState);
+        this.setState({ selected_items: newState, selected_indexes: rowIndexes});
     };
 
     onDetailViewSelect = (event, item) => {
@@ -371,9 +383,14 @@ export default class ListPage extends React.Component {
                         table_properties={this.state.table_properties} 
                         list_items={this.state.data}
                         selected_items={this.state.selected_items}
+                        selected_indexes = {this.state.selected_indexes}
                         handleSort={this.onSort}
                         handleSelect={this.onSelect}
                         handleDetailViewSelect={this.onDetailViewSelect}
+                        showDetails = {this.props.simple !=undefined ? !this.props.simple : true}
+                        selectable = {this.props.simple !=undefined ? !this.props.simple : true}
+                        sortable = {this.props.simple != undefined ? !this.props.simple : true}
+                        title = {this.state.page_title}
                     />
                 </div>
                 <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
