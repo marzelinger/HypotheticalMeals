@@ -4,35 +4,39 @@ import PropTypes from 'prop-types';
 import ProductLine from './ProductLine';
 
 const ProductLineList = (props) => {
-  const productLineNodes = props.data.map(prodLine => (
+  const LineNodes = props.data.map(line => (
     <ProductLine
-      user={prodLine.user}
-      key={prodLine._id}
-      id={prodLine._id}
-      name={prodLine.name}
-      skus={prodLine.skus}
-      handleUpdateProductLine={props.handleUpdateProductLine}
-      handleDeleteProductLine={props.handleDeleteProductLine}
+      key={line._id}
+      id={line._id}
+      name={line.name}
+      skus={line.skus}
+      handleUpdateProdLine={props.handleUpdateProdLine}
+      handleDeleteProdLine={props.handleDeleteProdLine}
+      prod_lines = {props.data.map((item) => {
+        return {
+          value: item._id, 
+          label: item.name
+        }
+      })}
     >
-      { prodLine.name}
+      { line.name}
     </ProductLine>
   ));
   return (
     <div>
-      { productLineNodes }
+      { LineNodes }
     </div>
   );
 };
 
 ProductLineList.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({
-    user: PropTypes.string,
-    id: PropTypes.string,
+    _id: PropTypes.string,
     name: PropTypes.string,
     skus: PropTypes.array
   })),
-  handleDeleteProductLine: PropTypes.func,
-  handleUpdateProductLine: PropTypes.func,
+  handleDeleteProdLine: PropTypes.func,
+  handleUpdateProdLine: PropTypes.func,
 };
 
 ProductLineList.defaultProps = {
