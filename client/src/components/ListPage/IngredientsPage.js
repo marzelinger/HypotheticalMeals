@@ -46,6 +46,7 @@ export default class IngredientsPage extends React.Component {
             table_properties,
             table_options,
             selected_items: [],
+            selected_indexes: [],
             detail_view_item: null,
             detail_view_options: [],
             data: [],
@@ -77,16 +78,11 @@ export default class IngredientsPage extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
-        console.log(this.state.data)
         if (prevState.sku_substr !== this.state.sku_substr || prevState.filter_value !== this.state.filter_value || 
             prevState.filter_category !== this.state.filter_category) {
             await this.updateFilterState(prevState);
             this.loadDataFromServer();
             console.log(this.state.data)
-        }
-        if (prevState.data !== this.state.data){
-            //this is where we recount the number of skus for each data item
-            
         }
     }
 
@@ -153,6 +149,7 @@ export default class IngredientsPage extends React.Component {
             await SubmitRequest.submitUpdateItem(this.state.page_name, item);
             }
         );
+        this.setState({ data: data })
     }
 
     onFilterValueChange = (e, id) => {
@@ -187,8 +184,8 @@ export default class IngredientsPage extends React.Component {
         }
     }
 
-    onCreateNewItem = () => {
-        var item = ItemStore.getEmptyItem(this.state.page_name, this.state.data, this);
+    async onCreateNewItem() {
+        var item = await ItemStore.getEmptyItem(this.state.page_name);
         const newData = this.state.data.slice();
         newData.push(item);
         this.setState({ 
@@ -256,11 +253,21 @@ export default class IngredientsPage extends React.Component {
         this.loadDataFromServer();
     };
 
-    onSelect = async (event, item) => {
-        var newState = this.state.selected_items.slice();
-        var loc = newState.indexOf(item);
-        (loc > -1) ? newState.splice(loc, 1) : newState.push(item);
-        await this.setState({ selected_items: newState});
+    // onSelect = async (event, item) => {
+    //     var newState = this.state.selected_items.slice();
+    //     var loc = newState.indexOf(item);
+    //     (loc > -1) ? newState.splice(loc, 1) : newState.push(item);
+    //     await this.setState({ selected_items: newState});
+    // };
+
+    onSelect = (rowIndexes) => {
+        console.log(rowIndexes);
+        var newState = [];
+        rowIndexes.forEach( index => {
+            newState.push(this.state.data[index]);
+        });
+        console.log(newState);
+        this.setState({ selected_items: newState, selected_indexes: rowIndexes});
     };
 
     onDetailViewSelect = (event, item) => {
@@ -329,9 +336,13 @@ export default class IngredientsPage extends React.Component {
                         table_properties={this.state.table_properties} 
                         list_items={this.state.data}
                         selected_items={this.state.selected_items}
+                        selected_indexes = {this.state.selected_indexes}
                         handleSort={this.onSort}
                         handleSelect={this.onSelect}
                         handleDetailViewSelect={this.onDetailViewSelect}
+                        showDetails = {true}
+                        sortable = {true}
+                        title = {this.state.page_title}
                     />
                 </div>
                 <Modal isOpen={this.state.modal} toggle={this.toggleModal} id="popup" className='item-details'>

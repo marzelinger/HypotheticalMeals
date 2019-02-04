@@ -22,8 +22,8 @@ export default class IngredientsViewSimple extends React.Component {
 
         this.state = {
             data: props.sku.ingredients,
-            table_columns,
-            table_properties,
+            table_columns: [...table_columns, 'Quantity'],
+            table_properties: [...table_properties, 'quantity'],
             selected_items: []
         };
         this.onQuantityChange = this.onQuantityChange.bind(this);
@@ -67,6 +67,8 @@ export default class IngredientsViewSimple extends React.Component {
                         handleSelect={this.onSelect}
                         handleDetailViewSelect={this.onDetailViewSelect}
                         handleQuantityChange={this.onQuantityChange}
+                        selectable = {false}
+                        title = {'Ingredients'}
                     />
                 </div>
             </div>
