@@ -144,6 +144,7 @@ export default class ListPage extends React.Component {
         var final_keyword_filter = '';
         var final_prod_line_filter = '';
         for (var i = 0; i < this.state.filter_value.length; i++){
+            if (this.state.filter_value[i] === undefined) return;
             if (this.state.filter_value[i].length === Constants.obj_id_length 
                 && this.state.filter_category[i] === Constants.ingredient_label) {
                     final_ing_filter += (final_ing_filter.length == 0 ? '' : ',');
@@ -393,7 +394,6 @@ export default class ListPage extends React.Component {
             </div>
         );
     }
-
 }
 
 ListPage.propTypes = {
