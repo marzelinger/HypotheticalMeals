@@ -40,7 +40,7 @@ export default class IngredientDetails extends React.Component {
     }
 
     async handleSubmit(e, opt) {
-        if (opt !== Constants.details_save) {
+        if (![Constants.details_save, Constants.details_create].includes(opt)) {
             this.props.handleDetailViewSubmit(e, this.props.item, opt);
             return;
         }

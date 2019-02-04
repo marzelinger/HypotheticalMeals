@@ -148,6 +148,7 @@ export default class IngredientsPage extends React.Component {
             await SubmitRequest.submitUpdateItem(this.state.page_name, item);
             }
         );
+        this.setState({ data: data })
     }
 
     onFilterValueChange = (e, id) => {

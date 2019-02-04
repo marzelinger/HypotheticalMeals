@@ -121,29 +121,21 @@ export default class SKUDetails extends React.Component {
     }
 
     async handleSubmit(e, opt) {
-        if (opt !== Constants.details_save) {
+        if (![Constants.details_save, Constants.details_create].includes(opt)) {
             this.props.handleDetailViewSubmit(e, this.props.item, opt);
             return;
         }
         await this.validateInputs();
-        if (this.state.invalid_inputs.length === 0) {
-            this.props.handleDetailViewSubmit(e, this.props.item, opt);
-        }
-        else {
-            alert('Invalid Fields');
-        }
+        if (this.state.invalid_inputs.length === 0) this.props.handleDetailViewSubmit(e, this.props.item, opt)
+        else alert('Invalid Fields');
     }
 
     async validateInputs() { 
         var inv_in = [];
         this.state.item_properties.map(prop => {
-            if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) {
-                inv_in.push(prop);
-            }
+            if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
         })
-        if (this.state.prod_line_item.name === undefined) {
-            inv_in.push('prod_line');
-        }
+        if (this.state.prod_line_item.name === undefined) inv_in.push('prod_line')
         await this.setState({ invalid_inputs: inv_in });
     }
 

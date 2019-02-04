@@ -49,8 +49,9 @@ export default class ItemStore{
           num: new_id,
           vendor_info: '',
           pkg_size: '',
-          pkg_cost: '',
-          skus: []
+          pkg_cost: 0,
+          sku_count: 0,
+          comment: ''
         };
       case Constants.skus_page_name: 
         let new_case_upc = ItemStore.getUniqueCaseUPC(res.data);
@@ -61,7 +62,7 @@ export default class ItemStore{
           case_upc: new_case_upc,
           unit_upc: new_unit_upc,
           unit_size: '',
-          cpc: '',
+          cpc: 0,
           prod_line: '',
           comment: '',
           ingredients: [],
