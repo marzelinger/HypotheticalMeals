@@ -59,7 +59,7 @@ export default class IngredientsPagePag extends React.Component {
             modal: false,
             simple: props.simple || false,
             currentPage: 0,
-            pageSize: 3,
+            pageSize: 2,
             pagesCount: 5
         };
         this.toggleModal = this.toggleModal.bind(this);
@@ -194,6 +194,7 @@ export default class IngredientsPagePag extends React.Component {
             currentPage: index
         });
         console.log("this is current page; "+this.state.currentPage);
+        this.loadDataFromServer();
     }
 
     onFilterValueChange = (e, id) => {
