@@ -492,7 +492,7 @@ export default class CSV_parser{
             }
         }
 
-        Object.keys(skus_to_ingrs).forEach(function(sku) {
+        Object.keys(skus_to_ingrs).forEach(async function(sku) {
             var sku_to_update = await SKU.find({ num : Number(sku)});
             var tuples = skus_to_ingrs.get(sku);
             var ingr_arr = [];
@@ -511,7 +511,7 @@ export default class CSV_parser{
             var updated_sku = await sku_to_update.save();
         });
 
-        Object.keys(ingrs_to_count).forEach(function(ingredient){
+        Object.keys(ingrs_to_count).forEach(async function(ingredient){
             var ingredient_to_update = await Ingredient.find({ num : Number(ingredient)});
             ingredient_to_update.sku_count = ingrs_to_count.get(ingredient);
             var updated_ingr = await ingredient_to_update.save();
