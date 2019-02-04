@@ -81,7 +81,6 @@ class App extends React.Component{
                <Route exact path="/adminregister" component={AdminRegister} />
               <Switch>
                 <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
-                <PrivateRoute exact path="/ingredientspag" component={IngredientsPagePagination} />
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
                 <PrivateRoute exact path="/skus" component={ListPage} />
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingGoalsPage} />
@@ -100,3 +99,5 @@ export default App
 //               <Route exact path="/login" component={Login} />
 //               <Route exact path="/register" component={Register} />
 //               <Route exact path="/adminregister" component={AdminRegister} />
+//                <PrivateRoute exact path="/ingredientspag" component={IngredientsPagePagination} />
+

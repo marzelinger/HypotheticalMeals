@@ -406,12 +406,12 @@ export default class IngredientsPage extends React.Component {
             
                     </Pagination>
                 </div>
-                {this.data.slice(this.currentPage *this.pageSize, (this.currentPage +1) * this.pageSize)
+                {/* {this.data.slice(this.currentPage *this.pageSize, (this.currentPage +1) * this.pageSize)
             .map((data, i)=>
                 <div className = "data-slice" key={i}>
                     {data}
                     </div>
-                    )} 
+                    )}  */}
 
             </div>
         );
