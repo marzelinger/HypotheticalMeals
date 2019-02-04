@@ -1,4 +1,4 @@
-// IngredientItemDetails.js
+// SkuDetails.js
 // Riley
 // Item details popup that is used for viewing, editing and creating Ingredients
 
