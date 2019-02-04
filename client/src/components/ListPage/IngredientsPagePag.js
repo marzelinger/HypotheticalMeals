@@ -52,13 +52,14 @@ export default class IngredientsPagePag extends React.Component {
             detail_view_item: null,
             detail_view_options: [],
             data: [],
+            currentData: [],
             sort_field: '_',
             loaded: false,
             error: null,
             modal: false,
             simple: props.simple || false,
             currentPage: 0,
-            pageSize: 1,
+            pageSize: 3,
             pagesCount: 5
         };
         this.toggleModal = this.toggleModal.bind(this);
@@ -105,6 +106,7 @@ export default class IngredientsPagePag extends React.Component {
         for (var i = 0; i < prevState.sku_substr.length; i++) {
             if (this.state.filter_category[i] === Constants.sku_label
                 && this.state.sku_substr[i].length > 0) {
+                //TODO MAYBE CHANGE BELOW
                 let res = await SubmitRequest.submitGetSkusByNameSubstring(this.state.sku_substr[i]);
                 if (res === undefined || !res.success) {
                     res.data = [];
@@ -142,8 +144,14 @@ export default class IngredientsPagePag extends React.Component {
         }
         if (final_sku_filter === '') final_sku_filter = '_';
         if (final_keyword_filter === '') final_keyword_filter = '_';
-        var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-            this.state.sort_field, final_sku_filter, final_keyword_filter);
+        
+        //var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
+          //  this.state.sort_field, final_sku_filter, final_keyword_filter);
+
+          var res = await SubmitRequest.submitGetFilterDataPag(Constants.ing_filter_path, 
+            this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
+
+
 
         if (res === undefined || !res.success) {
             res.data = [];
@@ -151,14 +159,18 @@ export default class IngredientsPagePag extends React.Component {
         }
         this.setState({
             data: res.data,
-            loaded: res.loaded
+            loaded: res.loaded,
+            //added below line
+            currentData: res.data
         })
     }
 
     async updateSkuCounts() {
         let data = this.state.data.slice();
         await data.map(async (item) => {
-            let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', '_');
+            //let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', '_');
+
+            let skus = await SubmitRequest.submitGetFilterDataPag(Constants.sku_filter_path,'_', item._id, '_', this.state.currentPage, this.state.pageSize,'_');
             item.sku_count = skus.data.length;
             await SubmitRequest.submitUpdateItem(this.state.page_name, item);
             }
@@ -166,7 +178,7 @@ export default class IngredientsPagePag extends React.Component {
     }
 
     setNumberPages = () =>{
-        console.log('this is the data: '+this.data);
+        console.log('this is the data: '+this.state.data);
         //this.pagesCount = Math.ceil(this.data.length/this.pageSize);
         this.state.pagesCount = 5;
         this.state = {
@@ -406,18 +418,34 @@ export default class IngredientsPagePag extends React.Component {
                     </Pagination>
                 </div>
                 
+                {/* {this.state.currentData} */}
 
-                { this.data != undefined ? (
+
+                {/* {
                     this.data.slice(this.state.currentPage *this.state.pageSize, 
-                        (this.state.currentPage +1) * this.pageSize)
+                        (this.state.currentPage +1) * this.state.pageSize)
+            .map((data, i)=>
+                <div className = "data-slice" key={i}>
+                    {data}
+                    </div>
+                    )
+                
+                    } */}
+
+
+
+                {/* { this.data != undefined ? (
+                    this.data.slice(this.state.currentPage *this.state.pageSize, 
+                        (this.state.currentPage +1) * this.state.pageSize)
             .map((data, i)=>
                 <div className = "data-slice" key={i}>
                     {data}
                     </div>
                     )
                 )
-                : (<div/>)
-                }
+                : (<div/>) */}
+
+
                     
                     
             

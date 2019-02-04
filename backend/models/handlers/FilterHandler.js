@@ -23,8 +23,24 @@ class FilterHandler{
             if (keyword !== undefined && keyword !== "_"){
                 and_query.push({$text: { $search: keyword } }); 
             }
-            let results = (and_query.length === 0) ? await Ingredient.find( ).populate('skus').sort(sort_field) : 
-                                                     await Ingredient.find( {$and: and_query }).populate('skus').sort(sort_field);
+            //ADDED FOR THE PAGINATION STUFF    
+            var currentPage = Number(req.params.currentPage);
+            var pageSize = Number(req.params.pageSize);
+            console.log('this is the currentpage: '+currentPage);
+            console.log('this is the pageSize: '+pageSize);
+            console.log('this is the query length: '+and_query.length);
+            let results = (and_query.length === 0) ? await Ingredient.find().skip(currentPage*pageSize).limit(pageSize).populate('skus').sort(sort_field) : await Ingredient.find( {$and: and_query }).skip(currentPage*pageSize).limit(pageSize).populate('skus').sort(sort_field).skip(currentPage*pageSize).limit(pageSize);
+
+            console.log('this is the results: '+results);
+
+
+            // this.data.slice(this.state.currentPage *this.state.pageSize, 
+            //     (this.state.currentPage +1) * this.state.pageSize)
+
+
+            // let results = (and_query.length === 0) ? await Ingredient.find( ).populate('skus').sort(sort_field) : 
+            //                                          await Ingredient.find( {$and: and_query }).populate('skus').sort(sort_field);
+            
             if (results.length == 0) return results = [];
             return res.json({ success: true, data: results});
         }
