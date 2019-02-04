@@ -1,4 +1,4 @@
-// IngredientsPage.js
+// IngredientsPagePag.js
 // Riley
 // Ingredients view
 
@@ -20,10 +20,12 @@ import './../../style/ListPage.css';
 import GeneralNavBar from "../GeneralNavBar";
 import DependencyReport from "../export/DependencyReport";
 import ExportSimple from '../export/ExportSimple';
-import DataStore from './../../helpers/DataStore'
+import DataStore from '../../helpers/DataStore'
+import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 
 
-export default class IngredientsPage extends React.Component {
+
+export default class IngredientsPagePag extends React.Component {
     constructor(props) {
         super(props);
 
@@ -32,7 +34,8 @@ export default class IngredientsPage extends React.Component {
             page_title, 
             table_columns, 
             table_properties, 
-            table_options } = DataStore.getIngredientData();
+            table_options
+             } = DataStore.getIngredientData();
   
 
         this.state = {
@@ -46,7 +49,6 @@ export default class IngredientsPage extends React.Component {
             table_properties,
             table_options,
             selected_items: [],
-            selected_indexes: [],
             detail_view_item: null,
             detail_view_options: [],
             data: [],
@@ -54,12 +56,17 @@ export default class IngredientsPage extends React.Component {
             loaded: false,
             error: null,
             modal: false,
-            simple: props.simple || false
+            simple: props.simple || false,
+            currentPage: 0,
+            pageSize: 1,
+            pagesCount: 5
         };
         this.toggleModal = this.toggleModal.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onKeywordSubmit = this.onKeywordSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
+        this.handlePageClick=this.handlePageClick.bind(this);
+
     }
 
     toggleModal(){
@@ -75,14 +82,21 @@ export default class IngredientsPage extends React.Component {
         }
         await this.loadDataFromServer();
         await this.updateSkuCounts();
+        //this.setNumberPages();
+
     }
 
     async componentDidUpdate (prevProps, prevState) {
+        console.log(this.state.data)
         if (prevState.sku_substr !== this.state.sku_substr || prevState.filter_value !== this.state.filter_value || 
             prevState.filter_category !== this.state.filter_category) {
             await this.updateFilterState(prevState);
             this.loadDataFromServer();
             console.log(this.state.data)
+        }
+        if (prevState.data !== this.state.data){
+            //this is where we recount the number of skus for each data item
+            
         }
     }
 
@@ -149,7 +163,25 @@ export default class IngredientsPage extends React.Component {
             await SubmitRequest.submitUpdateItem(this.state.page_name, item);
             }
         );
-        this.setState({ data: data })
+    }
+
+    setNumberPages = () =>{
+        console.log('this is the data: '+this.data);
+        //this.pagesCount = Math.ceil(this.data.length/this.pageSize);
+        this.state.pagesCount = 5;
+        this.state = {
+            currentPage: 0    
+        };
+    }
+
+    handlePageClick = (e, index) =>{
+        e.preventDefault();
+        console.log("this is current page1; "+this.state.currentPage);
+
+        this.setState({
+            currentPage: index
+        });
+        console.log("this is current page; "+this.state.currentPage);
     }
 
     onFilterValueChange = (e, id) => {
@@ -184,8 +216,8 @@ export default class IngredientsPage extends React.Component {
         }
     }
 
-    async onCreateNewItem() {
-        var item = await ItemStore.getEmptyItem(this.state.page_name);
+    onCreateNewItem = () => {
+        var item = ItemStore.getEmptyItem(this.state.page_name, this.state.data, this);
         const newData = this.state.data.slice();
         newData.push(item);
         this.setState({ 
@@ -253,21 +285,11 @@ export default class IngredientsPage extends React.Component {
         this.loadDataFromServer();
     };
 
-    // onSelect = async (event, item) => {
-    //     var newState = this.state.selected_items.slice();
-    //     var loc = newState.indexOf(item);
-    //     (loc > -1) ? newState.splice(loc, 1) : newState.push(item);
-    //     await this.setState({ selected_items: newState});
-    // };
-
-    onSelect = (rowIndexes) => {
-        console.log(rowIndexes);
-        var newState = [];
-        rowIndexes.forEach( index => {
-            newState.push(this.state.data[index]);
-        });
-        console.log(newState);
-        this.setState({ selected_items: newState, selected_indexes: rowIndexes});
+    onSelect = async (event, item) => {
+        var newState = this.state.selected_items.slice();
+        var loc = newState.indexOf(item);
+        (loc > -1) ? newState.splice(loc, 1) : newState.push(item);
+        await this.setState({ selected_items: newState});
     };
 
     onDetailViewSelect = (event, item) => {
@@ -336,13 +358,9 @@ export default class IngredientsPage extends React.Component {
                         table_properties={this.state.table_properties} 
                         list_items={this.state.data}
                         selected_items={this.state.selected_items}
-                        selected_indexes = {this.state.selected_indexes}
                         handleSort={this.onSort}
                         handleSelect={this.onSelect}
                         handleDetailViewSelect={this.onDetailViewSelect}
-                        showDetails = {true}
-                        sortable = {true}
-                        title = {this.state.page_title}
                     />
                 </div>
                 <Modal isOpen={this.state.modal} toggle={this.toggleModal} id="popup" className='item-details'>
@@ -358,12 +376,65 @@ export default class IngredientsPage extends React.Component {
                 </Modal>   
                 <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/>                           
                 <DependencyReport data = {this.state.data} />
+            
+                <div className = "pagination-wrapper">
+                    <Pagination aria-label = "Page navigation example">
+                    <PaginationItem disabled = {this.state.currentPage <=0}>
+                    <PaginationLink onClick = {e => this.handlePageClick(e, this.state.currentPage -1)}
+                    previous href = "#"/>
+                    </PaginationItem>
+
+
+                    {[...Array(this.state.pagesCount)].map((page,i) =>
+                        <PaginationItem active = {i === this.state.currentPage} key = {i}>
+                        <PaginationLink onClick = { e => this.handlePageClick(e, i)} href = "#">
+                            {i+1}
+                            </PaginationLink>
+                            </PaginationItem>
+                    )}
+
+                    <PaginationItem disabled={this.state.currentPage >= this.state.pagesCount - 1}>
+              
+                    <PaginationLink
+                    onClick={e => this.handlePageClick(e, this.state.currentPage + 1)}
+                    next
+                    href="#"
+                    />
+              
+                    </PaginationItem>
+            
+                    </Pagination>
+                </div>
+                
+
+                { this.data != undefined ? (
+                    this.data.slice(this.state.currentPage *this.state.pageSize, 
+                        (this.state.currentPage +1) * this.pageSize)
+            .map((data, i)=>
+                <div className = "data-slice" key={i}>
+                    {data}
+                    </div>
+                    )
+                )
+                : (<div/>)
+                }
+                    
+                    
+            
+            
+            
+            
+            
+            
+            
+            
+            
             </div>
         );
     }
 
 }
 
-IngredientsPage.propTypes = {
+IngredientsPagePag.propTypes = {
     default_sku_filter: PropTypes.object
 }

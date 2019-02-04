@@ -15,7 +15,9 @@ const DetailsViewSkuTable = props => {
   return (
     <div>
       <ListPage
-        {...skuTableData}
+        {
+        ...skuTableData
+        } simple = {true}
       />
     </div>
   );
@@ -24,7 +26,7 @@ const DetailsViewSkuTable = props => {
 
 DetailsViewSkuTable.propTypes = {
   id: PropTypes.string.isRequired,
-  ingredient: PropTypes.object.isRequired
+  ingredient: PropTypes.object
 };
 
 export default DetailsViewSkuTable;

@@ -16,5 +16,7 @@ const IngredientsSchema = new Schema({
   comment: String
 }, { timestamps: true });
 
+
+
 // export our module to use in server.js
 export default mongoose.model('Ingredient', IngredientsSchema);
