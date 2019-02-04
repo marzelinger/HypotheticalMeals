@@ -106,6 +106,8 @@ export default class ListPage extends React.Component {
     async updateFilterState(prevState) {
         var asr = this.state.assisted_search_results.slice();
         for (var i = 0; i < prevState.ing_substr.length; i++) {
+            if (this.state.filter_category[i] === undefined) return;
+            if (this.state.ing_substr[i] === undefined) return;
             if (this.state.filter_category[i] === Constants.ingredient_label
                 && this.state.ing_substr[i].length > 0) {
                 let res = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.ing_substr[i]);

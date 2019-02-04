@@ -182,8 +182,8 @@ export default class IngredientsPage extends React.Component {
         }
     }
 
-    onCreateNewItem = () => {
-        var item = ItemStore.getEmptyItem(this.state.page_name);
+    async onCreateNewItem() {
+        var item = await ItemStore.getEmptyItem(this.state.page_name);
         const newData = this.state.data.slice();
         newData.push(item);
         this.setState({ 

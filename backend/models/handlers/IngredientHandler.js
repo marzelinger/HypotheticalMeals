@@ -2,6 +2,7 @@
 // Riley
 
 import Ingredient from '../databases/ingredient';
+import SKU from '../databases/sku';
 
 class IngredientHandler{
 
@@ -101,11 +102,18 @@ class IngredientHandler{
     static async deleteIngredientByID(req, res){
         try{
             var target_id = req.params.ingredient_id;
+            let skus = await SKU.find({ ingredients : target_id });
+            skus.map(async (sku) => {
+                let ind = sku.ingredients.indexOf(target_id);
+                sku.ingredients.splice(ind, 1);
+                sku.ingredient_quantities.splice(ind, 1);
+                await SKU.findOneAndUpdate({ _id : sku._id},
+                    {$set: {ingredients : sku.ingredients, ingredient_quantities: sku.ingredient_quantities}}, 
+                    {upsert : true, new : true});
+            })
             let to_remove = await Ingredient.findOneAndDelete({ _id: target_id});
-            if(!to_remove){
-                return res.json({ success: false, error: '404'});
-            }
-            return res.json({ success: true, data: to_remove});
+            if(!to_remove) return res.json({ success: true, error: '404'});
+            return res.json({ success: true, data: to_remove });
         } catch (err){
             return res.json({ success: false, error: err});
         }
