@@ -4,12 +4,12 @@
 // THIS PAGE IS DEPRICATED
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import Filter from './Filter';
 import PageTable from './PageTable'
 import TableOptions from './TableOptions'
 import SubmitRequest from './../../helpers/SubmitRequest'
 import ItemStore from './../../helpers/ItemStore'
-import ItemDetails from './ItemDetails'
 import AddToManuGoal from './AddToManuGoal'
 import { 
     Alert,
@@ -21,6 +21,8 @@ import './../../style/ListPage.css';
 import GeneralNavBar from "../GeneralNavBar";
 import ExportSimple from '../export/ExportSimple';
 import DependencyReport from '../export/DependencyReport';
+import DataStore from './../../helpers/DataStore'
+import SkuDetails from './SkuDetails';
 const jwt_decode = require('jwt-decode');
 
 
@@ -28,23 +30,32 @@ export default class ListPage extends React.Component {
     constructor(props) {
         super(props);
 
+        let {
+            page_name, 
+            page_title, 
+            table_columns, 
+            table_properties, 
+            table_options, 
+            item_properties, 
+            item_property_labels } = props.simple ? DataStore.getSkuDataSimple() : DataStore.getSkuData();
+
         this.state = {
-            page_name: Constants.skus_page_name,
-            page_title: 'SKUs',
+            page_name,
+            page_title,
             ing_substr: [],
             filter_value: [],
             filter_category: [],
             assisted_search_results: [[]],
-            table_columns: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Count per Case', 'Product Line'],
-            table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line'],
-            table_options: [Constants.create_item, Constants.add_to_manu_goals, Constants.add_keyword_filter, 
-                Constants.add_ing_filter, Constants.add_prod_filter],
-            item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', 'comment', 'ingredients'],
-            item_property_labels: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Count per Case', 'Product Line', 'Comment', 'Ingredients'],
+            table_columns,
+            table_properties,
+            table_options,
+            item_properties,
+            item_property_labels,
             selected_items: [],
-            detail_view_item: null,
+            detail_view_item: {},
             detail_view_options: [],
             data: [],
+            sort_field: '_',
             loaded: false,
             error: null,
             details_modal: false,
@@ -61,6 +72,8 @@ export default class ListPage extends React.Component {
         this.toggle = this.toggle.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onKeywordSubmit = this.onFilterValueSubmit.bind(this);
+        this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
+        this.onSort = this.onSort.bind(this);
     }
 
     toggle = (modalType) => {
@@ -78,7 +91,11 @@ export default class ListPage extends React.Component {
         }
     }   
 
-    componentDidMount = () => {
+    async componentDidMount() {
+        if (this.props.default_ing_filter !== undefined){
+            await this.onAddFilter(Constants.ingredient_label)
+            await this.onFilterValueSelection(undefined, this.props.default_ing_filter, 0);
+        }
         this.loadDataFromServer();
     }
 
@@ -92,7 +109,6 @@ export default class ListPage extends React.Component {
 
     async updateFilterState(prevState) {
         var asr = this.state.assisted_search_results.slice();
-        console.log(asr);
         for (var i = 0; i < prevState.ing_substr.length; i++) {
             if (this.state.filter_category[i] === Constants.ingredient_label
                 && this.state.ing_substr[i].length > 0) {
@@ -100,7 +116,6 @@ export default class ListPage extends React.Component {
                 if (res === undefined || !res.success) {
                     res.data = [];
                 }
-                console.log(res)
                 asr[i] = res.data;
             }
             if (this.state.filter_category[i] === Constants.prod_line_label
@@ -146,7 +161,7 @@ export default class ListPage extends React.Component {
         if (final_keyword_filter === '') final_keyword_filter = '_';
         if (final_prod_line_filter === '') final_prod_line_filter = '_';
         var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
-            final_ing_filter, final_keyword_filter, final_prod_line_filter);
+            this.state.sort_field, final_ing_filter, final_keyword_filter, final_prod_line_filter);
 
         if (res === undefined || !res.success) {
             res.data = [];
@@ -201,7 +216,7 @@ export default class ListPage extends React.Component {
     }
 
     onAddFilter = (type) => {
-        if (type == Constants.keyword_label && this.state.filter_category.includes(type)){
+        if (type == Constants.keyword_label && this.state.filter_category.includes(Constants.keyword_label)){
             return;
         }
         var ind = this.state.ing_substr.length;
@@ -277,20 +292,9 @@ export default class ListPage extends React.Component {
           });
     }
 
-    onSort = (event, sortKey) => {
-        const data = this.state.data;
-        data.sort((a,b) => {
-            if (/^\d+$/.test(a[sortKey]) && /^\d+$/.test(b[sortKey])) {
-                return parseInt(a[sortKey])-parseInt(b[sortKey]);
-            }
-            else {
-                if (a[sortKey] === undefined && b[sortKey] === undefined) return a;
-                else if (a[sortKey] === undefined) return b;
-                else if (b[sortKey] === undefined) return a;
-                return a[sortKey].toString().localeCompare(b[sortKey]);
-            }
-        })
-        this.setState({data})
+    async onSort(event, sortKey) {
+        await this.setState({sort_field: sortKey})
+        this.loadDataFromServer();
     };
 
     onSelect = async (event, item) => {
@@ -308,16 +312,16 @@ export default class ListPage extends React.Component {
         this.toggle(Constants.details_modal);
     };
 
-    onDetailViewSubmit = (event, item, option) => {
+    async onDetailViewSubmit(event, item, option) {
         switch (option) {
             case Constants.details_create:
-                SubmitRequest.submitCreateItem(this.state.page_name, item, this);
+                await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_save:
-                SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
+                await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_delete:
-                SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
+                await SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
                 break;
             case Constants.details_cancel:
                 break;
@@ -330,10 +334,10 @@ export default class ListPage extends React.Component {
         this.toggle(Constants.details_modal);
     }
 
-    onPropChange = (event, item, prop) => {
+    onPropChange = (value, item, prop) => {
         var newData = this.state.data.slice();
         var ind = newData.indexOf(item);
-        newData[ind][prop] = event.target.value;
+        newData[ind][prop] = value;
         this.setState({ data: newData });
     };
 
@@ -372,7 +376,7 @@ export default class ListPage extends React.Component {
                     />
                 </div>
                 <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
-                    <ItemDetails
+                    <SkuDetails
                             item={this.state.detail_view_item}
                             item_properties={this.state.item_properties}
                             item_property_labels={this.state.item_property_labels}
@@ -390,4 +394,8 @@ export default class ListPage extends React.Component {
         );
     }
 
+}
+
+ListPage.propTypes = {
+    default_ing_filter: PropTypes.object
 }

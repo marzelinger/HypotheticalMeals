@@ -3,12 +3,13 @@
 // Ingredients view
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import Filter from './Filter';
 import PageTable from './PageTable'
 import TableOptions from './TableOptions'
 import SubmitRequest from '../../helpers/SubmitRequest'
 import ItemStore from '../../helpers/ItemStore'
-import ItemDetails from './ItemDetails'
+import IngredientDetails from './IngredientDetails'
 import { 
     Alert,
     Button,
@@ -19,28 +20,36 @@ import './../../style/ListPage.css';
 import GeneralNavBar from "../GeneralNavBar";
 import DependencyReport from "../export/DependencyReport";
 import ExportSimple from '../export/ExportSimple';
+import DataStore from './../../helpers/DataStore'
 
 
 export default class IngredientsPage extends React.Component {
     constructor(props) {
         super(props);
 
+        let {
+            page_name, 
+            page_title, 
+            table_columns, 
+            table_properties, 
+            table_options } = DataStore.getIngredientData();
+  
+
         this.state = {
-            page_name: Constants.ingredients_page_name,
-            page_title: 'Ingredients',
+            page_name,
+            page_title,
             sku_substr: [],
             filter_value: [],
             filter_category: [],
             assisted_search_results: [[]],
-            table_columns: ['Name', 'Number', 'Package Size', 'Cost per Package (USD)', 'Associated SKUs'],
-            table_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'sku_count'],
-            table_options: [Constants.create_item, Constants.add_keyword_filter, Constants.add_sku_filter],
-            item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment', 'skus'],
-            item_property_labels: ['Name', 'Number', 'Package Size', 'Package Cost', 'Vendor Info', 'Comments', 'SKUs'],
+            table_columns,
+            table_properties,
+            table_options,
             selected_items: [],
             detail_view_item: null,
             detail_view_options: [],
             data: [],
+            sort_field: '_',
             loaded: false,
             error: null,
             modal: false,
@@ -49,6 +58,7 @@ export default class IngredientsPage extends React.Component {
         this.toggleModal = this.toggleModal.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onKeywordSubmit = this.onKeywordSubmit.bind(this);
+        this.onSort = this.onSort.bind(this);
     }
 
     toggleModal(){
@@ -57,30 +67,26 @@ export default class IngredientsPage extends React.Component {
         });
     }   
 
-    componentDidMount = () => {
-        this.loadDataFromServer();
+    async componentDidMount() {
+        if (this.props.default_sku_filter !== undefined){
+            await this.onAddFilter(Constants.sku_label)
+            await this.onFilterValueSelection(undefined, this.props.default_sku_filter, 0);
+        }
+        await this.loadDataFromServer();
+        await this.updateSkuCounts();
     }
 
     async componentDidUpdate (prevProps, prevState) {
+        console.log(this.state.data)
         if (prevState.sku_substr !== this.state.sku_substr || prevState.filter_value !== this.state.filter_value || 
             prevState.filter_category !== this.state.filter_category) {
             await this.updateFilterState(prevState);
             this.loadDataFromServer();
+            console.log(this.state.data)
         }
         if (prevState.data !== this.state.data){
-            console.log(this.state.data);
             //this is where we recount the number of skus for each data item
-            var newData = this.state.data.slice();
-            let changed = false;
-            newData.map(item => {
-                if (item.sku_count !== item.skus.length){
-                    item.sku_count = item.skus.length;
-                    changed = true;
-                }
-            })
-            if (changed){
-                this.setState({ data: newData })
-            }
+            
         }
     }
 
@@ -127,7 +133,7 @@ export default class IngredientsPage extends React.Component {
         if (final_sku_filter === '') final_sku_filter = '_';
         if (final_keyword_filter === '') final_keyword_filter = '_';
         var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-            final_sku_filter, final_keyword_filter);
+            this.state.sort_field, final_sku_filter, final_keyword_filter);
 
         if (res === undefined || !res.success) {
             res.data = [];
@@ -137,6 +143,16 @@ export default class IngredientsPage extends React.Component {
             data: res.data,
             loaded: res.loaded
         })
+    }
+
+    async updateSkuCounts() {
+        let data = this.state.data.slice();
+        await data.map(async (item) => {
+            let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', '_');
+            item.sku_count = skus.data.length;
+            await SubmitRequest.submitUpdateItem(this.state.page_name, item);
+            }
+        );
     }
 
     onFilterValueChange = (e, id) => {
@@ -235,10 +251,9 @@ export default class IngredientsPage extends React.Component {
         }
     }
 
-    onSort = (event, sortKey) => {
-        const data = this.state.data;
-        data.sort((a,b) => a[sortKey].toString().localeCompare(b[sortKey]))
-        this.setState({data})
+    async onSort(event, sortKey) {
+        await this.setState({sort_field: sortKey})
+        this.loadDataFromServer();
     };
 
     onSelect = async (event, item) => {
@@ -278,10 +293,10 @@ export default class IngredientsPage extends React.Component {
         this.toggleModal();
     }
 
-    onPropChange = (event, item, prop) => {
+    onPropChange = (value, item, prop) => {
         var newData = this.state.data.slice();
         var ind = newData.indexOf(item);
-        newData[ind][prop] = event.target.value;
+        newData[ind][prop] = value;
         this.setState({ data: newData });
     };
 
@@ -320,10 +335,8 @@ export default class IngredientsPage extends React.Component {
                     />
                 </div>
                 <Modal isOpen={this.state.modal} toggle={this.toggleModal} id="popup" className='item-details'>
-                    <ItemDetails
+                    <IngredientDetails
                             item={this.state.detail_view_item}
-                            item_properties={this.state.item_properties}
-                            item_property_labels={this.state.item_property_labels}
                             detail_view_options={this.state.detail_view_options}
                             handlePropChange={this.onPropChange}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
@@ -338,4 +351,8 @@ export default class IngredientsPage extends React.Component {
         );
     }
 
+}
+
+IngredientsPage.propTypes = {
+    default_sku_filter: PropTypes.object
 }

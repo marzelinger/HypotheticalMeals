@@ -43,5 +43,8 @@
     "redux-thunk": "^2.3.0",
     "uuid": "^3.3.2",
     "validator": "^10.11.0"
+  },
+  "devDependencies": {
+    "case-sensitive-paths-webpack-plugin": "^2.2.0"
   }
 }
