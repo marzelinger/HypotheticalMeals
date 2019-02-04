@@ -452,7 +452,14 @@ export default class IngredientsPagePag extends React.Component {
 
             {[...Array(this.state.pagesCount)].map((page, i) => 
               <PaginationItem active={i === this.state.currentPage} key={i}>
-                <PaginationLink onClick={e => this.handlePageClick(e, i)} href="#">
+                <PaginationLink onClick={e => {
+                    //this.handlePageClick(e, i)
+                    this.setState({
+                        currentPage: i
+                    });
+                    this.loadDataFromServer();     
+                }
+             } href="#">
                   {i + 1}
                 </PaginationLink>
               </PaginationItem>
