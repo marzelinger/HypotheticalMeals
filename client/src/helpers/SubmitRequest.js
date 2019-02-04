@@ -2,6 +2,8 @@
 // Riley
 // Simple functions for submitting HTTP requests from the front end
 
+import * as Constants from './../resources/Constants';
+
 export default class SubmitRequest{
 
   static submitGetData = (page_name) => {
@@ -42,6 +44,7 @@ export default class SubmitRequest{
   }
 
   static submitDeleteItem = (route, item) => {
+    if (route === Constants.ingredients_page_name) SubmitRequest.submitRemoveIngredientReferences(item);
     return fetch(`/api/${route}/${item._id}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' }
@@ -161,9 +164,21 @@ export default class SubmitRequest{
     });
   }
 
+  static async submitRemoveIngredientReferences(ing) {
+    let res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, '_', ing._id, '_');
+    console.log(res);
+    if (res === undefined || !res.success) return;
+    if (res.data === []) return;
+    res.data.map(async (sku) => {
+      let ind = sku.ingredients.indexOf(ing._id);
+      sku.ingredients.splice(ind, 1);
+      sku.ingredient_quantities.splice(ind, 1);
+      let subres = await SubmitRequest.submitUpdateItem(Constants.skus_page_name, sku);
+      console.log(subres);
+    })
+  }
 
-
-static submitGetPagination(obj) {
+  static submitGetPagination(obj) {
 
     fetch('/api/ingredientspagget', { method: 'GET' })
           .then(data => data.json())

@@ -56,7 +56,6 @@ class FilterHandler{
             }
             let results = (and_query.length === 0) ? await SKU.find( ).populate('ingredients').populate('prod_line').sort(sort_field) : 
                                                      await SKU.find( {$and: and_query }).populate('ingredients').populate('prod_line').sort(sort_field);
-            console.log('here')
             if (results.length == 0) results = [];
             return res.json({ success: true, data: results});
         }
