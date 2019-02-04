@@ -18,15 +18,6 @@ class SkuHandler{
             var new_ingredients = req.body.ingredients;
             var new_ingredient_quantities = req.body.ingredient_quantities;
             var new_comment = req.body.comment;
-            console.log(new_name);
-            console.log(new_sku_num);
-            console.log(new_case_upc);
-            console.log(new_unit_upc);
-            console.log(new_unit_size);
-            console.log(new_cpc);
-            console.log(new_prod_line);
-            console.log(new_ingredients);
-            console.log(new_ingredient_quantities);
 
             if(!new_name || !new_sku_num || !new_case_upc || !new_unit_upc || !new_unit_size || !new_cpc || !new_prod_line){
                 return res.json({
@@ -151,9 +142,7 @@ class SkuHandler{
     static async getIngredientsBySkuID(req, res){
         try{
             var target_id = req.params.sku_id;
-            console.log(`targetid : ${target_id}`);
             let response = await SKU.find({ _id : target_id }).populate('ingredients');
-            console.log(sku);
             let sku = response[0];
             var { ingredients, ingredient_quantities } = sku;
             let adj_ingredients = [];
