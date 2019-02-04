@@ -2,6 +2,7 @@
 // Riley, Belal
 
 import Prod_Line from '../databases/prod_line';
+import FilterHandler from './FilterHandler';
 
 class Prod_LineHandler{
 
@@ -56,7 +57,7 @@ class Prod_LineHandler{
   // GET
   static async getAllProductLines(req, res){
     try {
-      let all_prod_lines = await Prod_Line.find()
+      let all_prod_lines = await Prod_Line.find();
       return res.json({ success: true, data: all_prod_lines});
     }
     catch (err) {

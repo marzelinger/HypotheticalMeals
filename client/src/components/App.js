@@ -83,6 +83,7 @@ class App extends React.Component{
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
                 <PrivateRoute exact path="/skus" component={ListPage} />
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingGoalsPage} />
+                <PrivateRoute exact path="/prod_lines" component={ProductLinePage} />
               </Switch>
             </div>
           </Router>
