@@ -65,7 +65,7 @@ export default class IngredientsPagePag extends React.Component {
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onKeywordSubmit = this.onKeywordSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
-        //this.handlePageClick=this.handlePageClick.bind(this);
+        this.handlePageClick=this.handlePageClick.bind(this);
         this.setNumberPages();
     }
 
@@ -192,14 +192,14 @@ export default class IngredientsPagePag extends React.Component {
 
     }
 
-    handlePageClick(e, index){
+    handlePageClick = (e, index) => {
         e.preventDefault();
         console.log("this is current page1; "+this.state.currentPage);
 
         this.setState({
             currentPage: index
         });
-        //this.loadDataFromServer();
+        this.loadDataFromServer();
     }
 
     onFilterValueChange = (e, id) => {
