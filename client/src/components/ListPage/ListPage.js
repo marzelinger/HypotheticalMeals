@@ -22,7 +22,7 @@ import GeneralNavBar from "../GeneralNavBar";
 import ExportSimple from '../export/ExportSimple';
 import DependencyReport from '../export/DependencyReport';
 import DataStore from './../../helpers/DataStore'
-import SkuDetails from './SKUDetails';
+import SkuDetails from './SkuDetails';
 const jwt_decode = require('jwt-decode');
 
 
