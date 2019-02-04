@@ -25,7 +25,7 @@ export default class ItemStore{
           vendor_info: '',
           pkg_size: '',
           pkg_cost: '',
-          skus: ['']
+          skus: []
         };
       case Constants.skus_page_name: 
         return {
@@ -37,7 +37,8 @@ export default class ItemStore{
           cpc: '',
           prod_line: '',
           comment: '',
-          ingredients: ['']
+          ingredients: [],
+          ingredient_quantities: []
         };
     }
     
