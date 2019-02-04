@@ -1,7 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+
+import * as Constants from '../../resources/Constants';
+import SubmitRequest from '../../helpers/SubmitRequest'
+
+
 var fileDownload = require('js-file-download');
+
 
 export default class DependencyReport extends Component {
 
@@ -28,7 +34,7 @@ export default class DependencyReport extends Component {
 //set of ingredients (the selection of which follows the 
 //same rules as the “view options” described in req 2.1.2). 
 //For each ingredient, all SKUs made with the ingredient shall be shown. 
-loadDataFromServerForReport = (ingredients) => {
+async loadDataFromServerForReport(ingredients){
     var fileTitle = "Ingredient_Dependency_Report";
     var count = ingredients.length;
     var finalData = [];
@@ -41,37 +47,27 @@ loadDataFromServerForReport = (ingredients) => {
         dataLine.push(curData.pkg_size);
         dataLine.push(curData.pkg_cost);
         dataLine.push(curData.comment);
-        dataLine.push("\r\n");
+        //dataLine.push("\r\n");
         finalData.push(dataLine);
+        finalData.push("\r\n");
         //var ingSKUS = curData.skus.length;
         console.log("this is the dataline: "+dataLine);
         //console.log("this is the ingSkus: "+ingSKUS);
-        var ingSKUs = this.getSKUSbyIngId(curData._id);
-        console.log("this is the ingSkus: "+ ingSKUs);
-
-        finalData.push(ingSKUs);
-        console.log("this is the finalData: "+ finalData);
-        finalData.push("\r\n");
-    }    
-    fileDownload(finalData, fileTitle+'.csv');
-};
+        //var ingSKUs = this.getSKUSbyIngId(curData._id);
 
 
-getSKUSbyIngId = (ingID) => {
-    console.log('this is the ingID: '+ ingID);
-    var skuData = [];
-    fetch('/api/skus_by_ingredient/'+ingID, { method: 'GET' })
-    .then(data => data.json())
-    .then((res) => {
-      console.log("this is the response: "+res);
+        var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
+          "_", curData._id, "_", "_");
+        console.log("this is the res: "+res);
 
-      if (!res.success) {
-      this.setState({ error: res.error });
-      }
-      else {
-        var resData = res.data;
-        console.log("this is the skuData: "+resData);
-        console.log("this is the skuData string: "+JSON.stringify(resData));
+        if (!res.success) {
+          this.setState({ error: res.error });
+        }
+        else {
+          var resData = res.data;
+          console.log("this is the skuData: "+resData);
+          console.log('this is the res.data.length: '+resData.length);
+          console.log("this is the skuData string: "+JSON.stringify(resData));
         for(let s = 0; s<resData.length; s++){
           var curSku = [];
           var curSkuObj = resData[s];
@@ -82,23 +78,68 @@ getSKUSbyIngId = (ingID) => {
           curSku.push(curSkuObj.unit_upc);
           curSku.push(curSkuObj.unit_size);
           curSku.push(curSkuObj.cpc);
-          curSku.push(curSkuObj.prod_line);
+          curSku.push(curSkuObj.prod_line.name);
+          console.log("this is the prod: "+curSkuObj.prod_line.name);
+          console.log("this is the prod string: "+JSON.stringify(curSkuObj.prod_line));
+
+
           curSku.push(curSkuObj.comment);
-          curSku.push("\r\n");
+          //curSku.push("\r\n");
           console.log("this is the curSku: "+curSku);
-          skuData.push(curSku);
-          console.log("this is the skuData: "+skuData);
+          finalData.push(curSku);
+          finalData.push("\r\n");
+          console.log("this is the skuData: "+finalData);
         }
-        console.log("this is the skuLine: "+ curSku);
       }
-    });
+
+
+        //console.log("this is the ingSkus: "+ ingSKUs);
+
+        //finalData.push(ingSKUs);
+        console.log("this is the finalData: "+ finalData);
+        //finalData.push("\r\n");
+    }    
+    fileDownload(finalData, fileTitle+'.csv');
+};
+
+
+getSKUSbyIngId = (ingID) => {
+    console.log('this is the ingID: '+ ingID);
+    var skuData = [];
+    // var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
+    //       "_", ingID, "_", "_");
+    //       console.log("this is the res: "+res);
+
+    //   // if (!res.success) {
+      // this.setState({ error: res.error });
+      // }
+      // else {
+      //   var resData = res.data;
+      //   console.log("this is the skuData: "+resData);
+      //   console.log("this is the skuData string: "+JSON.stringify(resData));
+      //   for(let s = 0; s<resData.length; s++){
+      //     var curSku = [];
+      //     var curSkuObj = resData[s];
+      //     curSku.push(curSkuObj.num);
+      //     console.log("this is the num: "+curSkuObj.num);
+      //     curSku.push(curSkuObj.name);
+      //     curSku.push(curSkuObj.case_cpc);
+      //     curSku.push(curSkuObj.unit_upc);
+      //     curSku.push(curSkuObj.unit_size);
+      //     curSku.push(curSkuObj.cpc);
+      //     curSku.push(curSkuObj.prod_line);
+      //     curSku.push(curSkuObj.comment);
+      //     curSku.push("\r\n");
+      //     console.log("this is the curSku: "+curSku);
+      //     skuData.push(curSku);
+      //     console.log("this is the skuData: "+skuData);
+      //   }
+      //   console.log("this is the skuLine: "+ curSku);
+      //}
+    
     return skuData;
 
 }
-
-
-
-
 
 render() {
 return (

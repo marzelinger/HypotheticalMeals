@@ -9,7 +9,9 @@ export default class SubmitRequest{
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { error: res.error.message || res.error };
-        else return ({ 
+
+        else 
+        return ({ 
             success: res.success,
             data: res.data,
             loaded: true
@@ -159,4 +161,18 @@ export default class SubmitRequest{
     });
   }
 
+
+
+static submitGetPagination(obj) {
+
+    fetch('/api/ingredientspagget', { method: 'GET' })
+          .then(data => data.json())
+          .then((res) => {
+            if (!res.success) obj.setState({ error: res.error });
+            else obj.setState({ 
+                data: res.data,
+                loaded: true
+            });
+          });
+  }
 }

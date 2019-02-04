@@ -12,7 +12,7 @@ const SkusSchema = new Schema({
   case_upc: Number,
   unit_upc: Number,
   unit_size: String,
-  cpc: String,
+  cpc: Number,
   prod_line: 
     {
       type: Schema.Types.ObjectId,

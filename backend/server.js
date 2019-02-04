@@ -9,6 +9,7 @@ import mongoose from 'mongoose';
 import SkuHandler from './models/handlers/SkuHandler';
 import Prod_LineHandler from './models/handlers/Prod_LineHandler';
 import IngredientHandler from './models/handlers/IngredientHandler';
+import PaginationHandler from './models/handlers/PaginationHandler';
 import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
 import UserHandler from './models/handlers/UserHandler';
 import FilterHandler from './models/handlers/FilterHandler';
@@ -108,6 +109,11 @@ router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword
 router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
 
 
+
+//pagination router api calls
+router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
+
+router.get('/ingredientspagget', (req, res, next) => PaginationHandler.getIngredientsPag(req, res, next));
 // Gives constant name to long directory home page.
 // const appPage = path.join(__dirname, '../client/build/index.html');
 
