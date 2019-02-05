@@ -16,6 +16,9 @@ import FilterHandler from './models/handlers/FilterHandler';
 import { getSecret } from './secrets';
 const passport = require("passport");
 const cors = require('cors');
+var path = require("path");
+
+
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -108,22 +111,17 @@ router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword
 // @access Public
 router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
 
-
-
-//pagination router api calls
-router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
-
 router.get('/ingredientspagget', (req, res, next) => PaginationHandler.getIngredientsPag(req, res, next));
 // Gives constant name to long directory home page.
-// const appPage = path.join(__dirname, '../client/build/index.html');
+ const appPage = path.join(__dirname, '../client/build/index.html');
 
 // // Allows the use of files.
-// app.use(express.static('../client/build'));
+ app.use(express.static('../client/build'));
 
 // // SERVES STATIC HOMEPAGE at '/' URL
-// app.get('*', function(req, res) {
-//   res.sendFile(appPage)
-// })
+ app.get('*', function(req, res) {
+   res.sendFile(appPage)
+ })
 
 
 app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
