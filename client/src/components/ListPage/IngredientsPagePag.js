@@ -12,12 +12,9 @@ import ItemStore from '../../helpers/ItemStore'
 import IngredientDetails from './IngredientDetails'
 import { 
     Alert,
-    Button,
-    DropdownToggle,
     Modal} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import './../../style/ListPage.css';
-import GeneralNavBar from "../GeneralNavBar";
 import DependencyReport from "../export/DependencyReport";
 import ExportSimple from '../export/ExportSimple';
 import DataStore from '../../helpers/DataStore'
@@ -94,10 +91,6 @@ export default class IngredientsPagePag extends React.Component {
             this.loadDataFromServer();
             console.log(this.state.data)
         }
-        if (prevState.data !== this.state.data){
-            //this is where we recount the number of skus for each data item
-            
-        }
     }
 
     async updateFilterState(prevState) {
@@ -147,14 +140,14 @@ export default class IngredientsPagePag extends React.Component {
         if (final_sku_filter === '') final_sku_filter = '_';
         if (final_keyword_filter === '') final_keyword_filter = '_';
         
-        //var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-          //  this.state.sort_field, final_sku_filter, final_keyword_filter);
 
           var res = await SubmitRequest.submitGetFilterDataPag(Constants.ing_filter_path, 
             this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
             var resALL = await SubmitRequest.submitGetFilterDataPag(Constants.ing_filter_path, 
                 this.state.sort_field, final_sku_filter, final_keyword_filter, 0, allData.data.length);
             console.log("this is the res: "+res);
+            console.log("this is the res.data: "+res.data);
+
     
         if (res === undefined || !res.success) {
             res.data = [];
@@ -187,9 +180,7 @@ export default class IngredientsPagePag extends React.Component {
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
         console.log('this is the allData: '+allData);
         console.log('this is the allData length: '+allData.data.length);
-
         console.log('this is the pageSize: '+this.state.pageSize);
-
         var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
         console.log('this is the pagesCount1: '+this.state.pagesCount);
 
@@ -342,11 +333,21 @@ export default class IngredientsPagePag extends React.Component {
         this.loadDataFromServer();
     };
 
-    onSelect = async (event, item) => {
-        var newState = this.state.selected_items.slice();
-        var loc = newState.indexOf(item);
-        (loc > -1) ? newState.splice(loc, 1) : newState.push(item);
-        await this.setState({ selected_items: newState});
+    // onSelect = async (event, item) => {
+    //     var newState = this.state.selected_items.slice();
+    //     var loc = newState.indexOf(item);
+    //     (loc > -1) ? newState.splice(loc, 1) : newState.push(item);
+    //     await this.setState({ selected_items: newState});
+    // };
+
+    onSelect = (rowIndexes) => {
+        console.log(rowIndexes);
+        var newState = [];
+        rowIndexes.forEach( index => {
+            newState.push(this.state.data[index]);
+        });
+        console.log(newState);
+        this.setState({ selected_items: newState, selected_indexes: rowIndexes});
     };
 
     onDetailViewSelect = (event, item) => {
