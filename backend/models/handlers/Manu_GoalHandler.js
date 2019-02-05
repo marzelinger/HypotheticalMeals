@@ -17,8 +17,7 @@ class Manu_GoalHandler{
             }
             let conflict = await Manu_Goal.find({ name : new_name, user: new_user});
             if(conflict.length > 0){
-                console.log("?");
-                return res.json({ success: false, error: 'CONFLICT'});
+                return res.json({ success: false, error: 'Manufacturing Goal ' + new_name + ' exists for user ' + new_user});
             }
 
             manu_goal.name = new_name;
@@ -32,7 +31,6 @@ class Manu_GoalHandler{
         }
     }
 
-    // 
     static async updateManufacturingGoalByID(req, res){
         try {
             var target_id = req.params.manu_goal_id;

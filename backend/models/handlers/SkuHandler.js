@@ -33,7 +33,7 @@ class SkuHandler{
 
             let conflict = await SKU.find({ num : new_sku_num});
             if(conflict.length > 0){
-                return res.json({ success: false, error: 'CONFLICT'});
+                return res.json({ success: false, error: 'SKU Number Conflict'});
             }
             sku.name = new_name;
             sku.num = new_sku_num;

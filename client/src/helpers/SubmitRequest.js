@@ -11,7 +11,7 @@ export default class SubmitRequest{
       return fetch('/api/' + page_name, { method: 'GET' })
         .then(data => data.json())
         .then((res) => {
-          if (!res.success) return { error: res.error.message || res.error };
+          if (!res.success) return { success: res.success, error: res.error };
 
           else 
           return ({ 
@@ -165,7 +165,7 @@ export default class SubmitRequest{
     return fetch(path, { method: 'GET' })
       .then(data => data.json())
       .then((res) => {
-        if (!res.success) return { success: res.success, error: res.error.message || res.error};
+        if (!res.success) return { success: res.success, error: res.error };
         else return ({ 
             success: res.success,
             data: res.data,
@@ -175,21 +175,4 @@ export default class SubmitRequest{
       }
       );
     }
-
-
-
-  // static submitSkusByIngredientIDRequest = (item_id) => {
-  //   try {
-  //     return fetch(`/api/skus_by_ingredient/${item_id}`, {
-  //       method: 'GET',
-  //       headers: { 'Content-Type': 'application/json' }
-  //     }).then(res => res.json()).then((res) => {
-  //       if (!res.success) return { success: res.success, error: res.error };
-  //       else return { succes: res.success, data: res.data };
-  //     });
-  //   }
-  //   catch (err){
-  //     return { success: false, error: err };
-  //   }
-  // }
 }
