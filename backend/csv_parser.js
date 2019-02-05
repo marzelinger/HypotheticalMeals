@@ -65,7 +65,7 @@ export default class CSV_parser{
                     var prod_line = new Prod_Line();
                     prod_line.name = obj_Name;
                     let new_prod_line = prod_line.save();
-                    prod_lines_added.push(new_prod_line);
+                    prod_lines_added.push(prod_line);
                 } else {
                     obj.name = obj_Name;
                     delete obj["Name"];
@@ -652,7 +652,7 @@ export default class CSV_parser{
             updated_ingrs.push(updated_ingredient);
         }
 
-        return res.json({ success: true, sku_data: updated_skus});
+        return res.json({ success: true, sku_data: updated_skus, showImport: true});
     }
 
 

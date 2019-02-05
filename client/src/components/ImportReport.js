@@ -82,7 +82,7 @@ export class ImportReport extends React.Component{
                         <tbody>
                             {this.state.added_items.map(item =>
                                 <tr
-                                    key={item.num}
+                                    key={this.props.label === "Product Line" ? item.name : item.num}
                                 >
                                     {this.state.table_properties.map(prop =>
                                     <td
@@ -110,7 +110,7 @@ export class ImportReport extends React.Component{
                         <tbody>
                             {this.state.updated_items.map(item =>
                                 <tr
-                                    key={item.num}
+                                    key={this.props.label === "Product Line" ? item.name : item.num}
                                 >
                                     {this.state.table_properties.map(prop =>
                                     <td
@@ -138,7 +138,7 @@ export class ImportReport extends React.Component{
                         <tbody>
                             {this.state.ignored_items.map(item =>
                                 <tr
-                                    key={item.num}
+                                    key={this.props.label === "Product Line" ? item.name : item.num}
                                 >
                                     {this.state.table_properties.map(prop =>
                                     <td
