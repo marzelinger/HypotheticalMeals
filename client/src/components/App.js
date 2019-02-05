@@ -15,6 +15,7 @@ import ManufacturingGoalsPage from "./ManufacturingGoalsPage";
 import IngredientsPage from "./ListPage/IngredientsPage";
 import ProductLinePage from "../ProductLine/ProductLinePage";
 import * as Constants from './../resources/Constants';
+import Logout from '../components/auth/Logout';
 
 import { setCurrentUser, logoutUser, getAllUsers } from "../actions/authActions";
 import { Provider } from "react-redux";
@@ -28,7 +29,6 @@ import { Link, withRouter } from "react-router-dom";
 //const getAllUsers = require("../actions/authActions");
 
 // Check for token to keep user logged in
-
 const store = configureStore();
 
 class App extends React.Component{
@@ -78,6 +78,7 @@ class App extends React.Component{
                <Route exact path="/login" component={Login} />
                <Route exact path="/register" component={Register} />
                <Route exact path="/adminregister" component={AdminRegister} />
+              
               <Switch>
                 <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
@@ -93,7 +94,8 @@ class App extends React.Component{
   }
 }
 
-export default App
+export default App;
+
 
 // <Route exact path="/" component={Landing} />
 //               <Route exact path="/login" component={Login} />

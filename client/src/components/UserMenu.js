@@ -9,9 +9,10 @@ import MenuItem from 'material-ui/MenuItem';
 import '../style/GeneralMenu.css';
 import Logout from './auth/Logout';
 
+
 const jwt_decode = require('jwt-decode');
 
-export default class GeneralMenu extends React.Component {
+export default class UserMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -56,9 +57,9 @@ export default class GeneralMenu extends React.Component {
             onRequestClose={this.handleRequestClose}
             >
                 <Menu>
-                    <MenuItem primaryText = "Logout">
-                    <Logout></Logout>
-                    </MenuItem>
+                    <MenuItem primaryText = "LogoutDUMMY"></MenuItem>
+                    {//<Logout></Logout>
+                    }
                 </Menu>
             </Popover>
         </div>

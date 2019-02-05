@@ -34,27 +34,10 @@ export default class GeneralNavBar extends React.Component {
           <GeneralMenu/>
           <PrivateRoute exact path="/register" component={Register} />
           <UserMenu></UserMenu>
-          <Logout></Logout>  
+          {//<Logout></Logout>
+          }  
         </Navbar>
       </div>
     );
   }
 }
-
-
-
-// <Navbar color="light" light expand="md">
-// <GeneralMenu/>
-// <Route exact path="/register" component={Register} />
-// <NavbarBrand id = "title" href="/">{Constants.TITLE}</NavbarBrand>
-// {
-//   localStorage.getItem("jwtToken")
-//   ? 
-//   <Logout></Logout>
-//   : <div></div>
-
-
-// }
-
-// }
-// </Navbar>
