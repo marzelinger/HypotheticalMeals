@@ -70,7 +70,7 @@ export default class Filter extends React.Component {
                 onChange={(opt, e) => this.props.handleFilterValueSelection(opt.label, opt.value, e, this.props.id)}
                 onInputChange={(val, e) => this.props.handleFilterValueChange(val, e, this.props.id)} 
                 options={this.props.assisted_search_results.map(res => ({ label: res.name, value: res._id }))}
-                openMenuOnClick={this.props.filter_category !== Constants.keyword_label}
+                noOptionsMessage={() => null}
             />
             <InputGroupAddon addonType="append">{this.props.filter_category}</InputGroupAddon>
             <Button color="secondary" onClick={(e) => this.props.handleRemoveFilter(e, this.props.id)}> 

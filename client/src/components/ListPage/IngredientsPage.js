@@ -154,8 +154,6 @@ export default class IngredientsPage extends React.Component {
     }
 
     onFilterValueChange = (val, e, id) => {
-        console.log(val)
-        console.log(e)
         if (e.action === 'input-change'){
             var sku_sub = this.state.sku_substr.slice();
             sku_sub[id] = val;
@@ -184,7 +182,6 @@ export default class IngredientsPage extends React.Component {
     onKeywordSubmit (id) {
         var fil_val = this.state.filter_value.slice();
         fil_val[id] = this.state.sku_substr[id];
-        console.log(fil_val[id])
         this.setState({
             filter_value: fil_val
         });
@@ -267,12 +264,10 @@ export default class IngredientsPage extends React.Component {
     // };
 
     onSelect = (rowIndexes) => {
-        console.log(rowIndexes);
         var newState = [];
         rowIndexes.forEach( index => {
             newState.push(this.state.data[index]);
         });
-        console.log(newState);
         this.setState({ selected_items: newState, selected_indexes: rowIndexes});
     };
 

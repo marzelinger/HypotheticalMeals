@@ -177,8 +177,6 @@ export default class ListPage extends React.Component {
     }
 
     onFilterValueChange (val, e, id) {
-        console.log(val)
-        console.log(e)
         if (e.action === 'input-change'){
             var ing_sub = this.state.ing_substr.slice();
             ing_sub[id] = val;
@@ -187,13 +185,10 @@ export default class ListPage extends React.Component {
             });
             return val;
         }
-        console.log(this.state.ing_substr[id])
         return this.state.ing_substr[id];
     }
 
     onFilterValueSelection (name, value, e, id) {
-        console.log(name)
-        console.log(value)
         var ing_sub = this.state.ing_substr.slice();
         ing_sub[id] = name;
         var fil_val = this.state.filter_value.slice();
