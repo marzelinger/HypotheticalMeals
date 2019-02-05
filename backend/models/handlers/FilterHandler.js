@@ -21,7 +21,7 @@ class FilterHandler{
             }
             var keyword = req.params.keyword;
             if (keyword !== undefined && keyword !== "_"){
-                and_query.push({$text: { $search: keyword } }); 
+                and_query.push({$or: [{name: { $regex: keyword , $options: "$i"}}, {pkg_size:{ $regex: keyword , $options: "$i"}}, {vendor_info: { $regex: keyword , $options: "$i"}}, {comment: { $regex: keyword , $options: "$i"}}]}); 
             }
             let results = (and_query.length === 0) ? await Ingredient.find( ).populate('skus').sort(sort_field) : 
                                                      await Ingredient.find( {$and: and_query }).populate('skus').sort(sort_field);
@@ -47,13 +47,14 @@ class FilterHandler{
             }
             var keyword = req.params.keyword;
             if (keyword !== undefined && keyword !== "_"){
-                and_query.push({$text: { $search: keyword } }); 
+                and_query.push({$or: [{name: { $regex: keyword , $options: "$i"}}, {unit_size: { $regex: keyword , $options: "$i"}}, {comment: { $regex: keyword , $options: "$i"}}]}); 
             }
             var prod_line_ids = req.params.prod_line_ids;
             if (prod_line_ids !== undefined && prod_line_ids !== "_"){
                 prod_line_ids = prod_line_ids.replace(/\s/g, "").split(',');
                 and_query.push({ prod_line: prod_line_ids }); 
             }
+            console.log(and_query)
             let results = (and_query.length === 0) ? await SKU.find( ).populate('ingredients').populate('prod_line').sort(sort_field) : 
                                                      await SKU.find( {$and: and_query }).populate('ingredients').populate('prod_line').sort(sort_field);
             if (results.length == 0) results = [];
