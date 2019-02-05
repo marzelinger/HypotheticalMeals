@@ -365,26 +365,32 @@ export default class IngredientsPage extends React.Component {
         this.toggleModal();
     };
 
-    onDetailViewSubmit = (event, item, option) => {
+    async onDetailViewSubmit(event, item, option) {
+        var res = {};
         switch (option) {
             case Constants.details_create:
-                SubmitRequest.submitCreateItem(this.state.page_name, item, this);
+                res = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_save:
-                SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
+                res = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_delete:
-                SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
+                res = await SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
                 break;
             case Constants.details_cancel:
+                res = {success: true}
                 break;
         }
-        this.setState({ 
-            detail_view_item: null,
-            detail_view_options: []
-        });
-        this.loadDataFromServer();
-        this.toggleModal();
+        console.log(res)
+        if (!res.success) alert(res.error);
+        else {
+            this.setState({ 
+                detail_view_item: null,
+                detail_view_options: []
+            });
+            this.loadDataFromServer();
+            this.toggleModal();
+        }
     }
 
     onPropChange = (value, item, prop) => {
