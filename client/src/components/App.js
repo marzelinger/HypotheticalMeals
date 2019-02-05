@@ -35,7 +35,7 @@ const store = configureStore();
 class App extends React.Component{
   constructor() {
     super();
-    // localStorage.clear();
+   //  localStorage.clear();
     //this.determineUserInit();
     this.determineUser();
     this.state = {
