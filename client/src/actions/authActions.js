@@ -89,7 +89,7 @@ export const registerFirstAdmin = (userData, history) => dispatch => {
   console.log("this is the regfirstAdmin flag: "+ localStorage.getItem("firstAdminCreated"));
 
   console.log("this is the adminHasinit value: "+ adminHasInit().isValid);
-  if(!adminHasInit().isValid){
+//  if(!adminHasInit().isValid){
   axios
     .post("/api/users/register", userData)
     .then(res => history.push("/login")) // re-direct to login on successful register
@@ -101,7 +101,7 @@ export const registerFirstAdmin = (userData, history) => dispatch => {
     );
     localStorage.setItem("firstAdminCreated", true);
     console.log("this is the regfirstAdminLATER flag: "+ localStorage.getItem("firstAdminCreated"));
-  }
+ // }
 };
 
 
