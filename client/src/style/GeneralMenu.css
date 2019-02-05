@@ -1,8 +1,0 @@
-
-#menubutton{
-    height:50px;
-    width: 50px;
-    background-size: 50px 50px;
-    background-image: url("./../resources/button.png");
-    border-radius: 100%;
-}
