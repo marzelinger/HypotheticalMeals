@@ -16,8 +16,7 @@ export default class SubmitRequest{
           else 
           return ({ 
               success: res.success,
-              data: res.data,
-              loaded: true
+              data: res.data
           });
         });
       }
@@ -168,8 +167,7 @@ export default class SubmitRequest{
         if (!res.success) return { success: res.success, error: res.error };
         else return ({ 
             success: res.success,
-            data: res.data,
-            loaded: true
+            data: res.data
           }
         )
       }
