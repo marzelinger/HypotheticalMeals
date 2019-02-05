@@ -14,7 +14,9 @@ import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
 import UserHandler from './models/handlers/UserHandler';
 import FilterHandler from './models/handlers/FilterHandler';
 import { getSecret } from './secrets';
+var path = require("path");
 const passport = require("passport");
+
 const cors = require('cors');
 
 const dotenv = require('dotenv');
@@ -31,6 +33,16 @@ app.use(cors(corsOptions));
 
 // set our port to either a predetermined port number if you have set it up, or 3001
 const API_PORT = process.env.API_PORT || 3001;
+
+
+
+var corsOptions = {
+  origin: '*',
+  optionSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+
 
 
 mongoose.connect(getSecret('dbUri'));
@@ -109,21 +121,20 @@ router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword
 router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
 
 
+// Gives constant name to long directory home page.
+const appPage = path.join(__dirname, '../client/build/index.html');
 
-//pagination router api calls
-router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
+// Allows the use of files.
+app.use(express.static('../client/build'));
 
-router.get('/ingredientspagget', (req, res, next) => PaginationHandler.getIngredientsPag(req, res, next));
+// SERVES STATIC HOMEPAGE at '/' URL
+app.get('*', function(req, res) {
+  res.sendFile(appPage)
+})
+
+
 // Gives constant name to long directory home page.
 // const appPage = path.join(__dirname, '../client/build/index.html');
-
-// // Allows the use of files.
-// app.use(express.static('../client/build'));
-
-// // SERVES STATIC HOMEPAGE at '/' URL
-// app.get('*', function(req, res) {
-//   res.sendFile(appPage)
-// })
 
 
 app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
