@@ -34,7 +34,7 @@ export default class SubmitRequest{
         body: JSON.stringify(item),
       }).then(res => res.json()).then((res) => {
         if (!res.success) return { success: res.success, error: res.error };
-        else console.log(res);
+        else return { success: res.success, data: res.data};
       });
     }
     catch (err){
@@ -50,7 +50,7 @@ export default class SubmitRequest{
         body: JSON.stringify(item),
       }).then(res => res.json()).then((res) => {
         if (!res.success) return { success: res.success, error: res.error };
-        else console.log(res);
+        else return { success: res.success, data: res.data};
       });
     }
     catch (err){
@@ -65,6 +65,7 @@ export default class SubmitRequest{
         headers: { 'Content-Type': 'application/json' }
       }).then(res => res.json()).then((res) => {
         if (!res.success) return { success: res.success, error: res.error };
+        else return { success: res.success, data: res.data};
       });
     }
     catch (err){
