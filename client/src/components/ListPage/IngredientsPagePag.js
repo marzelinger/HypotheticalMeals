@@ -52,21 +52,22 @@ export default class IngredientsPagePag extends React.Component {
             detail_view_item: null,
             detail_view_options: [],
             data: [],
+            exportData: [],
             sort_field: '_',
             loaded: false,
             error: null,
             modal: false,
             simple: props.simple || false,
             currentPage: 0,
-            pageSize: 1,
-            pagesCount: 5
-        };
+            pageSize: 2,
+            pagesCount: 0
+                };
         this.toggleModal = this.toggleModal.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onKeywordSubmit = this.onKeywordSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
-
+        this.setNumberPages();
     }
 
     toggleModal(){
@@ -82,7 +83,6 @@ export default class IngredientsPagePag extends React.Component {
         }
         await this.loadDataFromServer();
         await this.updateSkuCounts();
-        //this.setNumberPages();
 
     }
 
@@ -105,6 +105,7 @@ export default class IngredientsPagePag extends React.Component {
         for (var i = 0; i < prevState.sku_substr.length; i++) {
             if (this.state.filter_category[i] === Constants.sku_label
                 && this.state.sku_substr[i].length > 0) {
+                //TODO MAYBE CHANGE BELOW
                 let res = await SubmitRequest.submitGetSkusByNameSubstring(this.state.sku_substr[i]);
                 if (res === undefined || !res.success) {
                     res.data = [];
@@ -127,6 +128,9 @@ export default class IngredientsPagePag extends React.Component {
     }
 
     async loadDataFromServer() {
+
+        let allData = await SubmitRequest.submitGetData(this.state.page_name);
+
         if (this.state.filter_value === undefined) return;
         var final_sku_filter = '';
         var final_keyword_filter = '';
@@ -142,46 +146,99 @@ export default class IngredientsPagePag extends React.Component {
         }
         if (final_sku_filter === '') final_sku_filter = '_';
         if (final_keyword_filter === '') final_keyword_filter = '_';
-        var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-            this.state.sort_field, final_sku_filter, final_keyword_filter);
+        
+        //var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
+          //  this.state.sort_field, final_sku_filter, final_keyword_filter);
 
+          var res = await SubmitRequest.submitGetFilterDataPag(Constants.ing_filter_path, 
+            this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
+            var resALL = await SubmitRequest.submitGetFilterDataPag(Constants.ing_filter_path, 
+                this.state.sort_field, final_sku_filter, final_keyword_filter, 0, allData.data.length);
+            console.log("this is the res: "+res);
+    
         if (res === undefined || !res.success) {
             res.data = [];
             res.loaded = true;
+            resALL.data = [];
+            resALL.loaded = true;
         }
         this.setState({
             data: res.data,
-            loaded: res.loaded
+            loaded: res.loaded,
+            exportData: resALL.data
+
         })
     }
 
     async updateSkuCounts() {
+        console.log('this is the data in updateSkuCounts: '+this.state.data);
         let data = this.state.data.slice();
         await data.map(async (item) => {
-            let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', '_');
+            //let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', '_');
+
+            let skus = await SubmitRequest.submitGetFilterDataPag(Constants.sku_filter_path,'_', item._id, '_', this.state.currentPage, this.state.pageSize,'_');
             item.sku_count = skus.data.length;
             await SubmitRequest.submitUpdateItem(this.state.page_name, item);
             }
         );
     }
 
-    setNumberPages = () =>{
-        console.log('this is the data: '+this.data);
-        //this.pagesCount = Math.ceil(this.data.length/this.pageSize);
-        this.state.pagesCount = 5;
-        this.state = {
-            currentPage: 0    
-        };
+    async setNumberPages(){
+        let allData = await SubmitRequest.submitGetData(this.state.page_name);
+        console.log('this is the allData: '+allData);
+        console.log('this is the allData length: '+allData.data.length);
+
+        console.log('this is the pageSize: '+this.state.pageSize);
+
+        var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
+        console.log('this is the pagesCount1: '+this.state.pagesCount);
+
+        this.setState({
+            currentPage: 0,
+            pagesCount: curCount,
+        }); 
+               console.log('this is the pagesCount: '+this.state.pagesCount);
+
     }
 
-    handlePageClick = (e, index) =>{
+    handlePageClick = (e, index) => {
         e.preventDefault();
         console.log("this is current page1; "+this.state.currentPage);
 
         this.setState({
             currentPage: index
         });
-        console.log("this is current page; "+this.state.currentPage);
+        this.loadDataFromServer();
+    }
+
+    async loadExportData(e){
+        e.preventDefault();
+        let allData = await SubmitRequest.submitGetData(this.state.page_name);
+
+        if (this.state.filter_value === undefined) return;
+        var final_sku_filter = '';
+        var final_keyword_filter = '';
+        for (var i = 0; i < this.state.filter_value.length; i++){
+            if (this.state.filter_value[i].length === Constants.obj_id_length 
+                && this.state.filter_category[i] === Constants.sku_label) {
+                    final_sku_filter += (final_sku_filter.length == 0 ? '' : ',');
+                    final_sku_filter += this.state.filter_value[i];
+            }
+            else if (this.state.filter_category[i] === Constants.keyword_label) {
+                final_keyword_filter = this.state.filter_value[i];
+            }
+        }
+        if (final_sku_filter === '') final_sku_filter = '_';
+        if (final_keyword_filter === '') final_keyword_filter = '_';
+        
+        console.log("this is the all data length: "+allData.data.length);
+        var res = await SubmitRequest.submitGetFilterDataPag(Constants.ing_filter_path, 
+            this.state.sort_field, final_sku_filter, final_keyword_filter, 0, allData.data.length);
+        console.log("this is the res: "+res);
+
+        this.setState({
+            exportData: res.data
+        });
     }
 
     onFilterValueChange = (e, id) => {
@@ -330,6 +387,9 @@ export default class IngredientsPagePag extends React.Component {
     };
 
     render() {
+        console.log("This is the curpage value; "+this.state.currentPage);
+        console.log("this is the pagesCount: " +this.state.pagesCount); 
+        
         return (
             <div className="list-page">
                 <div className="options-container" id={this.state.simple ? "simple" : "complex"}>
@@ -374,61 +434,49 @@ export default class IngredientsPagePag extends React.Component {
                         value={this.state.error}
                         color='danger'/>
                 </Modal>   
-                <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/>                           
+                <ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/>                           
                 <DependencyReport data = {this.state.data} />
             
                 <div className = "pagination-wrapper">
-                    <Pagination aria-label = "Page navigation example">
-                    <PaginationItem disabled = {this.state.currentPage <=0}>
-                    <PaginationLink onClick = {e => this.handlePageClick(e, this.state.currentPage -1)}
-                    previous href = "#"/>
-                    </PaginationItem>
-
-
-                    {[...Array(this.state.pagesCount)].map((page,i) =>
-                        <PaginationItem active = {i === this.state.currentPage} key = {i}>
-                        <PaginationLink onClick = { e => this.handlePageClick(e, i)} href = "#">
-                            {i+1}
-                            </PaginationLink>
-                            </PaginationItem>
-                    )}
-
-                    <PaginationItem disabled={this.state.currentPage >= this.state.pagesCount - 1}>
-              
-                    <PaginationLink
-                    onClick={e => this.handlePageClick(e, this.state.currentPage + 1)}
-                    next
-                    href="#"
-                    />
-              
-                    </PaginationItem>
+                <Pagination aria-label="Page navigation example">
             
-                    </Pagination>
-                </div>
-                
+            <PaginationItem disabled={this.state.currentPage <= 0}>
+              
+              <PaginationLink
+                onClick={e => this.handlePageClick(e, this.state.currentPage - 1)}
+                previous
+                href="#"
+              />
+              
+            </PaginationItem>
 
-                { this.data != undefined ? (
-                    this.data.slice(this.state.currentPage *this.state.pageSize, 
-                        (this.state.currentPage +1) * this.pageSize)
-            .map((data, i)=>
-                <div className = "data-slice" key={i}>
-                    {data}
-                    </div>
-                    )
-                )
-                : (<div/>)
+            {[...Array(this.state.pagesCount)].map((page, i) => 
+              <PaginationItem active={i === this.state.currentPage} key={i}>
+                <PaginationLink onClick={e => {
+                    //this.handlePageClick(e, i)
+                    this.setState({
+                        currentPage: i
+                    });
+                    this.loadDataFromServer();     
                 }
-                    
-                    
+             } href="#">
+                  {i + 1}
+                </PaginationLink>
+              </PaginationItem>
+            )}
+
+            <PaginationItem disabled={this.state.currentPage >= this.state.pagesCount - 1}>
+              
+              <PaginationLink
+                onClick={e => this.handlePageClick(e, this.state.currentPage + 1)}
+                next
+                href="#"
+              />
+              
+            </PaginationItem>
             
-            
-            
-            
-            
-            
-            
-            
-            
+          </Pagination>
+                </div>            
             </div>
         );
     }

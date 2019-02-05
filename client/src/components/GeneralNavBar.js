@@ -7,12 +7,10 @@ import GeneralMenu from './GeneralMenu'
 import UserMenu from './UserMenu'
 import * as Constants from '../resources/Constants';
 import '../style/GeneralNavBarStyle.css';
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Register from "./auth/Register";
 import PrivateRoute from './private-route/PrivateRoute';
 import ExportSimple from "./export/ExportSimple";
 import Logout from './auth/Logout'
-
 
 
 export default class GeneralNavBar extends React.Component {
