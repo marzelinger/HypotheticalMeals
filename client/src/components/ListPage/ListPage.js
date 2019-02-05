@@ -119,6 +119,7 @@ export default class ListPage extends React.Component {
             if (this.state.filter_category[i] === Constants.ingredient_label
                 && this.state.ing_substr[i].length > 0) {
                 let res = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.ing_substr[i]);
+                console.log(res)
                 if (res === undefined || !res.success) {
                     res.data = [];
                 }
@@ -127,6 +128,7 @@ export default class ListPage extends React.Component {
             if (this.state.filter_category[i] === Constants.prod_line_label
                 && this.state.ing_substr[i].length > 0) {
                 let res = await SubmitRequest.submitGetProductLinesByNameSubstring(this.state.ing_substr[i]);
+                console.log(res)
                 if (res === undefined || !res.success) {
                     res.data = [];
                 }
@@ -170,12 +172,11 @@ export default class ListPage extends React.Component {
         if (final_prod_line_filter === '') final_prod_line_filter = '_';
         var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
             this.state.sort_field, final_ing_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize, final_prod_line_filter);
+        var resALL = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
+            this.state.sort_field, final_ing_filter, final_keyword_filter, 0, allData.data.length, final_prod_line_filter);
 
-            var resALL = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
-                this.state.sort_field, final_ing_filter, final_keyword_filter, 0, allData.data.length, final_prod_line_filter);
-
-                console.log("this is the res: "+res);
-                console.log("this is the res.data: "+res.data);
+        console.log("this is the res: "+res);
+        console.log("this is the res.data: "+res.data);
         
         if (res === undefined || !res.success) {
             res.data = [];
@@ -211,7 +212,7 @@ export default class ListPage extends React.Component {
             currentPage: 0,
             pagesCount: curCount,
         }); 
-               console.log('this is the pagesCount: '+this.state.pagesCount);
+        console.log('this is the pagesCount: '+this.state.pagesCount);
 
     }
 
