@@ -17,6 +17,7 @@ import {
 } from 'material-ui/Table';
 import * as Constants from '../resources/Constants';
 import Select from 'react-select'
+import './ProductLine.css'
 
 export class ProductLineSkuTable extends React.Component{
     constructor(props) {
@@ -39,21 +40,22 @@ export class ProductLineSkuTable extends React.Component{
           }
         })
         let dataSourceConfig = {
-          text: 'textKey',
-          value: 'valueKey',
+          text: 'label',
+          value: 'value',
         };
-        return (<Select defaultValue = {defaultValue} onChange = {(newval, {action}) => this.props.onProdLineChange(newval, index, action) } options={options} />);
+       
+        return (<Select  className = "select" defaultValue = {defaultValue} onChange = {(newval, {action}) => this.props.onProdLineChange(newval, index, action) } options={options} />);
         // return <Input onChange = {(e) => this.props.onProdLineChange(e, index)} placeholder={item['prod_line']} type="String" />
     }
     
     render() {
         let tablebody = (
             this.props.list_items.map((item, index) => 
-            <TableRow
+            <TableRow className = "rows"
               key={item.num + index}
             >
               {this.props.table_properties.map(prop => 
-                <TableRowColumn key={prop}>
+                <TableRowColumn style = {{overflow: prop == 'prod_line' ? 'visible' : 'hidden', zIndex: `${index}`}}  key={prop}>
                   {prop == 'prod_line' ? this.createProductLineElement(item, index) : item[prop]}
                 </TableRowColumn>
               )}
@@ -62,8 +64,8 @@ export class ProductLineSkuTable extends React.Component{
         
 
       return (
-        <div>
-          <Table>
+        <div id = "help">
+          <Table id = "help_here">
             <TableHeader displaySelectAll={this.state.showCheckboxes} adjustForCheckbox={this.state.showCheckboxes}>
               <TableRow>
                 {this.props.table_properties.map(prop => 

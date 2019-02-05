@@ -15,7 +15,6 @@ import ManufacturingGoalsPage from "./ManufacturingGoalsPage";
 import IngredientsPage from "./ListPage/IngredientsPage";
 import IngredientsPagePag from "./ListPage/IngredientsPagePag";
 import ProductLinePage from "../ProductLine/ProductLinePage";
-//import AuthActions from "../actions/authActions";
 import * as Constants from './../resources/Constants';
 
 import { setCurrentUser, logoutUser, getAllUsers } from "../actions/authActions";
@@ -27,6 +26,8 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Link, withRouter } from "react-router-dom";
 
+//const getAllUsers = require("../actions/authActions");
+
 // Check for token to keep user logged in
 
 const store = configureStore();
@@ -34,38 +35,17 @@ const store = configureStore();
 class App extends React.Component{
   constructor() {
     super();
-    //localStorage.clear();
+    // localStorage.clear();
     //this.determineUserInit();
     this.determineUser();
     this.state = {
       navbar_items: [Constants.SkuTitle, Constants.IngTitle, Constants.ManuGoalTitle],
-      displayRegisterForm: true
     }
-    //this.determineUserInit();
   }
-
-  async componentDidMount() {
-    await this.loadUsersFromServer();
-
-}
-
-
-async loadUsersFromServer() {
-  var res = await getAllUsers();
-  console.log("this is the response: "+ res);
-
-  if (res === undefined || !res.success) {
-      res.data = [];
-      res.loaded = true;
-  }
-  this.setState({
-      displayRegisterForm: true
-  })
-}
 
   determineUser = () => {
     if (localStorage.jwtToken) {
-      //if(localStorage.getItem("firstAdminCreated")){
+      if(localStorage.getItem("firstAdminCreated")){
         // Set auth token header auth
         const token = localStorage.jwtToken;
         setAuthToken(token);
@@ -81,7 +61,7 @@ async loadUsersFromServer() {
       
           // Redirect to login
           window.location.href = "./login";
-        //}
+        }
       }
     }
   }
