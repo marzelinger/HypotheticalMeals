@@ -41,6 +41,8 @@ class Manu_GoalHandler{
             }
             var new_skus = req.body.skus;
             var new_quantities = req.body.quantities
+
+            // Manu_GoalHandler.checkForZeroQtys(new_skus, new_quantities);
             let updated_manu_goal = await Manu_Goal.findOneAndUpdate({_id : target_id},
                 {$set: {skus: new_skus, quantities: new_quantities}}, {upsert: true, new: true});
             if(!updated_manu_goal){
@@ -56,6 +58,16 @@ class Manu_GoalHandler{
             return res.json({ success: false, error: err});
         }
     }
+
+    static checkForZeroQtys(new_items, new_quantities) {
+        var toRemove = [];
+        new_quantities.map((qty, index) => {if (parseInt(qty) <= 0) toRemove.push(index)});
+        toRemove.map(ind => {
+            new_items.splice(ind, 1);
+            new_quantities.splice(ind, 1);
+        });
+    }
+
 
     static async getAllManufacturingGoals(req, res){
         try {
