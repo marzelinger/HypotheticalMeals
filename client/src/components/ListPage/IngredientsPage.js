@@ -51,7 +51,6 @@ export default class IngredientsPage extends React.Component {
             data: [],
             exportData: [],
             sort_field: '_',
-            loaded: false,
             error: null,
             modal: false,
             simple: props.simple || false,
@@ -155,13 +154,10 @@ export default class IngredientsPage extends React.Component {
 
         if (res === undefined || !res.success) {
             res.data = [];
-            res.loaded = true;
             resALL.data = [];
-            resALL.loaded = true;
         }
         this.setState({
             data: res.data,
-            loaded: res.loaded,
             exportData: resALL.data
         })
     }

@@ -53,7 +53,6 @@ export default class ListPage extends React.Component {
             exportData: [],
 
             sort_field: '_',
-            loaded: false,
             error: null,
             details_modal: false,
             manu_goals_modal: false,
@@ -179,13 +178,10 @@ export default class ListPage extends React.Component {
         
         if (res === undefined || !res.success) {
             res.data = [];
-            res.loaded = true;
             resALL.data = [];
-            resALL.loaded = true;
         }
         this.setState({
             data: res.data,
-            loaded: res.loaded,
             exportData: resALL.data
 
         })
