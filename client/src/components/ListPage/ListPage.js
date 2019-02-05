@@ -177,6 +177,8 @@ export default class ListPage extends React.Component {
     }
 
     onFilterValueChange (val, e, id) {
+        console.log(val)
+        console.log(e)
         if (e.action === 'input-change'){
             var ing_sub = this.state.ing_substr.slice();
             ing_sub[id] = val;
@@ -189,6 +191,8 @@ export default class ListPage extends React.Component {
     }
 
     onFilterValueSelection (name, value, e, id) {
+        console.log(name)
+        console.log(value)
         var ing_sub = this.state.ing_substr.slice();
         ing_sub[id] = name;
         var fil_val = this.state.filter_value.slice();
@@ -303,13 +307,6 @@ export default class ListPage extends React.Component {
         await this.setState({sort_field: sortKey})
         this.loadDataFromServer();
     };
-
-    // onSelect = async (event, item) => {
-    //     var newState = this.state.selected_items.slice();
-    //     var loc = newState.indexOf(item);
-    //     (loc > -1) ? newState.splice(loc, 1) : newState.push(item);
-    //     await this.setState({ selected_items: newState});
-    // };
 
     onSelect = (rowIndexes) => {
         console.log(rowIndexes);
