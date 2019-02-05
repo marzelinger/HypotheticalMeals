@@ -8,13 +8,15 @@ const Schema = mongoose.Schema;
 // object that shows the shape of your database entries.
 const IngredientsSchema = new Schema({
   name: String,
-  num: String,
+  num: Number,
   vendor_info: String,
   pkg_size: String,
-  pkg_cost: String,
-  skus: [String],
+  pkg_cost: Number,
+  sku_count: Number,
   comment: String
 }, { timestamps: true });
+
+
 
 // export our module to use in server.js
 export default mongoose.model('Ingredient', IngredientsSchema);

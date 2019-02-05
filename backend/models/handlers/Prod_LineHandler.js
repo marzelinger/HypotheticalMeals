@@ -2,6 +2,7 @@
 // Riley, Belal
 
 import Prod_Line from '../databases/prod_line';
+import FilterHandler from './FilterHandler';
 
 class Prod_LineHandler{
 
@@ -56,7 +57,7 @@ class Prod_LineHandler{
   // GET
   static async getAllProductLines(req, res){
     try {
-      let all_prod_lines = await Prod_Line.find()
+      let all_prod_lines = await Prod_Line.find();
       return res.json({ success: true, data: all_prod_lines});
     }
     catch (err) {
@@ -90,6 +91,18 @@ class Prod_LineHandler{
       return res.json({ success: false, error: err});
     }
   }
+
+  static async getProductLinesByNameSubstring(req, res){
+    try{
+        var search_substr = req.params.search_substr;
+        let results = await Prod_Line.find({ name: { $regex: search_substr, $options: 'i' } });
+        if (results.length == 0) return res.json({success: false, error: '404'})
+        return res.json({ success: true, data: results});
+    }
+    catch (err) {
+        return res.json({ success: false, error: err});
+    }
+}
 
 }
 

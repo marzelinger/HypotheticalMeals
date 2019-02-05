@@ -2,6 +2,7 @@
 // Riley
 
 import Ingredient from '../databases/ingredient';
+import SKU from '../databases/sku';
 
 class IngredientHandler{
 
@@ -15,7 +16,7 @@ class IngredientHandler{
             var new_vendor_info = req.body.vendor_info;
             var new_pkg_size = req.body.pkg_size;
             var new_pkg_cost = req.body.pkg_cost;
-            var new_skus = req.body.skus;
+            var new_sku_count = req.body.sku_count;
             var new_comment = req.body.comment;
             if(!new_ingredient_name || ! new_ingredient_num || !new_pkg_size || !new_pkg_cost) {
                 return res.json({
@@ -34,7 +35,7 @@ class IngredientHandler{
             ingredient.vendor_info = new_vendor_info;
             ingredient.pkg_size = new_pkg_size;
             ingredient.pkg_cost = new_pkg_cost;
-            ingredient.skus = new_skus;
+            ingredient.sku_count = new_sku_count;
             ingredient.comment = new_comment; 
 
             let new_ingredient = await ingredient.save();
@@ -56,12 +57,12 @@ class IngredientHandler{
             var new_vendor_info = req.body.vendor_info;
             var new_pkg_size = req.body.pkg_size;
             var new_pkg_cost = req.body.pkg_cost;
-            var new_skus = req.body.skus;
+            var new_sku_count = req.body.sku_count
             var new_comment = req.body.comment;
 
             let updated_ingredient = await Ingredient.findOneAndUpdate({ _id: target_id},
                 {$set: {name: new_ingredient_name, num : new_ingredient_num, vendor_info: new_vendor_info, pkg_size : new_pkg_size,
-                     pkg_cost : new_pkg_cost, skus : new_skus, comment: new_comment}}, {upsert: true, new: true});
+                     pkg_cost : new_pkg_cost, sku_count: new_sku_count, comment: new_comment}}, {upsert: true, new: true});
             
             if(!updated_ingredient){
                 return res.json({
@@ -101,28 +102,35 @@ class IngredientHandler{
     static async deleteIngredientByID(req, res){
         try{
             var target_id = req.params.ingredient_id;
+            let skus = await SKU.find({ ingredients : target_id });
+            skus.map(async (sku) => {
+                let ind = sku.ingredients.indexOf(target_id);
+                sku.ingredients.splice(ind, 1);
+                sku.ingredient_quantities.splice(ind, 1);
+                await SKU.findOneAndUpdate({ _id : sku._id},
+                    {$set: {ingredients : sku.ingredients, ingredient_quantities: sku.ingredient_quantities}}, 
+                    {upsert : true, new : true});
+            })
             let to_remove = await Ingredient.findOneAndDelete({ _id: target_id});
-            if(!to_remove){
-                return res.json({ success: false, error: '404'});
-            }
-            return res.json({ success: true, data: to_remove});
+            if(!to_remove) return res.json({ success: true, error: '404'});
+            return res.json({ success: true, data: to_remove });
         } catch (err){
             return res.json({ success: false, error: err});
         }
     }
 
-    // Filtering APIs
-    static async getAllIngredientsByKeyword(req, res){
-        var query = {};
-        if (req.body.name !== "") { query.name = req.body.name}
+    static async getIngredientsByNameSubstring(req, res){
         try{
-            let all_ingredients = await Ingredient.find({ query });
-            return res.json({ success: true, data: all_ingredients});
+            var search_substr = req.params.search_substr;
+            let results = await Ingredient.find({ name: { $regex: search_substr, $options: 'i' } });
+            if (results.length == 0) return res.json({success: false, error: '404'})
+            return res.json({ success: true, data: results});
         }
         catch (err) {
             return res.json({ success: false, error: err});
         }
     }
+
 }
 
 export default IngredientHandler;
