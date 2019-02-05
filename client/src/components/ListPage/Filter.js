@@ -29,6 +29,8 @@ export default class Filter extends React.Component {
             focus: false,
             open: false,
         };
+        const options = [];
+        
     }
 
     toggleFocus() {
@@ -85,7 +87,7 @@ export default class Filter extends React.Component {
         return (
         <div className='filter-item' style={{width: this.state.width + '%'}}>
             {/* {this.showResults(this.state)} */}
-            <InputGroup id = 'inputGroup'>
+            {/* <InputGroup id = 'inputGroup'>
                 <Input 
                     type="text"
                     value={this.props.value}
@@ -99,8 +101,18 @@ export default class Filter extends React.Component {
                         {Constants.remove_filter_label}
                     </Button>
                 </InputGroupAddon>
-            </InputGroup>
-            <Popover
+            </InputGroup> */}
+            <Select 
+                value={this.props.value}
+                onChange={(e) => this.props.handleFilterValueChange(e, this.props.id)} 
+                options={this.props.assisted_search_results}
+                isClearable={true}
+            />
+            <Button color="secondary" onClick={(e) => this.props.handleRemoveFilter(e, this.props.id)}> 
+                {Constants.remove_filter_label}
+            </Button>
+        
+            {/* <Popover
                 open={this.state.open}
                 anchorEl={this.state.anchorEl}
                 anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
@@ -123,7 +135,7 @@ export default class Filter extends React.Component {
                         onMouseDown={(e) => {this.closePopout()}}
                     />
                 </Menu>
-            </Popover>
+            </Popover> */}
         </div>
         );
     }
