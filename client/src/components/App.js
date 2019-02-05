@@ -45,7 +45,7 @@ class App extends React.Component{
 
   determineUser = () => {
     if (localStorage.jwtToken) {
-      if(localStorage.getItem("firstAdminCreated")){
+      //if(localStorage.getItem("firstAdminCreated")){
         // Set auth token header auth
         const token = localStorage.jwtToken;
         setAuthToken(token);
@@ -62,7 +62,7 @@ class App extends React.Component{
           // Redirect to login
           window.location.href = "./login";
         }
-      }
+      //}
     }
   }
 
