@@ -68,6 +68,12 @@ export default class ImportPage extends React.Component {
         this.resetState();
         this.setState({
             selectedFile: event.target.files[0],
+            showUpdateTable: false,
+            showImportReport: false,
+            update_list_items_old: [],
+            update_list_type: "",
+            update_list_items_new: [],
+            update_list_no_collisions: [],
         })
     }
 

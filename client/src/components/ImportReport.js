@@ -88,7 +88,7 @@ export class ImportReport extends React.Component{
                                     <td
                                         key={prop}
                                     >
-                                        {item[prop]}
+                                        {prop === "Product Line Name" ? item[prop].name : item[prop]}
                                     </td>
                                 )}
                                 </tr>
