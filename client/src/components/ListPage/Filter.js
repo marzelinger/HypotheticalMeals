@@ -15,6 +15,7 @@ import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import * as Constants from '../../resources/Constants';
+import Select from 'react-select'
 
 
 export default class Filter extends React.Component {
@@ -25,15 +26,15 @@ export default class Filter extends React.Component {
         this.toggleBlur = this.toggleBlur.bind(this);
         this.state = {
             width: 100,
-            focus: false
+            focus: false,
+            open: false,
         };
     }
 
-    toggleFocus(e) {
+    toggleFocus() {
         if (this){
             this.setState({
-                focus: true,
-                anchorEl: e.currentTarget,
+                focus: true
             })
         }
     }
@@ -44,6 +45,21 @@ export default class Filter extends React.Component {
                 focus: false
             })
         }
+    }
+
+    openPopout(e) {
+        if (!this.state.open){
+            this.setState({
+                open: true,
+                anchorEl: e.currentTarget,
+            })
+        }
+    }
+
+    closePopout() {
+        this.setState({
+            open: false
+        })
     }
 
     showResults = (state) => {
@@ -68,13 +84,13 @@ export default class Filter extends React.Component {
     render() {
         return (
         <div className='filter-item' style={{width: this.state.width + '%'}}>
-            {this.showResults(this.state)}
+            {/* {this.showResults(this.state)} */}
             <InputGroup id = 'inputGroup'>
                 <Input 
                     type="text"
                     value={this.props.value}
                     onChange={(e) => this.props.handleFilterValueChange(e, this.props.id)}
-                    onFocus={this.toggleFocus}
+                    onFocus={(e) => this.openPopout(e)}
                     onBlur={this.toggleBlur}
                 />
                 <InputGroupAddon addonType="append">{this.props.filter_category}</InputGroupAddon>
@@ -85,19 +101,29 @@ export default class Filter extends React.Component {
                 </InputGroupAddon>
             </InputGroup>
             <Popover
-                open={this.state.focus}
+                open={this.state.open}
                 anchorEl={this.state.anchorEl}
                 anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
                 targetOrigin={{horizontal: 'left', vertical: 'top'}}
-                >
+            >
                 <Menu>
-                    <MenuItem primaryText="Refresh" />
-                    <MenuItem primaryText="Help &amp; feedback" />
-                    <MenuItem primaryText="Settings" />
-                    <MenuItem primaryText="Sign out" />
+                    {(this.props.assisted_search_results.map(res => 
+                        <MenuItem
+                            key={res.name}
+                            primaryText={res.name}
+                            onMouseDown={(e) => {
+                                this.closePopout();
+                                this.props.handleFilterValueSelection(e, res, this.props.id);
+                            }}
+                        />
+                    ))}
+                    <MenuItem
+                        key='close'
+                        primaryText='Close'
+                        onMouseDown={(e) => {this.closePopout()}}
+                    />
                 </Menu>
-                </Popover>
-            {/* {this.renderOptions()} */}
+            </Popover>
         </div>
         );
     }
