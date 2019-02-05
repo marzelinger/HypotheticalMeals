@@ -25,7 +25,7 @@ export default class DependencyReport extends Component {
 
   onExportDependencyReport(e){
     e.preventDefault();
-    this.loadDataFromServerForReport(this.props.data);
+    //this.loadDataFromServerForReport(this.props.data);
      
       };
 
@@ -35,6 +35,12 @@ export default class DependencyReport extends Component {
 //same rules as the “view options” described in req 2.1.2). 
 //For each ingredient, all SKUs made with the ingredient shall be shown. 
 async loadDataFromServerForReport(ingredients){
+  //let allData = await SubmitRequest.submitGetData(this.state.page_name);
+
+  //var resALL = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
+    //this.state.sort_field, final_ing_filter, final_keyword_filter, 0, allData.data.length, final_prod_line_filter);
+
+
     var fileTitle = "Ingredient_Dependency_Report";
     var count = ingredients.length;
     var finalData = [];
@@ -59,7 +65,7 @@ async loadDataFromServerForReport(ingredients){
         //console.log("this is the ingSkus: "+ingSKUS);
         //var ingSKUs = this.getSKUSbyIngId(curData._id);
 
-
+        //TODO FIX THE DEPENDENCY REPORT
         var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
           "_", curData._id, "_", "_");
         console.log("this is the res: "+res);

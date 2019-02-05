@@ -13,15 +13,12 @@ import ItemStore from './../../helpers/ItemStore'
 import AddToManuGoal from './AddToManuGoal'
 import { 
     Alert,
-    Button,
-    DropdownToggle,
     Modal} from 'reactstrap';
 import * as Constants from './../../resources/Constants';
 import './../../style/ListPage.css';
-import GeneralNavBar from "../GeneralNavBar";
 import ExportSimple from '../export/ExportSimple';
-import DependencyReport from '../export/DependencyReport';
 import DataStore from './../../helpers/DataStore'
+import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import SkuDetails from './SkuDetails';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 const jwt_decode = require('jwt-decode');
@@ -53,6 +50,8 @@ export default class ListPage extends React.Component {
             detail_view_item: {},
             detail_view_options: [],
             data: [],
+            exportData: [],
+
             sort_field: '_',
             loaded: false,
             error: null,
@@ -60,7 +59,10 @@ export default class ListPage extends React.Component {
             manu_goals_modal: false,
             manu_goals_data: [],
             simple: props.simple || false,
-            user:''
+            user:'',
+            currentPage: 0,
+            pageSize: 2,
+            pagesCount: 0
         };
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!= null){
@@ -72,6 +74,8 @@ export default class ListPage extends React.Component {
         this.onKeywordSubmit = this.onFilterValueSubmit.bind(this);
         this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
+        this.handlePageClick=this.handlePageClick.bind(this);
+        this.setNumberPages();
     }
 
     toggle = (modalType) => {
@@ -98,10 +102,12 @@ export default class ListPage extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
+        console.log(this.state.data)
         if (prevState.ing_substr !== this.state.ing_substr || prevState.filter_value !== this.state.filter_value || 
             prevState.filter_category !== this.state.filter_category) {
             await this.updateFilterState(prevState);
             this.loadDataFromServer();
+            console.log(this.state.data)
         }
     }
 
@@ -139,6 +145,7 @@ export default class ListPage extends React.Component {
     }
 
     async loadDataFromServer() {
+        let allData = await SubmitRequest.submitGetData(this.state.page_name);
         if (this.state.filter_value === undefined) return;
         var final_ing_filter = '';
         var final_keyword_filter = '';
@@ -162,15 +169,25 @@ export default class ListPage extends React.Component {
         if (final_keyword_filter === '') final_keyword_filter = '_';
         if (final_prod_line_filter === '') final_prod_line_filter = '_';
         var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
-            this.state.sort_field, final_ing_filter, final_keyword_filter, final_prod_line_filter);
+            this.state.sort_field, final_ing_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize, final_prod_line_filter);
 
+            var resALL = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
+                this.state.sort_field, final_ing_filter, final_keyword_filter, 0, allData.data.length, final_prod_line_filter);
+
+                console.log("this is the res: "+res);
+                console.log("this is the res.data: "+res.data);
+        
         if (res === undefined || !res.success) {
             res.data = [];
             res.loaded = true;
+            resALL.data = [];
+            resALL.loaded = true;
         }
         this.setState({
             data: res.data,
-            loaded: res.loaded
+            loaded: res.loaded,
+            exportData: resALL.data
+
         })
     }
 
@@ -181,6 +198,33 @@ export default class ListPage extends React.Component {
             ing_substr: ing_sub
         });
     }
+
+    async setNumberPages(){
+        let allData = await SubmitRequest.submitGetData(this.state.page_name);
+        console.log('this is the allData: '+allData);
+        console.log('this is the allData length: '+allData.data.length);
+        console.log('this is the pageSize: '+this.state.pageSize);
+        var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
+        console.log('this is the pagesCount1: '+this.state.pagesCount);
+
+        this.setState({
+            currentPage: 0,
+            pagesCount: curCount,
+        }); 
+               console.log('this is the pagesCount: '+this.state.pagesCount);
+
+    }
+
+    handlePageClick = (e, index) => {
+        e.preventDefault();
+        console.log("this is current page1; "+this.state.currentPage);
+
+        this.setState({
+            currentPage: index
+        });
+        this.loadDataFromServer();
+    }
+
 
     onFilterValueSelection (e, item, id) {
         var ing_sub = this.state.ing_substr.slice();
@@ -353,6 +397,11 @@ export default class ListPage extends React.Component {
     };
 
     render() {
+
+
+        console.log("This is the curpage value; "+this.state.currentPage);
+         console.log("this is the pagesCount: " +this.state.pagesCount); 
+
         return (
             <div className="list-page">
                 <div className="options-container" id={this.state.simple ? "simple" : "complex"}>
@@ -403,7 +452,57 @@ export default class ListPage extends React.Component {
                         color='danger'/>
                 </Modal>
                 <AddToManuGoal selected_skus={this.state.selected_items} isOpen={this.state.manu_goals_modal} toggle={(toggler) => this.toggle(toggler)} manu_goals_data={this.state.manu_goals_data}></AddToManuGoal>
-                <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/>               
+                <ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/>     
+
+                <div className = "pagination-wrapper">
+                <Pagination aria-label="Page navigation example">
+            
+            <PaginationItem disabled={this.state.currentPage <= 0}>
+              
+              <PaginationLink
+                onClick={e => this.handlePageClick(e, this.state.currentPage - 1)}
+                previous
+                href="#"
+              />
+
+</PaginationItem>
+
+{[...Array(this.state.pagesCount)].map((page, i) => 
+  <PaginationItem active={i === this.state.currentPage} key={i}>
+    <PaginationLink onClick={e => {
+        //this.handlePageClick(e, i)
+        this.setState({
+            currentPage: i
+        });
+        this.loadDataFromServer();     
+    }
+ } href="#">
+      {i + 1}
+    </PaginationLink>
+  </PaginationItem>
+)}
+
+
+<PaginationItem disabled={this.state.currentPage >= this.state.pagesCount - 1}>
+              
+              <PaginationLink
+                onClick={e => this.handlePageClick(e, this.state.currentPage + 1)}
+                next
+                href="#"
+              />
+              
+            </PaginationItem>
+            
+          </Pagination>
+                </div>  
+
+
+
+
+
+
+
+
             </div>
         );
     }

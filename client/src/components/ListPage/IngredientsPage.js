@@ -143,12 +143,9 @@ export default class IngredientsPage extends React.Component {
         if (final_keyword_filter === '') final_keyword_filter = '_';
 
 
-        // var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-        //     this.state.sort_field, final_sku_filter, final_keyword_filter);
-
-            var res = await SubmitRequest.submitGetFilterDataPag(Constants.ing_filter_path, 
+            var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
                 this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
-                var resALL = await SubmitRequest.submitGetFilterDataPag(Constants.ing_filter_path, 
+                var resALL = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
                     this.state.sort_field, final_sku_filter, final_keyword_filter, 0, allData.data.length);
                 console.log("this is the res: "+res);
                 console.log("this is the res.data: "+res.data);
@@ -163,8 +160,7 @@ export default class IngredientsPage extends React.Component {
         }
         this.setState({
             data: res.data,
-            loaded: res.loaded
-            ,
+            loaded: res.loaded,
             exportData: resALL.data
         })
     }
@@ -174,7 +170,7 @@ export default class IngredientsPage extends React.Component {
 
         let data = this.state.data.slice();
         await data.map(async (item) => {
-                       let skus = await SubmitRequest.submitGetFilterDataPag(Constants.sku_filter_path,'_', item._id, '_', this.state.currentPage, this.state.pageSize,'_');
+                       let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', this.state.currentPage, this.state.pageSize,'_');
 
            // let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', '_');
             item.sku_count = skus.data.length;

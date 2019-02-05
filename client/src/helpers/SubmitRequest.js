@@ -153,23 +153,6 @@ export default class SubmitRequest{
       });
   }
 
-  static submitGetFilterDataPag = (route, sort_field, filter_value, keyword, currentPage, pageSize, prod_line) => {
-    var path = '/api/' + route + '/' + sort_field + '/' + filter_value + '/' + keyword + '/' + currentPage +'/' + pageSize;
-    path += (prod_line === undefined) ? '' : ('/' + prod_line);
-    console.log(path)
-    return fetch(path, 
-      { method: 'GET'})
-      .then(data => data.json())
-      .then((res) => {
-        if (!res.success) return { success: res.success, error: res.error.message || res.error};
-        else return ({ 
-            success: res.success,
-            data: res.data,
-            loaded: true
-        });
-      });
-  }
-
 
   static submitSkusByIngredientIDRequest = (item_id, obj) => {
     fetch(`/api/skus_by_ingredient/${item_id}`, {
