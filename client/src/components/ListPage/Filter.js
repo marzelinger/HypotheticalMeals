@@ -29,8 +29,6 @@ export default class Filter extends React.Component {
             focus: false,
             open: false,
         };
-        const options = [];
-        
     }
 
     toggleFocus() {
@@ -103,15 +101,17 @@ export default class Filter extends React.Component {
                 </InputGroupAddon>
             </InputGroup> */}
             <Select 
-                value={this.props.value}
-                onChange={(e) => this.props.handleFilterValueChange(e, this.props.id)} 
-                options={this.props.assisted_search_results}
-                isClearable={true}
+                inputValue={this.props.value}
+                onChange={(opt, e) => this.props.handleFilterValueSelection(opt.label, opt.value, e, this.props.id)}
+                onInputChange={(val, e) => this.props.handleFilterValueChange(val, e, this.props.id)} 
+                options={this.props.assisted_search_results.map(res => ({ label: res.name, value: res._id }))}
+                openMenuOnClick={this.props.filter_category !== Constants.keyword_label}
             />
+            <InputGroupAddon addonType="append">{this.props.filter_category}</InputGroupAddon>
             <Button color="secondary" onClick={(e) => this.props.handleRemoveFilter(e, this.props.id)}> 
                 {Constants.remove_filter_label}
             </Button>
-        
+            {/* {console.log(this.props.assisted_search_results.map(res => ({ label: res.name, value: res._id })))} */}
             {/* <Popover
                 open={this.state.open}
                 anchorEl={this.state.anchorEl}

@@ -69,6 +69,7 @@ export default class ListPage extends React.Component {
           }
         this.toggle = this.toggle.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
+        this.onFilterValueChange = this.onFilterValueChange.bind(this);
         this.onKeywordSubmit = this.onFilterValueSubmit.bind(this);
         this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
@@ -174,19 +175,27 @@ export default class ListPage extends React.Component {
         })
     }
 
-    onFilterValueChange = (e, id) => {
-        var ing_sub = this.state.ing_substr.slice();
-        ing_sub[id] = e.target.value;
-        this.setState({
-            ing_substr: ing_sub
-        });
+    onFilterValueChange (val, e, id) {
+        console.log(val)
+        console.log(e)
+        if (e.action === 'input-change'){
+            var ing_sub = this.state.ing_substr.slice();
+            ing_sub[id] = val;
+            this.setState({
+                ing_substr: ing_sub
+            });
+            return val;
+        }
+        return this.state.ing_substr[id];
     }
 
-    onFilterValueSelection (e, item, id) {
+    onFilterValueSelection (name, value, e, id) {
+        console.log(name)
+        console.log(e)
         var ing_sub = this.state.ing_substr.slice();
-        ing_sub[id] = item.name;
+        ing_sub[id] = name;
         var fil_val = this.state.filter_value.slice();
-        fil_val[id] = item._id;
+        fil_val[id] = value;
         var asr = this.state.assisted_search_results.slice();
         asr[id] = [];
         this.setState({
