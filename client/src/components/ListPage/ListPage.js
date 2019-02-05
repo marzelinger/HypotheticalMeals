@@ -193,6 +193,7 @@ export default class ListPage extends React.Component {
     onFilterValueSelection (name, value, e, id) {
         console.log(name)
         console.log(value)
+        console.log(e)
         var ing_sub = this.state.ing_substr.slice();
         ing_sub[id] = name;
         var fil_val = this.state.filter_value.slice();

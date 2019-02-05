@@ -25,7 +25,7 @@ export default class Filter extends React.Component {
     render() {
         return (
         <div className='filter-item' style={{width: this.state.width + '%'}}>
-            <Select 
+            <Select
                 value={this.props.value}
                 onChange={(opt, e) => this.props.handleFilterValueSelection(opt.label, opt.value, e, this.props.id)}
                 onInputChange={(val, e) => this.props.handleFilterValueChange(val, e, this.props.id)} 

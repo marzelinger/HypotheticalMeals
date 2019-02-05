@@ -5,23 +5,17 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 import { 
-    Input,
     Label,
-    FormGroup, 
-    ListGroup,
-    ListGroupItem} from 'reactstrap';
+    FormGroup} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import SubmitRequest from './../../helpers/SubmitRequest'
-import { prototype } from 'stream';
-import Select from 'react-select'
+import ReactSelect from 'react-select'
 
 
 export default class ItemSearchInput extends React.Component {
     constructor(props) {
         super(props);
 
-        this.toggleFocus = this.toggleFocus.bind(this);
-        this.toggleBlur = this.toggleBlur.bind(this);
         this.onFilterValueChange = this.onFilterValueChange.bind(this);
         this.state = {
             width: 100,
@@ -60,22 +54,6 @@ export default class ItemSearchInput extends React.Component {
         this.setState({ assisted_search_results: res.data });
     }
 
-    toggleFocus() {
-        if (this){
-            this.setState({
-                focus: true
-            })
-        }
-    }
-
-    toggleBlur() {
-        if (this){
-            this.setState({
-                focus: false
-            })
-        }
-    }
-
     onFilterValueChange = (value, e) => {
         if (e.action === 'input-change'){
             var new_item = this.props.curr_item
@@ -107,12 +85,13 @@ export default class ItemSearchInput extends React.Component {
                 borderColor: this.props.invalid_inputs.includes('prod_line') ? 'red' : '#ddd'
             })
         }
+        const getValue = (opts, val) => opts.find(o => o.value === val); 
 
         return (
         <div className='filter-item' style={{width: this.state.width + '%'}}>
             <FormGroup>
                 <Label>{this.props.item_type}</Label>
-                <Select 
+                <ReactSelect 
                     inputValue={this.state.substr}
                     onChange={(opt, e) => this.onFilterValueSelection(opt.label, opt.value, e)}
                     onInputChange={(val, e) => this.onFilterValueChange(val, e)} 
