@@ -29,11 +29,11 @@ class SkuHandler{
                     success: false, error: "Ingredient quantities don't match ingredients list"
                 });
             }
-            SkuHandler.checkForZeroQtys(new_ingredient_quantities, new_ingredients);
+            SkuHandler.checkForZeroQtys(new_ingredients, new_ingredient_quantities);
 
             let conflict = await SKU.find({ num : new_sku_num});
             if(conflict.length > 0){
-                return res.json({ success: false, error: 'CONFLICT'});
+                return res.json({ success: false, error: 'SKU Number Conflict'});
             }
             sku.name = new_name;
             sku.num = new_sku_num;
@@ -55,12 +55,12 @@ class SkuHandler{
         }
     }
 
-    static checkForZeroQtys(new_ingredient_quantities, new_ingredients) {
+    static checkForZeroQtys(new_items, new_quantities) {
         var toRemove = [];
-        new_ingredient_quantities.map((qty, index) => {if (parseInt(qty) <= 0) toRemove.push(index)});
+        new_quantities.map((qty, index) => {if (parseInt(qty) <= 0) toRemove.push(index)});
         toRemove.map(ind => {
-            new_ingredients.splice(ind, 1);
-            new_ingredient_quantities.splice(ind, 1);
+            new_items.splice(ind, 1);
+            new_quantities.splice(ind, 1);
         });
     }
 
@@ -80,7 +80,7 @@ class SkuHandler{
             var new_ingredients = req.body.ingredients;
             var new_ingredient_quantities = req.body.ingredient_quantities;
             var new_comment = req.body.comment;
-            SkuHandler.checkForZeroQtys(new_ingredient_quantities, new_ingredients);
+            SkuHandler.checkForZeroQtys(new_ingredients, new_ingredient_quantities);
 
             let updated_sku = await SKU.findOneAndUpdate({ _id : target_id},
                 {$set: {name : new_name, num : new_sku_num, case_upc : new_case_upc, unit_upc : new_unit_upc,
