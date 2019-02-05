@@ -31,10 +31,15 @@ class SkuHandler{
             }
             SkuHandler.checkForZeroQtys(new_ingredient_quantities, new_ingredients);
 
-            let conflict = await SKU.find({ num : new_sku_num});
-            if(conflict.length > 0){
-                return res.json({ success: false, error: 'CONFLICT'});
+            let conflict1 = await SKU.find({ num : Number(new_sku_num) });
+            let conflict2 = await SKU.find({ case_upc : Number(new_case_upc) });
+            if(conflict1.length > 0){
+                return res.json({ success: false, error: 'Conflict: SKU#'});
             }
+            if(conflict2.length > 0){
+                return res.json({ success: false, error: 'Conflict: Case UPC'});
+            }
+
             sku.name = new_name;
             sku.num = new_sku_num;
             sku.case_upc = new_case_upc;
@@ -45,7 +50,6 @@ class SkuHandler{
             sku.ingredients = new_ingredients;
             sku.ingredient_quantities = new_ingredient_quantities;
             sku.comment = new_comment;
-            console.log(sku);
             let new_sku = await sku.save();
             console.log('Sku added to database');
             return res.json({ success: true, data: new_sku});
@@ -80,6 +84,15 @@ class SkuHandler{
             var new_ingredient_quantities = req.body.ingredient_quantities;
             var new_comment = req.body.comment;
             SkuHandler.checkForZeroQtys(new_ingredient_quantities, new_ingredients);
+
+            let conflict1 = await SKU.find({ num: Number(new_sku_num)});
+            let conflict2 = await SKU.find({ case_upc: Number(new_case_upc)});
+            if(conflict1.length > 0){
+                return res.json({ success: false, error: "Conflict: SKU#"});
+            }
+            if(conflict2.length > 0){
+                return res.json({ success: false, error: "Conflict: Case UPC"})
+            }
 
             let updated_sku = await SKU.findOneAndUpdate({ _id : target_id},
                 {$set: {name : new_name, num : new_sku_num, case_upc : new_case_upc, unit_upc : new_unit_upc,

@@ -57,13 +57,24 @@ export default class CSV_parser{
 
             // Creates the product line to save to the database 
             var prod_lines_added = [];
-            for(const prod_line_to_add of prod_lines_to_add) {
-                var prod_line = new Prod_Line();
-                prod_line.name = prod_line_to_add;
-                let new_prod_line = prod_line.save();
-                prod_lines_added.push(new_prod_line);
+            var prod_lines_ignored = [];
+            for(var i = 0; i < jsonArray.length; i++){
+                var obj = jsonArray[i];
+                var obj_Name = obj["Name"];
+                if(prod_lines_to_add.has(obj_Name)){
+                    var prod_line = new Prod_Line();
+                    prod_line.name = obj_Name;
+                    let new_prod_line = prod_line.save();
+                    prod_lines_added.push(new_prod_line);
+                } else {
+                    obj.name = obj_Name;
+                    delete obj["Name"];
+                    prod_lines_ignored.push(obj);
+                }
             }
-            return res.json({ success: true, added: added, ignored: ignored, data: prod_lines_added});
+            return res.json({ success: true, added: added, ignored: ignored, 
+                            data: prod_lines_added, showImport: true,
+                            ignored_data: prod_lines_ignored});
         } catch (err){
             fs.unlinkSync(req.file.path);
             return res.json({ success: false, error: 'Catch all error'});
@@ -128,18 +139,18 @@ export default class CSV_parser{
                 //TODO check if any of the fields are null, if they are and they're autogenerable, generate, if not return an error
                 
                 // DATA VALIDATION
-                if(obj["Name"].length < 1 || obj["Name"].length > 32) return res.json({success: false, badData: i});
+                if(obj["Name"].length < 1 || obj["Name"].length > 32) return res.json({success: false, badData1: i});
 
                 var isNum1 = /^\d+$/.test(obj["SKU#"]);
-                if(!isNum1) return res.json({ success: false, badData: i});
+                if(!isNum1) return res.json({ success: false, badData2: i});
 
-                if(obj["Case UPC"].length != 12) return res.json({ success: false, badData: i});
+                if(obj["Case UPC"].length != 12) return res.json({ success: false, badData3: i});
                 var isNum2 = /^\d+$/.test(obj["Unit UPC"]);
-                if(!isNum2) return res.json({ success: false, badData: i});
+                if(!isNum2) return res.json({ success: false, badData3: i});
                 var firstChar = obj["Case UPC"].substring(0,1);
                 if(firstChar != '0' && firstChar != '1' && firstChar !='6' && firstChar !='8' && firstChar != '9') return res.json({ success: false, badData: i});
                 
-                if(obj["Unit UPC"].length != 12) return res.json({ success: false, badData: i});
+                if(obj["Unit UPC"].length != 12) return res.json({ success4: false, badData: i});
                 var isNum3 = /^\d+$/.test(obj["Case UPC"]);
                 if(!isNum3) return res.json({ success: false, badData: i});
                 var firstChar2 = obj["Unit UPC"].substring(0,1);
@@ -162,16 +173,18 @@ export default class CSV_parser{
                 } 
                 // Checking for collisions with the primary key
                 else if(db_skus.has(Number(obj["SKU#"]))){
-                    var db_sku = await SKU.find({ num : Number(obj["SKU#"]) });
-
+                    var db_sku_arr= await SKU.find({ num : Number(obj["SKU#"]) });
+                    var curr_prod_line_arr = await Prod_Line.find({ name: obj["Product Line Name"] });
                     // If it is a duplicate from something in the database, ignore it
+                    var db_sku = db_sku_arr[0];
+                    var curr_prod_line = curr_prod_line_arr[0];
                     if(db_sku.name == obj["Name"] &&
                     db_sku.num == obj["SKU#"] &&
                     db_sku.case_upc == obj["Case UPC"] &&
                     db_sku.unit_upc == obj["Unit UPC"] &&
                     db_sku.unit_size == obj["Unit size"] &&
                     db_sku.cpc == obj["Count per case"] &&
-                    db_sku.prod_line == obj["Product Line Name"] &&
+                    db_sku.prod_line._id + "" == curr_prod_line._id + "" &&
                     db_sku.comment == obj["Comment"]) {
                         skus_to_ignore.add(obj["SKU#"])
                     }
@@ -201,6 +214,7 @@ export default class CSV_parser{
             var intermediate_skus_added = []; 
             var skus_to_update_new = [];
             var skus_to_update_old = [];
+            var skus_to_ignore_arr = []
             for(var i =0; i < jsonArray.length; i++){
                 var obj = jsonArray[i];
                 if(skus_to_update.has(obj["SKU#"])){
@@ -233,7 +247,7 @@ export default class CSV_parser{
                     sku.num = Number(obj["SKU#"]);
                     sku.case_upc = Number(obj["Case UPC"]);
                     sku.unit_upc = Number(obj["Unit UPC"]);
-                    sku.unit_size = obj["Unit Size"];
+                    sku.unit_size = obj["Unit size"];
                     let prod_line = await Prod_Line.find({ name : obj["Product Line Name"]});
                     sku.prod_line = prod_line[0]._id;
                     sku.cpc = Number(obj["Count per case"]);
@@ -243,6 +257,24 @@ export default class CSV_parser{
                     //skus_added.push(new_sku);
                 }
                 else {
+                    obj.name = obj.Name;
+                    obj.num = Number(obj["SKU#"]);
+                    obj.case_upc = obj["Case UPC"];
+                    obj.unit_upc = obj["Unit UPC"];
+                    obj.unit_size = obj["Unit size"];
+                    obj.cpc = obj["Count per case"];
+                    let prod_line = await Prod_Line.find({ name : obj["Product Line Name"]});
+                    obj.prod_line = prod_line[0]._id;
+                    obj.comment = obj["Comment"];
+                    delete obj["Name"];
+                    delete obj["SKU#"];
+                    delete obj["Case UPC"];
+                    delete obj["Unit UPC"];
+                    delete obj["Unit size"];
+                    delete obj["Count per case"];
+                    delete obj["Product Line Name"];
+                    delete obj["Comment"];
+                    skus_to_ignore_arr.push(obj);
                     ignored = ignored + 1;;
                 }
             }  
@@ -253,9 +285,9 @@ export default class CSV_parser{
                     skus_added.push(new_sku);
                     console.log(new_sku);
                 }
-                return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: skus_added});
+                return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: skus_added, showImport: true, new_data: skus_to_update_new, ignored_data: skus_to_ignore_arr});
             } else{
-                return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: intermediate_skus_added, old_data: skus_to_update_old, new_data: skus_to_update_new});
+                return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: intermediate_skus_added, old_data: skus_to_update_old, new_data: skus_to_update_new, ignored_data: skus_to_ignore_arr});
             }
       //  }
       /*
@@ -286,15 +318,17 @@ export default class CSV_parser{
     }*/
 
     static async parseUpdateSKU(req, res){
-        var all_skus = [];
         var updateArray = JSON.parse(req.body.updates);
         var addArray = JSON.parse(req.body.adds);
+        var ignoreArray = JSON.parse(req.body.ignores);
+        var returningUpdate = [];
+        var returningAdd = [];
         for(var i = 0; i < updateArray.length; i++){
             let updated_sku = await SKU.findOneAndUpdate({ num : Number(updateArray[i].num)},
                 {$set: {name : updateArray[i].name, case_upc : updateArray[i].case_upc, unit_upc : updateArray[i].unit_upc,
                         unit_size : updateArray[i].unit_size, cpc: updateArray[i].cpc, prod_line: updateArray[i].prod_line,
                         comment : updateArray[i].comment}}, {upsert : true, new : true});
-            all_skus.push(updated_sku);
+                        returningUpdate.push(updated_sku);
         }
         for(var i = 0; i < addArray.length; i++){
             var sku = new SKU();
@@ -307,9 +341,9 @@ export default class CSV_parser{
             sku.prod_line = addArray[i].prod_line;
             sku.comment = addArray[i].comment;
             let new_sku = await sku.save();
-            all_skus.push(new_sku);
+            returningAdd.push(new_sku);
         }
-        return res.json({ success: true, data: all_skus});
+        return res.json({ success: true, adds: returningAdd, updates: returningUpdate, ignores: ignoreArray});
     }
 
     static async parseIngredientsCSV(req, res){
@@ -370,8 +404,8 @@ export default class CSV_parser{
                     return res.json({ success: false, collision: i});
                 // Check for a collision based on the primary key
                 } else if(db_ingredients_nums.has(Number(obj["Ingr#"]))) {
-                    var db_ingredient = await Ingredient.find({ num : obj["Ingr#"]});
-
+                    var db_ingredient_list = await Ingredient.find({ num : obj["Ingr#"]});
+                    var db_ingredient = db_ingredient_list[0];
                     // If it is a duplicate from something in the database, ignore it
                     if(db_ingredient.name == obj["Name"] && 
                         db_ingredient.num == obj["Ingr#"] &&
@@ -403,6 +437,7 @@ export default class CSV_parser{
             var intermediate_ingrs_added = [];
             var ingrs_to_update_new = [];
             var ingrs_to_update_old = [];
+            var ingrs_to_ignore_arr = [];
             for(var i = 0; i < jsonArray.length; i++){
                 var obj = jsonArray[i];
                 if(ingrs_to_update.has(obj["Ingr#"])) {
@@ -434,6 +469,19 @@ export default class CSV_parser{
                     ingredient.comment = obj["Comment"];
                     intermediate_ingrs_added.push(ingredient);
                 } else {
+                    obj.name = obj.Name;
+                    obj.num = Number(obj["Ingr#"]);
+                    obj.vendor_info = obj["Vendor Info"];
+                    obj.pkg_size = obj["Size"];
+                    obj.pkg_cost = Number(obj["Cost"]);
+                    obj.comment = obj["Comment"];
+                    delete obj["Name"];
+                    delete obj["Ingr#"];
+                    delete obj["Vendor Info"];
+                    delete obj["Size"];
+                    delete obj["Cost"];
+                    delete obj["Comment"];
+                    ingrs_to_ignore_arr.push(obj);
                     ignored = ignored+1;
                 }
             }
@@ -443,10 +491,15 @@ export default class CSV_parser{
                     let new_ingr = await intermediate_ingrs_added[i].save();
                     ingrs_added.push(new_ingr);
                 }
-                return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: ingrs_added});
+                return res.json({ success: true, added: added, ignored: ignored, 
+                                    updated: updated, data: ingrs_added, 
+                                    showImport: true, new_data: ingrs_to_update_new, 
+                                    ignored_data: ingrs_to_ignore_arr});
             }
             else {
-                return res.json({ success: true, added: added, ignored: ignored, data: intermediate_ingrs_added, old_data: ingrs_to_update_old, new_data: ingrs_to_update_new});
+                return res.json({ success: true, added: added, ignored: ignored, 
+                    data: intermediate_ingrs_added, old_data: ingrs_to_update_old,
+                    new_data: ingrs_to_update_new, ignored_data: ingrs_to_ignore_arr});
             }
      //   }
    /*     catch (err) {
@@ -474,9 +527,11 @@ export default class CSV_parser{
     }*/
 
     static async parseUpdateIngredients(req, res){
-        var all_ingredients = [];
+        var returningAdds = [];
+        var returningUpdates = [];
+        console.log(req.body);
+        var ignoreArray = JSON.parse(req.body.ignores);
         var updateArray = JSON.parse(req.body.updates);
-        console.log(updateArray);
         var addArray = JSON.parse(req.body.adds);
         for(var i = 0; i < updateArray.length; i++){
             let updated_ingr = await Ingredient.findOneAndUpdate({ num: Number(updateArray[i].num)},
@@ -484,7 +539,7 @@ export default class CSV_parser{
                         pkg_cost: updateArray[i].pkg_cost, comment: updateArray[i].comment}}, 
                         {upsert : true, new : true});
             console.log(updated_ingr);
-            all_ingredients.push(updated_ingr);
+            returningUpdates.push(updated_ingr);
         }
         for(var i = 0; i < addArray.length; i++){
             var ingr = new Ingredient();
@@ -495,9 +550,10 @@ export default class CSV_parser{
             ingr.pkg_cost = Number(addArray[i].pkg_cost);
             ingr.comment = addArray[i].comment;
             let new_ingr = await ingr.save();
-            all_ingredients.push(new_ingr);
+            returningAdds.push(new_ingr);
         }
-        return res.json({ success: true, data: all_ingredients});
+        return res.json({ success: true, adds: returningAdds,
+                        updates: returningUpdates, ignores: ignoreArray});
     }
 
     static async parseFormulasCSV(req, res){
@@ -563,6 +619,7 @@ export default class CSV_parser{
             }
         }
 
+        var updated_skus = [];
         for(var sku of sku_to_ingrs.keys()) {
             var sku_to_update = await SKU.find({ num : Number(sku)});
             sku_to_update.ingredients = [];
@@ -584,15 +641,18 @@ export default class CSV_parser{
             let updated_sku = await SKU.findOneAndUpdate({ num : Number(sku)},
             {$set: {ingredients: ingr_arr, ingredient_quantities: quantity_arr}}, 
                 {upsert : true, new : true});
+            updated_skus.push(updated_sku);
         }
 
+        var updated_ingrs = [];
         for(var ingredient of ingrs_to_count.keys()){
             let updated_ingredient = await Ingredient.findOneAndUpdate({ num : Number(ingredient)},
             {$set: {sku_count: ingrs_to_count.get(ingredient)}},
                 {upsert: true, new: true});
+            updated_ingrs.push(updated_ingredient);
         }
 
-        return res.json({ success: true });
+        return res.json({ success: true, sku_data: updated_skus});
     }
 
 

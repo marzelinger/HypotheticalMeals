@@ -4,6 +4,7 @@ import {Progress} from 'reactstrap'
 import {Alert} from 'reactstrap'
 import {Button} from 'reactstrap'
 import {ImportTable} from './ImportTable'
+import {ImportReport} from './ImportReport'
 import {Input} from 'reactstrap'
 import './Center.css';
 
@@ -51,9 +52,10 @@ export default class ImportPage extends React.Component {
             // Update table 
             showUpdateTable: false,
             update_list_items_old: [],
-            update_list_type: "",
+            //update_list_type: "",
             update_list_items_new: [],
             update_list_no_collisions: [],
+            update_list_ignores: [],
 
             aborted: false,
             sku_dependency: false,
@@ -107,19 +109,23 @@ export default class ImportPage extends React.Component {
                 return;
             }
             axios.post(endpoint, fd)
+                //.then(data => data.json())
                 .then((res) => {
+                    // Setting state for a duplicate
                     if(typeof res.data.duplicate != 'undefined'){
                         this.setState({
                             duplicate: true,
                             rowIssue: res.data.duplicate
                         });
                     }
+                    // Setting state for an ambiguous collision
                     else if(typeof res.data.collision!= 'undefined'){
                         this.setState({
                             collision: true,
                             rowIssue: res.data.collision
                         })
                     }
+                    // Setting state for the number of fields being off
                     else if(typeof res.data.numFields != 'undefined'){
                         this.setState({
                             incorrectNumHeaders: true,
@@ -127,6 +133,7 @@ export default class ImportPage extends React.Component {
                             requiredHeaders: res.data.requiredFields
                         })
                     }
+                    // Setting state for the headers being mislabeled
                     else if(typeof res.data.header != 'undefined'){
                         this.setState({
                             incorrectHeaders: true,
@@ -135,49 +142,91 @@ export default class ImportPage extends React.Component {
                             correctColumnName: res.data.expected
                         })
                     }
+                    // Setting state for an empty file
                     else if(typeof res.data.empty != 'undefined'){
                         this.setState({
                             empty: true
                         })
                     }
+                    // Setting state for a SKU entry with an invalid product line
                     else if(typeof res.data.prod_line_name != 'undefined'){
                         this.setState({
                             prod_line_error: true,
                             rowIssue: res.data.row,
                             prod_line_name: res.data.prod_line_name
                         })
+                    // Setting state for a formula entry with an invalid SKU #
+                    } else if(typeof res.data.sku_dependency != 'undefined'){
+                        this.setState({
+                            sku_dependency: true,
+                            dependency_row: res.data.sku_dependency,
+                        })
+                    // Setting state for a formula entry with an invalid Ingr #
+                    } else if(typeof res.data.ingr_dependency != 'undefined'){
+                        this.setState({
+                            ingr_dependency: true,
+                            dependency_row: res.data.ingr_dependency,
+                        })
+                    // Setting state for the update table from a SKU import
                     } else if(typeof res.data.old_data != 'undefined' && endpoint == "/api/parseSkus"){
-                        
                         this.setState({
                             showUpdateTable: true,
                             update_list_type: "SKUs",
                             update_list_items_old: res.data.old_data,
                             update_list_items_new:  res.data.new_data,
                             update_list_no_collisions: res.data.data,
+                            update_list_ignores: res.data.ignored_data,
                         })
-                        console.log(res.data.new_data);
-                        console.log(res.data.old_data);
+                    // Setting state for the update table from a ingredient import
                     } else if(typeof res.data.old_data != 'undefined' && endpoint == "/api/parseIngredients"){
-
                         this.setState({
                             showUpdateTable: true,
                             update_list_type: "Ingredients",
                             update_list_items_old: res.data.old_data,
                             update_list_items_new: res.data.new_data,
                             update_list_no_collisions: res.data.data,
+                            update_list_ignores: res.data.ignored_data,
                         })
-                    } else if(typeof res.data.sku_dependency != 'undefined'){
+                    // Setting state for the import report after a SKU import
+                    } else if(typeof res.data.showImport != 'undefined' && endpoint == "/api/parseSkus"){
                         this.setState({
-                            sku_dependency: true,
-                            dependency_row: res.data.sku_dependency,
+                            showImportReport: true,
+                            update_list_items_new: res.data.new_data,
+                            update_list_no_collisions: res.data.data,
+                            update_list_ignores: res.data.ignored_data,
+                            import_report_type: "SKUs"
                         })
-                    } else if(typeof res.data.ingr_dependency != 'undefined'){
+                    // Setting state for the import report after an ingredient import
+                    } else if(typeof res.data.showImport != 'undefined' && endpoint == "/api/parseIngredients"){
                         this.setState({
-                            ingr_dependency: true,
-                            dependency_row: res.data.ingr_dependency,
+                            showImportReport: true,
+                            update_list_items_new: res.data.new_data,
+                            update_list_no_collisions:res.data.data,
+                            update_list_ignores: res.data.ignored_data,
+                            import_report_type: "Ingredients",
+                        })
+                    } else if(typeof res.data.showImport != 'undefined' && endpoint == "/api/parseProdLines"){
+                        this.setState({
+                            showImportReport: true,
+                            update_list_items_new: [],
+                            update_list_no_collisions: res.data.data,
+                            update_list_ignores: res.data.ignored_data,
+                            import_report_type: "Product Line",
+                        })
+                        console.log("data is : " + res.data.data);
+                    } else if(typeof res.data.showImport != 'undefined' && endpoint == '/api/parseFormulas'){
+                        this.setState({
+                            showImportReport: true,
+                            update_list_items_new: res.data.sku_data,
+                            update_list_no_collisions: [],
+                            update_list_ignores: [],
+                            import_report_type: "Formulas",
                         })
                     }
-
+                    // Setting state for the import report after a product line import
+                    //TODO
+                    // Setting state for the import report after a formulas import
+                    //TODO
                     this.setState({
                         waiting: false,
                         selectedFile: null
@@ -260,18 +309,39 @@ export default class ImportPage extends React.Component {
         var endPointUpdate = "";
         if(this.state.update_list_type == "SKUs") endPointUpdate = "/api/parseUpdateSkus";
         else if(this.state.update_list_type == "Ingredients") endPointUpdate = "/api/parseUpdateIngredients";
-        console.log(this.state.update_list_items_new);
-        console.log(this.state.update_list_no_collisions);
+        this.setState({
+            waiting: true,
+            /*added_items: this.state.update_list_no_collisions,
+            update_items: this.state.update_list_items_new,
+            ignored_items: this.state.update_list_items_ignored,*/
+        })
         var toUpdate = JSON.stringify(this.state.update_list_items_new);
         var toAdd = JSON.stringify(this.state.update_list_no_collisions);
+        var toIgnore = JSON.stringify(this.state.update_list_ignores);
         fetch(endPointUpdate, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ updates: toUpdate,
-                     adds: toAdd}),
-        }).then((res) => {
+                     adds: toAdd, ignores: toIgnore}),
+        }).then(data => data.json()).
+        then((res) => {
+            if(endPointUpdate == "/api/parseUpdateSkus") {
+                this.setState({
+                    import_report_type: "SKUs"
+                })
+            } else {
+                this.setState({
+                    import_report_type: "Ingredients"
+                })
+            }
+            this.setState({
+                showImportReport: true,
+                update_list_items_new: res.updates,
+                update_list_no_collisions: res.adds,
+                update_list_ignores: res.ignores,
+            });
             this.resetState();
-        })
+        });
     }
 
     handleReject = () => {
@@ -283,7 +353,7 @@ export default class ImportPage extends React.Component {
 
     resetState = () => {
         this.setState({
-            selectedFile: null,
+            //selectedFile: null,
             waiting: false,
 
             // Duplicates
@@ -320,13 +390,12 @@ export default class ImportPage extends React.Component {
 
             // Update table 
             showUpdateTable: false,
-            update_list_items_old: [],
-            update_list_type: "",
-            update_list_items_new: [],
-            update_list_no_collisions: [],
+           // update_list_items_old: [],
+            //update_list_type: "",
+            //update_list_items_new: [],
+            //update_list_no_collisions: [],
 
             aborted: false,
-
             sku_dependency: false,
             ingr_dependency: false,
             dependency_row: -1,
@@ -405,6 +474,12 @@ export default class ImportPage extends React.Component {
                 {this.state.showUpdateTable && <Button className="centerButton" onClick={this.handleAccept}> Accept Updates</Button> }
                 {this.state.showUpdateTable && <Button className="centerButton" onClick={this.handleReject}> Reject Updates</Button> }    
                 </div>
+
+                {this.state.showImportReport && <ImportReport
+                    added_items={this.state.update_list_no_collisions}
+                    updated_items={this.state.update_list_items_new}
+                    ignored_items={this.state.update_list_ignores}
+                    label={this.state.import_report_type} />}
             </div>
         );
     }
