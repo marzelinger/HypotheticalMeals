@@ -13,6 +13,7 @@ import {
 import * as Constants from '../../resources/Constants';
 import SubmitRequest from './../../helpers/SubmitRequest'
 import { prototype } from 'stream';
+import Select from 'react-select'
 
 
 export default class ItemSearchInput extends React.Component {
@@ -75,24 +76,28 @@ export default class ItemSearchInput extends React.Component {
         }
     }
 
-    onFilterValueChange = (e) => {
-        var new_item = this.props.curr_item
-        if (new_item !== e.target.value){
-            new_item = {};
+    onFilterValueChange = (value, e) => {
+        if (e.action === 'input-change'){
+            var new_item = this.props.curr_item
+            if (new_item !== value){
+                new_item = {};
+            }
+            this.props.handleSelectItem(new_item);
+            this.setState({
+                substr: value
+            });
+            return value
         }
-        this.props.handleSelectItem(new_item);
-        this.setState({
-            substr: e.target.value
-        });
+        return this.state.substr;
     }
 
-    onFilterValueSelection (e, item) {
+    onFilterValueSelection (name, value, e) {
         this.setState({
-            substr: item.name,
-            value: item._id,
+            substr: name,
+            value: value,
             assisted_search_results: []
         });
-        this.props.handleSelectItem(item);
+        this.props.handleSelectItem({name: name, _id: value});
     }
 
     showResults = (state) => {
@@ -115,18 +120,32 @@ export default class ItemSearchInput extends React.Component {
     }
 
     render() {
+        const customStyles = {
+            control: (base, state) => ({
+                ...base,
+                borderColor: this.props.invalid_inputs.includes('prod_line') ? 'red' : '#ddd'
+            })
+        }
+
         return (
         <div className='filter-item' style={{width: this.state.width + '%'}}>
-            {this.showResults(this.state)}
+            {/* {this.showResults(this.state)} */}
             <FormGroup>
                 <Label>{this.props.item_type}</Label>
-                <Input 
+                {/* <Input 
                     type="text"
                     value={this.state.substr}
                     invalid={this.props.invalid_inputs.includes('prod_line')}
                     onChange={(e) => this.onFilterValueChange(e)}
                     onFocus={this.toggleFocus}
                     onBlur={this.toggleBlur}
+                /> */}
+                <Select 
+                    inputValue={this.state.substr}
+                    onChange={(opt, e) => this.onFilterValueSelection(opt.label, opt.value, e)}
+                    onInputChange={(val, e) => this.onFilterValueChange(val, e)} 
+                    options={this.state.assisted_search_results.map(res => ({ label: res.name, value: res._id }))}
+                    styles={customStyles}
                 />
             </FormGroup>
         </div>

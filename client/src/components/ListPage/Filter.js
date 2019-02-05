@@ -62,44 +62,9 @@ export default class Filter extends React.Component {
         })
     }
 
-    showResults = (state) => {
-        if (state.focus){
-            return (<ListGroup>
-                {(this.props.assisted_search_results.map(res => 
-                <ListGroupItem
-                    key={res.name}
-                    tag="button"
-                    onMouseDown={(e) => this.props.handleFilterValueSelection(e, res, this.props.id)}
-                >{res.name}</ListGroupItem>
-            ))}
-            </ListGroup>
-            )
-        }
-        else {
-            return;
-        }
-        
-    }
-
     render() {
         return (
         <div className='filter-item' style={{width: this.state.width + '%'}}>
-            {/* {this.showResults(this.state)} */}
-            {/* <InputGroup id = 'inputGroup'>
-                <Input 
-                    type="text"
-                    value={this.props.value}
-                    onChange={(e) => this.props.handleFilterValueChange(e, this.props.id)}
-                    onFocus={(e) => this.openPopout(e)}
-                    onBlur={this.toggleBlur}
-                />
-                <InputGroupAddon addonType="append">{this.props.filter_category}</InputGroupAddon>
-                <InputGroupAddon addonType="append">
-                    <Button color="secondary" onClick={(e) => this.props.handleRemoveFilter(e, this.props.id)}> 
-                        {Constants.remove_filter_label}
-                    </Button>
-                </InputGroupAddon>
-            </InputGroup> */}
             <Select 
                 inputValue={this.props.value}
                 onChange={(opt, e) => this.props.handleFilterValueSelection(opt.label, opt.value, e, this.props.id)}
@@ -111,31 +76,6 @@ export default class Filter extends React.Component {
             <Button color="secondary" onClick={(e) => this.props.handleRemoveFilter(e, this.props.id)}> 
                 {Constants.remove_filter_label}
             </Button>
-            {/* {console.log(this.props.assisted_search_results.map(res => ({ label: res.name, value: res._id })))} */}
-            {/* <Popover
-                open={this.state.open}
-                anchorEl={this.state.anchorEl}
-                anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                targetOrigin={{horizontal: 'left', vertical: 'top'}}
-            >
-                <Menu>
-                    {(this.props.assisted_search_results.map(res => 
-                        <MenuItem
-                            key={res.name}
-                            primaryText={res.name}
-                            onMouseDown={(e) => {
-                                this.closePopout();
-                                this.props.handleFilterValueSelection(e, res, this.props.id);
-                            }}
-                        />
-                    ))}
-                    <MenuItem
-                        key='close'
-                        primaryText='Close'
-                        onMouseDown={(e) => {this.closePopout()}}
-                    />
-                </Menu>
-            </Popover> */}
         </div>
         );
     }
