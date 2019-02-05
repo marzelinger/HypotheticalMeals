@@ -99,13 +99,13 @@ export default class CSV_parser{
             var count = 0;
             for(var key in jsonArray[0]){
                 if(count == 0 && key != "SKU#") return res.json({ success: false, header: 1, expected:"SKU#", actual: key});
-                if(count == 1 && key != "Name") return res.json({ success: false, header: 2, expected:"Name", actual: key});
-                if(count == 2 && key != "Case UPC") return res.json({ success: false, header: 3, expected:"Case UPC", actual: key});
-                if(count == 3 && key != "Unit UPC") return res.json({ succes: false, header: 4, expected:"Unit UPC", actual: key});
-                if(count == 4 && key != "Unit size") return res.json({ success: false, header: 5, expected:"Unit size", actual: key});
-                if(count == 5 && key != "Count per case") return res.json({ success: false, header: 6, expected:"Count per case", actual: key});
-                if(count == 6 && key != "Product Line Name") return res.json({ success: false, header: 7, expected:"Product Line Name", actual: key});
-                if(count == 7 && key != "Comment") return res.json({ success: false, header: 8, expected:"Comment", actual: key});
+                else if(count == 1 && key != "Name") return res.json({ success: false, header: 2, expected:"Name", actual: key});
+                else if(count == 2 && key != "Case UPC") return res.json({ success: false, header: 3, expected:"Case UPC", actual: key});
+                else if(count == 3 && key != "Unit UPC") return res.json({ succes: false, header: 4, expected:"Unit UPC", actual: key});
+                else if(count == 4 && key != "Unit size") return res.json({ success: false, header: 5, expected:"Unit size", actual: key});
+                else if(count == 5 && key != "Count per case") return res.json({ success: false, header: 6, expected:"Count per case", actual: key});
+                else if(count == 6 && key != "Product Line Name") return res.json({ success: false, header: 7, expected:"Product Line Name", actual: key});
+                else if(count == 7 && key != "Comment") return res.json({ success: false, header: 8, expected:"Comment", actual: key});
                 count++;
             }
             if(count != 8) return res.json({ success: false, requiredFields: 8, numFields: (count-1)});
@@ -119,6 +119,35 @@ export default class CSV_parser{
             var skus_to_ignore = new Set();
             for(var i = 0; i < jsonArray.length; i++){
                 var obj = jsonArray[i];
+                //Validate required fields
+                if(!obj["Name"] || !obj["SKU#"] || !obj["Case UPC"] || !obj["Unit UPC"] ||
+                   !obj["Unit size"] || !obj["Count per case"] || !obj["Product Line Name"]) {
+                       return res.json({ success: false, incompleteEntry: i})
+                }
+
+                //TODO check if any of the fields are null, if they are and they're autogenerable, generate, if not return an error
+                
+                // DATA VALIDATION
+                if(obj["Name"].length < 1 || obj["Name"].length > 32) return res.json({success: false, badData: i});
+
+                var isNum1 = /^\d+$/.test(obj["SKU#"]);
+                if(!isNum1) return res.json({ success: false, badData: i});
+
+                if(obj["Case UPC"].length != 12) return res.json({ success: false, badData: i});
+                var isNum2 = /^\d+$/.test(obj["Unit UPC"]);
+                if(!isNum2) return res.json({ success: false, badData: i});
+                var firstChar = obj["Case UPC"].substring(0,1);
+                if(firstChar != '0' && firstChar != '1' && firstChar !='6' && firstChar !='8' && firstChar != '9') return res.json({ success: false, badData: i});
+                
+                if(obj["Unit UPC"].length != 12) return res.json({ success: false, badData: i});
+                var isNum3 = /^\d+$/.test(obj["Case UPC"]);
+                if(!isNum3) return res.json({ success: false, badData: i});
+                var firstChar2 = obj["Unit UPC"].substring(0,1);
+                if(firstChar2 != '0' && firstChar2 != '1' && firstChar2 !='6' && firstChar2 !='8' && firstChar2 != '9') return res.json({ success: false, badData: i});
+
+                var isNum4 =  /^\d+$/.test(obj["Count per case"]);
+                if(!isNum4) return res.json({ success: false, badData: i});
+
                 // If the specified product line doesn't exist, indicate to the user
                 if(!db_prod_lines.has(obj["Product Line Name"])) {
                     return res.json({ success: false, row: i+1, prod_line_name: obj["Product Line Name"]});
@@ -183,7 +212,8 @@ export default class CSV_parser{
                     obj.unit_upc = obj["Unit UPC"];
                     obj.unit_size = obj["Unit size"];
                     obj.cpc = obj["Count per case"];
-                    obj.prod_line = obj["Product Line Name"];
+                    let prod_line = await Prod_Line.find({ name : obj["Product Line Name"]});
+                    obj.prod_line = prod_line[0]._id;
                     obj.comment = obj["Comment"];
                     delete obj["Name"];
                     delete obj["SKU#"];
@@ -304,11 +334,11 @@ export default class CSV_parser{
             var count = 0;
             for(var key in jsonArray[0]){
                 if(count == 0 && key != "Ingr#") return res.json({ success: false, header: 1, actual: key, expected: "Ingr#"});
-                if(count == 1 && key != "Name") return res.json({ success: false, header: 2, actual: key, expected: "Name"});
-                if(count == 2 && key != "Vendor Info") return res.json({ success: false, header: 3, actual: key, expected: "Vendor Info"});
-                if(count == 3 && key != "Size") return res.json({ succes: false, header: 4, actual: key, expected: "Size"});
-                if(count == 4 && key != "Cost") return res.json({ success: false, header: 5, actual: key, expected: "Cost"});
-                if(count == 5 && key != "Comment") return res.json({ success: false, header: 6, actual: key, expected: "Comment"});
+                else if(count == 1 && key != "Name") return res.json({ success: false, header: 2, actual: key, expected: "Name"});
+                else if(count == 2 && key != "Vendor Info") return res.json({ success: false, header: 3, actual: key, expected: "Vendor Info"});
+                else if(count == 3 && key != "Size") return res.json({ succes: false, header: 4, actual: key, expected: "Size"});
+                else if(count == 4 && key != "Cost") return res.json({ success: false, header: 5, actual: key, expected: "Cost"});
+                else if(count == 5 && key != "Comment") return res.json({ success: false, header: 6, actual: key, expected: "Comment"});
                 count++;
             }
             if(count != 6) return res.json({ success: false, requiredFields: 6, numFields: (count-1)});
@@ -321,6 +351,17 @@ export default class CSV_parser{
             var ingrs_to_ignore = new Set();
             for(var i = 0; i < jsonArray.length; i++){
                 var obj = jsonArray[i];
+
+                // TODO: autogenerate any fields that are "" if autogenerable
+
+                if(!obj["Name"] || !obj["Ingr#"] || !obj["Size"] || !obj["Cost"]) return res.json({ success: false, incompleteEntry: i});
+
+                var isNum = /^\d+$/.test(obj["Ingr#"]);
+                if(!isNum) return res.json({ success: false, badData: i});
+
+                var isValid = obj["Cost"].search(/^\$?\d+(,\d{3})*(\.\d*)?$/) >= 0;
+                if(!isValid) return res.json({ success: false, badData: i});
+
                 // Check for a duplicate in the same CSV file
                 if(ingrs_to_add_nums.has(Number(obj["Ingr#"])) || ingrs_to_add_names.has(obj["Name"])) {
                     return res.json({ success: false, duplicate: i});
@@ -473,18 +514,30 @@ export default class CSV_parser{
             db_ingredients_nums.add(ingredient.num);
         });
 
-       
         const jsonArray = await csv().fromFile(req.file.path);
         fs.unlinkSync(req.file.path);
+
+        if(jsonArray.length == 0){
+            return res.json({ success: false, empty: true});
+        }
+
+        var count = 0;
+        for(var key in jsonArray[0]){
+            if(count==0 && key != "SKU#") return res.json({ success: false, header: 1, expected:"SKU#", actual: key})
+            else if(count == 1 && key != "Ingr#") return res.json({ success: false, header: 2, expected:"Ingr#", actual: key});
+            else if(count == 2 && key != "Quantity") return res.json({ success: false, header: 3, expected: "Quantity", actual: key})
+            count++;
+        }
+        if(count != 3) return res.json({ success: false, requiredFields: 3, numFields: (count-1)});
 
         var sku_to_ingrs = new Map();
         var ingrs_to_count = new Map();
         for(var i = 0; i < jsonArray.length; i++){
             var obj = jsonArray[i];
-            if(!db_skus_nums.has(obj["SKU#"])){
+            if(!db_skus_nums.has(Number(obj["SKU#"]))){
                 return res.json({ success: false, sku_dependency: i});
             }
-            else if(!db_ingredients_nums.has(obj["Ingr#"])){
+            else if(!db_ingredients_nums.has(Number(obj["Ingr#"]))){
                 return res.json({ success: false, ingr_dependency: i})
             }
             else {
@@ -492,10 +545,12 @@ export default class CSV_parser{
                     var arrayToAdd = sku_to_ingrs.get(obj["SKU#"]);
                     arrayToAdd.push( {ingr: obj["Ingr#"], quantity: obj["Quantity"]} );
                     sku_to_ingrs.set(obj["SKU#"], arrayToAdd);
+                    console.log('gets here second time')
                 } else {
                     var arrayToAdd = [];
                     arrayToAdd.push( {ingr: obj["Ingr#"], quantity: obj["Quantity"]} );
                     sku_to_ingrs.set(obj["SKU#"], arrayToAdd);
+                    console.log('gets here once');
                 }
             }
 
@@ -508,30 +563,34 @@ export default class CSV_parser{
             }
         }
 
-        Object.keys(skus_to_ingrs).forEach(async function(sku) {
+        for(var sku of sku_to_ingrs.keys()) {
             var sku_to_update = await SKU.find({ num : Number(sku)});
-            var tuples = skus_to_ingrs.get(sku);
+            sku_to_update.ingredients = [];
+            sku_to_update.ingredient_quantities =[];
+            var tuples = sku_to_ingrs.get(sku);
+            console.log(tuples);
             var ingr_arr = [];
             var quantity_arr = [];
-            for(var tuple in tuples){
+            for(var i = 0; i < tuples.length; i++){
+                var tuple = tuples[i];
                 var ingr = tuple.ingr;
                 var ingr_to_point_at = await Ingredient.find({ num : Number(ingr)});
                 var quantity = tuple.quantity;
-                
-                ingr_arr.push(ingr_to_point_at._id);
-                quantity_arr.push(quantity);
+                ingr_arr.push(ingr_to_point_at[0]._id);
+                quantity_arr.push(Number(quantity));
             }
-            sku_to_update.ingredients = ingr_arr;
-            sku_to_update.ingredient_quantities = quantity_arr;
+        //    sku_to_update.ingredients = 
+       //     sku_to_update.ingredient_quantities = quantity_arr;
+            let updated_sku = await SKU.findOneAndUpdate({ num : Number(sku)},
+            {$set: {ingredients: ingr_arr, ingredient_quantities: quantity_arr}}, 
+                {upsert : true, new : true});
+        }
 
-            var updated_sku = await sku_to_update.save();
-        });
-
-        Object.keys(ingrs_to_count).forEach(async function(ingredient){
-            var ingredient_to_update = await Ingredient.find({ num : Number(ingredient)});
-            ingredient_to_update.sku_count = ingrs_to_count.get(ingredient);
-            var updated_ingr = await ingredient_to_update.save();
-        });
+        for(var ingredient of ingrs_to_count.keys()){
+            let updated_ingredient = await Ingredient.findOneAndUpdate({ num : Number(ingredient)},
+            {$set: {sku_count: ingrs_to_count.get(ingredient)}},
+                {upsert: true, new: true});
+        }
 
         return res.json({ success: true });
     }

@@ -56,6 +56,9 @@ export default class ImportPage extends React.Component {
             update_list_no_collisions: [],
 
             aborted: false,
+            sku_dependency: false,
+            ingr_dependency: false,
+            dependency_row: -1,
         }
     }
 
@@ -163,6 +166,16 @@ export default class ImportPage extends React.Component {
                             update_list_items_new: res.data.new_data,
                             update_list_no_collisions: res.data.data,
                         })
+                    } else if(typeof res.data.sku_dependency != 'undefined'){
+                        this.setState({
+                            sku_dependency: true,
+                            dependency_row: res.data.sku_dependency,
+                        })
+                    } else if(typeof res.data.ingr_dependency != 'undefined'){
+                        this.setState({
+                            ingr_dependency: true,
+                            dependency_row: res.data.ingr_dependency,
+                        })
                     }
 
                     this.setState({
@@ -232,6 +245,14 @@ export default class ImportPage extends React.Component {
     onDismissFileName = () => {
         this.setState({
             invalidFileName: false
+        })
+    }
+
+    onDismissDependency = () =>{
+        this.setState({
+            sku_dependency: false,
+            ingr_dependency: false,
+            dependency_row: -1,
         })
     }
 
@@ -305,6 +326,10 @@ export default class ImportPage extends React.Component {
             update_list_no_collisions: [],
 
             aborted: false,
+
+            sku_dependency: false,
+            ingr_dependency: false,
+            dependency_row: -1,
         })
     }
 
@@ -331,11 +356,11 @@ export default class ImportPage extends React.Component {
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.incorrectNumHeaders} toggle={this.onDismissHeaderCount}>
-                    {this.state.numHeaders} columns were specified when {this.state.requiredHeaders} were expected;
+                    {this.state.numHeaders} columns were specified when {this.state.requiredHeaders} were expected
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.incorrectHeaders} toggle={this.onDismissHeaderName}>
-                    Column {this.state.incorrectColumnNum} had name {this.state.incorrectColumnName} when {this.state.correctColumnName} was expected;
+                    Column {this.state.incorrectColumnNum} had name {this.state.incorrectColumnName} when {this.state.correctColumnName} was expected
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.empty} toggle={this.onDismissEmpty} >
@@ -360,6 +385,14 @@ export default class ImportPage extends React.Component {
 
                 <Alert color="danger" isOpen={this.state.aborted} toggle={this.resetState}>
                     The import was aborted
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.sku_dependency} toggle={this.onDismissDependency}>
+                    The SKU specified in row {this.state.dependency_row+1} does not exist
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.ingr_dependency} toggle={this.onDismissDependency}>
+                    The Ingredient specified in row {this.state.dependency_row+1} does not exist
                 </Alert>
                 
 
