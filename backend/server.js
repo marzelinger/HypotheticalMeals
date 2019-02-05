@@ -136,4 +136,8 @@ app.get('*', function(req, res) {
 // const appPage = path.join(__dirname, '../client/build/index.html');
 
 
-app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
+//app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
+
+app.listen(process.env.PORT || 8080, function() {
+  console.log('Express server is up and running!');
+});
