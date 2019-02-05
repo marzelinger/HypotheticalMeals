@@ -56,8 +56,9 @@ export default class GeneralMenu extends React.Component {
             onRequestClose={this.handleRequestClose}
             >
                 <Menu>
-                    <MenuItem primaryText = "Logout"></MenuItem>
-                    {/* <Logout></Logout> */}
+                    <MenuItem primaryText = "Logout">
+                    <Logout></Logout>
+                    </MenuItem>
                 </Menu>
             </Popover>
         </div>
