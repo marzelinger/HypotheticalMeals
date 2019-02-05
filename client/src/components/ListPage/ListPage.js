@@ -93,7 +93,8 @@ export default class ListPage extends React.Component {
     async componentDidMount() {
         if (this.props.default_ing_filter !== undefined){
             await this.onAddFilter(Constants.ingredient_label)
-            await this.onFilterValueSelection(undefined, this.props.default_ing_filter, 0);
+            await this.onFilterValueSelection(this.props.default_ing_filter.name, 
+                this.props.default_ing_filter._id, undefined, 0);
         }
         this.loadDataFromServer();
     }
@@ -186,12 +187,13 @@ export default class ListPage extends React.Component {
             });
             return val;
         }
+        console.log(this.state.ing_substr[id])
         return this.state.ing_substr[id];
     }
 
     onFilterValueSelection (name, value, e, id) {
         console.log(name)
-        console.log(e)
+        console.log(value)
         var ing_sub = this.state.ing_substr.slice();
         ing_sub[id] = name;
         var fil_val = this.state.filter_value.slice();

@@ -100,25 +100,6 @@ export default class ItemSearchInput extends React.Component {
         this.props.handleSelectItem({name: name, _id: value});
     }
 
-    showResults = (state) => {
-        if (state.focus){
-            return (<ListGroup>
-                {this.state.assisted_search_results.map(res => 
-                <ListGroupItem
-                    key={res.name}
-                    tag="button"
-                    onMouseDown={(e) => this.onFilterValueSelection(e, res)}
-                >{res.name}</ListGroupItem>
-            )}
-            </ListGroup>
-            )
-        }
-        else {
-            return;
-        }
-        
-    }
-
     render() {
         const customStyles = {
             control: (base, state) => ({
@@ -129,23 +110,15 @@ export default class ItemSearchInput extends React.Component {
 
         return (
         <div className='filter-item' style={{width: this.state.width + '%'}}>
-            {/* {this.showResults(this.state)} */}
             <FormGroup>
                 <Label>{this.props.item_type}</Label>
-                {/* <Input 
-                    type="text"
-                    value={this.state.substr}
-                    invalid={this.props.invalid_inputs.includes('prod_line')}
-                    onChange={(e) => this.onFilterValueChange(e)}
-                    onFocus={this.toggleFocus}
-                    onBlur={this.toggleBlur}
-                /> */}
                 <Select 
                     inputValue={this.state.substr}
                     onChange={(opt, e) => this.onFilterValueSelection(opt.label, opt.value, e)}
                     onInputChange={(val, e) => this.onFilterValueChange(val, e)} 
                     options={this.state.assisted_search_results.map(res => ({ label: res.name, value: res._id }))}
                     styles={customStyles}
+                    placeholder={'Select Product Line...'}
                 />
             </FormGroup>
         </div>

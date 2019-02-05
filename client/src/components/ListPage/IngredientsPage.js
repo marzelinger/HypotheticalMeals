@@ -58,6 +58,7 @@ export default class IngredientsPage extends React.Component {
         };
         this.toggleModal = this.toggleModal.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
+        this.onFilterValueChange = this.onFilterValueChange.bind(this);
         this.onKeywordSubmit = this.onKeywordSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
     }
@@ -152,19 +153,25 @@ export default class IngredientsPage extends React.Component {
         this.setState({ data: data })
     }
 
-    onFilterValueChange = (e, id) => {
-        var sku_sub = this.state.sku_substr.slice();
-        sku_sub[id] = e.target.value;
-        this.setState({
-            sku_substr: sku_sub
-        });
+    onFilterValueChange = (val, e, id) => {
+        console.log(val)
+        console.log(e)
+        if (e.action === 'input-change'){
+            var sku_sub = this.state.sku_substr.slice();
+            sku_sub[id] = val;
+            this.setState({
+                sku_substr: sku_sub
+            });
+            return val;
+        }
+        return this.state.sku_substr[id];
     }
 
-    onFilterValueSelection (e, item, id) {
+    onFilterValueSelection (name, value, e, id) {
         var sku_sub = this.state.sku_substr.slice();
-        sku_sub[id] = item.name;
+        sku_sub[id] = name;
         var fil_val = this.state.filter_value.slice();
-        fil_val[id] = item._id;
+        fil_val[id] = value;
         var asr = this.state.assisted_search_results.slice();
         asr[id] = [];
         this.setState({
@@ -175,13 +182,12 @@ export default class IngredientsPage extends React.Component {
     }
 
     onKeywordSubmit (id) {
-        if (this.state.filter_category[id] == Constants.keyword_label){
-            var fil_val = this.state.filter_value.slice();
-            fil_val[id] = this.state.sku_substr[id];
-            this.setState({
-                filter_value: fil_val
-            });
-        }
+        var fil_val = this.state.filter_value.slice();
+        fil_val[id] = this.state.sku_substr[id];
+        console.log(fil_val[id])
+        this.setState({
+            filter_value: fil_val
+        });
     }
 
     async onCreateNewItem() {

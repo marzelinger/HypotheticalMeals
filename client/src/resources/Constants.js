@@ -38,7 +38,7 @@ export const details_create = 'Create'
 export const details_add = 'Add'
 export const details_remove = 'Remove'
 export const details_modify_ingredient ="Modify Ingredient"
-export const details_modify_ingredient_quantities ="Modify Ingredient Quantities"
+export const details_modify_ingredient_quantities ="Modify Quantity"
 
 export const add_keyword_filter = 'Add Keyword Filter'
 export const add_sku_filter = 'Add SKU Filter'
