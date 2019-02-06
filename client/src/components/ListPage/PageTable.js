@@ -100,7 +100,7 @@ export default class PageTable extends Component {
         return (
           <TableRow className = "superrow">
             <TableHeaderColumn id = "pagetitle" className = "super" colSpan = {2}>{`${this.props.title} Table`}</TableHeaderColumn>
-            <TableHeaderColumn className = "super" colSpan = {6}>
+            <TableHeaderColumn className = "super" colSpan = {this.determineColumns() - 2}>
               <TableActions
                 simple = {this.props.simple}
                 table_options = {this.props.table_options}

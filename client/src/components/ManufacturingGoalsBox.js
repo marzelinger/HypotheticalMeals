@@ -124,9 +124,9 @@ class ManufacturingGoalsBox extends Component {
 
   render() {
     return (
-      <div className="container">
+      <div className = "goalsbox">
+              <h1 id = "manufacturing_goals_title">{Constants.MANUFACTURING_TITLE}</h1>
         <div className="goals">
-          <h2>Current Goals:</h2>
           <ManufacturingGoalList
             data={this.state.data}
             handleDeleteGoal={this.onDeleteGoal}

@@ -7,7 +7,6 @@ import { UncontrolledCollapse, CardBody, Card } from 'reactstrap';
 import deleteButton from'../resources/delete.png';
 import ManufacturingGoalCalculator from'./ManufacturingGoalCalculator';
 import ManuGoalsTables from './ListPage/ManuGoalsTables';
-
 export default class ManufacturingGoal extends React.Component{
   constructor(props){
     super(props);
@@ -22,7 +21,7 @@ export default class ManufacturingGoal extends React.Component{
     return (
       <div id="singleGoal">
         <div className="textContent">
-          <div className="singleGoalContent" id={'goal' + this.props.id}>
+          <div className="singleGoalContent hoverable" id={'goal' + this.props.id}>
             <h3>{this.props.name}</h3>
           </div>
           <UncontrolledCollapse toggler={'#goal' + this.props.id}>
@@ -35,7 +34,7 @@ export default class ManufacturingGoal extends React.Component{
         </div>
           <div className="singleGoalButtons">
             {/* <a onClick={() => { props.handleUpdateGoal(props.id); }}>update</a> */}
-            <img id ="deleteButton" onClick={() => {this.props.handleDeleteGoal(this.props.id); }} src= {deleteButton}></img>
+            <img className = "hoverable" id ="deleteButton" onClick={() => {this.props.handleDeleteGoal(this.props.id); }} src= {deleteButton}></img>
             <ManufacturingGoalCalculator name = {this.props.name} skus = {this.props.skus} quantities = {this.props.quantities}></ManufacturingGoalCalculator>
           </div>
       </div>

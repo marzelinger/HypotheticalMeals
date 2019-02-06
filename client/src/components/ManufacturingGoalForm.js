@@ -20,7 +20,7 @@ class GoalForm extends React.Component{
   render(){
     return (
       <div>
-        <img id = "button" src={addButton} onClick={this.toggle}></img>
+        <img className = "hoverable" id = "button" src={addButton} onClick={this.toggle}></img>
         <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup" className={this.props.className}>
           <ModalHeader toggle={this.toggle}>Create New Manufacturing Goal</ModalHeader>
           <form onSubmit={this.props.handleSubmit}>
