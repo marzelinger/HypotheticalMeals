@@ -45,12 +45,15 @@ export default class Filter extends React.Component {
     showResults = (state) => {
         if (state.focus){
             return (<ListGroup>
-                {(this.props.assisted_search_results.map(res => 
-                <ListGroupItem
-                    key={res.name}
-                    tag="button"
-                    onMouseDown={(e) => this.props.handleFilterValueSelection(e, res, this.props.id)}
-                >{res.name}</ListGroupItem>
+                {(this.props.assisted_search_results.map((res, index) => {
+                    if (index < 5) {
+                       return (<ListGroupItem
+                                    key={res.name}
+                                    tag="button"
+                                    onMouseDown={(e) => this.props.handleFilterValueSelection(e, res, this.props.id)}
+                                >{res.name}</ListGroupItem>)
+                    }
+                }
             ))}
             </ListGroup>
             )

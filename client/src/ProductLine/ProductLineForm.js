@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import addButton from '../resources/add.png';
+import addButton from './../resources/add.png';
 
 class ProductLineForm extends React.Component{
   constructor(props) {

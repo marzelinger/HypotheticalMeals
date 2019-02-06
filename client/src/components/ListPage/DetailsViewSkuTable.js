@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Table } from 'reactstrap';
 import * as Constants from './../../resources/Constants';
-import ListPage from './ListPage';
+import SkusPage from './SkusPage';
 import DataStore from './../../helpers/DataStore';
 
 const DetailsViewSkuTable = props => {
@@ -14,7 +14,7 @@ const DetailsViewSkuTable = props => {
   }
   return (
     <div>
-      <ListPage
+      <SkusPage
         {
         ...skuTableData
         } simple = {true}

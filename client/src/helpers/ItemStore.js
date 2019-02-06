@@ -49,7 +49,7 @@ export default class ItemStore{
           num: new_id,
           vendor_info: '',
           pkg_size: '',
-          pkg_cost: 0,
+          pkg_cost: '',
           sku_count: 0,
           comment: ''
         };
@@ -62,7 +62,7 @@ export default class ItemStore{
           case_upc: new_case_upc,
           unit_upc: new_unit_upc,
           unit_size: '',
-          cpc: 0,
+          cpc: '',
           prod_line: '',
           comment: '',
           ingredients: [],

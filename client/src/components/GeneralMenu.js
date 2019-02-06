@@ -4,7 +4,10 @@ import { Link } from "react-router-dom";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Register from "./auth/Register";
 import AdminRegister from "./auth/AdminRegister";
-import '../style/GeneralMenu.css';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
+import Drawer from 'material-ui/Drawer';
+import MenuItem from 'material-ui/MenuItem';
+import MenuIcon from 'material-ui/svg-icons/navigation/menu';
 
 const currentUserIsAdmin = require("../components/auth/currentUserIsAdmin");
 
@@ -12,90 +15,49 @@ const currentUserIsAdmin = require("../components/auth/currentUserIsAdmin");
 export default class GeneralMenu extends React.Component {
   constructor(props) {
     super(props);
-
-    this.toggle = this.toggle.bind(this);
     this.state = {
-      dropdownOpen: false
+      open: false
     };
   }
 
-  toggle() {
-    this.setState(prevState => ({
-      dropdownOpen: !prevState.dropdownOpen
-    }));
-  }
+  handleToggle = () => this.setState({open: !this.state.open});
+
+  handleClose = () => this.setState({open: false});
 
   render() {
     return (
-      <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-        <DropdownToggle id = "menubutton">
-        </DropdownToggle>
-        <DropdownMenu>
-          <DropdownItem>
-          <Link
-                to="/manu_goals"
-                className="btn btn-large waves-effect waves-light hoverable blue accent-3"
-              >
- Manufacturing Goals
-               </Link>
-            
-            
-            </DropdownItem>
-            <DropdownItem>
-          <Link
-                to="/ingredients"
-                style={{
-                  width: "140px",
-                  borderRadius: "3px",
-                  letterSpacing: "1px"
-                }}
-                className="btn btn-large waves-effect waves-light hoverable blue accent-3"
-
-              >
- Ingredients
-               </Link>
-            
-            
-            </DropdownItem>
-            <DropdownItem>
-              </DropdownItem>
-
-
-            <DropdownItem>
-          <Link
-                to="/skus"
-                className="btn btn-large waves-effect waves-light hoverable blue accent-3"
-              >
- SKUs
-               </Link>
-            
-            
-            </DropdownItem>      
-            
-            <DropdownItem>
- Product Lines
-            
-            
-            </DropdownItem>      
-          <DropdownItem>
-            <div>
-              {
-                currentUserIsAdmin().isValid 
-                ? (
-                <div>
-                <Link
-                to="/register"
-                className="btn btn-large waves-effect waves-light hoverable blue accent-3"
-              >
-                Register New User
+      <div>
+        <FloatingActionButton
+          label="Toggle Drawer"
+          onClick={this.handleToggle}
+        >
+          <MenuIcon/>
+        </FloatingActionButton>
+        <Drawer open={this.state.open} docked = {false} onRequestChange={(open) => this.setState({open})}>
+        <Link to="/manu_goals" >
+          <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Manufacturing Goals'}></MenuItem>
+        </Link>
+        <Link to="/ingredients" >
+        <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Ingredients'}></MenuItem>
+        </Link>
+        <Link to="/skus" >
+          <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'SKUs'}></MenuItem>
+        </Link>
+        <Link to="/prod_lines" >
+          <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Manufacturing Goals'}></MenuItem>
+        </Link>
+          {
+            currentUserIsAdmin().isValid ? 
+            (
+              <Link to="/prod_lines" >
+                <MenuItem style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Register New Users'}></MenuItem>
               </Link>
-              </div>)
-              : (<div/>)
-              }
-            </div>
-          </DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
+            )
+            :
+            (<div></div>)
+          }
+        </Drawer>
+      </div>
     );
   }
 }

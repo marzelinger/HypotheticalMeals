@@ -66,9 +66,7 @@ export default class PageTable extends Component {
   };
 
   determineSelected= (index) => {
-    console.log('here')
     if(this.state.selectable){
-      console.log(this.props.selected_indexes);
       return this.props.selected_indexes.includes(index);
     } 
     return false;
