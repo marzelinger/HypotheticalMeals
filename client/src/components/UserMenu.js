@@ -21,7 +21,7 @@ export default class GeneralMenu extends React.Component {
 
   }
 
-  handleClick = (event) => {
+  handleClickMenu = (event) => {
     // This prevents ghost click.
     event.preventDefault();
 
@@ -46,7 +46,7 @@ export default class GeneralMenu extends React.Component {
             primary={true}
             cursor
             icon={<Person />}
-            onClick = {this.handleClick}
+            onClick = {this.handleClickMenu}
             />
             <Popover
             open={this.state.open}
@@ -56,9 +56,7 @@ export default class GeneralMenu extends React.Component {
             onRequestClose={this.handleRequestClose}
             >
                 <Menu>
-                    <MenuItem primaryText = "Logout">
-                    <Logout></Logout>
-                    </MenuItem>
+                    {/* <Logout></Logout> */}
                 </Menu>
             </Popover>
         </div>

@@ -114,7 +114,7 @@ class ProductLinesBox extends Component {
   loadSkusforLines = async (all_prod_lines) => {
     var prod_lines = [];
     for( const prod_line of all_prod_lines ){ 
-      var skus = await fetch(`/api/skus_filter/_/_/_/${prod_line._id}`, {method: 'GET'})
+      var skus = await fetch(`/api/skus_filter/_/_/_/_/_/${prod_line._id}`, {method: 'GET'})
       .then(data => data.json())
       .then((res) => {
         if (!res.success) this.setState({ error: res.error });

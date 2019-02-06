@@ -18,6 +18,7 @@ import Details from 'material-ui/svg-icons/navigation/more-horiz';
 import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
 import PropTypes from 'prop-types';
+import TableActions from './TableActions';
 
 const styles = {
   propContainer: {
@@ -36,7 +37,6 @@ const styles = {
 export default class PageTable extends Component {
   constructor(props) {
     super(props);
-    console.log(props.selectable!=undefined)
     this.state = {
       fixedHeader: true,
       fixedFooter: false,
@@ -94,6 +94,32 @@ export default class PageTable extends Component {
     return (<TableHeaderColumn>{this.getPropertyLabel(prop)}</TableHeaderColumn>);
   }
 
+  getTableSuperHeader = () => {
+      if(this.props.showHeader) {
+        return (
+          <TableRow>
+            <TableHeaderColumn style = {{textAlign: 'left'}} colSpan = {3}>{`${this.props.title} Table`}</TableHeaderColumn>
+            <TableHeaderColumn colSpan = {this.determineColumns() - 3}>
+              <TableActions
+                simple = {this.props.simple}
+                filter_category = {this.props.filter_category}
+                assisted_search_results = {this.props.assisted_search_results}
+                filter_substr = {this.props.filter_substr}
+                table_options = {this.props.table_options}
+                onTableOptionSelection = {this.props.onTableOptionSelection}
+                onFilterValueSelection = {this.props.onFilterValueSelection}
+                onFilterValueChange = {this.props.onFilterValueChange}
+                onRemoveFilter = {this.props.onRemoveFilter}
+                filters = {this.props.filters}
+              >
+              </TableActions>
+            
+            </TableHeaderColumn>
+          </TableRow>
+        );
+      }
+  }
+
   render() {
     return (
       <div>
@@ -110,11 +136,7 @@ export default class PageTable extends Component {
             adjustForCheckbox={this.state.showCheckboxes}
             enableSelectAll={this.state.enableSelectAll}
           >
-            <TableRow>
-              <TableHeaderColumn colSpan={this.determineColumns()} style={{textAlign: 'center'}}>
-                {this.props.title}
-              </TableHeaderColumn>
-            </TableRow>
+              {this.getTableSuperHeader()}
             <TableRow selectable = {true} >
                 {this.props.table_properties.map(prop => 
                   this.getColumnComponent(prop)
@@ -167,5 +189,6 @@ PageTable.propTypes = {
   handleSort: PropTypes.func,
   handleSelect: PropTypes.func,
   handleDetailViewSelect: PropTypes.func,
-  handleQuantityChange: PropTypes.func
+  handleQuantityChange: PropTypes.func,
+  showHeader: PropTypes.bool.isRequired
 };
