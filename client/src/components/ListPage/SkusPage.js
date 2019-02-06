@@ -109,7 +109,7 @@ export default class ListPage extends React.Component {
             this.loadDataFromServer();
             console.log(this.state.data)
         }
-        this.setNumberPages();
+        //this.setNumberPages();
     }
 
     async updateFilterState(prevState) {

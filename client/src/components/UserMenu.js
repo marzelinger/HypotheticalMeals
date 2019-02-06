@@ -58,8 +58,8 @@ export default class UserMenu extends React.Component {
             >
                 <Menu>
                     <MenuItem primaryText = "LogoutDUMMY"></MenuItem>
-                    {//<Logout></Logout>
-                    }
+                    <Logout></Logout>
+                    
                 </Menu>
             </Popover>
         </div>

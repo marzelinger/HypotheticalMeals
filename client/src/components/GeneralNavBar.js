@@ -34,8 +34,7 @@ export default class GeneralNavBar extends React.Component {
           <GeneralMenu/>
           <PrivateRoute exact path="/register" component={Register} />
           <UserMenu></UserMenu>
-          {//<Logout></Logout>
-          }  
+          <Logout></Logout>       
         </Navbar>
       </div>
     );

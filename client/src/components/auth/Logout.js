@@ -8,19 +8,14 @@ import MenuItem from 'material-ui/MenuItem';
 import { Provider } from "react-redux";
 
 class Logout extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-    };
-  }
   onLogoutClick = e => {
+    console.log("this is in the onLogoutClcik");
     e.preventDefault();
     logoutUser();
   };
 
 render() {
-    //const { user } = this.props.auth;
+    const { user } = this.props.auth;
 return (
         <MenuItem onClick={this.onLogoutClick} primaryText="Log out"/>
     );
