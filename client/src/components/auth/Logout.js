@@ -20,7 +20,7 @@ class Logout extends Component {
   };
 
 render() {
-    const { user } = this.props.auth;
+    //const { user } = this.props.auth;
 return (
         <MenuItem onClick={this.onLogoutClick} primaryText="Log out"/>
     );

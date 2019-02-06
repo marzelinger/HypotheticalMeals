@@ -453,8 +453,8 @@ export default class IngredientsPage extends React.Component {
                         value={this.state.error}
                         color='danger'/>
                 </Modal>   
-                <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/>                           
-                <DependencyReport data = {this.state.data} />
+                <ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/>                           
+                <DependencyReport data = {this.state.exportData} />
 
                 <div className = "pagination-wrapper">
                 <Pagination aria-label="Page navigation example">
