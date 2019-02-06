@@ -4,6 +4,7 @@ import ManufacturingGoalList from './ManufacturingGoalList';
 import ManufacturingGoalForm from './ManufacturingGoalForm';
 import '../style/ManufacturingGoalsBox.css';
 import * as Constants from '../resources/Constants';
+import SubmitRequest from './../helpers/SubmitRequest';
 const jwt_decode = require('jwt-decode');
 
 class ManufacturingGoalsBox extends Component {
@@ -24,6 +25,10 @@ class ManufacturingGoalsBox extends Component {
     }
 
     this.pollInterval = null;
+    this.submitNewGoal = this.submitNewGoal.bind(this);
+    this.onDeleteGoal = this.onDeleteGoal.bind(this);
+    this.loadGoalsFromServer = this.loadGoalsFromServer.bind(this);
+    this.submitUpdatedGoal = this.submitUpdatedGoal.bind(this);
   }
 
   onChangeText = (e) => {
@@ -46,17 +51,19 @@ class ManufacturingGoalsBox extends Component {
     this.submitUpdatedGoal();
   }
 
-  onDeleteGoal= (id) => {
+  async onDeleteGoal(id) {
     const i = this.state.data.findIndex(c => c._id === id);
+    let item = this.state.data[i];
     const data = [
       ...this.state.data.slice(0, i),
       ...this.state.data.slice(i + 1),
     ];
     this.setState({ data });
-    fetch(`api/manugoals/${id}`, { method: 'DELETE' })
-      .then(res => res.json()).then((res) => {
-        if (!res.success) this.setState({ error: res.error });
-      });
+
+    let res = await SubmitRequest.submitDeleteItem(Constants.manugoals_page_name, item);
+    if (!res.success) {
+      this.setState({ error: res.error });
+    }
   }
 
   submitGoal = (e) => {
@@ -70,28 +77,27 @@ class ManufacturingGoalsBox extends Component {
     }
   }
 
-  submitNewGoal = () => {
+  async submitNewGoal() {
     const { name, skus, user } = this.state;
-    fetch('/api/manugoals', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, skus, user }),
-    }).then(res => res.json()).then((res) => {
-      if (!res.success) this.setState({ error: res.error.message || res.error });
-      else this.setState({ name: '', skus: '', error: null });
-    });
+    let res = await SubmitRequest.submitCreateItem(Constants.manugoals_page_name, { name, skus, user });
+    if (!res.success) {
+      this.setState({ error: res.error });
+    }
+    else {
+      this.setState({ name: '', skus: '', error: null });
+    }
   }
 
-  submitUpdatedGoal = () => {
-    const { name, skus, user, updateId, quantities} = this.state;
-    fetch(`/api/manugoals/${this.state.user}/${updateId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, skus, user, quantities }),
-    }).then(res => res.json()).then((res) => {
-      if (!res.success) this.setState({ error: res.error.message || res.error });
-      else this.setState({ name: '', skus: '', quantities: '', error:null });
-    });
+  async submitUpdatedGoal() {
+    const { name, skus, user, updateId, quantities } = this.state;
+    let item = { name, skus, user, quantities };
+    let res = await SubmitRequest.submitUpdateGoal(user, updateId, item);
+    if (!res.success) {
+      this.setState({ error: res.error});
+    }
+    else {
+      this.setState({ name: '', skus: '', quantities: '', error: null })
+    }
   }
 
   componentDidMount() {
@@ -106,22 +112,21 @@ class ManufacturingGoalsBox extends Component {
     this.pollInterval = null;
   }
 
-  loadGoalsFromServer = () => {
-    // fetch returns a promise. If you are not familiar with promises, see
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
-    fetch(`/api/manugoals/${this.state.user}`)
-      .then(data => data.json())
-      .then((res) => {
-        if (!res.success) this.setState({ error: res.error });
-        else this.setState({ data: res.data });
-      });
+  async loadGoalsFromServer() {
+    let res = await SubmitRequest.submitGetManuGoalsData(this.state.user);
+    if (!res.success) {
+      this.setState({ error: res.error });
+    }
+    else {
+      this.setState({ data: res.data})
+    }
   }
 
   render() {
     return (
-      <div className="container">
+      <div className = "goalsbox">
+              <h1 id = "manufacturing_goals_title">{Constants.MANUFACTURING_TITLE}</h1>
         <div className="goals">
-          <h2>Current Goals:</h2>
           <ManufacturingGoalList
             data={this.state.data}
             handleDeleteGoal={this.onDeleteGoal}

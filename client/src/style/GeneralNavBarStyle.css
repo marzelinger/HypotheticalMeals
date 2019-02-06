@@ -1,8 +1,21 @@
-@import url('https://fonts.googleapis.com/css?family=Alegreya+Sans');
+@import url('https://fonts.googleapis.com/css?family=Major+Mono+Display|Roboto');
 
 
 
 #title{
-    font-family: 'Alegreya Sans', sans-serif;
-    margin-left: auto;
+    font-family: 'Major Mono Display', monospace;
+    font-size: 300%;
+    color: #424242;
+    float: left;
+}
+
+#bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between !important;
+}
+
+#usermenu {
+   float: right;
+   margin-left: auto;
 }

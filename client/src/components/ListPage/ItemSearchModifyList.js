@@ -13,6 +13,7 @@ import {
     ListGroupItem} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import SubmitRequest from '../../helpers/SubmitRequest'
+import Select from 'react-select'
 
 
 export default class ItemSearchModifyList extends React.Component {
@@ -66,10 +67,14 @@ export default class ItemSearchModifyList extends React.Component {
         }
     }
 
-    onFilterValueChange = (e) => {
-        this.setState({
-            substr: e.target.value
-        });
+    onFilterValueChange = (value, e) => {
+        if (e.action === 'input-change'){
+            this.setState({
+                substr: value
+            });
+            return value;
+        }
+        return this.setState.substr;
     }
 
     onQuantityChange = (e) => {
@@ -78,9 +83,11 @@ export default class ItemSearchModifyList extends React.Component {
         });
     }
 
-    async onFilterValueSelection (e, item) {
+    async onFilterValueSelection (name, value, e) {
+        var item = {};
+        this.state.assisted_search_results.map(res => {if (res._id === value) item = res})
         await this.setState({
-            substr: item.name,
+            substr: name,
             value: item,
             assisted_search_results: []
         });
@@ -90,44 +97,22 @@ export default class ItemSearchModifyList extends React.Component {
         switch (option) {
             case Constants.details_add:
                 return (state.value === '' || state.qty <= 0)
-                break;
             case Constants.details_remove:
                 return (state.value === '' || state.qty <= 0)
-                break;
         }
-    }
-
-    showResults = (state) => {
-        if (state.focus){
-            return (<ListGroup>
-                {this.state.assisted_search_results.map(res => 
-                <ListGroupItem
-                    key={res.name}
-                    tag="button"
-                    onMouseDown={(e) => this.onFilterValueSelection(e, res)}
-                >{res.name}</ListGroupItem>
-            )}
-            </ListGroup>
-            )
-        }
-        else {
-            return;
-        }
-        
     }
 
     render() {
         return (
         <div className='filter-item' style={{width: this.state.width + '%'}}>
-            {this.showResults(this.state)}
             <FormGroup>
                 <Label>{this.props.item_type}</Label>
-                <Input 
-                    type="text"
-                    value={this.state.substr}
-                    onChange={(e) => this.onFilterValueChange(e)}
-                    onFocus={this.toggleFocus}
-                    onBlur={this.toggleBlur}
+                <Select 
+                    inputValue={this.state.substr}
+                    onChange={(opt, e) => this.onFilterValueSelection(opt.label, opt.value, e)}
+                    onInputChange={(val, e) => this.onFilterValueChange(val, e)} 
+                    options={this.state.assisted_search_results.map(res => ({ label: res.name, value: res._id }))}
+                    placeholder={'Select Ingredient...'}
                 />
                 <Label>{Constants.details_modify_ingredient_quantities}</Label>
                 <Input 

@@ -85,8 +85,8 @@ router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteM
 router.get('/manugoals/:user_id/:manu_goal_id/skus', (req, res) => Manu_GoalHandler.getManufacturingGoalByIDSkus(req, res));
 
 // Multiple database APIs
-router.get('/ingredients_filter/:sort_field/:sku_ids/:keyword', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
-router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:prod_line_ids', (req, res) => FilterHandler.getSkusByFilter(req, res));
+router.get('/ingredients_filter/:sort_field/:sku_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
+router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize/:prod_line_ids', (req, res) => FilterHandler.getSkusByFilter(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);

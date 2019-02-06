@@ -4,14 +4,13 @@ import {
   Navbar,
   NavbarBrand} from 'reactstrap';
 import GeneralMenu from './GeneralMenu'
-import Logout from './auth/Logout'
+import UserMenu from './UserMenu'
 import * as Constants from '../resources/Constants';
 import '../style/GeneralNavBarStyle.css';
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Register from "./auth/Register";
 import PrivateRoute from './private-route/PrivateRoute';
 import ExportSimple from "./export/ExportSimple";
-
+import Logout from './auth/Logout'
 
 
 export default class GeneralNavBar extends React.Component {
@@ -29,16 +28,13 @@ export default class GeneralNavBar extends React.Component {
   render() {
     console.log("in the general navbar: "+ localStorage.getItem("jwtToken"));
     return (
-      <div>
-        <Navbar color="light" light expand="md">
-          <GeneralMenu/>
-          <PrivateRoute exact path="/register" component={Register} />
-          <NavbarBrand id = "title" href="/">{Constants.TITLE}</NavbarBrand>
-        
-            <Logout></Logout>          
-        </Navbar>
-        
-      </div>
+      <Navbar id = "bar" color="light" light expand="md">
+        <GeneralMenu></GeneralMenu>
+        <NavbarBrand id = "title" href="/">{Constants.TITLE}</NavbarBrand>
+        <PrivateRoute exact path="/register" component={Register} />
+        {/* <UserMenu id = "usermenu"></UserMenu> */}
+        <Logout id="usermenu"></Logout>
+      </Navbar>
     );
   }
 }
