@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import * as Constants from '../../resources/Constants';
-import '../../style/GeneralNavBarStyle.css';
 import Filter from './Filter';
 import TableOptions from './TableOptions'
 import TextField from 'material-ui/TextField';
@@ -19,31 +18,25 @@ export default class TableActions extends React.Component {
 
   render() {
     return (
-      <div className="options-container" id={this.state.simple ? "simple" : "complex"}>
-      <SearchIcon></SearchIcon>
+      <div id={this.state.simple ? "simple" : "complex"}>
+      <SearchIcon style = {{width: '50px', height: '50px'}}></SearchIcon>
       <TextField
         hintText="Keyword Search"
-        onChange = {(e, val) => this.props.onFilterValueChange(val, 'keyword')}
+        onChange = {(e, val) => this.props.onFilterValueChange(e, val, 'keyword')}
       />
+      {
+        Object.keys(this.props.filters).map( (type) => {
+          if(type == 'keyword')return 
+          return (
+            <Filter data = {this.props[type]} 
+                handleFilterValueChange = {this.props.onFilterValueChange}
+                handleFilterValueSelection = {this.props.onFilterValueSelection} 
+                handleRemoveFilter = {this.props.onRemoveFilter} 
+                type = {type}
+            ></Filter>
 
-      {/* {this.props.filter_substr.map((is,index) => {
-              if (this.props.filter_category[index] != Constants.filter_removed){
-                  return (<Filter 
-                              key={'filter'+index}
-                              id={index}
-                              value={is}
-                              filter_category={this.props.filter_category[index]} 
-                              assisted_search_results={this.props.assisted_search_results[index]}
-                              handleFilterValueChange={this.props.onFilterValueChange}
-                              handleFilterValueSelection={this.props.onFilterValueSelection}
-                              handleRemoveFilter={this.props.onRemoveFilter}
-                          />)
-              }
-          })}
-              <TableOptions
-              table_options={this.props.table_options}
-              handleTableOptionSelection={this.props.onTableOptionSelection}
-              /> */}
+        )})
+      }
       </div>
     );
   }
@@ -51,9 +44,6 @@ export default class TableActions extends React.Component {
 
 TableOptions.propTypes = {
     simple: PropTypes.bool,
-    filter_category: PropTypes.array,
-    assisted_search_results: PropTypes.array,
-    filter_substr: PropTypes.array,
     table_options: PropTypes.array,
     onTableOptionSelection: PropTypes.func,
     onFilterValueSelection: PropTypes.func,

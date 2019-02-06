@@ -19,6 +19,7 @@ import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
 import PropTypes from 'prop-types';
 import TableActions from './TableActions';
+import '../../style/TableStyle.css'
 
 const styles = {
   propContainer: {
@@ -86,7 +87,7 @@ export default class PageTable extends Component {
   getColumnComponent = (prop) => {
     if(this.props.sortable != undefined && this.props.sortable){
       return (                  
-        <TableHeaderColumn tooltip = {"Sort By " + this.getPropertyLabel(prop)} className = "hoverable" key={prop}>
+        <TableHeaderColumn style={{ height: 'auto !important' }} tooltip = {"Sort By " + this.getPropertyLabel(prop)} className = "hoverable" key={prop}>
           <div onClick={e => this.props.handleSort(e, prop)}>{this.getPropertyLabel(prop)}</div>
         </TableHeaderColumn>
       )
@@ -97,20 +98,21 @@ export default class PageTable extends Component {
   getTableSuperHeader = () => {
       if(this.props.showHeader) {
         return (
-          <TableRow>
-            <TableHeaderColumn style = {{textAlign: 'left'}} colSpan = {3}>{`${this.props.title} Table`}</TableHeaderColumn>
-            <TableHeaderColumn colSpan = {this.determineColumns() - 3}>
+          <TableRow className = "superrow">
+            <TableHeaderColumn id = "pagetitle" className = "super" colSpan = {2}>{`${this.props.title} Table`}</TableHeaderColumn>
+            <TableHeaderColumn className = "super" colSpan = {6}>
               <TableActions
                 simple = {this.props.simple}
-                filter_category = {this.props.filter_category}
-                assisted_search_results = {this.props.assisted_search_results}
-                filter_substr = {this.props.filter_substr}
                 table_options = {this.props.table_options}
                 onTableOptionSelection = {this.props.onTableOptionSelection}
                 onFilterValueSelection = {this.props.onFilterValueSelection}
                 onFilterValueChange = {this.props.onFilterValueChange}
                 onRemoveFilter = {this.props.onRemoveFilter}
                 filters = {this.props.filters}
+                ingredient = {this.props.ingredients}
+                product_line = {this.props.product_lines}
+                sku = {this.props.skus}
+                id = "tableactions"
               >
               </TableActions>
             
@@ -124,7 +126,7 @@ export default class PageTable extends Component {
     return (
       <div>
         <Table
-          height={this.state.height}
+          height={'413px'}
           fixedHeader={this.state.fixedHeader}
           fixedFooter={this.state.fixedFooter}
           selectable={this.state.selectable}
@@ -132,12 +134,12 @@ export default class PageTable extends Component {
           onRowSelection = {(res) => this.props.handleSelect(res)}
         >
           <TableHeader
-            displaySelectAll={this.state.showCheckboxes}
-            adjustForCheckbox={this.state.showCheckboxes}
+            displaySelectAll={false}
+            adjustForCheckbox={true}
             enableSelectAll={this.state.enableSelectAll}
           >
               {this.getTableSuperHeader()}
-            <TableRow selectable = {true} >
+            <TableRow class = "cols" selectable = {true} >
                 {this.props.table_properties.map(prop => 
                   this.getColumnComponent(prop)
                 )}
@@ -151,11 +153,12 @@ export default class PageTable extends Component {
             stripedRows={this.state.stripedRows}
           >
               {this.props.list_items.map((item, index) => 
-                <TableRow selected = {this.determineSelected(index)} key={index}>
+                <TableRow className = "myrow" selected = {this.determineSelected(index)} key={index}>
                   {this.props.table_properties.map(prop => 
                     <TableRowColumn
                       key={prop}
-                      onClick={e => this.props.handleSelect(e, item) }
+                      onClick={e => this.props.handleSelect(e, item)}
+                      style={{ height: 'auto !important' }}
                     >
                       {(['string','number'].includes(typeof item[prop]) || item[prop] === null || item[prop] === undefined) 
                           ? item[prop] : item[prop].name}

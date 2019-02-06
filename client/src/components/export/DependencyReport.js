@@ -114,18 +114,13 @@ async loadDataFromServerForReport(ingredients){
 
 render() {
 return (
-            <button
-              style={{
-                width: "150px",
-                borderRadius: "3px",
-                letterSpacing: "1px",
-                marginTop: "1rem"
-              }}
+              <div className = "depbutton hoverable"
+              onClick={this.onExportSimpleClick}
+              primary={true}
               onClick={this.onExportDependencyReport}
-              className="btn btn-small waves-effect waves-light hoverable blue accent-3"
-            >
+               >
               Dependency Report
-            </button>
+               </div>
     );
   }
 }

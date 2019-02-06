@@ -14,7 +14,6 @@ import Select from 'react-select'
 export default class Filter extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
             width: 100,
             focus: false,
@@ -23,30 +22,40 @@ export default class Filter extends React.Component {
     }
 
     render() {
+        // var style = {
+        //     height: '10px !important',
+        //     width: '80%',
+        //     marginTop: '10px',
+        //     marginBottom: '10px'
+        // }
         return (
-        <div className='filter-item' style={{width: this.state.width + '%'}}>
+        <div className='filter-item'>
             <Select
-                value={this.props.value}
-                onChange={(opt, e) => this.props.handleFilterValueSelection(opt.label, opt.value, e, this.props.id)}
-                onInputChange={(val, e) => this.props.handleFilterValueChange(val, e, this.props.id)} 
-                options={this.props.assisted_search_results.map(res => ({ label: res.name, value: res._id }))}
+                placeholder = {`Filter by ${this.props.type}`}
+                isMulti
+                onChange={(opt, e) => this.props.handleFilterValueSelection(opt, e, this.props.type)}
+                options={this.props.data.map((item) => ({label: item.name, value: item._id}))}
                 noOptionsMessage={() => null}
+                theme={(theme) => ({
+                    ...theme,
+                    colors: {
+                    ...theme.colors,
+                      primary25: 'rgb(0, 188, 212, .5)',
+                      primary: 'rgb(66, 66, 66)',
+                    },
+                  })}
             />
-            <InputGroupAddon addonType="append">{this.props.filter_category}</InputGroupAddon>
-            <Button color="secondary" onClick={(e) => this.props.handleRemoveFilter(e, this.props.id)}> 
-                {Constants.remove_filter_label}
-            </Button>
+            {/* <InputGroupAddon addonType="append">{this.props.type}</InputGroupAddon> */}
         </div>
         );
     }
 }
 
 Filter.propTypes = {
-    id: PropTypes.number,
     value: PropTypes.string,
-    filter_category: PropTypes.string,
-    assisted_search_results: PropTypes.arrayOf(PropTypes.object),
+    data: PropTypes.arrayOf(PropTypes.object),
     handleFilterValueChange: PropTypes.func,
     handleFilterValueSelection: PropTypes.func,
-    handleRemoveFilter: PropTypes.func
+    handleRemoveFilter: PropTypes.func,
+    type: PropTypes.string
   };
