@@ -287,10 +287,6 @@ export const exportReportProdLines = (addedLabel, updatedLabel, ignoredLabel,add
     const rows = [];
     var fileLabel = [];  
     fileLabel.push("Name");
-
-
-
-
     var noAdd = [];
     noAdd.push("No " + fileType +" Added ");
     var noUp = [];
@@ -355,9 +351,6 @@ export const exportReportFormulas = (addedLabel, updatedLabel, ignoredLabel,adde
     // fileLabel.push("Product Line Name");
     // fileLabel.push("Comment"); 
     const rows = [];
-
-
-
     var noAdd = [];
     noAdd.push("No " + fileType +" Added ");
     var noUp = [];
@@ -453,7 +446,7 @@ export const exportImportReport = (added_items, updated_items, ignored_items, fi
     var fileTitle = "";
     switch(fileType){
         case ("SKUs"):
-            rows = exportReportIngredients(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items, fileType);
+            rows = exportReportSKUs(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items, fileType);
             fileTitle = "skus";
             break;
         case("Ingredients"):

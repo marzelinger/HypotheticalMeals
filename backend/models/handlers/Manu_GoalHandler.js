@@ -93,6 +93,7 @@ class Manu_GoalHandler{
         try {
             var target_id = req.params.manu_goal_id;
             var user_id = req.params.user_id
+
             let to_return = await Manu_Goal.find({ _id : target_id, user: user_id}).populate('skus');
             var { skus, quantities } = to_return[0];
             let adjust_skus = [];
