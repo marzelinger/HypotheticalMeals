@@ -5,7 +5,7 @@
 
 import React from 'react';
 import ProductLineSkuTable from './ProductLineSkuTable'
-import './../style/SkusPage.css';
+// import './../style/SkusPage.css';
 import ExportSimple from './../components/export/ExportSimple';
 
 
@@ -14,14 +14,14 @@ export default class ProductLineTables extends React.Component {
         super(props);
         this.state = {
             page_title: 'skus',
-            table_columns: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line', 'Quantity'],
-            table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', 'quantity'],
+            table_columns: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line'],
+            table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line'],
             error: null
         };
     }
 
     onSort = (event, sortKey) => {
-        const data = this.state.data;
+        const data = this.props.data;
         data.sort((a,b) => {
             if (/^\d+$/.test(a[sortKey]) && /^\d+$/.test(b[sortKey])) {
                 return parseInt(a[sortKey])-parseInt(b[sortKey]);

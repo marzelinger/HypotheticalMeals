@@ -15,7 +15,7 @@ import {
 } from 'material-ui/Table';
 import * as Constants from './../resources/Constants';
 import Select from 'react-select'
-import './ProductLine.css'
+import '../style/TableStyle.css'
 
 export class ProductLineSkuTable extends React.Component{
     constructor(props) {
@@ -49,7 +49,7 @@ export class ProductLineSkuTable extends React.Component{
     render() {
         let tablebody = (
             this.props.list_items.map((item, index) => 
-            <TableRow className = "rows"
+            <TableRow
               key={item.num + index}
             >
               {this.props.table_properties.map(prop => 
@@ -62,10 +62,11 @@ export class ProductLineSkuTable extends React.Component{
         
 
       return (
-        <div id = "help">
-          <Table id = "help_here">
+        <div>
+          <Table
+          height={'200px'}>
             <TableHeader displaySelectAll={this.state.showCheckboxes} adjustForCheckbox={this.state.showCheckboxes}>
-              <TableRow>
+              <TableRow class= "cols">
                 {this.props.table_properties.map(prop => 
                   <TableHeaderColumn tooltip = {"Sort By " + this.getPropertyLabel(prop)} className = "hoverable" key={prop}>
                     <div onClick={e => this.props.handleSort(e, prop)}>{this.getPropertyLabel(prop)}</div>
