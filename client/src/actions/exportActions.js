@@ -114,4 +114,293 @@ export const exportProdLines = (dataIN, fileTitle)  => {
         let row = rowArray.join(",");
         csvContent += row + "\r\n";
      }); 
-    fileDownload(csvContent, fileTitle+'.csv');}
+    fileDownload(csvContent, fileTitle+'.csv');
+}
+
+
+
+export const exportReportSKUs = (addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items ) => {
+    const rows = [];
+    var fileLabel = [];
+    fileLabel.push("SKU#");
+    fileLabel.push("Name");
+    fileLabel.push("Case UPC");
+    fileLabel.push("Unit UPC");
+    fileLabel.push("Unit size");
+    fileLabel.push("Count per case");
+    fileLabel.push("Product Line Name");
+    fileLabel.push("Comment"); 
+
+    if(added_items.length>0){
+    rows.push(addedLabel);
+    rows.push(fileLabel);
+    }
+    for (let a = 0; a<added_items.length; a++){
+        var curAdd = added_items[a];
+        var addLine = [];
+        addLine.push(curAdd.num);
+        addLine.push(curAdd.name);
+        addLine.push(curAdd.case_cpc);
+        addLine.push(curAdd.unit_upc);
+        addLine.push(curAdd.unit_size);
+        addLine.push(curAdd.cpc);
+        addLine.push(curAdd.prod_line.name);
+        addLine.push(curAdd.comment);
+        rows.push(addLine);
+    }
+
+    if(updated_items.length>0){
+        rows.push(updatedLabel);
+        rows.push(fileLabel);
+        }
+    for (let u = 0; u<updated_items.length; u++){
+        var curUp = updated_items[u];
+        var upLine = [];
+        upLine.push(curUp.num);
+        upLine.push(curUp.name);
+        upLine.push(curUp.case_cpc);
+        upLine.push(curUp.unit_upc);
+        upLine.push(curUp.unit_size);
+        upLine.push(curUp.cpc);
+        upLine.push(curUp.prod_line.name);
+        upLine.push(curUp.comment);
+        rows.push(upLine);
+    }
+
+    if(ignored_items.length>0){
+        rows.push(ignoredLabel);
+        rows.push(fileLabel);
+        }
+    for (let i = 0; i<ignored_items.length; i++){
+        var curIgn = ignored_items[i];
+        var ignLine = [];
+        ignLine.push(curIgn.num);
+        ignLine.push(curIgn.name);
+        ignLine.push(curIgn.case_cpc);
+        ignLine.push(curIgn.unit_upc);
+        ignLine.push(curIgn.unit_size);
+        ignLine.push(curIgn.cpc);
+        ignLine.push(curIgn.prod_line.name);
+        ignLine.push(curIgn.comment);
+        rows.push(ignLine);
+    }
+    return rows;
+}
+
+export const exportReportIngredients = (addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items ) => {
+    const rows = [];
+    var fileLabel = [];
+    fileLabel.push("Ingr#");
+    fileLabel.push("Name");
+    fileLabel.push("Vendor Info");
+    fileLabel.push("Size");
+    fileLabel.push("Cost");
+    fileLabel.push("Comment");
+
+
+    if(added_items.length>0){
+        rows.push(addedLabel);
+        rows.push(fileLabel);
+        }
+    for (let a = 0; a<added_items.length; a++){
+        var curAdd = added_items[a];
+        var addLine = [];
+        addLine.push(curAdd.num);
+        addLine.push(curAdd.name);
+        addLine.push(curAdd.vendor_info);
+        addLine.push(curAdd.pkg_size);
+        addLine.push(curAdd.pkg_cost);
+        addLine.push(curAdd.comment);
+        rows.push(addLine);
+    }
+    if(updated_items.length>0){
+        rows.push(updatedLabel);
+        rows.push(fileLabel);
+        }
+    for (let u = 0; u<updated_items.length; u++){
+        var curUp = updated_items[u];
+        var upLine = [];
+        upLine.push(curUp.num);
+        upLine.push(curUp.name);
+        upLine.push(curUp.vendor_info);
+        upLine.push(curUp.pkg_size);
+        upLine.push(curUp.pkg_cost);
+        upLine.push(curUp.comment);
+        rows.push(upLine);
+    }
+
+    if(ignored_items.length>0){
+        rows.push(ignoredLabel);
+        rows.push(fileLabel);
+        }
+    for (let i = 0; i<ignored_items.length; i++){
+        var curIgn = ignored_items[i];
+        var ignLine = [];
+        ignLine.push(curIgn.num);
+        ignLine.push(curIgn.name);
+        ignLine.push(curIgn.vendor_info);
+        ignLine.push(curIgn.pkg_size);
+        ignLine.push(curIgn.pkg_cost);
+        ignLine.push(curIgn.comment);
+        rows.push(ignLine);
+    }
+    return rows;
+
+}
+
+export const exportReportProdLines = (addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items ) => {
+    const rows = [];
+    var fileLabel = [];  
+    fileLabel.push("Name");
+
+    if(added_items.length>0){
+        rows.push(addedLabel);
+        rows.push(fileLabel);
+    }
+
+    for (let a = 0; a<added_items.length; a++){
+        var curAdd = added_items[a];
+        var addLine = [];
+        addLine.push(curAdd.name);
+        rows.push(addLine);
+    }
+
+    if(updated_items.length>0){
+        rows.push(updatedLabel);
+        rows.push(fileLabel);
+        }
+    for (let u = 0; u<updated_items.length; u++){
+        var curUp = updated_items[u];
+        var upLine = [];
+        upLine.push(curUp.name);
+        rows.push(upLine);
+    }
+
+    if(ignored_items.length>0){
+        rows.push(ignoredLabel);
+        rows.push(fileLabel);
+        }
+    for (let i = 0; i<ignored_items.length; i++){
+        var curIgn = ignored_items[i];
+        var ignLine = [];
+        ignLine.push(curIgn.name);
+        rows.push(ignLine);
+    }
+    return rows;
+
+}
+
+export const exportReportFormulas = (addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items ) => {
+    // var fileLabel = [];
+    // fileLabel.push("Name");
+    // fileLabel.push("Number");
+    // fileLabel.push("Case UPC");
+    // fileLabel.push("Unit UPC");
+    // fileLabel.push("Unit Size");
+    // fileLabel.push("Count per Case");
+    // fileLabel.push("Product Line Name");
+    // fileLabel.push("Comment"); 
+    const rows = [];
+
+    var fileLabel = [];
+    fileLabel.push("SKU#");
+    fileLabel.push("Name");
+    fileLabel.push("Case UPC");
+    fileLabel.push("Unit UPC");
+    fileLabel.push("Unit size");
+    fileLabel.push("Count per case");
+    fileLabel.push("Product Line Name");
+    fileLabel.push("Comment"); 
+
+    if(added_items.length>0){
+    rows.push(addedLabel);
+    rows.push(fileLabel);
+    }
+    for (let a = 0; a<added_items.length; a++){
+        var curAdd = added_items[a];
+        var addLine = [];
+        addLine.push(curAdd.num);
+        addLine.push(curAdd.name);
+        addLine.push(curAdd.case_cpc);
+        addLine.push(curAdd.unit_upc);
+        addLine.push(curAdd.unit_size);
+        addLine.push(curAdd.cpc);
+        addLine.push(curAdd.prod_line.name);
+        addLine.push(curAdd.comment);
+        rows.push(addLine);
+    }
+
+    if(updated_items.length>0){
+        rows.push(updatedLabel);
+        rows.push(fileLabel);
+        }
+    for (let u = 0; u<updated_items.length; u++){
+        var curUp = updated_items[u];
+        var upLine = [];
+        upLine.push(curUp.num);
+        upLine.push(curUp.name);
+        upLine.push(curUp.case_cpc);
+        upLine.push(curUp.unit_upc);
+        upLine.push(curUp.unit_size);
+        upLine.push(curUp.cpc);
+        upLine.push(curUp.prod_line.name);
+        upLine.push(curUp.comment);
+        rows.push(upLine);
+    }
+
+    if(ignored_items.length>0){
+        rows.push(ignoredLabel);
+        rows.push(fileLabel);
+        }
+    for (let i = 0; i<ignored_items.length; i++){
+        var curIgn = ignored_items[i];
+        var ignLine = [];
+        ignLine.push(curIgn.num);
+        ignLine.push(curIgn.name);
+        ignLine.push(curIgn.case_cpc);
+        ignLine.push(curIgn.unit_upc);
+        ignLine.push(curIgn.unit_size);
+        ignLine.push(curIgn.cpc);
+        ignLine.push(curIgn.prod_line.name);
+        ignLine.push(curIgn.comment);
+        rows.push(ignLine);
+    }
+    return rows;
+
+}
+
+export const exportImportReport = (added_items, updated_items, ignored_items, fileType)  => {
+    var addedLabel = [];
+    addedLabel.push("Added "+ fileType);
+    var updatedLabel = [];
+    updatedLabel.push("Updated "+fileType);
+    var ignoredLabel = [];
+    ignoredLabel.push("Ignored "+ fileType);
+    var rows = [];
+    var fileTitle = "";
+    switch(fileType){
+        case ("SKUs"):
+            rows = exportReportIngredients(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items);
+            fileTitle = "skus";
+            break;
+        case("Ingredients"):
+            rows = exportReportIngredients(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items);
+            fileTitle = "ingredients";
+            break;
+        case ("Formulas"):
+            rows = exportReportFormulas(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items);
+            fileTitle = "formulas";
+            break;
+        case ("Product Line"): 
+            rows = exportReportProdLines(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items);
+            fileTitle = "product_lines";
+        break;
+      }
+        
+        let csvContent = "";
+        rows.forEach(function(rowArray){
+            let row = rowArray.join(",");
+            csvContent += row + "\r\n";
+         }); 
+        fileDownload(csvContent, fileTitle+'.csv');
+}

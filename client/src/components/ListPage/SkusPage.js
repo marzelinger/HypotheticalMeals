@@ -60,7 +60,7 @@ export default class ListPage extends React.Component {
             simple: props.simple || false,
             user:'',
             currentPage: 0,
-            pageSize: 2,
+            pageSize: 5,
             pagesCount: 0
         };
         if(localStorage != null){
@@ -98,6 +98,7 @@ export default class ListPage extends React.Component {
             await this.onFilterValueSelection(undefined, this.props.default_ing_filter, 0);
         }
         this.loadDataFromServer();
+        this.setNumberPages();
     }
 
     async componentDidUpdate (prevProps, prevState) {
@@ -108,6 +109,7 @@ export default class ListPage extends React.Component {
             this.loadDataFromServer();
             console.log(this.state.data)
         }
+        this.setNumberPages();
     }
 
     async updateFilterState(prevState) {

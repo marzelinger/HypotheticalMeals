@@ -55,7 +55,7 @@ export default class IngredientsPage extends React.Component {
             modal: false,
             simple: props.simple || false,
             currentPage: 0,
-            pageSize: 2,
+            pageSize: 5,
             pagesCount: 0
 
         };
@@ -83,6 +83,8 @@ export default class IngredientsPage extends React.Component {
         }
         await this.loadDataFromServer();
         await this.updateSkuCounts();
+        this.setNumberPages();
+
     }
 
     async componentDidUpdate (prevProps, prevState) {
@@ -93,6 +95,7 @@ export default class IngredientsPage extends React.Component {
             this.loadDataFromServer();
             console.log(this.state.data)
         }
+        this.setNumberPages();
     }
 
     async updateFilterState(prevState) {
