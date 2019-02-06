@@ -12,6 +12,7 @@ import jwt_decode from "jwt-decode";
 import setAuthToken from "../utils/setAuthToken";
 import GeneralNavBar from "./GeneralNavBar";
 import ManufacturingGoalsPage from "./ManufacturingGoalsPage";
+import ImportPage from "./ImportPage";
 import IngredientsPage from "./ListPage/IngredientsPage";
 import ProductLinePage from "../ProductLine/ProductLinePage";
 import * as Constants from './../resources/Constants';
@@ -85,6 +86,7 @@ class App extends React.Component{
                 <PrivateRoute exact path="/skus" component={SkusPage} />
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingGoalsPage} />
                 <PrivateRoute exact path="/prod_lines" component={ProductLinePage} />
+                <PrivateRoute exact path="/import" component={ImportPage} />
               </Switch>
             </div>
           </Router>
