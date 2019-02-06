@@ -15,6 +15,9 @@ import ManufacturingGoalsPage from "./ManufacturingGoalsPage";
 import IngredientsPage from "./ListPage/IngredientsPage";
 import ProductLinePage from "../ProductLine/ProductLinePage";
 import * as Constants from './../resources/Constants';
+import ImportPage from "./ImportPage"; 
+//import Logout from '../components/auth/Logout';
+
 
 import { setCurrentUser, logoutUser, getAllUsers } from "../actions/authActions";
 import { Provider } from "react-redux";
@@ -84,6 +87,7 @@ class App extends React.Component{
                 <PrivateRoute exact path="/skus" component={SkusPage} />
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingGoalsPage} />
                 <PrivateRoute exact path="/prod_lines" component={ProductLinePage} />
+                <PrivateRoute exact path="/import" component={ImportPage} />
               </Switch>
             </div>
           </Router>

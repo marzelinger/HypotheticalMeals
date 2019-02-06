@@ -14,6 +14,12 @@ import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
 import UserHandler from './models/handlers/UserHandler';
 import FilterHandler from './models/handlers/FilterHandler';
 import { getSecret } from './secrets';
+import CSV_parser from './csv_parser';
+var https = require('https');
+var fs = require('fs');
+var multer = require('multer');
+var upload = multer(({ dest : './tmp/csv'}));
+
 const passport = require("passport");
 const cors = require('cors');
 
@@ -85,6 +91,18 @@ router.get('/manugoals/:user_id/:manu_goal_id/skus', (req, res) => Manu_GoalHand
 router.get('/ingredients_filter/:sort_field/:sku_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
 router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize/:prod_line_ids', (req, res) => FilterHandler.getSkusByFilter(req, res));
 
+router.post('/parseSkus', upload.single('file'), (req, res) => CSV_parser.parseSKUCSV(req, res));
+router.post('/parseProdLines', upload.single('file'), (req, res) => CSV_parser.parseProdLineCSV(req,res));
+router.post('/parseIngredients', upload.single('file'), (req,res) => CSV_parser.parseIngredientsCSV(req, res));
+router.post('/parseFormulas', upload.single('file'), (req, res) => CSV_parser.parseFormulasCSV(req, res));
+router.post('/parseUpdateSkus', (req, res) => CSV_parser.parseUpdateSKU(req, res));
+router.post('/parseUpdateIngredients', (req, res) => CSV_parser.parseUpdateIngredients(req, res));
+
+
+
+
+
+
 // Use our router configuration when we call /api
 app.use('/api', router);
 app.use(passport.initialize());
@@ -111,9 +129,7 @@ router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
 
 
 //pagination router api calls
-router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
 
-router.get('/ingredientspagget', (req, res, next) => PaginationHandler.getIngredientsPag(req, res, next));
 // Gives constant name to long directory home page.
 // const appPage = path.join(__dirname, '../client/build/index.html');
 

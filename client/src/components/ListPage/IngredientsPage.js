@@ -85,6 +85,7 @@ export default class IngredientsPage extends React.Component {
         }
         await this.loadDataFromServer();
         await this.updateSkuCounts();
+        this.setNumberPages();
     }
 
     async componentDidUpdate (prevProps, prevState) {
@@ -92,6 +93,7 @@ export default class IngredientsPage extends React.Component {
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }
+        //this.setNumberPages();
     }
 
     updateDataState = async() => {
