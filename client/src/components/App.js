@@ -67,6 +67,7 @@ class App extends React.Component{
   }
 
   render(){
+    let props = {};
     return(
       <div>
         <Provider store={store}>
