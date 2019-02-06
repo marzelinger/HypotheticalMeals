@@ -1,6 +1,6 @@
 import React from 'react';
 import GeneralNavBar from './GeneralNavBar';
-import ListPage from './ListPage/ListPage'
+import SkusPage from './ListPage/SkusPage'
 import * as Constants from '../resources/Constants';
 // import '../style/PageStyle.css';
 
@@ -10,8 +10,8 @@ export default class GeneralPage extends React.Component {
       <div>
         <GeneralNavBar>
         </GeneralNavBar>
-        <ListPage>
-        </ListPage>
+        <SkusPage>
+        </SkusPage>
       </div>
     );
   }

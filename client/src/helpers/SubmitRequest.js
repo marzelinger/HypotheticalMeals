@@ -6,18 +6,30 @@ import * as Constants from './../resources/Constants';
 
 export default class SubmitRequest{
 
+  static submitQueryString(query) {
+    return fetch(query, { method: 'GET' })
+          .then(data => data.json())
+          .then((res) => {
+            if (!res.success) return { success: res.success, error: res.error };
+            else return{ 
+              success: res.success,
+              data: res.data
+            };
+            
+          });
+  }
+
   static submitGetData = (page_name) => {
     try {
       return fetch('/api/' + page_name, { method: 'GET' })
         .then(data => data.json())
         .then((res) => {
-          if (!res.success) return { error: res.error.message || res.error };
+          if (!res.success) return { success: res.success, error: res.error };
 
           else 
           return ({ 
               success: res.success,
-              data: res.data,
-              loaded: true
+              data: res.data
           });
         });
       }
@@ -34,7 +46,7 @@ export default class SubmitRequest{
         body: JSON.stringify(item),
       }).then(res => res.json()).then((res) => {
         if (!res.success) return { success: res.success, error: res.error };
-        else console.log(res);
+        else return { success: res.success, data: res.data};
       });
     }
     catch (err){
@@ -50,7 +62,7 @@ export default class SubmitRequest{
         body: JSON.stringify(item),
       }).then(res => res.json()).then((res) => {
         if (!res.success) return { success: res.success, error: res.error };
-        else console.log(res);
+        else return { success: res.success, data: res.data};
       });
     }
     catch (err){
@@ -65,6 +77,7 @@ export default class SubmitRequest{
         headers: { 'Content-Type': 'application/json' }
       }).then(res => res.json()).then((res) => {
         if (!res.success) return { success: res.success, error: res.error };
+        else return { success: res.success, data: res.data};
       });
     }
     catch (err){
@@ -160,35 +173,55 @@ export default class SubmitRequest{
   static submitGetFilterData = (route, sort_field, filter_value, keyword, currentPage, pageSize, prod_line) => {
     var path = '/api/' + route + '/' + sort_field + '/' + filter_value + '/' + keyword + '/' + currentPage +'/' + pageSize;
     path += (prod_line === undefined) ? '' : ('/' + prod_line);
-    console.log(path)
     return fetch(path, { method: 'GET' })
       .then(data => data.json())
       .then((res) => {
-        if (!res.success) return { success: res.success, error: res.error.message || res.error};
+        if (!res.success) return { success: res.success, error: res.error };
         else return ({ 
             success: res.success,
-            data: res.data,
-            loaded: true
+            data: res.data
           }
         )
       }
       );
-    }
+  }
+  
+  static submitGetManuGoalsData(user) {
+    return fetch(`/api/manugoals/${user}`, { method: 'GET' })
+      .then(data => data.json())
+      .then((res) => {
+        console.log(res.data);
+        if (!res.success) return { error: res.error } ;
+        else return { 
+          success: res.success,
+          data: res.data
+        };
+        
+      });
+  }
 
+  static submitUpdateGoal(user, id, item) {
+    return fetch(`/api/manugoals/${user}/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(item),
+    }).then(res => res.json()).then((res) => {
+      if (!res.success) return { success: res.success, error: res.error };
+      else return { success: res.success };
+    });
+  }
 
-
-  // static submitSkusByIngredientIDRequest = (item_id) => {
-  //   try {
-  //     return fetch(`/api/skus_by_ingredient/${item_id}`, {
-  //       method: 'GET',
-  //       headers: { 'Content-Type': 'application/json' }
-  //     }).then(res => res.json()).then((res) => {
-  //       if (!res.success) return { success: res.success, error: res.error };
-  //       else return { succes: res.success, data: res.data };
-  //     });
-  //   }
-  //   catch (err){
-  //     return { success: false, error: err };
-  //   }
-  // }
+  static submitGetPopulatedSkuIngredients = (skuId) => {
+    return fetch(`/api/ingredients_by_sku/${skuId}`, { method: 'GET' })
+    .then(data => data.json())
+    .then((res) => {
+      if (!res.success) return { success: res.success, error: res.error };
+      else return {
+        success: res.success,
+        data: res.data,
+        skuData: res.skuData
+      }
+    });
+  }
+  
 }

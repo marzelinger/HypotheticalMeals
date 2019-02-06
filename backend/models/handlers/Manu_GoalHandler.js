@@ -17,8 +17,7 @@ class Manu_GoalHandler{
             }
             let conflict = await Manu_Goal.find({ name : new_name, user: new_user});
             if(conflict.length > 0){
-                console.log("?");
-                return res.json({ success: false, error: 'CONFLICT'});
+                return res.json({ success: false, error: 'Manufacturing Goal ' + new_name + ' exists for user ' + new_user});
             }
 
             manu_goal.name = new_name;
@@ -32,7 +31,6 @@ class Manu_GoalHandler{
         }
     }
 
-    // 
     static async updateManufacturingGoalByID(req, res){
         try {
             var target_id = req.params.manu_goal_id;
@@ -41,6 +39,7 @@ class Manu_GoalHandler{
             }
             var new_skus = req.body.skus;
             var new_quantities = req.body.quantities
+            this.checkForZeroQtys(new_skus, new_quantities);
             let updated_manu_goal = await Manu_Goal.findOneAndUpdate({_id : target_id},
                 {$set: {skus: new_skus, quantities: new_quantities}}, {upsert: true, new: true});
             if(!updated_manu_goal){
@@ -55,6 +54,15 @@ class Manu_GoalHandler{
         catch (err) {
             return res.json({ success: false, error: err});
         }
+    }
+
+    static checkForZeroQtys(new_items, new_quantities) {
+        var toRemove = [];
+        new_quantities.map((qty, index) => {if (parseInt(qty) <= 0) toRemove.push(index)});
+        toRemove.map(ind => {
+            new_items.splice(ind, 1);
+            new_quantities.splice(ind, 1);
+        });
     }
 
     static async getAllManufacturingGoals(req, res){

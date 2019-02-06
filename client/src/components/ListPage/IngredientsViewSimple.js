@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import PageTable from './PageTable'
 import SubmitRequest from '../../helpers/SubmitRequest'
 import * as Constants from '../../resources/Constants';
-import './../../style/ListPage.css';
+import './../../style/SkusPage.css';
 import DataStore from './../../helpers/DataStore'
 
 

@@ -14,7 +14,7 @@ import {
     Alert,
     Modal} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
-import './../../style/ListPage.css';
+import './../../style/SkusPage.css';
 import DependencyReport from "../export/DependencyReport";
 import ExportSimple from '../export/ExportSimple';
 import DataStore from './../../helpers/DataStore'
@@ -51,7 +51,6 @@ export default class IngredientsPage extends React.Component {
             data: [],
             exportData: [],
             sort_field: '_',
-            loaded: false,
             error: null,
             modal: false,
             simple: props.simple || false,
@@ -63,6 +62,7 @@ export default class IngredientsPage extends React.Component {
         this.toggleModal = this.toggleModal.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onKeywordSubmit = this.onKeywordSubmit.bind(this);
+        this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
                 this.handlePageClick=this.handlePageClick.bind(this);
                 this.setNumberPages();
@@ -154,13 +154,10 @@ export default class IngredientsPage extends React.Component {
 
         if (res === undefined || !res.success) {
             res.data = [];
-            res.loaded = true;
             resALL.data = [];
-            resALL.loaded = true;
         }
         this.setState({
             data: res.data,
-            loaded: res.loaded,
             exportData: resALL.data
         })
     }

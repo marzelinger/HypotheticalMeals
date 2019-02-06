@@ -98,12 +98,15 @@ export default class ItemSearchInput extends React.Component {
     showResults = (state) => {
         if (state.focus){
             return (<ListGroup>
-                {this.state.assisted_search_results.map(res => 
-                <ListGroupItem
-                    key={res.name}
-                    tag="button"
-                    onMouseDown={(e) => this.onFilterValueSelection(e, res)}
-                >{res.name}</ListGroupItem>
+                {this.state.assisted_search_results.map((res, index) => {
+                    if (index < 5) return (
+                        <ListGroupItem
+                            key={res.name}
+                            tag="button"
+                            onMouseDown={(e) => this.onFilterValueSelection(e, res)}
+                        >{res.name}</ListGroupItem>
+                    )
+                }
             )}
             </ListGroup>
             )
@@ -113,6 +116,7 @@ export default class ItemSearchInput extends React.Component {
         }
         
     }
+    
 
     render() {
         return (
