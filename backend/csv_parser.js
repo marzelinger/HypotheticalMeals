@@ -142,14 +142,14 @@ export default class CSV_parser{
                 //TODO check if any of the fields are null, if they are and they're autogenerable, generate, if not return an error
                 
                 // DATA VALIDATION
-                if(obj["Name"].length < 1 || obj["Name"].length > 32) return res.json({success: false, badData1: i});
+                if(obj["Name"].length < 1 || obj["Name"].length > 32) return res.json({success: false, badData: i});
 
                 var isNum1 = /^\d+$/.test(obj["SKU#"]);
-                if(!isNum1) return res.json({ success: false, badData2: i});
+                if(!isNum1) return res.json({ success: false, badData: i});
 
-                if(obj["Case UPC"].length != 12) return res.json({ success: false, badData3: i});
+                if(obj["Case UPC"].length != 12) return res.json({ success: false, badData: i});
                 var isNum2 = /^\d+$/.test(obj["Unit UPC"]);
-                if(!isNum2) return res.json({ success: false, badData3: i});
+                if(!isNum2) return res.json({ success: false, badData: i});
                 var firstChar = obj["Case UPC"].substring(0,1);
                 if(firstChar != '0' && firstChar != '1' && firstChar !='6' && firstChar != '7' && firstChar !='8' && firstChar != '9') return res.json({ success: false, badData: i});
                 
