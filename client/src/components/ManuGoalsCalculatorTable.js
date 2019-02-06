@@ -2,7 +2,17 @@
 import React from 'react';
 import ExportSimple from './export/ExportSimple';
 import PropTypes from 'prop-types';
-import { Button, Table, ModalBody, ModalFooter } from 'reactstrap';
+import {
+    Table,
+    TableBody,
+    TableFooter,
+    TableHeader,
+    TableHeaderColumn,
+    TableRow,
+    TableRowColumn,
+  } from 'material-ui/Table';
+import { Button, ModalBody, ModalFooter } from 'reactstrap';
+import '../style/printing.css'
 const html2canvas = require('html2canvas');
 const jsPDF = require('jspdf');
 
@@ -12,9 +22,20 @@ export default class ManuGoalsCalculatorTable extends React.Component {
         this.state = {
             data: props.data,
             page_title: 'calculator',
-            table_columns: ['Name', 'Number', 'Vendor Information', 'Package Size', 'Package Cost', 'SKUs', 'Quantity in Goal'],
-            table_properties: ['name', 'num', 'vendor_info', 'pkg_size', 'pkg_cost', 'skus', 'goalQuantity']
+            table_columns: ['Name', 'Number', 'Vendor Information', 'Package Size', 'Package Cost', 'Quantity in Goal'],
+            table_properties: ['name', 'num', 'vendor_info', 'pkg_size', 'pkg_cost', 'goalQuantity']
         };
+        this.print = this.print.bind(this);
+    }
+
+    print() {
+        var content = document.getElementById('printarea');
+        var pri = document.getElementById('ifmcontentstoprint').contentWindow;
+        pri.document.open();
+        pri.document.write(content.innerHTML);
+        pri.document.close();
+        pri.focus();
+        pri.print();
     }
 
     getPropertyLabel = (col) => {
@@ -22,7 +43,7 @@ export default class ManuGoalsCalculatorTable extends React.Component {
       }
     
     exportPDF = async () => {
-        html2canvas(document.querySelector("#table"))
+        html2canvas(document.querySelector("#table"),{width: 750, height: 1050})
         .then((canvas) => {
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF();
@@ -35,35 +56,47 @@ export default class ManuGoalsCalculatorTable extends React.Component {
         console.log(this.state.data)
         return (
             <div>
-            <ModalBody>
+            <iframe id="ifmcontentstoprint" style={{
+                        height: '0px',
+                        width: '0px',
+                        position: 'absolute'
+                    }}></iframe>  
+            <ModalBody id = "printarea">
                 <div id = "table">
-                    <Table>
-                        <thead>
-                        <tr>
+                    <Table selectable={this.state.selectable}
+                        multiSelectable={this.state.multiSelectable}
+                        onRowSelection = {(res) => this.props.handleSelect(res)}
+                         >
+                    <TableHeader
+                        displaySelectAll={false}
+                        adjustForCheckbox={this.state.selectable}
+                        enableSelectAll={false}
+                    >
+                        <TableRow>
                             {this.state.table_properties.map(prop => 
-                            <th key={prop}>
+                            <TableHeaderColumn key={prop}>
                                 {this.getPropertyLabel(prop)}
-                            </th>
+                            </TableHeaderColumn>
                             )}
-                        </tr>
-                        </thead>
-                        <tbody>
+                        </TableRow>
+                        </TableHeader>
+                        <TableBody>
                         {this.state.data.map((item, index) => 
-                            <tr key={item.num + index}>
+                            <TableRow displayRowCheckbox = {false} key={item.num + index}>
                             {this.state.table_properties.map(prop => 
-                                <td key={prop}>
+                                <TableRowColumn key={prop}>
                                 {item[prop]}
-                                </td>
+                                </TableRowColumn>
                             )}
-                            </tr>
+                            </TableRow>
                         )}
-                        </tbody>
+                        </TableBody>
                     </Table>
                 </div>
             </ModalBody>
             <ModalFooter>
-                <ExportSimple name = {'Export CSV'} data = {this.state.data} fileTitle = {this.state.page_title}/>
-                <Button onClick = {() => this.exportPDF()}>Export PDF</Button>
+                <ExportSimple name = {'Export'} data = {this.state.data} fileTitle = {this.state.page_title}/>
+                <Button onClick = {() => this.print()}>Export PDF</Button>
             </ModalFooter>                 
             </div>
         );

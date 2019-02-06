@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import calculatorButton from '../resources/calculator.png';
 import ManuGoalsCalculatorTable from './ManuGoalsCalculatorTable';
 import SubmitRequest from './../helpers/SubmitRequest';
@@ -75,9 +75,9 @@ export default class ManufacturingGoalCalculator extends React.Component{
     return (
       <div>
         <img className = "hoverable" id = "button" src={calculatorButton} onClick={this.toggle}></img>
-        <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup">
+        <Modal size = {'lg'} isOpen={this.state.modal} toggle={this.toggle} id="popup">
           <ModalHeader toggle={this.toggle}>Calculator Results</ModalHeader>
-          <ModalBody>
+          <ModalBody class = "modal">
               <ManuGoalsCalculatorTable data = {this.state.ingredients_info}></ManuGoalsCalculatorTable>
           </ModalBody>
         </Modal>

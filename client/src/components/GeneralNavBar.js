@@ -32,7 +32,6 @@ export default class GeneralNavBar extends React.Component {
         <GeneralMenu></GeneralMenu>
         <NavbarBrand id = "title" href="/">{Constants.TITLE}</NavbarBrand>
         <PrivateRoute exact path="/register" component={Register} />
-        {/* <UserMenu id = "usermenu"></UserMenu> */}
         <Logout id="usermenu"></Logout>
       </Navbar>
     );
