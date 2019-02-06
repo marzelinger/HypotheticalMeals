@@ -381,7 +381,7 @@ export default class ImportPage extends React.Component {
     }
 
     handleExport = () => {
-        
+
     }
 
     resetState = () => {
@@ -497,11 +497,11 @@ export default class ImportPage extends React.Component {
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.ingr_dependency} toggle={this.onDismissDependency}>
-                    The Ingredient specified in row {this.state.dependency_row+1} does not exist
+                    The entry specified in row {this.state.dependency_row+1} does not exist
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.incompleteEntry} toggle={this.onDismissBadData}>
-                    The Ingredient specified in row {this.state.badDataRow+1} does not exist
+                    The entry specified in row {this.state.badDataRow+1} does not exist
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.badData} toggle={this.onDismissBadData}>
