@@ -1,92 +1,18 @@
 var fileDownload = require('js-file-download');
 
-export const exportSimpleData = (dataIN, fileTitle) => dispatch => {
-
-    console.log("fileTitle: "+fileTitle);
-    console.log("fileTitle.length: "+fileTitle.length);
-};
-
-//Users shall be able to create a tabular report showing a 
-//set of ingredients (the selection of which follows the 
-//same rules as the “view options” described in req 2.1.2). 
-//For each ingredient, all SKUs made with the ingredient shall be shown. 
-export const exportDependencyReport = (ingredients) => {
-    var fileTitle = "Ingredient_Dependency_Report";
-    var count = ingredients.length;
-    var finalData = [];
-
-    //to start let's simply show the ingredient followed by it's SKUs
-    //ie
-    //ingredient
-    //sku
-    //sku
-    //sku
-    //ingredient
-    //sku
-    //sku
-    //sku
-    for(let ing = 0; ing<count ; ing++){
-        var curData = ingredients[ing];
-        var dataLine = [];
-        dataLine.push(curData.num);
-        dataLine.push(curData.name);
-        dataLine.push(curData.vendor_info);
-        dataLine.push(curData.pkg_size);
-        dataLine.push(curData.pkg_cost);
-        dataLine.push(curData.comment);
-        dataLine.push("\r\n");
-        finalData.push(dataLine);
-        var ingSKUS = curData.skus.length;
-        console.log("this is the dataline: "+dataLine);
-        for(let s = 0; s<ingSKUS; s++){
-            //need to make a call to the db for each
-            //SKU number
-            //router.get('/skus/:sku_id', (req, res) => SkuHandler.getSkuByID(req, res));
-            console.log("in the double for loop of skus s: "+ s);
-            console.log('this is the skusid: '+ curData.skus[s]);
-            fetch('/api/skus/'+curData.skus[s], { method: 'GET' })
-            .then(data => data.json())
-            .then((res) => {
-            if (!res.success) this.setState({ error: res.error });
-            else 
-            console.log("this is the sku obj.data: "+ res.data.data);
-            var skuData = res.data;
-            //make the sku row
-            var skuLine = [];
-            skuLine.push(skuData.num);
-            console.log("this is the sku num: "+ skuData.num);
-
-            skuLine.push(skuData.name);
-            console.log("this is the sku name: "+ skuData.name);
-
-            skuLine.push(skuData.case_cpc);
-            console.log("this is the sku case-cpc: "+ skuData.case_cpc);
-
-            skuLine.push(skuData.unit_upc);
-            console.log("this is the sku unitupc: "+ skuData.unit_upc);
-
-            skuLine.push(skuData.unit_size);
-
-            skuLine.push(skuData.cpc);
-
-            skuLine.push(skuData.prod_line);
-
-            skuLine.push(skuData.comment);
-            skuLine.push("\r\n");
-            finalData.push(skuLine);
-            });
-
-        }
-        finalData.push("\r\n");
-    }    
-    fileDownload(finalData, fileTitle+'.csv');
-
-};
-
-
- export const exportSKUS = (dataIN, fileTitle)  => {
+export const exportSKUS = (dataIN, fileTitle)  => {
     var count = dataIN.length;
-    var finalData = [];
+    const rows = [];
+    var label = [];
+    label.push("SKU#");
+    label.push("Name");
+    label.push("Case UPC");
+    label.push("Unit UPC");
+    label.push("Unit size");
+    label.push("Count per case");
+    label.push("Product Line Name");
+    label.push("Comment");
+    rows.push(label);
     for(let i = 0; i<count ; i++){
         var curData = dataIN[i];
         var dataLine = [];
@@ -96,24 +22,29 @@ export const exportDependencyReport = (ingredients) => {
         dataLine.push(curData.unit_upc);
         dataLine.push(curData.unit_size);
         dataLine.push(curData.cpc);
-        dataLine.push(curData.prod_line);
+        dataLine.push(curData.prod_line.name);
         dataLine.push(curData.comment);
-        dataLine.push("\r\n");
-        finalData[i] = dataLine;
+        rows.push(dataLine);
     }    
-    fileDownload(finalData, fileTitle+'.csv');
+    let csvContent = "";
+    rows.forEach(function(rowArray){
+        let row = rowArray.join(",");
+        csvContent += row + "\r\n";
+     }); 
+    fileDownload(csvContent, fileTitle+'.csv');
 }
 
 export const exportIngredients = (dataIN, fileTitle)  => {
     var count = dataIN.length;
-    var finalData = [];
-    console.log("this is the dataIN: "+dataIN);
-    console.log("this is the dataIN[0]: "+dataIN[0]);
-    console.log("this is the dataIN[0].num: "+dataIN[0].num);
-    console.log("this is the ing stringify: "+ JSON.stringify(dataIN[0]));
-
-
-
+    const rows = [];
+    var label = [];
+    label.push("Ingr#");
+    label.push("Name");
+    label.push("Vendor Info");
+    label.push("Size");
+    label.push("Cost");
+    label.push("Comment");
+    rows.push(label);
     for(let i = 0; i<count ; i++){
         var curData = dataIN[i];
         var dataLine = [];
@@ -123,15 +54,29 @@ export const exportIngredients = (dataIN, fileTitle)  => {
         dataLine.push(curData.pkg_size);
         dataLine.push(curData.pkg_cost);
         dataLine.push(curData.comment);
-        dataLine.push("\r\n");
-        finalData[i] = dataLine;
+        rows.push(dataLine);
     }    
-    fileDownload(finalData, fileTitle+'.csv');
+    let csvContent = "";
+    rows.forEach(function(rowArray){
+        let row = rowArray.join(",");
+        csvContent += row + "\r\n";
+     }); 
+    fileDownload(csvContent, fileTitle+'.csv');
+
 }
 
 export const exportCalculator = (dataIN, fileTitle) => {
     var count = dataIN.length;
-    var finalData = [];
+    const rows = [];
+    var label = [];
+    label.push("Number");
+    label.push("Name");
+    label.push("Vendor Info");
+    label.push("Package Size");
+    label.push("Package Cost");
+    label.push("Comment");
+    label.push("Goal Quantity");
+    rows.push(label);
     for(let i = 0; i<count ; i++){
         var currData = dataIN[i];
         var dataLine = [];
@@ -142,23 +87,393 @@ export const exportCalculator = (dataIN, fileTitle) => {
         dataLine.push(currData.pkg_cost);
         dataLine.push(currData.comment);
         dataLine.push(currData.goalQuantity);
-        dataLine.push("\r\n");
-        finalData[i] = dataLine;
+        rows.push(dataLine);
     }    
-    fileDownload(finalData, fileTitle+'.csv');
+    let csvContent = "";
+    rows.forEach(function(rowArray){
+        let row = rowArray.join(",");
+        csvContent += row + "\r\n";
+     }); 
+    fileDownload(csvContent, fileTitle+'.csv');
 }
 
 export const exportProdLines = (dataIN, fileTitle)  => {
     var count = dataIN.length;
-    var finalData = [];
+    const rows = [];
+    var label = [];
+    label.push("Name");
+    rows.push(label);
     for(let i = 0; i<count ; i++){
-        console.log("here in the for loop");
         var curData = dataIN[i];
-        console.log(curData);
         var dataLine = [];
         dataLine.push(curData.name);
-        dataLine.push("\r\n");
-        finalData[i] = dataLine;
+        rows.push(dataLine);
     }    
-    fileDownload(finalData, fileTitle+'.csv');
+    let csvContent = "";
+    rows.forEach(function(rowArray){
+        let row = rowArray.join(",");
+        csvContent += row + "\r\n";
+     }); 
+    fileDownload(csvContent, fileTitle+'.csv');
+}
+
+
+
+export const exportReportSKUs = (addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items, fileType ) => {
+    const rows = [];
+    var fileLabel = [];
+    var noAdd = [];
+    noAdd.push("No " + fileType +" Added ");
+    var noUp = [];
+    noUp.push("No " + fileType +" Updated ");
+    var noIgn = [];
+    noIgn.push("No " + fileType +" Ignored ");
+
+
+    fileLabel.push("SKU#");
+    fileLabel.push("Name");
+    fileLabel.push("Case UPC");
+    fileLabel.push("Unit UPC");
+    fileLabel.push("Unit size");
+    fileLabel.push("Count per case");
+    fileLabel.push("Product Line Name");
+    fileLabel.push("Comment"); 
+
+    if(added_items.length>0){
+    rows.push(addedLabel);
+    rows.push(fileLabel);
+    }
+    else{
+        rows.push(noAdd);
+    }
+    for (let a = 0; a<added_items.length; a++){
+        var curAdd = added_items[a];
+        var addLine = [];
+        addLine.push(curAdd.num);
+        addLine.push(curAdd.name);
+        addLine.push(curAdd.case_cpc);
+        addLine.push(curAdd.unit_upc);
+        addLine.push(curAdd.unit_size);
+        addLine.push(curAdd.cpc);
+        addLine.push(curAdd.prod_line.name);
+        addLine.push(curAdd.comment);
+        rows.push(addLine);
+    }
+
+    if(updated_items.length>0){
+        rows.push(updatedLabel);
+        rows.push(fileLabel);
+        }
+        else{
+            rows.push(noUp);
+        }
+    for (let u = 0; u<updated_items.length; u++){
+        var curUp = updated_items[u];
+        var upLine = [];
+        upLine.push(curUp.num);
+        upLine.push(curUp.name);
+        upLine.push(curUp.case_cpc);
+        upLine.push(curUp.unit_upc);
+        upLine.push(curUp.unit_size);
+        upLine.push(curUp.cpc);
+        upLine.push(curUp.prod_line.name);
+        upLine.push(curUp.comment);
+        rows.push(upLine);
+    }
+
+    if(ignored_items.length>0){
+        rows.push(ignoredLabel);
+        rows.push(fileLabel);
+        }
+        else{
+            rows.push(noIgn);
+        }
+    for (let i = 0; i<ignored_items.length; i++){
+        var curIgn = ignored_items[i];
+        var ignLine = [];
+        ignLine.push(curIgn.num);
+        ignLine.push(curIgn.name);
+        ignLine.push(curIgn.case_cpc);
+        ignLine.push(curIgn.unit_upc);
+        ignLine.push(curIgn.unit_size);
+        ignLine.push(curIgn.cpc);
+        ignLine.push(curIgn.prod_line.name);
+        ignLine.push(curIgn.comment);
+        rows.push(ignLine);
+    }
+    return rows;
+}
+
+export const exportReportIngredients = (addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items , fileType) => {
+    const rows = [];
+    var fileLabel = [];
+
+
+    var noAdd = [];
+    noAdd.push("No " + fileType +" Added ");
+    var noUp = [];
+    noUp.push("No " + fileType +" Updated ");
+    var noIgn = [];
+    noIgn.push("No " + fileType +" Ignored ");
+
+    fileLabel.push("Ingr#");
+    fileLabel.push("Name");
+    fileLabel.push("Vendor Info");
+    fileLabel.push("Size");
+    fileLabel.push("Cost");
+    fileLabel.push("Comment");
+
+
+    if(added_items.length>0){
+        rows.push(addedLabel);
+        rows.push(fileLabel);
+        }
+        else{
+            rows.push(noAdd);
+        }
+    for (let a = 0; a<added_items.length; a++){
+        var curAdd = added_items[a];
+        var addLine = [];
+        addLine.push(curAdd.num);
+        addLine.push(curAdd.name);
+        addLine.push(curAdd.vendor_info);
+        addLine.push(curAdd.pkg_size);
+        addLine.push(curAdd.pkg_cost);
+        addLine.push(curAdd.comment);
+        rows.push(addLine);
+    }
+    if(updated_items.length>0){
+        rows.push(updatedLabel);
+        rows.push(fileLabel);
+        }
+        else{
+            rows.push(noUp);
+        }
+    for (let u = 0; u<updated_items.length; u++){
+        var curUp = updated_items[u];
+        var upLine = [];
+        upLine.push(curUp.num);
+        upLine.push(curUp.name);
+        upLine.push(curUp.vendor_info);
+        upLine.push(curUp.pkg_size);
+        upLine.push(curUp.pkg_cost);
+        upLine.push(curUp.comment);
+        rows.push(upLine);
+    }
+
+    if(ignored_items.length>0){
+        rows.push(ignoredLabel);
+        rows.push(fileLabel);
+        }
+        else{
+            rows.push(noIgn);
+        }
+    for (let i = 0; i<ignored_items.length; i++){
+        var curIgn = ignored_items[i];
+        var ignLine = [];
+        ignLine.push(curIgn.num);
+        ignLine.push(curIgn.name);
+        ignLine.push(curIgn.vendor_info);
+        ignLine.push(curIgn.pkg_size);
+        ignLine.push(curIgn.pkg_cost);
+        ignLine.push(curIgn.comment);
+        rows.push(ignLine);
+    }
+    return rows;
+
+}
+
+export const exportReportProdLines = (addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items , fileType) => {
+    const rows = [];
+    var fileLabel = [];  
+    fileLabel.push("Name");
+
+
+
+
+    var noAdd = [];
+    noAdd.push("No " + fileType +" Added ");
+    var noUp = [];
+    noUp.push("No " + fileType +" Updated ");
+    var noIgn = [];
+    noIgn.push("No " + fileType +" Ignored ");
+
+    if(added_items.length>0){
+        rows.push(addedLabel);
+        rows.push(fileLabel);
+    }
+    else{
+        rows.push(noAdd);
+    }
+
+    for (let a = 0; a<added_items.length; a++){
+        var curAdd = added_items[a];
+        var addLine = [];
+        addLine.push(curAdd.name);
+        rows.push(addLine);
+    }
+
+    if(updated_items.length>0){
+        rows.push(updatedLabel);
+        rows.push(fileLabel);
+        }
+        else{
+            rows.push(noUp);
+        }
+    for (let u = 0; u<updated_items.length; u++){
+        var curUp = updated_items[u];
+        var upLine = [];
+        upLine.push(curUp.name);
+        rows.push(upLine);
+    }
+
+    if(ignored_items.length>0){
+        rows.push(ignoredLabel);
+        rows.push(fileLabel);
+        }
+        else{
+            rows.push(noIgn);
+        }
+    for (let i = 0; i<ignored_items.length; i++){
+        var curIgn = ignored_items[i];
+        var ignLine = [];
+        ignLine.push(curIgn.name);
+        rows.push(ignLine);
+    }
+    return rows;
+
+}
+
+export const exportReportFormulas = (addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items , fileType) => {
+    // var fileLabel = [];
+    // fileLabel.push("Name");
+    // fileLabel.push("Number");
+    // fileLabel.push("Case UPC");
+    // fileLabel.push("Unit UPC");
+    // fileLabel.push("Unit Size");
+    // fileLabel.push("Count per Case");
+    // fileLabel.push("Product Line Name");
+    // fileLabel.push("Comment"); 
+    const rows = [];
+
+
+
+    var noAdd = [];
+    noAdd.push("No " + fileType +" Added ");
+    var noUp = [];
+    noUp.push("No " + fileType +" Updated ");
+    var noIgn = [];
+    noIgn.push("No " + fileType +" Ignored ");
+
+    var fileLabel = [];
+    fileLabel.push("SKU#");
+    fileLabel.push("Name");
+    fileLabel.push("Case UPC");
+    fileLabel.push("Unit UPC");
+    fileLabel.push("Unit size");
+    fileLabel.push("Count per case");
+    fileLabel.push("Product Line Name");
+    fileLabel.push("Comment"); 
+
+    if(added_items.length>0){
+    rows.push(addedLabel);
+    rows.push(fileLabel);
+    }
+    else{
+        rows.push(noAdd);
+    }
+    for (let a = 0; a<added_items.length; a++){
+        var curAdd = added_items[a];
+        var addLine = [];
+        addLine.push(curAdd.num);
+        addLine.push(curAdd.name);
+        addLine.push(curAdd.case_cpc);
+        addLine.push(curAdd.unit_upc);
+        addLine.push(curAdd.unit_size);
+        addLine.push(curAdd.cpc);
+        addLine.push(curAdd.prod_line.name);
+        addLine.push(curAdd.comment);
+        rows.push(addLine);
+    }
+
+    if(updated_items.length>0){
+        rows.push(updatedLabel);
+        rows.push(fileLabel);
+        }
+        else{
+            rows.push(noUp);
+        }
+    for (let u = 0; u<updated_items.length; u++){
+        var curUp = updated_items[u];
+        var upLine = [];
+        upLine.push(curUp.num);
+        upLine.push(curUp.name);
+        upLine.push(curUp.case_cpc);
+        upLine.push(curUp.unit_upc);
+        upLine.push(curUp.unit_size);
+        upLine.push(curUp.cpc);
+        upLine.push(curUp.prod_line.name);
+        upLine.push(curUp.comment);
+        rows.push(upLine);
+    }
+
+    if(ignored_items.length>0){
+        rows.push(ignoredLabel);
+        rows.push(fileLabel);
+        }
+        else{
+            rows.push(noIgn);
+        }
+    for (let i = 0; i<ignored_items.length; i++){
+        var curIgn = ignored_items[i];
+        var ignLine = [];
+        ignLine.push(curIgn.num);
+        ignLine.push(curIgn.name);
+        ignLine.push(curIgn.case_cpc);
+        ignLine.push(curIgn.unit_upc);
+        ignLine.push(curIgn.unit_size);
+        ignLine.push(curIgn.cpc);
+        ignLine.push(curIgn.prod_line.name);
+        ignLine.push(curIgn.comment);
+        rows.push(ignLine);
+    }
+    return rows;
+
+}
+
+export const exportImportReport = (added_items, updated_items, ignored_items, fileType)  => {
+    console.log("in this exportImport file");
+    var addedLabel = [];
+    addedLabel.push("Added "+ fileType);
+    var updatedLabel = [];
+    updatedLabel.push("Updated "+fileType);
+    var ignoredLabel = [];
+    ignoredLabel.push("Ignored "+ fileType);
+    var rows = [];
+    var fileTitle = "";
+    switch(fileType){
+        case ("SKUs"):
+            rows = exportReportSKUs(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items, fileType);
+            fileTitle = "skus";
+            break;
+        case("Ingredients"):
+            rows = exportReportIngredients(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items, fileType);
+            fileTitle = "ingredients";
+            break;
+        case ("Formulas"):
+            rows = exportReportFormulas(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items, fileType);
+            fileTitle = "formulas";
+            break;
+        case ("Product Line"): 
+            rows = exportReportProdLines(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items, fileType);
+            fileTitle = "product_lines";
+        break;
+      }
+        
+        let csvContent = "";
+        rows.forEach(function(rowArray){
+            let row = rowArray.join(",");
+            csvContent += row + "\r\n";
+         }); 
+        fileDownload(csvContent, fileTitle+'.csv');
 }

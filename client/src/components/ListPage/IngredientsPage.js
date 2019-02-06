@@ -66,8 +66,8 @@ export default class IngredientsPage extends React.Component {
         this.onFilterValueChange = this.onFilterValueChange.bind(this);
         this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
-                this.handlePageClick=this.handlePageClick.bind(this);
-                this.setNumberPages();
+        this.handlePageClick=this.handlePageClick.bind(this);
+        this.setNumberPages();
 
 
     }
@@ -85,6 +85,8 @@ export default class IngredientsPage extends React.Component {
         }
         await this.loadDataFromServer();
         await this.updateSkuCounts();
+        this.setNumberPages();
+
     }
 
     async componentDidUpdate (prevProps, prevState) {
@@ -92,6 +94,7 @@ export default class IngredientsPage extends React.Component {
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }
+        //this.setNumberPages();
     }
 
     updateDataState = async() => {
@@ -278,10 +281,6 @@ export default class IngredientsPage extends React.Component {
     };
 
     render() {
-
-        console.log("This is the curpage value; "+this.state.currentPage);
-         console.log("this is the pagesCount: " +this.state.pagesCount); 
-        
         return (
             <div className="list-page">
                 <div>
@@ -319,11 +318,9 @@ export default class IngredientsPage extends React.Component {
                         value={this.state.error}
                         color='danger'/>
                 </Modal>   
-
-
                 <div className = "pagination-wrapper">
-                    <Pagination aria-label="Page navigation example">
-                    <div>
+                <Pagination aria-label="Page navigation example">
+                <div>
                     <PaginationItem disabled={this.state.currentPage <= 0}>
                         <PaginationLink
                             onClick={e => this.handlePageClick(e, this.state.currentPage - 1)}

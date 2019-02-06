@@ -6,8 +6,11 @@ import FlatButton from 'material-ui/FlatButton';
 import Person from 'material-ui/svg-icons/social/person-outline';
 import '../../style/GeneralMenu.css';
 
+import { Provider } from "react-redux";
+
 class Logout extends Component {
   onLogoutClick = e => {
+    console.log("this is in the onLogoutClcik");
     e.preventDefault();
     this.props.logoutUser();
   };
@@ -26,6 +29,8 @@ return (
     );
   }
 }
+
+
 Logout.propTypes = {
   logoutUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired
@@ -34,6 +39,7 @@ Logout.propTypes = {
 const mapStateToProps = state => ({
   auth: state.auth
 });
+
 
 export default connect(
   mapStateToProps,
