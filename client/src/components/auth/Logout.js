@@ -11,7 +11,7 @@ class Logout extends Component {
   onLogoutClick = e => {
     console.log("this is in the onLogoutClcik");
     e.preventDefault();
-    logoutUser();
+    this.props.logoutUser();
   };
 
 render() {
