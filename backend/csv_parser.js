@@ -1,6 +1,7 @@
 import Prod_Line from './models/databases/prod_line';
 import SKU from './models/databases/sku';
 import Ingredient from './models/databases/ingredient';
+import ItemStore from './../client/src/helpers/ItemStore';
 
 const csv = require('csvtojson');
 const fs = require('fs');
@@ -131,10 +132,12 @@ export default class CSV_parser{
             for(var i = 0; i < jsonArray.length; i++){
                 var obj = jsonArray[i];
                 //Validate required fields
-                if(!obj["Name"] || !obj["SKU#"] || !obj["Case UPC"] || !obj["Unit UPC"] ||
+                if(!obj["Name"] || !obj["Case UPC"] || !obj["Unit UPC"] ||
                    !obj["Unit size"] || !obj["Count per case"] || !obj["Product Line Name"]) {
                        return res.json({ success: false, incompleteEntry: i})
                 }
+
+                if(obj["SKU#"] == "\"\"" || !obj["SKU#"]) obj["SKU#"] = ItemStore.getUniqueNumber(all_skus);
 
                 //TODO check if any of the fields are null, if they are and they're autogenerable, generate, if not return an error
                 
@@ -388,7 +391,8 @@ export default class CSV_parser{
 
                 // TODO: autogenerate any fields that are "" if autogenerable
 
-                if(!obj["Name"] || !obj["Ingr#"] || !obj["Size"] || !obj["Cost"]) return res.json({ success: false, incompleteEntry: i});
+                if(!obj["Name"] || !obj["Size"] || !obj["Cost"]) return res.json({ success: false, incompleteEntry: i});
+                if(obj["Ingr#"] == "\"\"" || !obj["Ingr#"]) obj["Ingr#"] = ItemStore.getUniqueNumber(all_ingredients);
 
                 var isNum = /^\d+$/.test(obj["Ingr#"]);
                 if(!isNum) return res.json({ success: false, badData: i});

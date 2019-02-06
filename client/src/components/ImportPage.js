@@ -117,6 +117,7 @@ export default class ImportPage extends React.Component {
             axios.post(endpoint, fd)
                 //.then(data => data.json())
                 .then((res) => {
+                    console.log(res);
                     // Setting state for a duplicate
                     if(typeof res.data.duplicate != 'undefined'){
                         this.setState({
