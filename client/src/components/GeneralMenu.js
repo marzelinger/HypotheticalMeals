@@ -49,7 +49,7 @@ export default class GeneralMenu extends React.Component {
           {
             currentUserIsAdmin().isValid ? 
             (
-              <Link to="/prod_lines" >
+              <Link to="/register" >
                 <MenuItem style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Register New Users'}></MenuItem>
               </Link>
             )
