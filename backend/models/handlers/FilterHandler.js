@@ -51,6 +51,7 @@ class FilterHandler{
 
     static async getSkusByFilter(req, res){
         try{
+            console.log(req);
             var and_query = [];
             var ids = [];
             var sort_field = req.params.sort_field;

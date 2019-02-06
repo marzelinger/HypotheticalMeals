@@ -28,15 +28,13 @@ export default class GeneralNavBar extends React.Component {
   render() {
     console.log("in the general navbar: "+ localStorage.getItem("jwtToken"));
     return (
-      <div>
-        <Navbar color="light" light expand="md">
-          <NavbarBrand id = "title" href="/">{Constants.TITLE}</NavbarBrand>
-          <GeneralMenu/>
-          <PrivateRoute exact path="/register" component={Register} />
-          <UserMenu></UserMenu>
-          <Logout></Logout>  
-        </Navbar>
-      </div>
+      <Navbar id = "bar" color="light" light expand="md">
+        <GeneralMenu></GeneralMenu>
+        <NavbarBrand id = "title" href="/">{Constants.TITLE}</NavbarBrand>
+        <PrivateRoute exact path="/register" component={Register} />
+        <UserMenu id = "usermenu"></UserMenu>
+        <Logout></Logout>
+      </Navbar>
     );
   }
 }

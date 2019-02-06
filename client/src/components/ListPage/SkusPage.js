@@ -21,7 +21,9 @@ import DataStore from '../../helpers/DataStore'
 import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import SkuDetails from './SkuDetails';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import '../../style/SkusPage.css'
 const jwt_decode = require('jwt-decode');
+
 
 
 export default class ListPage extends React.Component {
@@ -38,10 +40,6 @@ export default class ListPage extends React.Component {
         this.state = {
             page_name,
             page_title,
-            ing_substr: [],
-            filter_value: [],
-            filter_category: [],
-            assisted_search_results: [[]],
             table_columns,
             table_properties,
             table_options,
@@ -51,7 +49,6 @@ export default class ListPage extends React.Component {
             detail_view_options: [],
             data: [],
             exportData: [],
-
             sort_field: '_',
             error: null,
             details_modal: false,
@@ -60,8 +57,16 @@ export default class ListPage extends React.Component {
             simple: props.simple || false,
             user:'',
             currentPage: 0,
-            pageSize: 2,
-            pagesCount: 0
+            pageSize: 7,
+            pagesCount: 0,
+            filters: {
+                'keyword': '',
+                'ingredient': [],
+                'product_line': []
+            },
+            filterChange: false,
+            ingredients: [], 
+            product_lines: []
         };
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!= null){
@@ -70,7 +75,7 @@ export default class ListPage extends React.Component {
           }
         this.toggle = this.toggle.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
-        this.onKeywordSubmit = this.onFilterValueSubmit.bind(this);
+        this.onFilterValueChange = this.onFilterValueChange.bind(this);
         this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
@@ -95,75 +100,31 @@ export default class ListPage extends React.Component {
     async componentDidMount() {
         if (this.props.default_ing_filter !== undefined){
             await this.onAddFilter(Constants.ingredient_label)
-            await this.onFilterValueSelection(undefined, this.props.default_ing_filter, 0);
+            await this.onFilterValueSelection(this.props.default_ing_filter.name, 
+                this.props.default_ing_filter._id, undefined, 0);
         }
         this.loadDataFromServer();
     }
 
     async componentDidUpdate (prevProps, prevState) {
-        console.log(this.state.data)
-        if (prevState.ing_substr !== this.state.ing_substr || prevState.filter_value !== this.state.filter_value || 
-            prevState.filter_category !== this.state.filter_category) {
-            await this.updateFilterState(prevState);
-            this.loadDataFromServer();
-            console.log(this.state.data)
+        if (this.state.filterChange) {
+            await this.loadDataFromServer();
         }
     }
 
-    async updateFilterState(prevState) {
-        var asr = this.state.assisted_search_results.slice();
-        for (var i = 0; i < prevState.ing_substr.length; i++) {
-            if (this.state.filter_category[i] === undefined) return;
-            if (this.state.ing_substr[i] === undefined) return;
-            if (this.state.filter_category[i] === Constants.ingredient_label
-                && this.state.ing_substr[i].length > 0) {
-                let res = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.ing_substr[i]);
-                if (res === undefined || !res.success) {
-                    res.data = [];
-                }
-                asr[i] = res.data;
-            }
-            if (this.state.filter_category[i] === Constants.prod_line_label
-                && this.state.ing_substr[i].length > 0) {
-                let res = await SubmitRequest.submitGetProductLinesByNameSubstring(this.state.ing_substr[i]);
-                if (res === undefined || !res.success) {
-                    res.data = [];
-                }
-                asr[i] = res.data;
-            }
-            else if (this.state.filter_category[i] === Constants.keyword_label) {
-                if (prevState.ing_substr[i] !== this.state.ing_substr[i]){
-                    this.onFilterValueSubmit(i);
-                }
-                asr[i] = [];
-            }
-        }
-        this.setState({
-            assisted_search_results: asr
-        });
+    updateDataState = async () => {
+        var {data: ingredients} = await SubmitRequest.submitGetData(Constants.ingredients_page_name);
+        var {data: productlines} = await SubmitRequest.submitGetData(Constants.prod_line_page_name);
+        console.log(productlines)
+        this.setState({ingredients: ingredients, product_lines: productlines});
     }
+
 
     async loadDataFromServer() {
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        if (this.state.filter_value === undefined) return;
-        var final_ing_filter = '';
-        var final_keyword_filter = '';
-        var final_prod_line_filter = '';
-        for (var i = 0; i < this.state.filter_value.length; i++){
-            if (this.state.filter_value[i] === undefined) return;
-            if (this.state.filter_value[i].length === Constants.obj_id_length 
-                && this.state.filter_category[i] === Constants.ingredient_label) {
-                    final_ing_filter += (final_ing_filter.length == 0 ? '' : ',');
-                    final_ing_filter += this.state.filter_value[i];
-            }
-            else if (this.state.filter_category[i] === Constants.keyword_label) {
-                final_keyword_filter = this.state.filter_value[i];
-            }
-            else if (this.state.filter_category[i] === Constants.prod_line_label) {
-                final_prod_line_filter += (final_prod_line_filter.length == 0 ? '' : ',');
-                final_prod_line_filter += this.state.filter_value[i];
-            }
-        }
+        var final_ing_filter = this.state.filters['ingredient'].join(',');
+        var final_keyword_filter = this.state.filters['keyword'];
+        var final_prod_line_filter = this.state.filters['product_line'].join(',');
         if (final_ing_filter === '') final_ing_filter = '_';
         if (final_keyword_filter === '') final_keyword_filter = '_';
         if (final_prod_line_filter === '') final_prod_line_filter = '_';
@@ -172,75 +133,56 @@ export default class ListPage extends React.Component {
 
             var resALL = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
                 this.state.sort_field, final_ing_filter, final_keyword_filter, 0, allData.data.length, final_prod_line_filter);
-
-                console.log("this is the res: "+res);
-                console.log("this is the res.data: "+res.data);
         
         if (res === undefined || !res.success) {
             res.data = [];
             resALL.data = [];
         }
-        this.setState({
+        await this.setState({
             data: res.data,
-            exportData: resALL.data
-
+            exportData: resALL.data,
+            filterChange: false
         })
+        this.updateDataState();
     }
 
-    onFilterValueChange = (e, id) => {
-        var ing_sub = this.state.ing_substr.slice();
-        ing_sub[id] = e.target.value;
-        this.setState({
-            ing_substr: ing_sub
-        });
+    onFilterValueChange = (e, value, filterType) => {
+        var filters = this.state.filters;
+        if(filterType == 'keyword'){
+            filters[filterType] = value;
+        }
+        this.setState({filters: filters, filterChange: true}) ;
     }
 
     async setNumberPages(){
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        console.log('this is the allData: '+allData);
-        console.log('this is the allData length: '+allData.data.length);
-        console.log('this is the pageSize: '+this.state.pageSize);
         var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
-        console.log('this is the pagesCount1: '+this.state.pagesCount);
 
         this.setState({
             currentPage: 0,
             pagesCount: curCount,
         }); 
-               console.log('this is the pagesCount: '+this.state.pagesCount);
 
     }
 
     handlePageClick = (e, index) => {
         e.preventDefault();
-        console.log("this is current page1; "+this.state.currentPage);
-
         this.setState({
             currentPage: index
         });
         this.loadDataFromServer();
     }
 
-
-    onFilterValueSelection (e, item, id) {
-        var ing_sub = this.state.ing_substr.slice();
-        ing_sub[id] = item.name;
-        var fil_val = this.state.filter_value.slice();
-        fil_val[id] = item._id;
-        var asr = this.state.assisted_search_results.slice();
-        asr[id] = [];
+    onFilterValueSelection (vals, e, type)  {
+        console.log(filters);
+        var filters = this.state.filters;
+        filters[type] = vals.map((item) => {
+            return item.value
+        })
+        
         this.setState({
-            ing_substr: ing_sub,
-            filter_value: fil_val,
-            assisted_search_results: asr
-        });
-    }
-
-    onFilterValueSubmit (id) {
-        var fil_val = this.state.filter_value.slice();
-        fil_val[id] = this.state.ing_substr[id];
-        this.setState({
-            filter_value: fil_val
+            filters: filters,
+            filterChange: true
         });
     }
 
@@ -256,42 +198,8 @@ export default class ListPage extends React.Component {
         this.toggle(Constants.details_modal);
     }
 
-    onAddFilter = (type) => {
-        if (type == Constants.keyword_label && this.state.filter_category.includes(Constants.keyword_label)){
-            return;
-        }
-        var ind = this.state.ing_substr.length;
-        var ing_sub = this.state.ing_substr.slice();
-        ing_sub[ind] = '';
-        var fil_val = this.state.filter_value.slice();
-        fil_val[ind] = '';
-        var fil_cat = this.state.filter_category.slice();
-        fil_cat[ind] = type;
-        var asr = this.state.assisted_search_results.slice();
-        asr[ind] = [];
-        this.setState({ 
-            ing_substr: ing_sub,
-            filter_value: fil_val,
-            filter_category: fil_cat,
-            assisted_search_results: asr,
-        })
-    }
-
     onRemoveFilter = (e, id) => {
-        var ing_sub = this.state.ing_substr.slice();
-        ing_sub[id] = '';
-        var fil_val = this.state.filter_value.slice();
-        fil_val[id] = '';
-        var fil_cat = this.state.filter_category.slice();
-        fil_cat[id] = Constants.filter_removed;
-        var asr = this.state.assisted_search_results.slice();
-        asr[id] = [];
-        this.setState({ 
-            ing_substr: ing_sub,
-            filter_value: fil_val,
-            filter_category: fil_cat,
-            assisted_search_results: asr,
-        })
+        
     }
 
     onTableOptionSelection = async(e, opt) => {
@@ -325,20 +233,11 @@ export default class ListPage extends React.Component {
         this.loadDataFromServer();
     };
 
-    // onSelect = async (event, item) => {
-    //     var newState = this.state.selected_items.slice();
-    //     var loc = newState.indexOf(item);
-    //     (loc > -1) ? newState.splice(loc, 1) : newState.push(item);
-    //     await this.setState({ selected_items: newState});
-    // };
-
     onSelect = (rowIndexes) => {
-        console.log(rowIndexes);
         var newState = [];
         rowIndexes.forEach( index => {
             newState.push(this.state.data[index]);
         });
-        console.log(newState);
         this.setState({ selected_items: newState, selected_indexes: rowIndexes});
     };
 
@@ -366,7 +265,6 @@ export default class ListPage extends React.Component {
                 res = {success: true}
                 break;
         }
-        console.log(res)
         if (!res.success) alert(res.error);
         else {
             this.setState({ 
@@ -386,31 +284,9 @@ export default class ListPage extends React.Component {
     };
 
     render() {
-        console.log("This is the curpage value; "+this.state.currentPage);
-         console.log("this is the pagesCount: " +this.state.pagesCount); 
 
         return (
             <div className="list-page">
-                <div className="options-container" id={this.state.simple ? "simple" : "complex"}>
-                {this.state.ing_substr.map((is,index) => {
-                        if (this.state.filter_category[index] != Constants.filter_removed){
-                            return (<Filter 
-                                        key={'filter'+index}
-                                        id={index}
-                                        value={is}
-                                        filter_category={this.state.filter_category[index]} 
-                                        assisted_search_results={this.state.assisted_search_results[index]}
-                                        handleFilterValueChange={this.onFilterValueChange}
-                                        handleFilterValueSelection={this.onFilterValueSelection}
-                                        handleRemoveFilter={this.onRemoveFilter}
-                                    />)
-                        }
-                    })}
-                        <TableOptions
-                        table_options={this.state.table_options}
-                        handleTableOptionSelection={this.onTableOptionSelection}
-                        />
-                </div>
                 <div>
                     <PageTable 
                         columns={this.state.table_columns} 
@@ -425,6 +301,16 @@ export default class ListPage extends React.Component {
                         selectable = {this.props.simple !=undefined ? !this.props.simple : true}
                         sortable = {this.props.simple != undefined ? !this.props.simple : true}
                         title = {this.state.page_title}
+                        showHeader = {true}
+                        simple = {this.props.simple}
+                        filters = {this.state.filters}
+                        table_options = {this.state.table_options}
+                        onTableOptionSelection = {this.onTableOptionSelection}
+                        onFilterValueSelection = {this.onFilterValueSelection}
+                        onFilterValueChange = {this.onFilterValueChange}
+                        onRemoveFilter = {this.onRemoveFilter}
+                        ingredients = {this.state.ingredients}
+                        product_lines = {this.state.product_lines}
                     />
                 </div>
                 <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
@@ -439,10 +325,10 @@ export default class ListPage extends React.Component {
                         color='danger'/>
                 </Modal>
                 <AddToManuGoal selected_skus={this.state.selected_items} isOpen={this.state.manu_goals_modal} toggle={(toggler) => this.toggle(toggler)} manu_goals_data={this.state.manu_goals_data}></AddToManuGoal>
-                {this.props.default_ing_filter !== undefined ? null : (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}    
 
                 <div className = "pagination-wrapper">
                 <Pagination aria-label="Page navigation example">
+                    <div>
                     <PaginationItem disabled={this.state.currentPage <= 0}>
                         <PaginationLink
                             onClick={e => this.handlePageClick(e, this.state.currentPage - 1)}
@@ -470,8 +356,14 @@ export default class ListPage extends React.Component {
                             next
                             href="#"
                         />
+
                     </PaginationItem>
-                </Pagination>
+                    </div>
+                    {this.props.default_ing_filter !== undefined ? null : (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}    
+                    
+                    </Pagination>
+                    
+                    
                 </div>  
             </div>
         );

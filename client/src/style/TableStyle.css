@@ -1,9 +1,57 @@
-.rowHover:hover {
-    margin: 10px;
-    /* background-color:#f5f5f5; */
+td {
+    padding: 5px;
+    height: auto !important;
 }
 
-.selected {
-    background-color: yellow;
-    position: relative;
+tr > th {
+    height: auto !important;
 }
+
+.superrow>* {
+    padding-bottom: 5px !important;
+    padding-top: 20px !important;
+}
+
+.superrow:first-child {
+    height: 75px !important;
+    padding: 0px !important;
+    margin: 0px !important;
+}
+
+#complex {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.filter-item {
+    width: 60%;
+    margin-left: 20px;
+    margin-right: 10px;
+    padding-bottom: 10px;
+}
+
+input {
+    margin-bottom: 0px !important;
+}
+
+#pagetitle{
+    margin-bottom: 10px;
+    font-size: 20px !important;
+    text-align: left;
+}
+
+#complex > .filter-item {
+    padding: 0px;
+}
+
+.filter-item > div > div:first-of-type {
+    height: 50px !important;
+    padding: 0px;
+}
+
+.filter-item > div > div:first-of-type::selection {
+    border: none;
+}
+
+

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import RaisedButton from 'material-ui/RaisedButton';
 import { exportSimpleData, exportSKUS, exportIngredients, exportProdLines, exportCalculator } from "../../actions/exportActions";
 class ExportSimple extends Component {
 
@@ -39,18 +40,12 @@ class ExportSimple extends Component {
 render() {
     const { user } = this.props.auth;
 return (
-            <button
-              style={{
-                width: "150px",
-                borderRadius: "3px",
-                letterSpacing: "1.5px",
-                marginTop: "1rem"
-              }}
+            <div className = "exportbutton hoverable"
               onClick={this.onExportSimpleClick}
-              className="btn btn-small waves-effect waves-light hoverable blue accent-3"
+              primary={true}
             >
               {this.props.name || 'Export'}
-            </button>
+            </div>
     );
   }
 }
