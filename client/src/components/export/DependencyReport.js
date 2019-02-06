@@ -5,8 +5,10 @@ import { connect } from "react-redux";
 import * as Constants from '../../resources/Constants';
 import SubmitRequest from '../../helpers/SubmitRequest'
 
-
 var fileDownload = require('js-file-download');
+
+const currentPage = 0;
+const pageSize = 0;
 
 
 export default class DependencyReport extends Component {
@@ -18,15 +20,14 @@ export default class DependencyReport extends Component {
 
     this.state = {
       data: [],
-      fileTitle: ""
+      fileTitle: "",
     };
   }
 
 
   onExportDependencyReport(e){
     e.preventDefault();
-    //this.loadDataFromServerForReport(this.props.data);
-     
+    this.loadDataFromServerForReport(this.props.data, );   
       };
 
 
@@ -35,39 +36,48 @@ export default class DependencyReport extends Component {
 //same rules as the “view options” described in req 2.1.2). 
 //For each ingredient, all SKUs made with the ingredient shall be shown. 
 async loadDataFromServerForReport(ingredients){
-  //let allData = await SubmitRequest.submitGetData(this.state.page_name);
-
-  //var resALL = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
-    //this.state.sort_field, final_ing_filter, final_keyword_filter, 0, allData.data.length, final_prod_line_filter);
-
 
     var fileTitle = "Ingredient_Dependency_Report";
     var count = ingredients.length;
     var finalData = [];
+    const rows = [];
+    var skulabel = [];
+    skulabel.push("SKU#");
+    skulabel.push("Name");
+    skulabel.push("Case UPC");
+    skulabel.push("Unit UPC");
+    skulabel.push("Unit size");
+    skulabel.push("Count per case");
+    skulabel.push("Product Line Name");
+    skulabel.push("Comment");
+    var inglabel = [];
+    inglabel.push("Ingr#");
+    inglabel.push("Name");
+    inglabel.push("Vendor Info");
+    inglabel.push("Size");
+    inglabel.push("Cost");
+    inglabel.push("Comment");
+    var ingBIG = [];
+    var skuBIG = [];
+    ingBIG.push("INGREDIENT");
+    skuBIG.push("SKUS");
+
     for(let ing = 0; ing<count ; ing++){
         var curData = ingredients[ing];
         var dataLine = [];
-        finalData.push("INGREDIENTS");
-        finalData.push("\r\n");
+        rows.push(ingBIG);
+        rows.push(inglabel);
         dataLine.push(curData.num);
         dataLine.push(curData.name);
         dataLine.push(curData.vendor_info);
         dataLine.push(curData.pkg_size);
         dataLine.push(curData.pkg_cost);
         dataLine.push(curData.comment);
-        //dataLine.push("\r\n");
-        finalData.push(dataLine);
-        //finalData.push("\r\n");
-        finalData.push("SKUS");
-        //finalData.push("\r\n");
-        //var ingSKUS = curData.skus.length;
-        console.log("this is the dataline: "+dataLine);
-        //console.log("this is the ingSkus: "+ingSKUS);
-        //var ingSKUs = this.getSKUSbyIngId(curData._id);
+        rows.push(dataLine);
 
-        //TODO FIX THE DEPENDENCY REPORT
+        console.log("this is the dataline: "+dataLine);
         var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
-          "_", curData._id, "_", "_");
+          "_", curData._id, "_", currentPage, pageSize, "_");
         console.log("this is the res: "+res);
 
         if (!res.success) {
@@ -78,7 +88,11 @@ async loadDataFromServerForReport(ingredients){
           console.log("this is the skuData: "+resData);
           console.log('this is the res.data.length: '+resData.length);
           console.log("this is the skuData string: "+JSON.stringify(resData));
-        for(let s = 0; s<resData.length; s++){
+        if(resData.length>0){
+          rows.push(skuBIG);
+          rows.push(skulabel);
+        }
+          for(let s = 0; s<resData.length; s++){
           var curSku = [];
           var curSkuObj = resData[s];
           curSku.push(curSkuObj.num);
@@ -91,25 +105,41 @@ async loadDataFromServerForReport(ingredients){
           curSku.push(curSkuObj.prod_line.name);
           console.log("this is the prod: "+curSkuObj.prod_line.name);
           console.log("this is the prod string: "+JSON.stringify(curSkuObj.prod_line));
-
-
           curSku.push(curSkuObj.comment);
-          curSku.push("\r\n");
           console.log("this is the curSku: "+curSku);
-          finalData.push(curSku);
-          //finalData.push("\r\n");
+          rows.push(curSku);
           console.log("this is the skuData: "+finalData);
         }
       }
 
-
-        //console.log("this is the ingSkus: "+ ingSKUs);
-
-        //finalData.push(ingSKUs);
-        console.log("this is the finalData: "+ finalData);
-        //finalData.push("\r\n");
     }    
-    fileDownload(finalData, fileTitle+'.csv');
+
+    let csvContent = "";
+    for(let r = 0; r<rows.length; r++){
+
+      let row = rows[r];
+      if(row.length>0){
+        let curRow = row[0];
+        for (let c = 1; c<row.length; c++){
+         curRow+=","+row[c];
+        }
+      csvContent += curRow + "\r\n";
+    }
+    }
+
+
+
+    // rows.forEach(function(rowArray){
+    //     let row = rowArray.join(",");
+    //     csvContent += row + "\r\n";
+    //  }); 
+
+    // for(var r in rows){
+    //   let row = rows[r].join(",");
+    //   csvContent += row + "\r\n";
+    // }
+
+    fileDownload(csvContent, fileTitle+'.csv');
 };
 
 render() {

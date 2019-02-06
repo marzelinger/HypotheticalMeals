@@ -15,6 +15,12 @@ import UserHandler from './models/handlers/UserHandler';
 import FilterHandler from './models/handlers/FilterHandler';
 import { getSecret } from './secrets';
 const passport = require("passport");
+import CSV_parser from './csv_parser';
+var https = require('https');
+var fs = require('fs');
+var multer = require('multer');
+var upload = multer(({ dest : './tmp/csv'}));
+
 const cors = require('cors');
 
 const dotenv = require('dotenv');
@@ -32,11 +38,11 @@ app.use(cors(corsOptions));
 // set our port to either a predetermined port number if you have set it up, or 3001
 const API_PORT = process.env.API_PORT || 3001;
 
-
 mongoose.connect(getSecret('dbUri'));
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
+//app.use(express.static(path.join(__dirname, './../client/public')));
 // now we should configure the API to use bodyParser and look for JSON data in the request body
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -85,6 +91,13 @@ router.get('/manugoals/:user_id/:manu_goal_id/skus', (req, res) => Manu_GoalHand
 router.get('/ingredients_filter/:sort_field/:sku_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
 router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize/:prod_line_ids', (req, res) => FilterHandler.getSkusByFilter(req, res));
 
+router.post('/parseSkus', upload.single('file'), (req, res) => CSV_parser.parseSKUCSV(req, res));
+router.post('/parseProdLines', upload.single('file'), (req, res) => CSV_parser.parseProdLineCSV(req,res));
+router.post('/parseIngredients', upload.single('file'), (req,res) => CSV_parser.parseIngredientsCSV(req, res));
+router.post('/parseFormulas', upload.single('file'), (req, res) => CSV_parser.parseFormulasCSV(req, res));
+router.post('/parseUpdateSkus', (req, res) => CSV_parser.parseUpdateSKU(req, res));
+router.post('/parseUpdateIngredients', (req, res) => CSV_parser.parseUpdateIngredients(req, res));
+
 // Use our router configuration when we call /api
 app.use('/api', router);
 app.use(passport.initialize());
@@ -111,9 +124,7 @@ router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
 
 
 //pagination router api calls
-router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
 
-router.get('/ingredientspagget', (req, res, next) => PaginationHandler.getIngredientsPag(req, res, next));
 // Gives constant name to long directory home page.
 // const appPage = path.join(__dirname, '../client/build/index.html');
 
@@ -126,4 +137,16 @@ router.get('/ingredientspagget', (req, res, next) => PaginationHandler.getIngred
 // })
 
 
-app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
+/*
+router.get('*', (req,res) => {
+  res.sendFile(path.join(__dirname, './../client/public/index.html'))
+});*/
+
+/*
+https.createServer({
+  key: fs.readFileSync('./../server.key'),
+  cert: fs.readFileSync('./../server.cert')
+}, app)
+.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
+*/
+ app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
