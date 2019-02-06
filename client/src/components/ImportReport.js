@@ -88,7 +88,7 @@ export class ImportReport extends React.Component{
                                     <td
                                         key={prop}
                                     >
-                                        {prop === "Product Line Name" ? item[prop].name : item[prop]}
+                                        {prop === "prod_line" ? item[prop].name : item[prop]}
                                     </td>
                                 )}
                                 </tr>
@@ -116,7 +116,7 @@ export class ImportReport extends React.Component{
                                     <td
                                         key={prop}
                                     >
-                                        {item[prop]}
+                                         {prop === "prod_line" ? item[prop].name : item[prop]}
                                     </td>
                                 )}
                                 </tr>
@@ -144,7 +144,7 @@ export class ImportReport extends React.Component{
                                     <td
                                         key={prop}
                                     >
-                                        {item[prop]}
+                                         {prop === "prod_line" ? item[prop].name : item[prop]}
                                     </td>
                                 )}
                                 </tr>

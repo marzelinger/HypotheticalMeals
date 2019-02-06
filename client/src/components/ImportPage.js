@@ -61,6 +61,10 @@ export default class ImportPage extends React.Component {
             sku_dependency: false,
             ingr_dependency: false,
             dependency_row: -1,
+
+            badData: false,
+            incompleteEntry: false,
+            badDataRow: -1,
         }
     }
 
@@ -175,7 +179,17 @@ export default class ImportPage extends React.Component {
                             dependency_row: res.data.ingr_dependency,
                         })
                     // Setting state for the update table from a SKU import
-                    } else if(typeof res.data.old_data != 'undefined' && endpoint == "/api/parseSkus"){
+                    } else if(typeof res.data.badData != 'undefined'){
+                        this.setState({
+                            badData: true,
+                            badDataRow: res.data.badData,
+                        })
+                    } else if(typeof res.data.incompleteEntry != 'undefined'){
+                        this.setState({
+                            incompleteEntry: true,
+                            badDataRow: res.data.incompleteEntry,
+                        })
+                    }else if(typeof res.data.old_data != 'undefined' && endpoint == "/api/parseSkus"){
                         this.setState({
                             showUpdateTable: true,
                             update_list_type: "SKUs",
@@ -312,6 +326,14 @@ export default class ImportPage extends React.Component {
         })
     }
 
+    onDismissBadData = () =>{
+        this.setState({
+            badDataRow: -1,
+            badData: false,
+            incompleteEntry: false,
+        })
+    }
+
     handleAccept = () => {
         var endPointUpdate = "";
         if(this.state.update_list_type == "SKUs") endPointUpdate = "/api/parseUpdateSkus";
@@ -356,6 +378,10 @@ export default class ImportPage extends React.Component {
         this.setState({
             aborted: true,
         })
+    }
+
+    handleExport = () => {
+        
     }
 
     resetState = () => {
@@ -406,6 +432,9 @@ export default class ImportPage extends React.Component {
             sku_dependency: false,
             ingr_dependency: false,
             dependency_row: -1,
+            badData: false,
+            incompleteEntry: false,
+            badDataRow: -1,
         })
     }
 
@@ -470,6 +499,14 @@ export default class ImportPage extends React.Component {
                 <Alert color="danger" isOpen={this.state.ingr_dependency} toggle={this.onDismissDependency}>
                     The Ingredient specified in row {this.state.dependency_row+1} does not exist
                 </Alert>
+
+                <Alert color="danger" isOpen={this.state.incompleteEntry} toggle={this.onDismissBadData}>
+                    The Ingredient specified in row {this.state.badDataRow+1} does not exist
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.badData} toggle={this.onDismissBadData}>
+                    The entry specified in row {this.state.badDataRow+1} has bad data
+                </Alert>
                 
 
                 {this.state.showUpdateTable && <ImportTable
@@ -487,6 +524,11 @@ export default class ImportPage extends React.Component {
                     updated_items={this.state.update_list_items_new}
                     ignored_items={this.state.update_list_ignores}
                     label={this.state.import_report_type} />}
+
+                <div className="centerContainer">
+                {this.state.showImportReport && <Button className="centerButton" onClick={this.handleExport}> Export</Button> }    
+                </div>
+                
             </div>
         );
     }
