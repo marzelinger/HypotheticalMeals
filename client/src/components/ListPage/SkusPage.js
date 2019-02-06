@@ -386,8 +386,6 @@ export default class ListPage extends React.Component {
     };
 
     render() {
-
-
         console.log("This is the curpage value; "+this.state.currentPage);
          console.log("this is the pagesCount: " +this.state.pagesCount); 
 
@@ -441,57 +439,40 @@ export default class ListPage extends React.Component {
                         color='danger'/>
                 </Modal>
                 <AddToManuGoal selected_skus={this.state.selected_items} isOpen={this.state.manu_goals_modal} toggle={(toggler) => this.toggle(toggler)} manu_goals_data={this.state.manu_goals_data}></AddToManuGoal>
-                <ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/>     
+                {this.props.default_ing_filter !== undefined ? null : (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}    
 
                 <div className = "pagination-wrapper">
                 <Pagination aria-label="Page navigation example">
-            
-            <PaginationItem disabled={this.state.currentPage <= 0}>
-              
-              <PaginationLink
-                onClick={e => this.handlePageClick(e, this.state.currentPage - 1)}
-                previous
-                href="#"
-              />
-
-</PaginationItem>
-
-{[...Array(this.state.pagesCount)].map((page, i) => 
-  <PaginationItem active={i === this.state.currentPage} key={i}>
-    <PaginationLink onClick={e => {
-        //this.handlePageClick(e, i)
-        this.setState({
-            currentPage: i
-        });
-        this.loadDataFromServer();     
-    }
- } href="#">
-      {i + 1}
-    </PaginationLink>
-  </PaginationItem>
-)}
-
-
-<PaginationItem disabled={this.state.currentPage >= this.state.pagesCount - 1}>
-              
-              <PaginationLink
-                onClick={e => this.handlePageClick(e, this.state.currentPage + 1)}
-                next
-                href="#"
-              />
-              
-            </PaginationItem>
-            
-          </Pagination>
+                    <PaginationItem disabled={this.state.currentPage <= 0}>
+                        <PaginationLink
+                            onClick={e => this.handlePageClick(e, this.state.currentPage - 1)}
+                            previous
+                            href="#"
+                        />
+                    </PaginationItem>
+                    {[...Array(this.state.pagesCount)].map((page, i) => 
+                    <PaginationItem active={i === this.state.currentPage} key={i}>
+                        <PaginationLink onClick={e => {
+                            //this.handlePageClick(e, i)
+                            this.setState({
+                                currentPage: i
+                            });
+                            this.loadDataFromServer();     
+                        }
+                    } href="#">
+                        {i + 1}
+                        </PaginationLink>
+                    </PaginationItem>
+                    )}
+                    <PaginationItem disabled={this.state.currentPage >= this.state.pagesCount - 1}>
+                        <PaginationLink
+                            onClick={e => this.handlePageClick(e, this.state.currentPage + 1)}
+                            next
+                            href="#"
+                        />
+                    </PaginationItem>
+                </Pagination>
                 </div>  
-
-
-
-
-
-
-
-
             </div>
         );
     }
