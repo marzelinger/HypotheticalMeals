@@ -1,6 +1,6 @@
 // PageTable.js
 // Riley
-// Table component for ListPage
+// Table component for SkusPage
 
 import React from 'react';
 import PropTypes from 'prop-types';

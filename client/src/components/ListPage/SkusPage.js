@@ -8,16 +8,16 @@ import PropTypes from 'prop-types';
 import Filter from './Filter';
 import PageTable from './PageTable'
 import TableOptions from './TableOptions'
-import SubmitRequest from './../../helpers/SubmitRequest'
-import ItemStore from './../../helpers/ItemStore'
+import SubmitRequest from '../../helpers/SubmitRequest'
+import ItemStore from '../../helpers/ItemStore'
 import AddToManuGoal from './AddToManuGoal'
 import { 
     Alert,
     Modal} from 'reactstrap';
-import * as Constants from './../../resources/Constants';
-
+import * as Constants from '../../resources/Constants';
+import './../../style/SkusPage.css';
 import ExportSimple from '../export/ExportSimple';
-import DataStore from './../../helpers/DataStore'
+import DataStore from '../../helpers/DataStore'
 import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import SkuDetails from './SkuDetails';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -54,7 +54,6 @@ export default class ListPage extends React.Component {
             data: [],
             exportData: [],
             sort_field: '_',
-            loaded: false,
             error: null,
             details_modal: false,
             manu_goals_modal: false,
@@ -78,6 +77,7 @@ export default class ListPage extends React.Component {
           }
         this.toggle = this.toggle.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
+        this.onFilterValueChange = this.onFilterValueChange.bind(this);
         this.onKeywordSubmit = this.onFilterValueSubmit.bind(this);
         this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
@@ -103,7 +103,8 @@ export default class ListPage extends React.Component {
     async componentDidMount() {
         if (this.props.default_ing_filter !== undefined){
             await this.onAddFilter(Constants.ingredient_label)
-            await this.onFilterValueSelection(undefined, this.props.default_ing_filter, 0);
+            await this.onFilterValueSelection(this.props.default_ing_filter.name, 
+                this.props.default_ing_filter._id, undefined, 0);
         }
         this.loadDataFromServer();
     }
@@ -202,12 +203,11 @@ export default class ListPage extends React.Component {
         
         if (res === undefined || !res.success) {
             res.data = [];
-            res.loaded = true;
             resALL.data = [];
-            resALL.loaded = true;
         }
         this.setState({
             data: res.data,
+<<<<<<< HEAD:client/src/components/ListPage/ListPage.js
             loaded: res.loaded,
             exportData: resALL.data,
             filterChange: false
@@ -220,6 +220,25 @@ export default class ListPage extends React.Component {
         this.setState({
             filter_substr: ing_sub
         });
+=======
+            exportData: resALL.data
+
+        })
+    }
+
+    onFilterValueChange (val, e, id) {
+        console.log(val)
+        console.log(e)
+        if (e.action === 'input-change'){
+            var ing_sub = this.state.ing_substr.slice();
+            ing_sub[id] = val;
+            this.setState({
+                ing_substr: ing_sub
+            });
+            return val;
+        }
+        return this.state.ing_substr[id];
+>>>>>>> 1f45cc69fa8a38953dde1d130c80eb5978ff7472:client/src/components/ListPage/SkusPage.js
     }
 
     testOnFilterValueChange = (value, filterType) => {
@@ -253,12 +272,18 @@ export default class ListPage extends React.Component {
         this.loadDataFromServer();
     }
 
+<<<<<<< HEAD:client/src/components/ListPage/ListPage.js
 
     onFilterValueSelection (e, item, id) {
         var ing_sub = this.state.filter_substr.slice();
         ing_sub[id] = item.name;
+=======
+    onFilterValueSelection (name, value, e, id)  {
+        var ing_sub = this.state.ing_substr.slice();
+        ing_sub[id] = name;
+>>>>>>> 1f45cc69fa8a38953dde1d130c80eb5978ff7472:client/src/components/ListPage/SkusPage.js
         var fil_val = this.state.filter_value.slice();
-        fil_val[id] = item._id;
+        fil_val[id] = value;
         var asr = this.state.assisted_search_results.slice();
         asr[id] = [];
         this.setState({
@@ -348,6 +373,7 @@ export default class ListPage extends React.Component {
 
     onAddManuGoals =  async() => {
         this.toggle(Constants.manu_goals_modal);
+<<<<<<< HEAD:client/src/components/ListPage/ListPage.js
         await this.getManuGoalsData();
     }
 
@@ -362,19 +388,16 @@ export default class ListPage extends React.Component {
             });
             
           });
+=======
+        let res = await SubmitRequest.submitGetManuGoalsData(this.state.user);
+        this.setState({ manu_goals_data: res.data});
+>>>>>>> 1f45cc69fa8a38953dde1d130c80eb5978ff7472:client/src/components/ListPage/SkusPage.js
     }
 
     async onSort(event, sortKey) {
         await this.setState({sort_field: sortKey})
         this.loadDataFromServer();
     };
-
-    // onSelect = async (event, item) => {
-    //     var newState = this.state.selected_items.slice();
-    //     var loc = newState.indexOf(item);
-    //     (loc > -1) ? newState.splice(loc, 1) : newState.push(item);
-    //     await this.setState({ selected_items: newState});
-    // };
 
     onSelect = (rowIndexes) => {
         var newState = [];
