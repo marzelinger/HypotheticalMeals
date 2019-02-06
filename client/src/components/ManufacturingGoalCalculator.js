@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import calculatorButton from '../resources/calculator.png';
 import ManuGoalsCalculatorTable from './ManuGoalsCalculatorTable';
+import SubmitRequest from './../helpers/SubmitRequest';
 
 // * 1. need to iterate through each sku and get the quantity, calculate the quantity of the sku units
 // * 2. for each sku need to iterate through each ingredient
@@ -35,16 +36,6 @@ export default class ManufacturingGoalCalculator extends React.Component{
       return quantity * Number(sku.cpc);
   }
 
-  getPopulatedSkuIngredients = (skuId) => {
-    return fetch(`/api/ingredients_by_sku/${skuId}`, { method: 'GET' })
-    .then(data => data.json())
-    .then((res) => {
-      if (!res.success) this.setState({ error: res.error });
-      else return res;
-    });
-  }
-
-
   addIngredientInfo = async (ingredient, quantity) => {
     if(this.state.current_ingredient_ids.includes(ingredient.quantity)){
        var index =  this.state.current_ingredient_ids.indexOf(ingredient.id);
@@ -69,7 +60,7 @@ export default class ManufacturingGoalCalculator extends React.Component{
       console.log(this.props.skus);
       let index = 0;
       await this.props.skus.forEach( async (sku) => {
-        var {data, skuData}= await this.getPopulatedSkuIngredients(sku);
+        var {data, skuData} = await SubmitRequest.submitGetPopulatedSkuIngredients(sku);
         var quantity = this.calculateSkuUnitQuantity(this.props.quantities[index], skuData);
         await data.forEach( async(ingredient) => {
             await this.addIngredientInfo(ingredient, quantity);

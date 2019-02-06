@@ -316,21 +316,8 @@ export default class ListPage extends React.Component {
 
     onAddManuGoals =  async() => {
         this.toggle(Constants.manu_goals_modal);
-        await this.getManuGoalsData();
-    }
-
-    getManuGoalsData = () => {
-
-        fetch(`/api/manugoals/${this.state.user}`, { method: 'GET' })
-          .then(data => data.json())
-          .then((res) => {
-            console.log(res.data);
-            if (!res.success) this.setState({ error: res.error });
-            else this.setState({ 
-                manu_goals_data: res.data
-            });
-            
-          });
+        let res = await SubmitRequest.submitGetManuGoalsData(this.state.user);
+        this.setState({ manu_goals_data: res.data});
     }
 
     async onSort(event, sortKey) {

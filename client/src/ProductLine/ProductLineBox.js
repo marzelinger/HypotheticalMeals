@@ -4,6 +4,7 @@ import ProductLineList from './ProductLineList';
 import ProductLineForm from './ProductLineForm';
 // import '../style/ProductLineBox.css';
 import * as Constants from '../resources/Constants';
+import SubmitRequest from './../helpers/SubmitRequest';
 const jwt_decode = require('jwt-decode');
 
 class ProductLinesBox extends Component {
@@ -15,6 +16,10 @@ class ProductLinesBox extends Component {
       name: ''
     };
     this.pollInterval = null;
+    this.submitNewProdLine = this.submitNewProdLine.bind(this);
+    this.onDeleteProdLine = this.onDeleteProdLine.bind(this);
+    this.loadProdLinesFromServer = this.loadProdLinesFromServer.bind(this);
+    this.submitUpdatedProdLine = this.submitUpdatedProdLine.bind(this);
   }
 
   onChangeText = (e) => {
@@ -47,21 +52,23 @@ class ProductLinesBox extends Component {
     return allowed;
   }
 
-  onDeleteProdLine = (id) => {
+  async onDeleteProdLine(id) {
     if(!this.checkValidDelete(id)){
       alert('You cannot delete this product line, it is still used by skus');
       return;
     }
     const i = this.state.data.findIndex(c => c._id === id);
+    let item = this.state.data[i];
     const data = [
       ...this.state.data.slice(0, i),
       ...this.state.data.slice(i + 1),
     ];
     this.setState({ data });
-    fetch(`api/products/${id}`, { method: 'DELETE' })
-      .then(res => res.json()).then((res) => {
-        if (!res.success) this.setState({ error: res.error });
-      });
+    
+    let res = await SubmitRequest.submitDeleteItem(Constants.prod_line_page_name, item);
+    if (!res.success) {
+      this.setState({ error: res.error });
+    }
   }
 
   submitProdLine = (e) => {
@@ -75,28 +82,27 @@ class ProductLinesBox extends Component {
     }
   }
 
-  submitNewProdLine = () => {
+  async submitNewProdLine() {
     const { name } = this.state;
-    fetch('/api/products', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name}),
-    }).then(res => res.json()).then((res) => {
-      if (!res.success) this.setState({ error: res.error.message || res.error });
-      else this.setState({ name: '', error: null });
-    });
+    let res = await SubmitRequest.submitCreateItem(Constants.prod_line_page_name, { name });
+    if (!res.success) {
+      this.setState({ error: res.error });
+    }
+    else {
+      this.setState({ name: '', error: null });
+    }
   }
 
-  submitUpdatedProdLine = () => {
-    const { name,updateId} = this.state;
-    fetch(`/api/products/${updateId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name }),
-    }).then(res => res.json()).then((res) => {
-      if (!res.success) this.setState({ error: res.error.message || res.error });
-      else this.setState({ name: '', error: null });
-    });
+  async submitUpdatedProdLine() {
+    const { name, updateId } = this.state;
+    let item = { name };
+    let res = await SubmitRequest.submitUpdateItem(Constants.prod_line_page_name, item);
+    if (!res.success) {
+      this.setState({ error: res.error});
+    }
+    else {
+      this.setState({ name: '', error: null })
+    }
   }
 
   componentDidMount() {
@@ -111,15 +117,16 @@ class ProductLinesBox extends Component {
     this.pollInterval = null;
   }
 
-  loadSkusforLines = async (all_prod_lines) => {
+  async loadSkusforLines(all_prod_lines) {
     var prod_lines = [];
     for( const prod_line of all_prod_lines ){ 
-      var skus = await fetch(`/api/skus_filter/_/_/_/${prod_line._id}`, {method: 'GET'})
-      .then(data => data.json())
-      .then((res) => {
-        if (!res.success) this.setState({ error: res.error });
-        else return res.data;
-      });
+      let res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, '_', '_', '_', '_', '_', prod_line._id);
+      if (!res.success) {
+        this.setState({ error: res.error});
+      }
+      else {
+        var skus = res.data;
+      }
       var prod_line_with_sku = {
         ...prod_line,
         skus: skus
@@ -129,17 +136,16 @@ class ProductLinesBox extends Component {
     return prod_lines;
   }
 
-  loadProdLinesFromServer = async() => {
-    // fetch returns a promise. If you are not familiar with promises, see
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
-    let all_prod_lines = await fetch(`/api/products`)
-      .then(data => data.json())
-      .then((res) => {
-        if (!res.success) this.setState({ error: res.error });
-        else return res.data;
-      });
-      var prod_lines = await this.loadSkusforLines(all_prod_lines);
-      await this.setState({data: prod_lines});
+  async loadProdLinesFromServer() {
+    let res = await SubmitRequest.submitGetData(Constants.prod_line_page_name);
+    if (!res.success) {
+      this.setState({ error: res.error });
+    }
+    else {
+      var all_prod_lines = res.data;
+    }
+    var prod_lines = await this.loadSkusforLines(all_prod_lines);
+    await this.setState({data: prod_lines});
   }
 
   render() {

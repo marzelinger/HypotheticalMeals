@@ -7,7 +7,6 @@ import React from 'react';
 import Filter from './Filter';
 import GoalsSkuTable from './GoalsSkuTable'
 import TableOptions from './TableOptions'
-import SubmitRequest from './../../helpers/SubmitRequest'
 import ItemStore from './../../helpers/ItemStore'
 import ItemDetails from './ItemDetails'
 import AddToManuGoal from './AddToManuGoal'
@@ -21,6 +20,7 @@ import './../../style/ListPage.css';
 import GeneralNavBar from "../GeneralNavBar";
 import ExportSimple from '../export/ExportSimple';
 import DependencyReport from '../export/DependencyReport';
+import SubmitRequest from './../../helpers/SubmitRequest';
 
 
 export default class ManuGoalsTables extends React.Component {
@@ -35,6 +35,8 @@ export default class ManuGoalsTables extends React.Component {
             error: null,
             onDeleteSku: props.onDeleteSku
         };
+
+        this.loadDataFromServer = this.loadDataFromServer.bind(this);
     }
 
     componentDidMount = () => {
@@ -43,15 +45,13 @@ export default class ManuGoalsTables extends React.Component {
 
     async loadDataFromServer() {
         console.log(this.state.query);
-        fetch(this.state.query, { method: 'GET' })
-          .then(data => data.json())
-          .then((res) => {
-            if (!res.success) this.setState({ error: res.error });
-            else this.setState({ 
-                data: res.data
-            });
-            
-          });
+        let res = await SubmitRequest.submitQueryString(this.state.query);
+        if (!res.success) {
+            this.setState({ error: res.error });
+        }
+        else {
+            this.setState({ data: res.data });
+        }
     }
 
     onSort = (event, sortKey) => {
