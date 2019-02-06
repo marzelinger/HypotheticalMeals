@@ -113,6 +113,7 @@ export default class PageTable extends Component {
                 product_line = {this.props.product_lines}
                 sku = {this.props.skus}
                 id = "tableactions"
+                onTableOptionSelection = {this.props.onTableOptionSelection}
               >
               </TableActions>
             
@@ -126,7 +127,7 @@ export default class PageTable extends Component {
     return (
       <div>
         <Table
-          height={'413px'}
+          height={!this.state.selectable ? null : '413px'}
           fixedHeader={this.state.fixedHeader}
           fixedFooter={this.state.fixedFooter}
           selectable={this.state.selectable}
@@ -135,8 +136,8 @@ export default class PageTable extends Component {
         >
           <TableHeader
             displaySelectAll={false}
-            adjustForCheckbox={true}
-            enableSelectAll={this.state.enableSelectAll}
+            adjustForCheckbox={this.state.selectable}
+            enableSelectAll={false}
           >
               {this.getTableSuperHeader()}
             <TableRow class = "cols" selectable = {true} >

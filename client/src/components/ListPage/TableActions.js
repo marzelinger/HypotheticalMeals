@@ -5,7 +5,7 @@ import Filter from './Filter';
 import TableOptions from './TableOptions'
 import TextField from 'material-ui/TextField';
 import SearchIcon from 'material-ui/svg-icons/action/search'
-
+import AddIcon from 'material-ui/svg-icons/content/add-circle'
 
 export default class TableActions extends React.Component {
   constructor(props) {
@@ -37,6 +37,7 @@ export default class TableActions extends React.Component {
 
         )})
       }
+      <AddIcon id = "addnewitem"  onClick = {() => {this.props.onTableOptionSelection(null, Constants.create_item)}}></AddIcon>
       </div>
     );
   }
