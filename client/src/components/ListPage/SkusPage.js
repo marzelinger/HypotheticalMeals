@@ -104,12 +104,14 @@ export default class ListPage extends React.Component {
                 this.props.default_ing_filter._id, undefined, 0);
         }
         this.loadDataFromServer();
+        this.setNumberPages();
     }
 
     async componentDidUpdate (prevProps, prevState) {
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }
+        //this.setNumberPages();
     }
 
     updateDataState = async () => {

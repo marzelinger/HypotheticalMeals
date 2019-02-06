@@ -5,10 +5,13 @@ import { logoutUser } from "../../actions/authActions";
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 
+import { Provider } from "react-redux";
+
 class Logout extends Component {
   onLogoutClick = e => {
+    console.log("this is in the onLogoutClcik");
     e.preventDefault();
-    this.props.logoutUser();
+    logoutUser();
   };
 
 render() {
@@ -18,6 +21,8 @@ return (
     );
   }
 }
+
+
 Logout.propTypes = {
   logoutUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired
@@ -26,6 +31,7 @@ Logout.propTypes = {
 const mapStateToProps = state => ({
   auth: state.auth
 });
+
 
 export default connect(
   mapStateToProps,
