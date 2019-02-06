@@ -13,7 +13,7 @@ import ItemStore from '../../helpers/ItemStore'
 import AddToManuGoal from './AddToManuGoal'
 import { 
     Alert,
-    Modal} from 'reactstrap';
+    Modal, ModalHeader} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import './../../style/SkusPage.css';
 import ExportSimple from '../export/ExportSimple';
@@ -99,17 +99,17 @@ export default class ListPage extends React.Component {
 
     async componentDidMount() {
         if (this.props.default_ing_filter !== undefined){
-            await this.onAddFilter(Constants.ingredient_label)
-            await this.onFilterValueSelection(this.props.default_ing_filter.name, 
-                this.props.default_ing_filter._id, undefined, 0);
+            await this.onFilterValueSelection([this.props.default_ing_filter.name], null, 'ingredient');
         }
         this.loadDataFromServer();
+        this.setNumberPages();
     }
 
     async componentDidUpdate (prevProps, prevState) {
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }
+        //this.setNumberPages();
     }
 
     updateDataState = async () => {
@@ -207,15 +207,6 @@ export default class ListPage extends React.Component {
             case Constants.create_item:
                 this.onCreateNewItem();
                 break;
-            case Constants.add_ing_filter:
-                this.onAddFilter(Constants.ingredient_label);
-                break;
-            case Constants.add_keyword_filter:
-                this.onAddFilter(Constants.keyword_label);
-                break;
-            case Constants.add_prod_filter:
-                this.onAddFilter(Constants.prod_line_label);
-                break;
             case Constants.add_to_manu_goals:
                 await this.onAddManuGoals();
                 break;
@@ -311,18 +302,17 @@ export default class ListPage extends React.Component {
                         onRemoveFilter = {this.onRemoveFilter}
                         ingredients = {this.state.ingredients}
                         product_lines = {this.state.product_lines}
+                        onTableOptionSelection = {this.onTableOptionSelection}
                     />
                 </div>
                 <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
+                    <ModalHeader toggle={this.toggle}>SKU Details</ModalHeader>
                     <SkuDetails
                             item={this.state.detail_view_item}
                             detail_view_options={this.state.detail_view_options}
                             handlePropChange={this.onPropChange}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
                         />
-                    <Alert
-                        value={this.state.error}
-                        color='danger'/>
                 </Modal>
                 <AddToManuGoal selected_skus={this.state.selected_items} isOpen={this.state.manu_goals_modal} toggle={(toggler) => this.toggle(toggler)} manu_goals_data={this.state.manu_goals_data}></AddToManuGoal> 
 
@@ -358,7 +348,18 @@ export default class ListPage extends React.Component {
                         />
                         </PaginationItem>
                     </div>
-                    {this.props.default_ing_filter !== undefined ? null : (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}   
+                    <div className = "ingbuttons"> 
+                        
+                        {this.props.default_ing_filter !== undefined ? null : (<div className = "manugoalbutton hoverable"
+                            onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}
+                            primary={true}
+                            >
+                            Add To Manufacturing Goal
+                        </div>)}
+                        {this.props.default_ing_filter !== undefined ? null : (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}   
+                     
+                    </div>
+                    
                     </Pagination>
                     
                     
