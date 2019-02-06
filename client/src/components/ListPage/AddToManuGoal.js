@@ -7,6 +7,7 @@ import SelectQuantities from './SelectQuantities';
 import '../../style/ManufacturingGoalsBox.css'
 import * as Constants from '../../resources/Constants';
 import { ModalBase } from 'office-ui-fabric-react';
+import SubmitRequest from './../../helpers/SubmitRequest';
 
 export default class AddToManuGoal extends React.Component {
     constructor(props){
@@ -16,6 +17,7 @@ export default class AddToManuGoal extends React.Component {
             goal: {},
             quantities: []
         }
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleGoalSelection = (goal) => {
@@ -26,7 +28,7 @@ export default class AddToManuGoal extends React.Component {
         this.setState({currentScreen: 'selection', goal: {}, quantities: []});
     }
 
-    handleSubmit = (quantities) => {
+    async handleSubmit(quantities) {
         var goal = this.state.goal;
         console.log(goal);
         Object.keys(quantities).forEach( (key) => {
@@ -41,14 +43,13 @@ export default class AddToManuGoal extends React.Component {
             }
           });
         console.log(goal);
-        fetch(`/api/manugoals/${goal.user}/${goal._id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(goal),
-        }).then(res => res.json()).then((res) => {
-          if (!res.success) this.setState({ error: res.error.message || res.error });
-          else this.setState({ name: '', skus: '', user: '', error:null });
-        });
+        let res = await SubmitRequest.submitUpdateGoal(goal.user, goal._id, goal);
+        if (!res.success) {
+            this.setState({ error: res.error});
+        }
+        else {
+            this.setState({ name: '', skus: '', user: '', error: null })
+        }
         this.resetState();
         this.props.toggle(Constants.manu_goals_modal);
     }

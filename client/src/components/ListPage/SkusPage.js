@@ -8,16 +8,16 @@ import PropTypes from 'prop-types';
 import Filter from './Filter';
 import PageTable from './PageTable'
 import TableOptions from './TableOptions'
-import SubmitRequest from './../../helpers/SubmitRequest'
-import ItemStore from './../../helpers/ItemStore'
+import SubmitRequest from '../../helpers/SubmitRequest'
+import ItemStore from '../../helpers/ItemStore'
 import AddToManuGoal from './AddToManuGoal'
 import { 
     Alert,
     Modal} from 'reactstrap';
-import * as Constants from './../../resources/Constants';
-import './../../style/ListPage.css';
+import * as Constants from '../../resources/Constants';
+import './../../style/SkusPage.css';
 import ExportSimple from '../export/ExportSimple';
-import DataStore from './../../helpers/DataStore'
+import DataStore from '../../helpers/DataStore'
 import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import SkuDetails from './SkuDetails';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -316,21 +316,8 @@ export default class ListPage extends React.Component {
 
     onAddManuGoals =  async() => {
         this.toggle(Constants.manu_goals_modal);
-        await this.getManuGoalsData();
-    }
-
-    getManuGoalsData = () => {
-
-        fetch(`/api/manugoals/${this.state.user}`, { method: 'GET' })
-          .then(data => data.json())
-          .then((res) => {
-            console.log(res.data);
-            if (!res.success) this.setState({ error: res.error });
-            else this.setState({ 
-                manu_goals_data: res.data
-            });
-            
-          });
+        let res = await SubmitRequest.submitGetManuGoalsData(this.state.user);
+        this.setState({ manu_goals_data: res.data});
     }
 
     async onSort(event, sortKey) {

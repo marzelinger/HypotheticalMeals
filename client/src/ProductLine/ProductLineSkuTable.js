@@ -4,8 +4,6 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Input } from 'reactstrap';
-import AutoComplete from 'material-ui/AutoComplete';
 import {
   Table,
   TableBody,
@@ -15,7 +13,7 @@ import {
   TableRow,
   TableRowColumn,
 } from 'material-ui/Table';
-import * as Constants from '../resources/Constants';
+import * as Constants from './../resources/Constants';
 import Select from 'react-select'
 import './ProductLine.css'
 
