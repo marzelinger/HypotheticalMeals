@@ -119,9 +119,17 @@ export const exportProdLines = (dataIN, fileTitle)  => {
 
 
 
-export const exportReportSKUs = (addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items ) => {
+export const exportReportSKUs = (addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items, fileType ) => {
     const rows = [];
     var fileLabel = [];
+    var noAdd = [];
+    noAdd.push("No " + fileType +" Added ");
+    var noUp = [];
+    noUp.push("No " + fileType +" Updated ");
+    var noIgn = [];
+    noIgn.push("No " + fileType +" Ignored ");
+
+
     fileLabel.push("SKU#");
     fileLabel.push("Name");
     fileLabel.push("Case UPC");
@@ -134,6 +142,9 @@ export const exportReportSKUs = (addedLabel, updatedLabel, ignoredLabel,added_it
     if(added_items.length>0){
     rows.push(addedLabel);
     rows.push(fileLabel);
+    }
+    else{
+        rows.push(noAdd);
     }
     for (let a = 0; a<added_items.length; a++){
         var curAdd = added_items[a];
@@ -153,6 +164,9 @@ export const exportReportSKUs = (addedLabel, updatedLabel, ignoredLabel,added_it
         rows.push(updatedLabel);
         rows.push(fileLabel);
         }
+        else{
+            rows.push(noUp);
+        }
     for (let u = 0; u<updated_items.length; u++){
         var curUp = updated_items[u];
         var upLine = [];
@@ -170,6 +184,9 @@ export const exportReportSKUs = (addedLabel, updatedLabel, ignoredLabel,added_it
     if(ignored_items.length>0){
         rows.push(ignoredLabel);
         rows.push(fileLabel);
+        }
+        else{
+            rows.push(noIgn);
         }
     for (let i = 0; i<ignored_items.length; i++){
         var curIgn = ignored_items[i];
@@ -187,9 +204,18 @@ export const exportReportSKUs = (addedLabel, updatedLabel, ignoredLabel,added_it
     return rows;
 }
 
-export const exportReportIngredients = (addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items ) => {
+export const exportReportIngredients = (addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items , fileType) => {
     const rows = [];
     var fileLabel = [];
+
+
+    var noAdd = [];
+    noAdd.push("No " + fileType +" Added ");
+    var noUp = [];
+    noUp.push("No " + fileType +" Updated ");
+    var noIgn = [];
+    noIgn.push("No " + fileType +" Ignored ");
+
     fileLabel.push("Ingr#");
     fileLabel.push("Name");
     fileLabel.push("Vendor Info");
@@ -201,6 +227,9 @@ export const exportReportIngredients = (addedLabel, updatedLabel, ignoredLabel,a
     if(added_items.length>0){
         rows.push(addedLabel);
         rows.push(fileLabel);
+        }
+        else{
+            rows.push(noAdd);
         }
     for (let a = 0; a<added_items.length; a++){
         var curAdd = added_items[a];
@@ -216,6 +245,9 @@ export const exportReportIngredients = (addedLabel, updatedLabel, ignoredLabel,a
     if(updated_items.length>0){
         rows.push(updatedLabel);
         rows.push(fileLabel);
+        }
+        else{
+            rows.push(noUp);
         }
     for (let u = 0; u<updated_items.length; u++){
         var curUp = updated_items[u];
@@ -233,6 +265,9 @@ export const exportReportIngredients = (addedLabel, updatedLabel, ignoredLabel,a
         rows.push(ignoredLabel);
         rows.push(fileLabel);
         }
+        else{
+            rows.push(noIgn);
+        }
     for (let i = 0; i<ignored_items.length; i++){
         var curIgn = ignored_items[i];
         var ignLine = [];
@@ -248,14 +283,27 @@ export const exportReportIngredients = (addedLabel, updatedLabel, ignoredLabel,a
 
 }
 
-export const exportReportProdLines = (addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items ) => {
+export const exportReportProdLines = (addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items , fileType) => {
     const rows = [];
     var fileLabel = [];  
     fileLabel.push("Name");
 
+
+
+
+    var noAdd = [];
+    noAdd.push("No " + fileType +" Added ");
+    var noUp = [];
+    noUp.push("No " + fileType +" Updated ");
+    var noIgn = [];
+    noIgn.push("No " + fileType +" Ignored ");
+
     if(added_items.length>0){
         rows.push(addedLabel);
         rows.push(fileLabel);
+    }
+    else{
+        rows.push(noAdd);
     }
 
     for (let a = 0; a<added_items.length; a++){
@@ -269,6 +317,9 @@ export const exportReportProdLines = (addedLabel, updatedLabel, ignoredLabel,add
         rows.push(updatedLabel);
         rows.push(fileLabel);
         }
+        else{
+            rows.push(noUp);
+        }
     for (let u = 0; u<updated_items.length; u++){
         var curUp = updated_items[u];
         var upLine = [];
@@ -280,6 +331,9 @@ export const exportReportProdLines = (addedLabel, updatedLabel, ignoredLabel,add
         rows.push(ignoredLabel);
         rows.push(fileLabel);
         }
+        else{
+            rows.push(noIgn);
+        }
     for (let i = 0; i<ignored_items.length; i++){
         var curIgn = ignored_items[i];
         var ignLine = [];
@@ -290,7 +344,7 @@ export const exportReportProdLines = (addedLabel, updatedLabel, ignoredLabel,add
 
 }
 
-export const exportReportFormulas = (addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items ) => {
+export const exportReportFormulas = (addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items , fileType) => {
     // var fileLabel = [];
     // fileLabel.push("Name");
     // fileLabel.push("Number");
@@ -301,6 +355,15 @@ export const exportReportFormulas = (addedLabel, updatedLabel, ignoredLabel,adde
     // fileLabel.push("Product Line Name");
     // fileLabel.push("Comment"); 
     const rows = [];
+
+
+
+    var noAdd = [];
+    noAdd.push("No " + fileType +" Added ");
+    var noUp = [];
+    noUp.push("No " + fileType +" Updated ");
+    var noIgn = [];
+    noIgn.push("No " + fileType +" Ignored ");
 
     var fileLabel = [];
     fileLabel.push("SKU#");
@@ -315,6 +378,9 @@ export const exportReportFormulas = (addedLabel, updatedLabel, ignoredLabel,adde
     if(added_items.length>0){
     rows.push(addedLabel);
     rows.push(fileLabel);
+    }
+    else{
+        rows.push(noAdd);
     }
     for (let a = 0; a<added_items.length; a++){
         var curAdd = added_items[a];
@@ -334,6 +400,9 @@ export const exportReportFormulas = (addedLabel, updatedLabel, ignoredLabel,adde
         rows.push(updatedLabel);
         rows.push(fileLabel);
         }
+        else{
+            rows.push(noUp);
+        }
     for (let u = 0; u<updated_items.length; u++){
         var curUp = updated_items[u];
         var upLine = [];
@@ -351,6 +420,9 @@ export const exportReportFormulas = (addedLabel, updatedLabel, ignoredLabel,adde
     if(ignored_items.length>0){
         rows.push(ignoredLabel);
         rows.push(fileLabel);
+        }
+        else{
+            rows.push(noIgn);
         }
     for (let i = 0; i<ignored_items.length; i++){
         var curIgn = ignored_items[i];
@@ -370,6 +442,7 @@ export const exportReportFormulas = (addedLabel, updatedLabel, ignoredLabel,adde
 }
 
 export const exportImportReport = (added_items, updated_items, ignored_items, fileType)  => {
+    console.log("in this exportImport file");
     var addedLabel = [];
     addedLabel.push("Added "+ fileType);
     var updatedLabel = [];
@@ -380,19 +453,19 @@ export const exportImportReport = (added_items, updated_items, ignored_items, fi
     var fileTitle = "";
     switch(fileType){
         case ("SKUs"):
-            rows = exportReportIngredients(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items);
+            rows = exportReportIngredients(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items, fileType);
             fileTitle = "skus";
             break;
         case("Ingredients"):
-            rows = exportReportIngredients(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items);
+            rows = exportReportIngredients(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items, fileType);
             fileTitle = "ingredients";
             break;
         case ("Formulas"):
-            rows = exportReportFormulas(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items);
+            rows = exportReportFormulas(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items, fileType);
             fileTitle = "formulas";
             break;
         case ("Product Line"): 
-            rows = exportReportProdLines(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items);
+            rows = exportReportProdLines(addedLabel, updatedLabel, ignoredLabel,added_items, updated_items, ignored_items, fileType);
             fileTitle = "product_lines";
         break;
       }
