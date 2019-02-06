@@ -3,7 +3,7 @@ import 'whatwg-fetch';
 import ProductLineList from './ProductLineList';
 import ProductLineForm from './ProductLineForm';
 // import '../style/ProductLineBox.css';
-import * as Constants from '../resources/Constants';
+import * as Constants from './../resources/Constants';
 import SubmitRequest from './../helpers/SubmitRequest';
 const jwt_decode = require('jwt-decode');
 
