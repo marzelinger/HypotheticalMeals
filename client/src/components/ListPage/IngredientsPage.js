@@ -37,10 +37,6 @@ export default class IngredientsPage extends React.Component {
         this.state = {
             page_name,
             page_title,
-            sku_substr: [],
-            filter_value: [],
-            filter_category: [],
-            assisted_search_results: [[]],
             table_columns,
             table_properties,
             table_options,
@@ -55,13 +51,19 @@ export default class IngredientsPage extends React.Component {
             modal: false,
             simple: props.simple || false,
             currentPage: 0,
-            pageSize: 2,
-            pagesCount: 0
+            pageSize: 7,
+            pagesCount: 0,
+            filters: {
+                'keyword': '',
+                'sku': []
+            },
+            filterChange: false,
+            skus: []
 
         };
         this.toggleModal = this.toggleModal.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
-        this.onKeywordSubmit = this.onKeywordSubmit.bind(this);
+        this.onFilterValueChange = this.onFilterValueChange.bind(this);
         this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
                 this.handlePageClick=this.handlePageClick.bind(this);
@@ -87,79 +89,37 @@ export default class IngredientsPage extends React.Component {
 
     async componentDidUpdate (prevProps, prevState) {
         console.log(this.state.data)
-        if (prevState.sku_substr !== this.state.sku_substr || prevState.filter_value !== this.state.filter_value || 
-            prevState.filter_category !== this.state.filter_category) {
-            await this.updateFilterState(prevState);
-            this.loadDataFromServer();
-            console.log(this.state.data)
+        if (this.state.filterChange) {
+            await this.loadDataFromServer();
         }
     }
 
-    async updateFilterState(prevState) {
-        var asr = this.state.assisted_search_results.slice();
-        for (var i = 0; i < prevState.sku_substr.length; i++) {
-            if (this.state.filter_category[i] === Constants.sku_label
-                && this.state.sku_substr[i].length > 0) {
-                let res = await SubmitRequest.submitGetSkusByNameSubstring(this.state.sku_substr[i]);
-                if (res === undefined || !res.success) {
-                    res.data = [];
-                }
-                asr[i] = res.data;
-            }
-            else if (this.state.filter_category[i] === Constants.keyword_label) {
-                if (prevState.sku_substr[i] !== this.state.sku_substr[i]){
-                    this.onKeywordSubmit(i);
-                }
-                asr[i] = [];
-            }
-            else {
-                asr[i] = [];
-            }
-        }
-        this.setState({
-            assisted_search_results: asr
-        });
+    updateDataState = async() => {
+        var {data: skus} = await SubmitRequest.submitGetData(Constants.skus_page_name);
+        this.setState({skus: skus});
     }
 
     async loadDataFromServer() {
-
-                let allData = await SubmitRequest.submitGetData(this.state.page_name);
-
-
-        if (this.state.filter_value === undefined) return;
-        var final_sku_filter = '';
-        var final_keyword_filter = '';
-        for (var i = 0; i < this.state.filter_value.length; i++){
-            if (this.state.filter_value[i].length === Constants.obj_id_length 
-                && this.state.filter_category[i] === Constants.sku_label) {
-                    final_sku_filter += (final_sku_filter.length == 0 ? '' : ',');
-                    final_sku_filter += this.state.filter_value[i];
-            }
-            else if (this.state.filter_category[i] === Constants.keyword_label) {
-                final_keyword_filter = this.state.filter_value[i];
-            }
-        }
-        if (final_sku_filter === '') final_sku_filter = '_';
+        let allData = await SubmitRequest.submitGetData(this.state.page_name);
+        var final_keyword_filter = this.state.filters['keyword'];
+        var final_sku_filter = this.state.filters['sku'].join(',');
         if (final_keyword_filter === '') final_keyword_filter = '_';
-
+        if (final_sku_filter === '') final_sku_filter = '_';
 
             var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
                 this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
                 var resALL = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
                     this.state.sort_field, final_sku_filter, final_keyword_filter, 0, allData.data.length);
-                console.log("this is the res: "+res);
-                console.log("this is the res.data: "+res.data);
-    
-        
-
         if (res === undefined || !res.success) {
             res.data = [];
             resALL.data = [];
         }
-        this.setState({
+        await this.setState({
             data: res.data,
-            exportData: resALL.data
+            exportData: resALL.data,
+            filterChange: false
         })
+        this.updateDataState();
     }
 
     async updateSkuCounts() {
@@ -178,26 +138,25 @@ export default class IngredientsPage extends React.Component {
         // MAYBE NEED TO ADD SOMETHING TO RECALCULATE PAGES?
     }
 
+    onFilterValueChange = (e, value, filterType) => {
+        var filters = this.state.filters;
+        if(filterType == 'keyword'){
+            filters[filterType] = value;
+        }
+        this.setState({filters: filters, filterChange: true}) ;
+    }
+
     async setNumberPages(){
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        console.log('this is the allData: '+allData);
-        console.log('this is the allData length: '+allData.data.length);
-        console.log('this is the pageSize: '+this.state.pageSize);
         var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
-        console.log('this is the pagesCount1: '+this.state.pagesCount);
-
         this.setState({
             currentPage: 0,
             pagesCount: curCount,
         }); 
-               console.log('this is the pagesCount: '+this.state.pagesCount);
-
     }
 
     handlePageClick = (e, index) => {
         e.preventDefault();
-        console.log("this is current page1; "+this.state.currentPage);
-
         this.setState({
             currentPage: index
         });
@@ -205,67 +164,24 @@ export default class IngredientsPage extends React.Component {
     }
 
 
-    // async loadExportData(e){
-    //     e.preventDefault();
-    //     let allData = await SubmitRequest.submitGetData(this.state.page_name);
-
-    //     if (this.state.filter_value === undefined) return;
-    //     var final_sku_filter = '';
-    //     var final_keyword_filter = '';
-    //     for (var i = 0; i < this.state.filter_value.length; i++){
-    //         if (this.state.filter_value[i].length === Constants.obj_id_length 
-    //             && this.state.filter_category[i] === Constants.sku_label) {
-    //                 final_sku_filter += (final_sku_filter.length == 0 ? '' : ',');
-    //                 final_sku_filter += this.state.filter_value[i];
-    //         }
-    //         else if (this.state.filter_category[i] === Constants.keyword_label) {
-    //             final_keyword_filter = this.state.filter_value[i];
-    //         }
-    //     }
-    //     if (final_sku_filter === '') final_sku_filter = '_';
-    //     if (final_keyword_filter === '') final_keyword_filter = '_';
-        
-    //     console.log("this is the all data length: "+allData.data.length);
-    //     var res = await SubmitRequest.submitGetFilterDataPag(Constants.ing_filter_path, 
-    //         this.state.sort_field, final_sku_filter, final_keyword_filter, 0, allData.data.length);
-    //     console.log("this is the res: "+res);
-
-    //     this.setState({
-    //         exportData: res.data
-    //     });
-    // }
-
-
-    onFilterValueChange = (e, id) => {
-        var sku_sub = this.state.sku_substr.slice();
-        sku_sub[id] = e.target.value;
-        this.setState({
-            sku_substr: sku_sub
-        });
-    }
-
-    onFilterValueSelection (e, item, id) {
-        var sku_sub = this.state.sku_substr.slice();
-        sku_sub[id] = item.name;
-        var fil_val = this.state.filter_value.slice();
-        fil_val[id] = item._id;
-        var asr = this.state.assisted_search_results.slice();
-        asr[id] = [];
-        this.setState({
-            sku_substr: sku_sub,
-            filter_value: fil_val,
-            assisted_search_results: asr
-        });
-    }
-
-    onKeywordSubmit (id) {
-        if (this.state.filter_category[id] == Constants.keyword_label){
-            var fil_val = this.state.filter_value.slice();
-            fil_val[id] = this.state.sku_substr[id];
-            this.setState({
-                filter_value: fil_val
-            });
+    onFilterValueChange = (e, value, filterType) => {
+        var filters = this.state.filters;
+        if(filterType == 'keyword'){
+            filters[filterType] = value;
         }
+        this.setState({filters: filters, filterChange: true}) ;
+    }
+
+    onFilterValueSelection (vals, e, type)  {
+        var filters = this.state.filters;
+        filters[type] = vals.map((item) => {
+            return item.value
+        })
+        
+        this.setState({
+            filters: filters,
+            filterChange: true
+        });
     }
 
     async onCreateNewItem() {
@@ -280,42 +196,8 @@ export default class IngredientsPage extends React.Component {
         this.toggleModal();
     }
 
-    onAddFilter = (type) => {
-        if (type == Constants.keyword_label && this.state.filter_category.includes(type)){
-            return;
-        }
-        var ind = this.state.sku_substr.length;
-        var sku_sub = this.state.sku_substr.slice();
-        sku_sub[ind] = '';
-        var fil_val = this.state.filter_value.slice();
-        fil_val[ind] = '';
-        var fil_cat = this.state.filter_category.slice();
-        fil_cat[ind] = type;
-        var asr = this.state.assisted_search_results.slice();
-        asr[ind] = [];
-        this.setState({ 
-            sku_substr: sku_sub,
-            filter_value: fil_val,
-            filter_category: fil_cat,
-            assisted_search_results: asr,
-        })
-    }
 
     onRemoveFilter = (e, id) => {
-        var sku_sub = this.state.sku_substr.slice();
-        sku_sub[id] = '';
-        var fil_val = this.state.filter_value.slice();
-        fil_val[id] = '';
-        var fil_cat = this.state.filter_category.slice();
-        fil_cat[id] = Constants.filter_removed;
-        var asr = this.state.assisted_search_results.slice();
-        asr[id] = [];
-        this.setState({ 
-            sku_substr: sku_sub,
-            filter_value: fil_val,
-            filter_category: fil_cat,
-            assisted_search_results: asr,
-        })
     }
 
     onTableOptionSelection = (e, opt) => {
@@ -345,12 +227,10 @@ export default class IngredientsPage extends React.Component {
     // };
 
     onSelect = (rowIndexes) => {
-        console.log(rowIndexes);
         var newState = [];
         rowIndexes.forEach( index => {
             newState.push(this.state.data[index]);
         });
-        console.log(newState);
         this.setState({ selected_items: newState, selected_indexes: rowIndexes});
     };
 
@@ -404,26 +284,6 @@ export default class IngredientsPage extends React.Component {
         
         return (
             <div className="list-page">
-                <div className="options-container" id={this.state.simple ? "simple" : "complex"}>
-                    {this.state.sku_substr.map((ss,index) => {
-                        if (this.state.filter_category[index] != Constants.filter_removed){
-                            return (<Filter 
-                                        key={'filter'+index}
-                                        id={index}
-                                        value={ss}
-                                        filter_category={this.state.filter_category[index]} 
-                                        assisted_search_results={this.state.assisted_search_results[index]}
-                                        handleFilterValueChange={this.onFilterValueChange}
-                                        handleFilterValueSelection={this.onFilterValueSelection}
-                                        handleRemoveFilter={this.onRemoveFilter}
-                                    />)
-                        }
-                    })}
-                    <TableOptions
-                        table_options={this.state.table_options}
-                        handleTableOptionSelection={this.onTableOptionSelection}
-                    />
-                </div>
                 <div>
                     <PageTable 
                         columns={this.state.table_columns} 
@@ -437,6 +297,15 @@ export default class IngredientsPage extends React.Component {
                         showDetails = {true}
                         sortable = {true}
                         title = {this.state.page_title}
+                        showHeader = {true}
+                        simple = {this.props.simple}
+                        filters = {this.state.filters}
+                        table_options = {this.state.table_options}
+                        onTableOptionSelection = {this.onTableOptionSelection}
+                        onFilterValueSelection = {this.onFilterValueSelection}
+                        onFilterValueChange = {this.onFilterValueChange}
+                        onRemoveFilter = {this.onRemoveFilter}
+                        skus = {this.state.skus}
                     />
                 </div>
                 <Modal isOpen={this.state.modal} toggle={this.toggleModal} id="popup" className='item-details'>
@@ -450,55 +319,49 @@ export default class IngredientsPage extends React.Component {
                         value={this.state.error}
                         color='danger'/>
                 </Modal>   
-                <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/>                           
-                <DependencyReport data = {this.state.data} />
+
 
                 <div className = "pagination-wrapper">
-                <Pagination aria-label="Page navigation example">
-            
-            <PaginationItem disabled={this.state.currentPage <= 0}>
-              
-              <PaginationLink
-                onClick={e => this.handlePageClick(e, this.state.currentPage - 1)}
-                previous
-                href="#"
-              />
+                    <Pagination aria-label="Page navigation example">
+                    <div>
+                    <PaginationItem disabled={this.state.currentPage <= 0}>
+                        <PaginationLink
+                            onClick={e => this.handlePageClick(e, this.state.currentPage - 1)}
+                            previous
+                            href="#"
+                        />
+                    </PaginationItem>
 
-</PaginationItem>
+                    {[...Array(this.state.pagesCount)].map((page, i) => 
+                    <PaginationItem active={i === this.state.currentPage} key={i}>
+                        <PaginationLink onClick={e => {
+                            //this.handlePageClick(e, i)
+                            this.setState({
+                                currentPage: i
+                            });
+                            this.loadDataFromServer();     
+                        }
+                    } href="#">
+                        {i + 1}
+                        </PaginationLink>
+                    </PaginationItem>
+                    )}
 
-{[...Array(this.state.pagesCount)].map((page, i) => 
-  <PaginationItem active={i === this.state.currentPage} key={i}>
-    <PaginationLink onClick={e => {
-        //this.handlePageClick(e, i)
-        this.setState({
-            currentPage: i
-        });
-        this.loadDataFromServer();     
-    }
- } href="#">
-      {i + 1}
-    </PaginationLink>
-  </PaginationItem>
-)}
-
-<PaginationItem disabled={this.state.currentPage >= this.state.pagesCount - 1}>
+                    <PaginationItem disabled={this.state.currentPage >= this.state.pagesCount - 1}>
               
-              <PaginationLink
-                onClick={e => this.handlePageClick(e, this.state.currentPage + 1)}
-                next
-                href="#"
-              />
-              
-            </PaginationItem>
-            
-          </Pagination>
+                    <PaginationLink
+                        onClick={e => this.handlePageClick(e, this.state.currentPage + 1)}
+                        next
+                        href="#"
+                    />
+                    </PaginationItem>
+                    </div>
+                    <div className = "ingbuttons">     
+                        <DependencyReport data = {this.state.data} />
+                        <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/> 
+                    </div>
+                    </Pagination>
                 </div>  
-
-
-
-
-
-
             </div>
         );
     }

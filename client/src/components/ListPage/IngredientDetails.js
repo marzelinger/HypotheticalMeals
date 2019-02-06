@@ -48,9 +48,7 @@ export default class IngredientDetails extends React.Component {
         if (this.state.invalid_inputs.length === 0) {
             this.props.handleDetailViewSubmit(e, this.props.item, opt);
         }
-        else {
-            alert('Invalid Fields');
-        }
+        else alert('Invalid Fields');
     }
 
     async validateInputs() { 

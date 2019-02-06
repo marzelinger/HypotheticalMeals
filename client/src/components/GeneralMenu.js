@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Register from "./auth/Register";
 import AdminRegister from "./auth/AdminRegister";
-import FloatingActionButton from 'material-ui/FloatingActionButton';
+import RaisedButton from 'material-ui/RaisedButton';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
@@ -27,13 +27,12 @@ export default class GeneralMenu extends React.Component {
   render() {
     return (
       <div>
-        <FloatingActionButton
-          label="Toggle Drawer"
-          onClick={this.handleToggle}
-        >
-          <MenuIcon/>
-        </FloatingActionButton>
-        <Drawer open={this.state.open} docked = {false} onRequestChange={(open) => this.setState({open})}>
+          <div  onClick={this.handleToggle}
+            className = "waves-effect waves-light button hoverable" primary = {true}>
+            <MenuIcon color = '#424242'></MenuIcon>
+          </div>
+          
+        <Drawer openSecondary = {true} open={this.state.open} docked = {false} onRequestChange={(open) => this.setState({open})}>
         <Link to="/manu_goals" >
           <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Manufacturing Goals'}></MenuItem>
         </Link>
@@ -44,12 +43,12 @@ export default class GeneralMenu extends React.Component {
           <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'SKUs'}></MenuItem>
         </Link>
         <Link to="/prod_lines" >
-          <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Manufacturing Goals'}></MenuItem>
+          <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Product Lines'}></MenuItem>
         </Link>
           {
             currentUserIsAdmin().isValid ? 
             (
-              <Link to="/prod_lines" >
+              <Link to="/register" >
                 <MenuItem style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Register New Users'}></MenuItem>
               </Link>
             )

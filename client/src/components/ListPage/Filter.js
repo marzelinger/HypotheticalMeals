@@ -6,95 +6,56 @@ import React from 'react'
 import PropTypes from 'prop-types';
 import { 
     Button,
-    Input,
-    InputGroupAddon,
-    InputGroup, 
-    ListGroup,
-    ListGroupItem} from 'reactstrap';
+    InputGroupAddon } from 'reactstrap';
 import * as Constants from '../../resources/Constants';
+import Select from 'react-select'
 
 
 export default class Filter extends React.Component {
     constructor(props) {
         super(props);
-
-        this.toggleFocus = this.toggleFocus.bind(this);
-        this.toggleBlur = this.toggleBlur.bind(this);
         this.state = {
             width: 100,
-            focus: false
+            focus: false,
+            open: false
         };
     }
 
-    toggleFocus() {
-        if (this){
-            this.setState({
-                focus: true
-            })
-        }
-    }
-
-    toggleBlur() {
-        if (this){
-            this.setState({
-                focus: false
-            })
-        }
-    }
-
-    showResults = (state) => {
-        if (state.focus){
-            return (<ListGroup>
-                {(this.props.assisted_search_results.map((res, index) => {
-                    if (index < 5) {
-                       return (<ListGroupItem
-                                    key={res.name}
-                                    tag="button"
-                                    onMouseDown={(e) => this.props.handleFilterValueSelection(e, res, this.props.id)}
-                                >{res.name}</ListGroupItem>)
-                    }
-                }
-            ))}
-            </ListGroup>
-            )
-        }
-        else {
-            return;
-        }
-        
-    }
-
     render() {
+        // var style = {
+        //     height: '10px !important',
+        //     width: '80%',
+        //     marginTop: '10px',
+        //     marginBottom: '10px'
+        // }
         return (
-        <div className='filter-item' style={{width: this.state.width + '%'}}>
-            {this.showResults(this.state)}
-            <InputGroup id = 'inputGroup'>
-                <Input 
-                    type="text"
-                    value={this.props.value}
-                    onChange={(e) => this.props.handleFilterValueChange(e, this.props.id)}
-                    onFocus={this.toggleFocus}
-                    onBlur={this.toggleBlur}
-                />
-                <InputGroupAddon addonType="append">{this.props.filter_category}</InputGroupAddon>
-                <InputGroupAddon addonType="append">
-                    <Button color="secondary" onClick={(e) => this.props.handleRemoveFilter(e, this.props.id)}> 
-                        {Constants.remove_filter_label}
-                    </Button>
-                </InputGroupAddon>
-            </InputGroup>
-            {/* {this.renderOptions()} */}
+        <div className='filter-item'>
+            <Select
+                placeholder = {`Filter by ${this.props.type}`}
+                isMulti
+                onChange={(opt, e) => this.props.handleFilterValueSelection(opt, e, this.props.type)}
+                options={this.props.data.map((item) => ({label: item.name, value: item._id}))}
+                noOptionsMessage={() => null}
+                theme={(theme) => ({
+                    ...theme,
+                    colors: {
+                    ...theme.colors,
+                      primary25: 'rgb(0, 188, 212, .5)',
+                      primary: 'rgb(66, 66, 66)',
+                    },
+                  })}
+            />
+            {/* <InputGroupAddon addonType="append">{this.props.type}</InputGroupAddon> */}
         </div>
         );
     }
 }
 
 Filter.propTypes = {
-    id: PropTypes.number,
     value: PropTypes.string,
-    filter_category: PropTypes.string,
-    assisted_search_results: PropTypes.arrayOf(PropTypes.object),
+    data: PropTypes.arrayOf(PropTypes.object),
     handleFilterValueChange: PropTypes.func,
     handleFilterValueSelection: PropTypes.func,
-    handleRemoveFilter: PropTypes.func
+    handleRemoveFilter: PropTypes.func,
+    type: PropTypes.string
   };

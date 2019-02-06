@@ -6,8 +6,8 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 render(
-  <MuiThemeProvider>
-    <App />
-  </MuiThemeProvider>,
-  document.getElementById('root')
+  <MuiThemeProvider>
+    <App />
+  </MuiThemeProvider>,
+  document.getElementById('root')
 )

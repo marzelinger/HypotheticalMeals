@@ -103,7 +103,7 @@ class SkuHandler{
 
     static async getAllSkus(req, res){
         try {
-            let all_skus = await SKU.find();
+            let all_skus = await SKU.find().populate('ingredients').populate('prod_line');
             return res.json({ success: true, data: all_skus});
         }
         catch (err) {

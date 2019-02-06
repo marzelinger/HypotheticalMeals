@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
+import FlatButton from 'material-ui/FlatButton';
+import Person from 'material-ui/svg-icons/social/person-outline';
+import '../../style/GeneralMenu.css';
 
 class Logout extends Component {
   onLogoutClick = e => {
@@ -14,7 +15,14 @@ class Logout extends Component {
 render() {
     const { user } = this.props.auth;
 return (
-        <MenuItem onClick={this.onLogoutClick} primaryText="Log out"/>
+          <FlatButton
+            label={`Log out ${user.name}`}
+            labelPosition="after"
+            primary={true}
+            cursor
+            icon={<Person />}
+            onClick = {this.onLogoutClick}
+            />
     );
   }
 }
