@@ -6,7 +6,6 @@ export const MANUFACTURING_TITLE="Manufacturing Goals"
 export const DEFAULT_USER="default_user"
 
 export const product_line_title="Product Lines"
-export const prod_line_page_name = 'productlines';
 
 
 
@@ -19,6 +18,8 @@ export const ingredients_page_name = 'ingredients';
 export const ing_filter_path = 'ingredients_filter';
 export const sku_filter_path = 'skus_filter';
 export const skus_page_name = 'skus';
+export const manugoals_page_name = 'manugoals';
+export const prod_line_page_name = 'products';
 
 export const options = 'Options'
 export const keyword_label = "Keyword"

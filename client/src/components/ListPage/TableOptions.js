@@ -1,6 +1,6 @@
 // TableOptions.js
 // Riley
-// Dropdown options bar for ListPage component
+// Dropdown options bar for SkusPage component
 
 import React from 'react'
 import PropTypes from 'prop-types';

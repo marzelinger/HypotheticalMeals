@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
-import ListPage from "./ListPage/ListPage";
+import SkusPage from "./ListPage/SkusPage";
 import Landing from "./layout/Landing";
 import Register from "./auth/Register";
 import AdminRegister from "./auth/AdminRegister";
@@ -13,7 +13,6 @@ import setAuthToken from "../utils/setAuthToken";
 import GeneralNavBar from "./GeneralNavBar";
 import ManufacturingGoalsPage from "./ManufacturingGoalsPage";
 import IngredientsPage from "./ListPage/IngredientsPage";
-import IngredientsPagePag from "./ListPage/IngredientsPagePag";
 import ProductLinePage from "../ProductLine/ProductLinePage";
 import * as Constants from './../resources/Constants';
 
@@ -81,9 +80,8 @@ class App extends React.Component{
                <Route exact path="/adminregister" component={AdminRegister} />
               <Switch>
                 <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
-                <PrivateRoute exact path="/ingredientspagepag" component={IngredientsPagePag} />
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
-                <PrivateRoute exact path="/skus" component={ListPage} />
+                <PrivateRoute exact path="/skus" component={SkusPage} />
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingGoalsPage} />
                 <PrivateRoute exact path="/prod_lines" component={ProductLinePage} />
               </Switch>
