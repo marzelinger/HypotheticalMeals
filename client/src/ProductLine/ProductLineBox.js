@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import 'whatwg-fetch';
 import ProductLineList from './ProductLineList';
 import ProductLineForm from './ProductLineForm';
-// import '../style/ProductLineBox.css';
 import * as Constants from './../resources/Constants';
 import SubmitRequest from './../helpers/SubmitRequest';
+import '../style/ManufacturingGoalsBox.css'
 const jwt_decode = require('jwt-decode');
 
 class ProductLinesBox extends Component {
@@ -150,9 +150,9 @@ class ProductLinesBox extends Component {
 
   render() {
     return (
-      <div className="container">
-        <div className="prodlines">
-          <h2>Current Product Lines:</h2>
+      <div className="goalsbox">
+            <h1 id = "manufacturing_goals_title">{Constants.product_line_title}</h1>
+        <div className="goals">
           <ProductLineList
             data={this.state.data}
             handleDeleteProdLine={this.onDeleteProdLine}

@@ -15,6 +15,7 @@ import {
   TableRow,
   TableRowColumn,
 } from 'material-ui/Table';
+import '../../style/TableStyle.css'
 
 export class GoalSkuTable extends React.Component{
     constructor(props) {
@@ -50,7 +51,7 @@ export class GoalSkuTable extends React.Component{
         <div>
           <Table>
             <TableHeader displaySelectAll={this.state.showCheckboxes} adjustForCheckbox={this.state.showCheckboxes}>
-              <TableRow>
+              <TableRow class = "cols">
                 {this.props.table_properties.map(prop => 
                   <TableHeaderColumn tooltip = {"Sort By " + this.getPropertyLabel(prop)} className = "hoverable" key={prop}>
                     <div onClick={e => this.props.handleSort(e, prop)}>{this.getPropertyLabel(prop)}</div>

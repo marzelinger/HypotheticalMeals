@@ -54,4 +54,8 @@ input {
     border: none;
 }
 
+td > .select {
+    height: 50px !important;
+}
+
 

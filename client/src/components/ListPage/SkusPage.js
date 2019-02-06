@@ -324,11 +324,11 @@ export default class ListPage extends React.Component {
                         value={this.state.error}
                         color='danger'/>
                 </Modal>
-                <AddToManuGoal selected_skus={this.state.selected_items} isOpen={this.state.manu_goals_modal} toggle={(toggler) => this.toggle(toggler)} manu_goals_data={this.state.manu_goals_data}></AddToManuGoal>
+                <AddToManuGoal selected_skus={this.state.selected_items} isOpen={this.state.manu_goals_modal} toggle={(toggler) => this.toggle(toggler)} manu_goals_data={this.state.manu_goals_data}></AddToManuGoal> 
 
                 <div className = "pagination-wrapper">
                 <Pagination aria-label="Page navigation example">
-                    <div>
+                <div>
                     <PaginationItem disabled={this.state.currentPage <= 0}>
                         <PaginationLink
                             onClick={e => this.handlePageClick(e, this.state.currentPage - 1)}
@@ -356,11 +356,9 @@ export default class ListPage extends React.Component {
                             next
                             href="#"
                         />
-
-                    </PaginationItem>
+                        </PaginationItem>
                     </div>
-                    {this.props.default_ing_filter !== undefined ? null : (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}    
-                    
+                    {this.props.default_ing_filter !== undefined ? null : (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}   
                     </Pagination>
                     
                     
