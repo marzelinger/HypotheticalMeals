@@ -9,6 +9,7 @@ import mongoose from 'mongoose';
 import SkuHandler from './models/handlers/SkuHandler';
 import Prod_LineHandler from './models/handlers/Prod_LineHandler';
 import IngredientHandler from './models/handlers/IngredientHandler';
+import PaginationHandler from './models/handlers/PaginationHandler';
 import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
 import UserHandler from './models/handlers/UserHandler';
 import FilterHandler from './models/handlers/FilterHandler';
@@ -87,8 +88,8 @@ router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteM
 router.get('/manugoals/:user_id/:manu_goal_id/skus', (req, res) => Manu_GoalHandler.getManufacturingGoalByIDSkus(req, res));
 
 // Multiple database APIs
-router.get('/ingredients_filter/:sort_field/:sku_ids/:keyword', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
-router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:prod_line_ids', (req, res) => FilterHandler.getSkusByFilter(req, res));
+router.get('/ingredients_filter/:sort_field/:sku_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
+router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize/:prod_line_ids', (req, res) => FilterHandler.getSkusByFilter(req, res));
 
 router.post('/parseSkus', upload.single('file'), (req, res) => CSV_parser.parseSKUCSV(req, res));
 router.post('/parseProdLines', upload.single('file'), (req, res) => CSV_parser.parseProdLineCSV(req,res));
@@ -119,6 +120,22 @@ router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword
 // @desc Get all users in the mlab db and return them.
 // @access Public
 router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
+
+
+
+//pagination router api calls
+
+// Gives constant name to long directory home page.
+// const appPage = path.join(__dirname, '../client/build/index.html');
+
+// // Allows the use of files.
+// app.use(express.static('../client/build'));
+
+// // SERVES STATIC HOMEPAGE at '/' URL
+// app.get('*', function(req, res) {
+//   res.sendFile(appPage)
+// })
+
 
 /*
 router.get('*', (req,res) => {

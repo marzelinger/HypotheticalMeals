@@ -12,6 +12,7 @@ import {
     ListGroupItem} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import SubmitRequest from './../../helpers/SubmitRequest'
+import { prototype } from 'stream';
 
 
 export default class ItemSearchInput extends React.Component {
@@ -97,12 +98,15 @@ export default class ItemSearchInput extends React.Component {
     showResults = (state) => {
         if (state.focus){
             return (<ListGroup>
-                {this.state.assisted_search_results.map(res => 
-                <ListGroupItem
-                    key={res.name}
-                    tag="button"
-                    onMouseDown={(e) => this.onFilterValueSelection(e, res)}
-                >{res.name}</ListGroupItem>
+                {this.state.assisted_search_results.map((res, index) => {
+                    if (index < 5) return (
+                        <ListGroupItem
+                            key={res.name}
+                            tag="button"
+                            onMouseDown={(e) => this.onFilterValueSelection(e, res)}
+                        >{res.name}</ListGroupItem>
+                    )
+                }
             )}
             </ListGroup>
             )
@@ -112,6 +116,7 @@ export default class ItemSearchInput extends React.Component {
         }
         
     }
+    
 
     render() {
         return (
@@ -122,6 +127,7 @@ export default class ItemSearchInput extends React.Component {
                 <Input 
                     type="text"
                     value={this.state.substr}
+                    invalid={this.props.invalid_inputs.includes('prod_line')}
                     onChange={(e) => this.onFilterValueChange(e)}
                     onFocus={this.toggleFocus}
                     onBlur={this.toggleBlur}
@@ -135,5 +141,6 @@ export default class ItemSearchInput extends React.Component {
 ItemSearchInput.propTypes = {
     curr_item: PropTypes.object,
     item_type: PropTypes.string,
+    invalid_inputs: PropTypes.arrayOf(PropTypes.string),
     handleSelectItem: PropTypes.func
   };

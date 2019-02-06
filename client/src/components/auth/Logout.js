@@ -2,37 +2,40 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
+import Menu from 'material-ui/Menu';
+import MenuItem from 'material-ui/MenuItem';
+
+import { Provider } from "react-redux";
+
 class Logout extends Component {
   onLogoutClick = e => {
+    console.log("this is in the onLogoutClcik");
     e.preventDefault();
-    this.props.logoutUser();
+    logoutUser();
   };
+
 render() {
     const { user } = this.props.auth;
 return (
-            <button
-              style={{
-                width: "150px",
-                borderRadius: "3px",
-                letterSpacing: "1.5px",
-                marginTop: "1rem"
-              }}
-              onClick={this.onLogoutClick}
-              className="btn btn-small waves-effect waves-light hoverable blue accent-3"
-            >
-              Logout
-            </button>
+        <MenuItem onClick={this.onLogoutClick} primaryText="Log out"/>
     );
   }
 }
+
+
 Logout.propTypes = {
   logoutUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired
 };
+
 const mapStateToProps = state => ({
   auth: state.auth
 });
+
+
 export default connect(
   mapStateToProps,
   { logoutUser }
 )(Logout);
+
+

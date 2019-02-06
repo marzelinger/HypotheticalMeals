@@ -21,10 +21,26 @@ class FilterHandler{
             }
             var keyword = req.params.keyword;
             if (keyword !== undefined && keyword !== "_"){
-                and_query.push({$text: { $search: keyword } }); 
+                and_query.push({$or: [{name: { $regex: keyword , $options: "$i"}}, {pkg_size:{ $regex: keyword , $options: "$i"}}, {vendor_info: { $regex: keyword , $options: "$i"}}, {comment: { $regex: keyword , $options: "$i"}}]}); 
             }
-            let results = (and_query.length === 0) ? await Ingredient.find( ).populate('skus').sort(sort_field) : 
-                                                     await Ingredient.find( {$and: and_query }).populate('skus').sort(sort_field);
+            //ADDED FOR THE PAGINATION STUFF    
+            var currentPage = Number(req.params.currentPage);
+            var pageSize = Number(req.params.pageSize);
+            //console.log('this is the currentpage: '+currentPage);
+            //console.log('this is the pageSize: '+pageSize);
+            //console.log('this is the query length: '+and_query.length);
+            let results = (and_query.length === 0) ? await Ingredient.find().skip(currentPage*pageSize).limit(pageSize).populate('skus').sort(sort_field) : await Ingredient.find( {$and: and_query }).skip(currentPage*pageSize).limit(pageSize).populate('skus').sort(sort_field).skip(currentPage*pageSize).limit(pageSize);
+
+            //console.log('this is the results: '+results);
+
+
+            // this.data.slice(this.state.currentPage *this.state.pageSize, 
+            //     (this.state.currentPage +1) * this.state.pageSize)
+
+
+            // let results = (and_query.length === 0) ? await Ingredient.find( ).populate('skus').sort(sort_field) : 
+            //                                          await Ingredient.find( {$and: and_query }).populate('skus').sort(sort_field);
+            
             if (results.length == 0) return results = [];
             return res.json({ success: true, data: results});
         }
@@ -47,16 +63,20 @@ class FilterHandler{
             }
             var keyword = req.params.keyword;
             if (keyword !== undefined && keyword !== "_"){
-                and_query.push({$text: { $search: keyword } }); 
+                and_query.push({$or: [{name: { $regex: keyword , $options: "$i"}}, {unit_size: { $regex: keyword , $options: "$i"}}, {comment: { $regex: keyword , $options: "$i"}}]}); 
             }
+
+            var currentPage = Number(req.params.currentPage);
+            var pageSize = Number(req.params.pageSize);
+
             var prod_line_ids = req.params.prod_line_ids;
             if (prod_line_ids !== undefined && prod_line_ids !== "_"){
                 prod_line_ids = prod_line_ids.replace(/\s/g, "").split(',');
                 and_query.push({ prod_line: prod_line_ids }); 
             }
-            let results = (and_query.length === 0) ? await SKU.find( ).populate('ingredients').populate('prod_line').sort(sort_field) : 
-                                                     await SKU.find( {$and: and_query }).populate('ingredients').populate('prod_line').sort(sort_field);
-            console.log('here')
+            console.log(and_query)
+            let results = (and_query.length === 0) ? await SKU.find( ).skip(currentPage*pageSize).limit(pageSize).populate('ingredients').populate('prod_line').sort(sort_field) : 
+                                                     await SKU.find( {$and: and_query }).skip(currentPage*pageSize).limit(pageSize).populate('ingredients').populate('prod_line').sort(sort_field);
             if (results.length == 0) results = [];
             return res.json({ success: true, data: results});
         }

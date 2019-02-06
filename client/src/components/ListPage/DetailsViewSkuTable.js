@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Table } from 'reactstrap';
 import * as Constants from './../../resources/Constants';
-import ListPage from './ListPage';
+import SkusPage from './SkusPage';
 import DataStore from './../../helpers/DataStore';
 
 const DetailsViewSkuTable = props => {
@@ -14,8 +14,10 @@ const DetailsViewSkuTable = props => {
   }
   return (
     <div>
-      <ListPage
-        {...skuTableData}
+      <SkusPage
+        {
+        ...skuTableData
+        } simple = {true}
       />
     </div>
   );
@@ -24,7 +26,7 @@ const DetailsViewSkuTable = props => {
 
 DetailsViewSkuTable.propTypes = {
   id: PropTypes.string.isRequired,
-  ingredient: PropTypes.object.isRequired
+  ingredient: PropTypes.object
 };
 
 export default DetailsViewSkuTable;

@@ -7,6 +7,7 @@ import {ImportTable} from './ImportTable'
 import {ImportReport} from './ImportReport'
 import {Input} from 'reactstrap'
 import './Center.css';
+import {exportImportReport} from "../actions/exportActions";
 
 var endpoint = "not specified";
 
@@ -381,7 +382,13 @@ export default class ImportPage extends React.Component {
     }
 
     handleExport = () => {
+        console.log("this is the handleExport");
+        console.log("update_list-no-collisions: "+this.state.update_list_no_collisions);
+        console.log("update_list-items new: "+this.state.update_list_items_new);
+        console.log("update_list-ignored: "+this.state.update_list_ignores);
+        console.log("filetype: "+this.state.import_report_type);
 
+        exportImportReport(this.state.update_list_no_collisions, this.state.update_list_items_new, this.state.update_list_ignores, this.state.import_report_type);
     }
 
     resetState = () => {

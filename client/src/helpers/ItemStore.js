@@ -2,21 +2,46 @@
 // Riley
 // Store of empty items and default set items
 
+import SubmitRequest from './SubmitRequest';
 import * as Constants from '../resources/Constants';
 
 export default class ItemStore{
 
   static getUniqueNumber = (list) => {
     while(true){
-      var u_num = Math.floor(Math.random() * 1147483647) + 1000000000;
+      var u_num = Math.floor(Math.random() * 8999999999) + 1000000000;
       var success = true;
-      list.map(item => { if (item.num == u_num) success = false; });
+      list.map(item => { if (item.num === u_num) success = false; });
       if (success) return u_num;
     }
   }
 
-  static getEmptyItem(page_name, data, obj) {
-    var new_id = ItemStore.getUniqueNumber(data);
+  static getUniqueCaseUPC = (list) => {
+    while(true){
+      var c_upc = Math.floor(Math.random() * 399999999999) + 600000000000;
+      var success = true;
+      list.map(item => { if (item.case_upc === c_upc) success = false; });
+      if (success) return c_upc;
+    }
+  }
+
+  static getUniqueUnitUPC = (case_upc, list) => {
+    while(true){
+      var u_upc = Math.floor(Math.random() * 399999999999) + 600000000000;
+      var success = true;
+      list.map(item => { 
+        if (item.case_upc === case_upc) { 
+          if (item.unit_upc === u_upc){
+            success = false; 
+          }
+        }});
+      if (success) return u_upc;
+    }
+  }
+
+  static async getEmptyItem(page_name) {
+    var res = await SubmitRequest.submitGetData(page_name);
+    var new_id = await ItemStore.getUniqueNumber(res.data);
     switch (page_name){
       case Constants.ingredients_page_name:
         return {
@@ -25,14 +50,17 @@ export default class ItemStore{
           vendor_info: '',
           pkg_size: '',
           pkg_cost: '',
-          skus: []
+          sku_count: 0,
+          comment: ''
         };
       case Constants.skus_page_name: 
+        let new_case_upc = ItemStore.getUniqueCaseUPC(res.data);
+        let new_unit_upc = ItemStore.getUniqueUnitUPC(new_case_upc, res.data);
         return {
           name: '',
           num: new_id,
-          case_upc: '',
-          unit_upc: '',
+          case_upc: new_case_upc,
+          unit_upc: new_unit_upc,
           unit_size: '',
           cpc: '',
           prod_line: '',

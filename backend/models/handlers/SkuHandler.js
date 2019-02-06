@@ -29,7 +29,8 @@ class SkuHandler{
                     success: false, error: "Ingredient quantities don't match ingredients list"
                 });
             }
-            SkuHandler.checkForZeroQtys(new_ingredient_quantities, new_ingredients);
+            SkuHandler.checkForZeroQtys(new_ingredients, new_ingredient_quantities);
+
 
             let conflict1 = await SKU.find({ num : Number(new_sku_num) });
             let conflict2 = await SKU.find({ case_upc : Number(new_case_upc) });
@@ -59,12 +60,12 @@ class SkuHandler{
         }
     }
 
-    static checkForZeroQtys(new_ingredient_quantities, new_ingredients) {
+    static checkForZeroQtys(new_items, new_quantities) {
         var toRemove = [];
-        new_ingredient_quantities.map((qty, index) => {if (parseInt(qty) <= 0) toRemove.push(index)});
+        new_quantities.map((qty, index) => {if (parseInt(qty) <= 0) toRemove.push(index)});
         toRemove.map(ind => {
-            new_ingredients.splice(ind, 1);
-            new_ingredient_quantities.splice(ind, 1);
+            new_items.splice(ind, 1);
+            new_quantities.splice(ind, 1);
         });
     }
 
@@ -83,7 +84,7 @@ class SkuHandler{
             var new_prod_line = req.body.prod_line;
             var new_ingredient_quantities = req.body.ingredient_quantities;
             var new_comment = req.body.comment;
-            SkuHandler.checkForZeroQtys(new_ingredient_quantities, new_ingredients);
+            SkuHandler.checkForZeroQtys(new_ingredients, new_ingredient_quantities);
 
             let conflict1 = await SKU.find({ num: Number(new_sku_num)});
             let conflict2 = await SKU.find({ case_upc: Number(new_case_upc)});
@@ -155,9 +156,7 @@ class SkuHandler{
     static async getIngredientsBySkuID(req, res){
         try{
             var target_id = req.params.sku_id;
-            console.log(`targetid : ${target_id}`);
             let response = await SKU.find({ _id : target_id }).populate('ingredients');
-            console.log(sku);
             let sku = response[0];
             var { ingredients, ingredient_quantities } = sku;
             let adj_ingredients = [];

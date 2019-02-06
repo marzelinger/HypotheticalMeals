@@ -11,10 +11,12 @@ const IngredientsSchema = new Schema({
   num: Number,
   vendor_info: String,
   pkg_size: String,
-  pkg_cost: Number,
+  pkg_cost: String,
   sku_count: Number,
   comment: String
 }, { timestamps: true });
+
+
 
 // export our module to use in server.js
 export default mongoose.model('Ingredient', IngredientsSchema);

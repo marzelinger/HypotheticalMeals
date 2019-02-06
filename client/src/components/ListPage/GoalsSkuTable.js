@@ -1,15 +1,27 @@
 // PageTable.js
 // Riley
-// Table component for ListPage
+// Table component for SkusPage
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Table, Input } from 'reactstrap';
+import { Input } from 'reactstrap';
 import * as Constants from './../../resources/Constants';
+import {
+  Table,
+  TableBody,
+  TableFooter,
+  TableHeader,
+  TableHeaderColumn,
+  TableRow,
+  TableRowColumn,
+} from 'material-ui/Table';
 
 export class GoalSkuTable extends React.Component{
     constructor(props) {
       super(props);
+      this.state = {
+        showCheckboxes:false
+      }
     }
     getPropertyLabel = (col) => {
       return this.props.columns[this.props.table_properties.indexOf(col)];
@@ -22,33 +34,33 @@ export class GoalSkuTable extends React.Component{
     render() {
         let tablebody = (
             this.props.list_items.map((item, index) => 
-            <tr 
+            <TableRow
               key={item.num + index}
             >
               {this.props.table_properties.map(prop => 
-                <td key={prop}>
+                <TableRowColumn key={prop}>
                   {prop == 'quantity' ? this.createQuantityElement(item, index) : item[prop]}
-                </td>
+                </TableRowColumn>
               )}
-            </tr>
+            </TableRow>
           ))
         
 
       return (
         <div>
           <Table>
-            <thead>
-              <tr>
+            <TableHeader displaySelectAll={this.state.showCheckboxes} adjustForCheckbox={this.state.showCheckboxes}>
+              <TableRow>
                 {this.props.table_properties.map(prop => 
-                  <th key={prop} onClick={e => this.props.handleSort(e, prop)}>
-                    {this.getPropertyLabel(prop)}
-                  </th>
+                  <TableHeaderColumn tooltip = {"Sort By " + this.getPropertyLabel(prop)} className = "hoverable" key={prop}>
+                    <div onClick={e => this.props.handleSort(e, prop)}>{this.getPropertyLabel(prop)}</div>
+                  </TableHeaderColumn>
                 )}
-              </tr>
-            </thead>
-            <tbody>
+              </TableRow>
+            </TableHeader>
+            <TableBody displayRowCheckbox = {this.state.showCheckboxes}>
                 {tablebody}
-            </tbody>
+            </TableBody>
           </Table>
         </div>
       );

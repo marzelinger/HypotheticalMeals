@@ -12,15 +12,14 @@ import ItemStore from '../../helpers/ItemStore'
 import IngredientDetails from './IngredientDetails'
 import { 
     Alert,
-    Button,
-    DropdownToggle,
     Modal} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
-import './../../style/ListPage.css';
-import GeneralNavBar from "../GeneralNavBar";
+import './../../style/SkusPage.css';
 import DependencyReport from "../export/DependencyReport";
 import ExportSimple from '../export/ExportSimple';
 import DataStore from './../../helpers/DataStore'
+import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
+
 
 
 export default class IngredientsPage extends React.Component {
@@ -46,19 +45,29 @@ export default class IngredientsPage extends React.Component {
             table_properties,
             table_options,
             selected_items: [],
+            selected_indexes: [],
             detail_view_item: null,
             detail_view_options: [],
             data: [],
+            exportData: [],
             sort_field: '_',
-            loaded: false,
             error: null,
             modal: false,
-            simple: props.simple || false
+            simple: props.simple || false,
+            currentPage: 0,
+            pageSize: 5,
+            pagesCount: 0
+
         };
         this.toggleModal = this.toggleModal.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onKeywordSubmit = this.onKeywordSubmit.bind(this);
+        this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
+        this.handlePageClick=this.handlePageClick.bind(this);
+        this.setNumberPages();
+
+
     }
 
     toggleModal(){
@@ -74,6 +83,8 @@ export default class IngredientsPage extends React.Component {
         }
         await this.loadDataFromServer();
         await this.updateSkuCounts();
+        this.setNumberPages();
+
     }
 
     async componentDidUpdate (prevProps, prevState) {
@@ -84,10 +95,7 @@ export default class IngredientsPage extends React.Component {
             this.loadDataFromServer();
             console.log(this.state.data)
         }
-        if (prevState.data !== this.state.data){
-            //this is where we recount the number of skus for each data item
-            
-        }
+        //this.setNumberPages();
     }
 
     async updateFilterState(prevState) {
@@ -117,6 +125,12 @@ export default class IngredientsPage extends React.Component {
     }
 
     async loadDataFromServer() {
+        console.log("this loaddata page: "+this.state.currentPage);
+
+
+                let allData = await SubmitRequest.submitGetData(this.state.page_name);
+
+
         if (this.state.filter_value === undefined) return;
         var final_sku_filter = '';
         var final_keyword_filter = '';
@@ -132,27 +146,67 @@ export default class IngredientsPage extends React.Component {
         }
         if (final_sku_filter === '') final_sku_filter = '_';
         if (final_keyword_filter === '') final_keyword_filter = '_';
-        var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-            this.state.sort_field, final_sku_filter, final_keyword_filter);
+
+
+            var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
+                this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
+                var resALL = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
+                    this.state.sort_field, final_sku_filter, final_keyword_filter, 0, allData.data.length);
+                console.log("this is the res: "+res);
+                console.log("this is the res.data: "+res.data);
+    
+        
 
         if (res === undefined || !res.success) {
             res.data = [];
-            res.loaded = true;
+            resALL.data = [];
         }
         this.setState({
             data: res.data,
-            loaded: res.loaded
+            exportData: resALL.data
         })
     }
 
     async updateSkuCounts() {
+        console.log('this is the data in updateSkuCounts: '+this.state.data);
+
         let data = this.state.data.slice();
         await data.map(async (item) => {
-            let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', '_');
+                       let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', this.state.currentPage, this.state.pageSize,'_');
+
+           // let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', '_');
             item.sku_count = skus.data.length;
             await SubmitRequest.submitUpdateItem(this.state.page_name, item);
             }
         );
+        this.setState({ data: data })
+        // MAYBE NEED TO ADD SOMETHING TO RECALCULATE PAGES?
+    }
+
+    async setNumberPages(){
+        let allData = await SubmitRequest.submitGetData(this.state.page_name);
+        console.log('this is the allData: '+allData);
+        console.log('this is the allData length: '+allData.data.length);
+        console.log('this is the pageSize: '+this.state.pageSize);
+        var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
+        console.log('this is the pagesCount1: '+this.state.pagesCount);
+
+        this.setState({
+            currentPage: 0,
+            pagesCount: curCount,
+        }); 
+               console.log('this is the pagesCount: '+this.state.pagesCount);
+
+    }
+
+    handlePageClick = (e, index) => {
+        e.preventDefault();
+        console.log("this is current page1; "+this.state.currentPage);
+
+        this.setState({
+            currentPage: index
+        });
+        this.loadDataFromServer();
     }
 
     onFilterValueChange = (e, id) => {
@@ -187,8 +241,8 @@ export default class IngredientsPage extends React.Component {
         }
     }
 
-    onCreateNewItem = () => {
-        var item = ItemStore.getEmptyItem(this.state.page_name, this.state.data, this);
+    async onCreateNewItem() {
+        var item = await ItemStore.getEmptyItem(this.state.page_name);
         const newData = this.state.data.slice();
         newData.push(item);
         this.setState({ 
@@ -256,11 +310,21 @@ export default class IngredientsPage extends React.Component {
         this.loadDataFromServer();
     };
 
-    onSelect = async (event, item) => {
-        var newState = this.state.selected_items.slice();
-        var loc = newState.indexOf(item);
-        (loc > -1) ? newState.splice(loc, 1) : newState.push(item);
-        await this.setState({ selected_items: newState});
+    // onSelect = async (event, item) => {
+    //     var newState = this.state.selected_items.slice();
+    //     var loc = newState.indexOf(item);
+    //     (loc > -1) ? newState.splice(loc, 1) : newState.push(item);
+    //     await this.setState({ selected_items: newState});
+    // };
+
+    onSelect = (rowIndexes) => {
+        console.log(rowIndexes);
+        var newState = [];
+        rowIndexes.forEach( index => {
+            newState.push(this.state.data[index]);
+        });
+        console.log(newState);
+        this.setState({ selected_items: newState, selected_indexes: rowIndexes});
     };
 
     onDetailViewSelect = (event, item) => {
@@ -271,26 +335,32 @@ export default class IngredientsPage extends React.Component {
         this.toggleModal();
     };
 
-    onDetailViewSubmit = (event, item, option) => {
+    async onDetailViewSubmit(event, item, option) {
+        var res = {};
         switch (option) {
             case Constants.details_create:
-                SubmitRequest.submitCreateItem(this.state.page_name, item, this);
+                res = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_save:
-                SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
+                res = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_delete:
-                SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
+                res = await SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
                 break;
             case Constants.details_cancel:
+                res = {success: true}
                 break;
         }
-        this.setState({ 
-            detail_view_item: null,
-            detail_view_options: []
-        });
-        this.loadDataFromServer();
-        this.toggleModal();
+        console.log(res)
+        if (!res.success) alert(res.error);
+        else {
+            this.setState({ 
+                detail_view_item: null,
+                detail_view_options: []
+            });
+            this.loadDataFromServer();
+            this.toggleModal();
+        }
     }
 
     onPropChange = (value, item, prop) => {
@@ -329,9 +399,13 @@ export default class IngredientsPage extends React.Component {
                         table_properties={this.state.table_properties} 
                         list_items={this.state.data}
                         selected_items={this.state.selected_items}
+                        selected_indexes = {this.state.selected_indexes}
                         handleSort={this.onSort}
                         handleSelect={this.onSelect}
                         handleDetailViewSelect={this.onDetailViewSelect}
+                        showDetails = {true}
+                        sortable = {true}
+                        title = {this.state.page_title}
                     />
                 </div>
                 <Modal isOpen={this.state.modal} toggle={this.toggleModal} id="popup" className='item-details'>
@@ -345,8 +419,43 @@ export default class IngredientsPage extends React.Component {
                         value={this.state.error}
                         color='danger'/>
                 </Modal>   
-                <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/>                           
-                <DependencyReport data = {this.state.data} />
+                <ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/>                           
+                <DependencyReport data = {this.state.exportData} />
+
+                <div className = "pagination-wrapper">
+                <Pagination aria-label="Page navigation example">
+                    <PaginationItem disabled={this.state.currentPage <= 0}>
+                        <PaginationLink
+                            onClick={e => this.handlePageClick(e, this.state.currentPage - 1)}
+                            previous
+                            href="#"
+                        />
+                    </PaginationItem>
+                    {[...Array(this.state.pagesCount)].map((page, i) => 
+                    <PaginationItem active={i === this.state.currentPage} key={i}>
+                        <PaginationLink onClick={e => {
+                        //this.handlePageClick(e, i)
+                        console.log("this is before click page: "+this.state.currentPage);
+                        this.setState({
+                            currentPage: i
+                        });
+                        console.log("this is after click page: "+this.state.currentPage);
+                        this.loadDataFromServer();     
+                        }
+                        } href="#">
+                        {i + 1}
+                        </PaginationLink>
+                    </PaginationItem>
+                    )}
+                    <PaginationItem disabled={this.state.currentPage >= this.state.pagesCount - 1}>
+                        <PaginationLink
+                            onClick={e => this.handlePageClick(e, this.state.currentPage + 1)}
+                            next
+                            href="#"
+                        />
+                    </PaginationItem>
+                </Pagination>
+                </div>  
             </div>
         );
     }

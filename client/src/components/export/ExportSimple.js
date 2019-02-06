@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { exportSimpleData, exportSKUS, exportIngredients, exportProdLines, exportCalculator } from "../../actions/exportActions";
+import { exportSKUS, exportIngredients, exportProdLines, exportCalculator } from "../../actions/exportActions";
 class ExportSimple extends Component {
 
   constructor() {
@@ -55,7 +55,6 @@ return (
   }
 }
 ExportSimple.propTypes = {
-  exportSimpleData: PropTypes.func.isRequired,
   exportSKUS:PropTypes.func.isRequired,
   exportIngredients:PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired
@@ -65,5 +64,5 @@ const mapStateToProps = state => ({
 });
 export default connect(
   mapStateToProps,
-  { exportSimpleData, exportSKUS, exportIngredients, exportProdLines }
+  { exportSKUS, exportIngredients, exportProdLines }
 )(ExportSimple);

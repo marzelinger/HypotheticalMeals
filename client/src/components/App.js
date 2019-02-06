@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
-import ListPage from "./ListPage/ListPage";
+import SkusPage from "./ListPage/SkusPage";
 import Landing from "./layout/Landing";
 import Register from "./auth/Register";
 import AdminRegister from "./auth/AdminRegister";
@@ -16,6 +16,7 @@ import ImportPage from "./ImportPage";
 import IngredientsPage from "./ListPage/IngredientsPage";
 import ProductLinePage from "../ProductLine/ProductLinePage";
 import * as Constants from './../resources/Constants';
+import Logout from '../components/auth/Logout';
 
 import { setCurrentUser, logoutUser, getAllUsers } from "../actions/authActions";
 import { Provider } from "react-redux";
@@ -29,7 +30,6 @@ import { Link, withRouter } from "react-router-dom";
 //const getAllUsers = require("../actions/authActions");
 
 // Check for token to keep user logged in
-
 const store = configureStore();
 
 class App extends React.Component{
@@ -45,7 +45,7 @@ class App extends React.Component{
 
   determineUser = () => {
     if (localStorage.jwtToken) {
-      if(localStorage.getItem("firstAdminCreated")){
+      //if(localStorage.getItem("firstAdminCreated")){
         // Set auth token header auth
         const token = localStorage.jwtToken;
         setAuthToken(token);
@@ -62,12 +62,11 @@ class App extends React.Component{
           // Redirect to login
           window.location.href = "./login";
         }
-      }
+      //}
     }
   }
 
   render(){
-    let props = {};
     return(
       <div>
         <Provider store={store}>
@@ -79,11 +78,13 @@ class App extends React.Component{
                <Route exact path="/login" component={Login} />
                <Route exact path="/register" component={Register} />
                <Route exact path="/adminregister" component={AdminRegister} />
+              
               <Switch>
                 <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
-                <PrivateRoute exact path="/skus" component={ListPage} />
+                <PrivateRoute exact path="/skus" component={SkusPage} />
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingGoalsPage} />
+                <PrivateRoute exact path="/prod_lines" component={ProductLinePage} />
                 <PrivateRoute exact path="/import" component={ImportPage} />
               </Switch>
             </div>
@@ -94,7 +95,8 @@ class App extends React.Component{
   }
 }
 
-export default App
+export default App;
+
 
 // <Route exact path="/" component={Landing} />
 //               <Route exact path="/login" component={Login} />

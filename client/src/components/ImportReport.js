@@ -65,6 +65,8 @@ export class ImportReport extends React.Component{
     }
 
     render() {
+        console.log(this.state.ignored_items);
+        console.log(this.state.table_properties);
         return (
             <div className = "ImportReport">
                 <div className="paddedDiv">
@@ -88,7 +90,7 @@ export class ImportReport extends React.Component{
                                     <td
                                         key={prop}
                                     >
-                                        {prop === "prod_line" ? item[prop].name : item[prop]}
+                                        {prop === 'prod_line' ? item[prop] : item[prop]}
                                     </td>
                                 )}
                                 </tr>
@@ -116,7 +118,7 @@ export class ImportReport extends React.Component{
                                     <td
                                         key={prop}
                                     >
-                                         {prop === "prod_line" ? item[prop].name : item[prop]}
+                                         {prop === "prod_line" ? item[prop] : item[prop]}
                                     </td>
                                 )}
                                 </tr>
@@ -144,7 +146,7 @@ export class ImportReport extends React.Component{
                                     <td
                                         key={prop}
                                     >
-                                         {prop === "prod_line" ? item[prop].name : item[prop]}
+                                         {prop === "prod_line" ? item[prop] : item[prop]}
                                     </td>
                                 )}
                                 </tr>

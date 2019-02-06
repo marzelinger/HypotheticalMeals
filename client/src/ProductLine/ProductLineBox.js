@@ -2,21 +2,24 @@ import React, { Component } from 'react';
 import 'whatwg-fetch';
 import ProductLineList from './ProductLineList';
 import ProductLineForm from './ProductLineForm';
-import '../style/ManufacturingGoalsBox.css';
-import * as Constants from '../resources/Constants';
+// import '../style/ProductLineBox.css';
+import * as Constants from './../resources/Constants';
+import SubmitRequest from './../helpers/SubmitRequest';
+const jwt_decode = require('jwt-decode');
 
-
-class ProductLineBox extends Component {
+class ProductLinesBox extends Component {
   constructor() {
     super();
     this.state = {
       data: [],
       error: null,
-      name: '',
-      skus: [],
-      user: Constants.DEFAULT_USER
+      name: ''
     };
     this.pollInterval = null;
+    this.submitNewProdLine = this.submitNewProdLine.bind(this);
+    this.onDeleteProdLine = this.onDeleteProdLine.bind(this);
+    this.loadProdLinesFromServer = this.loadProdLinesFromServer.bind(this);
+    this.submitUpdatedProdLine = this.submitUpdatedProdLine.bind(this);
   }
 
   onChangeText = (e) => {
@@ -25,79 +28,87 @@ class ProductLineBox extends Component {
     this.setState(newState);
   }
 
-  onUpdateProductLine = (id) => {
-    const oldPL = this.state.data.find(c => c._id === id);
-    if (!oldPL) return;
-    this.setState({
-        name: oldPL.name,
-        skus: oldPL.skus,
-        updateId: id,
-        user: Constants.DEFAULT_USER
+  onUpdateProdLine = async (id) => {
+    console.log('updating line')
+    const oldProdLine = this.state.data.find(c => c._id === id);
+    if (!oldProdLine) return;
+    await this.setState({
+        name: oldProdLine.name,
+        updateId: id
     });
+    this.submitUpdatedProdLine();
   }
 
-  onDeleteProductLine= (id) => {
+  checkValidDelete = (id) => {
+    console.log('delete ' + id);
+    var allowed = true;
+    this.state.data.forEach((item) => {
+      console.log(item._id);
+      if(item._id == id && item.skus.length > 0){
+        console.log('here');
+        allowed =  false;
+      }
+    })
+    return allowed;
+  }
+
+  async onDeleteProdLine(id) {
+    if(!this.checkValidDelete(id)){
+      alert('You cannot delete this product line, it is still used by skus');
+      return;
+    }
     const i = this.state.data.findIndex(c => c._id === id);
+    let item = this.state.data[i];
     const data = [
       ...this.state.data.slice(0, i),
       ...this.state.data.slice(i + 1),
     ];
     this.setState({ data });
-    fetch(`api/products/${id}`, { method: 'DELETE' })
-      .then(res => res.json()).then((res) => {
-        if (!res.success) this.setState({ error: res.error });
-      });
+    
+    let res = await SubmitRequest.submitDeleteItem(Constants.prod_line_page_name, item);
+    if (!res.success) {
+      this.setState({ error: res.error });
+    }
   }
 
-  submitProductLine = (e) => {
+  submitProdLine = (e) => {
     e.preventDefault();
     const { name, updateId } = this.state;
     if (!name) return;
     if (updateId) {
-      this.submitUpdatedProductLine();
+      this.submitUpdatedProdLine();
     } else {
-      this.submitNewProductLine();
+      this.submitNewProdLine();
     }
   }
 
-  submitNewProductLine = () => {
-    const { name, skus, user } = this.state;
-    const data = [
-      ...this.state.data,
-      {
-          name,
-          _id: Date.now().toString(),
-          skus: [],
-          user: Constants.DEFAULT_USER
-      },
-    ];
-    this.setState({ data });
-    fetch('/api/products', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, skus, user }),
-    }).then(res => res.json()).then((res) => {
-      if (!res.success) this.setState({ error: res.error.message || res.error });
-      else this.setState({ name: '', skus: '', user: '', error: null });
-    });
+  async submitNewProdLine() {
+    const { name } = this.state;
+    let res = await SubmitRequest.submitCreateItem(Constants.prod_line_page_name, { name });
+    if (!res.success) {
+      this.setState({ error: res.error });
+    }
+    else {
+      this.setState({ name: '', error: null });
+    }
   }
 
-  submitUpdatedProductLine = () => {
-    const { name, skus, user, updateId } = this.state;
-    fetch(`/api/products/${updateId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, skus, user }),
-    }).then(res => res.json()).then((res) => {
-      if (!res.success) this.setState({ error: res.error.message || res.error });
-      else this.setState({ name: '', skus: '', user: '', error:null });
-    });
+  async submitUpdatedProdLine() {
+    const { name, updateId } = this.state;
+    let item = { name };
+    let res = await SubmitRequest.submitUpdateItem(Constants.prod_line_page_name, item);
+    if (!res.success) {
+      this.setState({ error: res.error});
+    }
+    else {
+      this.setState({ name: '', error: null })
+    }
   }
 
   componentDidMount() {
-    this.loadProductLinesFromServer();
+    this.loadProdLinesFromServer();
     if (!this.pollInterval) {
-      this.pollInterval = setInterval(this.loadProductLinesFromServer, 2000);
+      this.pollInterval = setInterval(this.loadProdLinesFromServer, 2000);
     }
   }
 
@@ -106,35 +117,53 @@ class ProductLineBox extends Component {
     this.pollInterval = null;
   }
 
-  loadProductLinesFromServer = () => {
-    // fetch returns a promise. If you are not familiar with promises, see
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
-    fetch('/api/products')
-      .then(data => data.json())
-      .then((res) => {
-        if (!res.success) this.setState({ error: res.error });
-        else this.setState({ data: res.data });
-      });
+  async loadSkusforLines(all_prod_lines) {
+    var prod_lines = [];
+    for( const prod_line of all_prod_lines ){ 
+      let res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, '_', '_', '_', '_', '_', prod_line._id);
+      if (!res.success) {
+        this.setState({ error: res.error});
+      }
+      else {
+        var skus = res.data;
+      }
+      var prod_line_with_sku = {
+        ...prod_line,
+        skus: skus
+      }
+      prod_lines.push(prod_line_with_sku);
+    };
+    return prod_lines;
+  }
+
+  async loadProdLinesFromServer() {
+    let res = await SubmitRequest.submitGetData(Constants.prod_line_page_name);
+    if (!res.success) {
+      this.setState({ error: res.error });
+    }
+    else {
+      var all_prod_lines = res.data;
+    }
+    var prod_lines = await this.loadSkusforLines(all_prod_lines);
+    await this.setState({data: prod_lines});
   }
 
   render() {
     return (
       <div className="container">
-        <div className="product_lines">
+        <div className="prodlines">
           <h2>Current Product Lines:</h2>
           <ProductLineList
             data={this.state.data}
-            handleDeleteProductLine={this.onDeleteProductLine}
-            handleUpdateProductLine={this.onUpdateProductLine}
+            handleDeleteProdLine={this.onDeleteProdLine}
+            handleUpdateGoal={this.onUpdateProdLine}
           />
         </div>
         <div className="form">
           <ProductLineForm
             name={this.state.name}
-            user={this.state.user}
-            skus={this.state.skus}
             handleChangeText={this.onChangeText}
-            handleSubmit={this.submitProductLine}
+            handleSubmit={this.submitProdLine}
           />
         </div>
         {this.state.error && <p>{this.state.error}</p>}
@@ -143,4 +172,4 @@ class ProductLineBox extends Component {
   }
 }
 
-export default ProductLineBox;
+export default ProductLinesBox;

@@ -65,7 +65,7 @@ export class ImportTable extends React.Component{
                                 <td
                                     key={prop}
                                 >
-                                     {prop === "prod_line" ? item[prop].name : item[prop]}
+                                     {prop === "prod_line" ? item[prop] : item[prop]}
                                 </td>
                             )}
                             </tr>
@@ -94,7 +94,7 @@ export class ImportTable extends React.Component{
                                 <td
                                     key={prop}
                                 >
-                                     {prop === "prod_line" ? item[prop].name : item[prop]}
+                                     {prop === "prod_line" ? item[prop] : item[prop]}
                                 </td>
                             )}
                             </tr>)}
