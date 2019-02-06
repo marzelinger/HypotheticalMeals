@@ -354,8 +354,8 @@ export default class IngredientsPage extends React.Component {
                     </PaginationItem>
                     </div>
                     <div className = "ingbuttons">     
-                        <DependencyReport data = {this.state.data} />
-                        <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/> 
+                        <DependencyReport data = {this.state.exportData} />
+                        <ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> 
                     </div>
                     </Pagination>
                 </div>  
