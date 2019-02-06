@@ -11,7 +11,7 @@ import Logout from './auth/Logout';
 
 const jwt_decode = require('jwt-decode');
 
-export default class GeneralMenu extends React.Component {
+export default class UserMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -57,6 +57,7 @@ export default class GeneralMenu extends React.Component {
             >
                 <Menu>
                     {/* <Logout></Logout> */}
+                    <MenuItem primaryText = "LogoutDUMMY"></MenuItem>                    
                 </Menu>
             </Popover>
         </div>

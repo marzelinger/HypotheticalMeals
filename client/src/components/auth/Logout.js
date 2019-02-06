@@ -10,6 +10,7 @@ class Logout extends Component {
   onLogoutClick = e => {
     e.preventDefault();
     this.props.logoutUser();
+    //logoutUser();
   };
 
 render() {
