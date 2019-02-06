@@ -12,7 +12,7 @@ import ItemStore from '../../helpers/ItemStore'
 import IngredientDetails from './IngredientDetails'
 import { 
     Alert,
-    Modal} from 'reactstrap';
+    Modal, ModalHeader} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import './../../style/SkusPage.css';
 import DependencyReport from "../export/DependencyReport";
@@ -306,18 +306,17 @@ export default class IngredientsPage extends React.Component {
                         onFilterValueChange = {this.onFilterValueChange}
                         onRemoveFilter = {this.onRemoveFilter}
                         skus = {this.state.skus}
+                        onTableOptionSelection = {this.onTableOptionSelection}
                     />
                 </div>
                 <Modal isOpen={this.state.modal} toggle={this.toggleModal} id="popup" className='item-details'>
+                    <ModalHeader toggle={this.toggleModal}>Ingredient Details</ModalHeader>
                     <IngredientDetails
                             item={this.state.detail_view_item}
                             detail_view_options={this.state.detail_view_options}
                             handlePropChange={this.onPropChange}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
                         />
-                    <Alert
-                        value={this.state.error}
-                        color='danger'/>
                 </Modal>   
 
 
