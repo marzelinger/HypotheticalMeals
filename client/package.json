@@ -51,6 +51,7 @@
   ],
   "proxy": "http://localhost:3001",
   "devDependencies": {
-    "case-sensitive-paths-webpack-plugin": "^2.2.0"
+    "case-sensitive-paths-webpack-plugin": "^2.2.0",
+    "react-to-print": "^2.0.0-alpha-6"
   }
 }
