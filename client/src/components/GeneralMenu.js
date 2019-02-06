@@ -44,7 +44,7 @@ export default class GeneralMenu extends React.Component {
           <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'SKUs'}></MenuItem>
         </Link>
         <Link to="/prod_lines" >
-          <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Manufacturing Goals'}></MenuItem>
+          <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Product Lines'}></MenuItem>
         </Link>
           {
             currentUserIsAdmin().isValid ? 
