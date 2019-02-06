@@ -1,4 +1,4 @@
-// ListPage.js
+// SkusPage.js
 // Riley
 // Larger page component to be shown in PageTemplate
 // THIS PAGE IS DEPRICATED
@@ -16,7 +16,7 @@ import {
     DropdownToggle,
     Modal} from 'reactstrap';
 import * as Constants from './../../resources/Constants';
-import './../../style/ListPage.css';
+import './../../style/SkusPage.css';
 import GeneralNavBar from "../GeneralNavBar";
 import ExportSimple from '../export/ExportSimple';
 import DependencyReport from '../export/DependencyReport';

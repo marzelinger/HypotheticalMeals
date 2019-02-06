@@ -1,4 +1,4 @@
-// ListPage.js
+// SkusPage.js
 // Riley
 // Larger page component to be shown in PageTemplate
 // THIS PAGE IS DEPRICATED
@@ -10,7 +10,7 @@ import {
     Button,
     DropdownToggle,
     Modal} from 'reactstrap';
-import './../style/ListPage.css';
+import './../style/SkusPage.css';
 import ExportSimple from './../components/export/ExportSimple';
 
 

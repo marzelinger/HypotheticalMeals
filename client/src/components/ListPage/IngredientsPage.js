@@ -14,7 +14,7 @@ import {
     Alert,
     Modal} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
-import './../../style/ListPage.css';
+import './../../style/SkusPage.css';
 import DependencyReport from "../export/DependencyReport";
 import ExportSimple from '../export/ExportSimple';
 import DataStore from './../../helpers/DataStore'

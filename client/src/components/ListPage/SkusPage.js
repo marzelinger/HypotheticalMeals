@@ -8,16 +8,16 @@ import PropTypes from 'prop-types';
 import Filter from './Filter';
 import PageTable from './PageTable'
 import TableOptions from './TableOptions'
-import SubmitRequest from './../../helpers/SubmitRequest'
-import ItemStore from './../../helpers/ItemStore'
+import SubmitRequest from '../../helpers/SubmitRequest'
+import ItemStore from '../../helpers/ItemStore'
 import AddToManuGoal from './AddToManuGoal'
 import { 
     Alert,
     Modal} from 'reactstrap';
-import * as Constants from './../../resources/Constants';
-import './../../style/ListPage.css';
+import * as Constants from '../../resources/Constants';
+import './../../style/SkusPage.css';
 import ExportSimple from '../export/ExportSimple';
-import DataStore from './../../helpers/DataStore'
+import DataStore from '../../helpers/DataStore'
 import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import SkuDetails from './SkuDetails';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
