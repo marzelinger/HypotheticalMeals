@@ -389,6 +389,7 @@ export default class ImportPage extends React.Component {
         console.log("filetype: "+this.state.import_report_type);
 
         exportImportReport(this.state.update_list_no_collisions, this.state.update_list_items_new, this.state.update_list_ignores, this.state.import_report_type);
+
     }
 
     resetState = () => {
@@ -504,11 +505,11 @@ export default class ImportPage extends React.Component {
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.ingr_dependency} toggle={this.onDismissDependency}>
-                    The Ingredient specified in row {this.state.dependency_row+1} does not exist
+                    The entry specified in row {this.state.dependency_row+1} does not exist
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.incompleteEntry} toggle={this.onDismissBadData}>
-                    The Ingredient specified in row {this.state.badDataRow+1} does not exist
+                    The entry specified in row {this.state.badDataRow+1} does not exist
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.badData} toggle={this.onDismissBadData}>
