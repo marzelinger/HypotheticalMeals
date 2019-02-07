@@ -5,6 +5,7 @@ import ProductLineForm from './ProductLineForm';
 import * as Constants from './../resources/Constants';
 import SubmitRequest from './../helpers/SubmitRequest';
 import '../style/ManufacturingGoalsBox.css'
+import ExportSimple from '../components/export/ExportSimple';
 const jwt_decode = require('jwt-decode');
 
 class ProductLinesBox extends Component {
@@ -165,6 +166,8 @@ class ProductLinesBox extends Component {
             handleChangeText={this.onChangeText}
             handleSubmit={this.submitProdLine}
           />
+          <ExportSimple data = {this.state.data} fileTitle = {"productLines"}/> 
+
         </div>
         {this.state.error && <p>{this.state.error}</p>}
       </div>

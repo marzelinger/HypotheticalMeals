@@ -12,7 +12,7 @@ import ItemStore from '../../helpers/ItemStore'
 import IngredientDetails from './IngredientDetails'
 import { 
     Alert,
-    Modal} from 'reactstrap';
+    Modal, ModalHeader} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import './../../style/SkusPage.css';
 import DependencyReport from "../export/DependencyReport";
@@ -66,8 +66,8 @@ export default class IngredientsPage extends React.Component {
         this.onFilterValueChange = this.onFilterValueChange.bind(this);
         this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
-                this.handlePageClick=this.handlePageClick.bind(this);
-                this.setNumberPages();
+        this.handlePageClick=this.handlePageClick.bind(this);
+        this.setNumberPages();
 
 
     }
@@ -85,6 +85,8 @@ export default class IngredientsPage extends React.Component {
         }
         await this.loadDataFromServer();
         await this.updateSkuCounts();
+        this.setNumberPages();
+
     }
 
     async componentDidUpdate (prevProps, prevState) {
@@ -92,6 +94,7 @@ export default class IngredientsPage extends React.Component {
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }
+        //this.setNumberPages();
     }
 
     updateDataState = async() => {
@@ -278,10 +281,6 @@ export default class IngredientsPage extends React.Component {
     };
 
     render() {
-
-        console.log("This is the curpage value; "+this.state.currentPage);
-         console.log("this is the pagesCount: " +this.state.pagesCount); 
-        
         return (
             <div className="list-page">
                 <div>
@@ -306,24 +305,21 @@ export default class IngredientsPage extends React.Component {
                         onFilterValueChange = {this.onFilterValueChange}
                         onRemoveFilter = {this.onRemoveFilter}
                         skus = {this.state.skus}
+                        onTableOptionSelection = {this.onTableOptionSelection}
                     />
                 </div>
                 <Modal isOpen={this.state.modal} toggle={this.toggleModal} id="popup" className='item-details'>
+                    <ModalHeader toggle={this.toggleModal}>Ingredient Details</ModalHeader>
                     <IngredientDetails
                             item={this.state.detail_view_item}
                             detail_view_options={this.state.detail_view_options}
                             handlePropChange={this.onPropChange}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
                         />
-                    <Alert
-                        value={this.state.error}
-                        color='danger'/>
                 </Modal>   
-
-
                 <div className = "pagination-wrapper">
-                    <Pagination aria-label="Page navigation example">
-                    <div>
+                <Pagination aria-label="Page navigation example">
+                <div>
                     <PaginationItem disabled={this.state.currentPage <= 0}>
                         <PaginationLink
                             onClick={e => this.handlePageClick(e, this.state.currentPage - 1)}
@@ -357,8 +353,8 @@ export default class IngredientsPage extends React.Component {
                     </PaginationItem>
                     </div>
                     <div className = "ingbuttons">     
-                        <DependencyReport data = {this.state.data} />
-                        <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/> 
+                        <DependencyReport data = {this.state.exportData} />
+                        <ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> 
                     </div>
                     </Pagination>
                 </div>  

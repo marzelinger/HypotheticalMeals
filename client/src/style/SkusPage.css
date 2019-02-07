@@ -64,7 +64,7 @@ li {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 10%;
+    border-radius: 12px;
     margin-left: 20px;
 }
 
@@ -76,12 +76,29 @@ li {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 7%;
+    border-radius: 12px;
 }
 
-
+.manugoalbutton{
+    background-color: rgb(0, 188, 212) !important;
+    border-color: #212529;
+    height: 40px;
+    width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
 
 .ingbuttons{
     display: flex;
     flex-direction: row;
+}
+
+#addnewitem{
+    width: 200px !important;
+    height: 50px !important;
+    align-self: center;
+    border-radius: 100px;
+    cursor: pointer;
 }
