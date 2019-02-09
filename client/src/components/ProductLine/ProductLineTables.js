@@ -5,8 +5,8 @@
 
 import React from 'react';
 import ProductLineSkuTable from './ProductLineSkuTable'
-// import './../style/SkusPage.css';
-import ExportSimple from './../components/export/ExportSimple';
+// import '../../style/SkusPage.css';
+import ExportSimple from '../export/ExportSimple';
 
 
 export default class ProductLineTables extends React.Component {

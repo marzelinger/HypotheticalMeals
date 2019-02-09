@@ -13,9 +13,9 @@ import {
   TableRow,
   TableRowColumn,
 } from 'material-ui/Table';
-import * as Constants from './../resources/Constants';
+import * as Constants from '../../resources/Constants';
 import Select from 'react-select'
-import '../style/TableStyle.css'
+import '../../style/TableStyle.css'
 
 export class ProductLineSkuTable extends React.Component{
     constructor(props) {

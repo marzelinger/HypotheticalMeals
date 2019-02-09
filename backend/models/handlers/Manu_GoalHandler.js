@@ -22,7 +22,6 @@ class Manu_GoalHandler{
 
             manu_goal.name = new_name;
             manu_goal.user = new_user;
-            console.log("here");
             let new_manu_goal = await manu_goal.save();
             return res.json({ success: true, data: new_manu_goal});
         }
