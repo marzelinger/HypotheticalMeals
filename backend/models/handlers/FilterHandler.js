@@ -26,12 +26,8 @@ class FilterHandler{
             //ADDED FOR THE PAGINATION STUFF    
             var currentPage = Number(req.params.currentPage);
             var pageSize = Number(req.params.pageSize);
-            //console.log('this is the currentpage: '+currentPage);
-            //console.log('this is the pageSize: '+pageSize);
-            //console.log('this is the query length: '+and_query.length);
             let results = (and_query.length === 0) ? await Ingredient.find().skip(currentPage*pageSize).limit(pageSize).populate('skus').sort(sort_field) : await Ingredient.find( {$and: and_query }).skip(currentPage*pageSize).limit(pageSize).populate('skus').sort(sort_field).skip(currentPage*pageSize).limit(pageSize);
 
-            //console.log('this is the results: '+results);
 
 
             // this.data.slice(this.state.currentPage *this.state.pageSize, 
@@ -51,7 +47,6 @@ class FilterHandler{
 
     static async getSkusByFilter(req, res){
         try{
-            console.log(req);
             var and_query = [];
             var ids = [];
             var sort_field = req.params.sort_field;

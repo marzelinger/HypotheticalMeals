@@ -2,9 +2,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { UncontrolledCollapse, CardBody, Card } from 'reactstrap';
-import deleteButton from'./../resources/delete.png';
+import deleteButton from'../../resources/delete.png';
 import ProductLineTables from './ProductLineTables';
-import SubmitRequest from './../helpers/SubmitRequest';
+import SubmitRequest from '../../helpers/SubmitRequest';
 
 export default class ProductLine extends React.Component{
   constructor(props){

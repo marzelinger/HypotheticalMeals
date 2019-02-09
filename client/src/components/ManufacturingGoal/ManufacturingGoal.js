@@ -4,9 +4,9 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import ReactMarkdown from 'react-markdown';
 import { UncontrolledCollapse, CardBody, Card } from 'reactstrap';
-import deleteButton from'../resources/delete.png';
+import deleteButton from'./../../resources/delete.png';
 import ManufacturingGoalCalculator from'./ManufacturingGoalCalculator';
-import ManuGoalsTables from './ListPage/ManuGoalsTables';
+import ManuGoalsTables from './../ListPage/ManuGoalsTables';
 export default class ManufacturingGoal extends React.Component{
   constructor(props){
     super(props);
