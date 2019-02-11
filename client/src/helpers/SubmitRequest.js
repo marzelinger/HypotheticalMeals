@@ -121,6 +121,7 @@ export default class SubmitRequest{
 
   static async submitGetProductLinesByNameSubstring(substr) {
     try {
+      console.log("here")
       return fetch('/api/products_name/' + substr)
       .then(data => data.json())
       .then((res) => {

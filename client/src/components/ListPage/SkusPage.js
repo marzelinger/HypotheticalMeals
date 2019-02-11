@@ -5,15 +5,11 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Filter from './Filter';
 import PageTable from './PageTable'
-import TableOptions from './TableOptions'
 import SubmitRequest from '../../helpers/SubmitRequest'
 import ItemStore from '../../helpers/ItemStore'
 import AddToManuGoal from './AddToManuGoal'
-import { 
-    Alert,
-    Modal, ModalHeader} from 'reactstrap';
+import {Modal, ModalHeader} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import './../../style/SkusPage.css';
 import ExportSimple from '../export/ExportSimple';
@@ -61,8 +57,8 @@ export default class ListPage extends React.Component {
             pagesCount: 0,
             filters: {
                 'keyword': '',
-                'ingredient': [],
-                'product_line': []
+                'ingredients': [],
+                'products': []
             },
             filterChange: false,
             ingredients: [], 
@@ -99,7 +95,7 @@ export default class ListPage extends React.Component {
 
     async componentDidMount() {
         if (this.props.default_ing_filter !== undefined){
-            await this.onFilterValueSelection([this.props.default_ing_filter.name], null, 'ingredient');
+            await this.onFilterValueSelection([this.props.default_ing_filter.name], null, 'ingredients');
         }
         this.loadDataFromServer();
         this.setNumberPages();
@@ -122,15 +118,14 @@ export default class ListPage extends React.Component {
 
     async loadDataFromServer() {
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        var final_ing_filter = this.state.filters['ingredient'].join(',');
+        var final_ing_filter = this.state.filters['ingredients'].join(',');
         var final_keyword_filter = this.state.filters['keyword'];
-        var final_prod_line_filter = this.state.filters['product_line'].join(',');
+        var final_prod_line_filter = this.state.filters['products'].join(',');
         if (final_ing_filter === '') final_ing_filter = '_';
         if (final_keyword_filter === '') final_keyword_filter = '_';
         if (final_prod_line_filter === '') final_prod_line_filter = '_';
         var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
             this.state.sort_field, final_ing_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize, final_prod_line_filter);
-
             var resALL = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
                 this.state.sort_field, final_ing_filter, final_keyword_filter, 0, allData.data.length, final_prod_line_filter);
         
@@ -316,7 +311,7 @@ export default class ListPage extends React.Component {
                         onFilterValueChange = {this.onFilterValueChange}
                         onRemoveFilter = {this.onRemoveFilter}
                         ingredients = {this.state.ingredients}
-                        product_lines = {this.state.product_lines}
+                        products = {this.state.product_lines}
                         onTableOptionSelection = {this.onTableOptionSelection}
                     />
                 </div>

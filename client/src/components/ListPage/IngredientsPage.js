@@ -55,7 +55,7 @@ export default class IngredientsPage extends React.Component {
             pagesCount: 0,
             filters: {
                 'keyword': '',
-                'sku': []
+                'skus': []
             },
             filterChange: false,
             skus: []
@@ -105,7 +105,7 @@ export default class IngredientsPage extends React.Component {
     async loadDataFromServer() {
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
         var final_keyword_filter = this.state.filters['keyword'];
-        var final_sku_filter = this.state.filters['sku'].join(',');
+        var final_sku_filter = this.state.filters['skus'].join(',');
         if (final_keyword_filter === '') final_keyword_filter = '_';
         if (final_sku_filter === '') final_sku_filter = '_';
 
