@@ -71,10 +71,12 @@ class SkuHandler{
 
     static async updateSkuByID(req, res){
         try{
+            console.log('trying to update')
             var target_id = req.params.sku_id;
             if (!target_id) {
                 return res.json({ success: false, error: 'No sku id provided' });
             }
+            console.log('here')
             var new_name = req.body.name;
             var new_sku_num = req.body.num;
             var new_case_upc = req.body.case_upc;
@@ -84,16 +86,20 @@ class SkuHandler{
             var new_prod_line = req.body.prod_line;
             var new_ingredient_quantities = req.body.ingredient_quantities;
             var new_comment = req.body.comment;
+            var new_ingredients = req.body.ingredients;
             SkuHandler.checkForZeroQtys(new_ingredients, new_ingredient_quantities);
-
-            let conflict1 = await SKU.find({ num: Number(new_sku_num)});
-            let conflict2 = await SKU.find({ case_upc: Number(new_case_upc)});
-            if(conflict1.length > 0){
-                return res.json({ success: false, error: "Conflict: SKU#"});
-            }
-            if(conflict2.length > 0){
-                return res.json({ success: false, error: "Conflict: Case UPC"})
-            }
+            
+            console.log('checking conflicts')
+            // let conflict1 = await SKU.find({ num: Number(new_sku_num)});
+            // let conflict2 = await SKU.find({ case_upc: Number(new_case_upc)});
+            // if(conflict1.length > 0){
+            //     console.log('here');
+            //     return res.json({ success: false, error: "Conflict: SKU#"});
+            // }
+            // if(conflict2.length > 0){
+            //     console.log('conflict two')
+            //     return res.json({ success: false, error: "Conflict: Case UPC"})
+            // }
 
             let updated_sku = await SKU.findOneAndUpdate({ _id : target_id},
                 {$set: {name : new_name, num : new_sku_num, case_upc : new_case_upc, unit_upc : new_unit_upc,

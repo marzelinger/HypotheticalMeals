@@ -18,9 +18,9 @@ import * as Constants from '../../resources/Constants';
 import './../../style/SkusPage.css';
 import ExportSimple from '../export/ExportSimple';
 import DataStore from '../../helpers/DataStore'
-import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
+import TablePagination from './TablePagination'
 import SkuDetails from './SkuDetails';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
 import '../../style/SkusPage.css'
 const jwt_decode = require('jwt-decode');
 
@@ -274,6 +274,21 @@ export default class ListPage extends React.Component {
         this.setState({ data: newData });
     };
 
+    getButtons = () => {
+        return (
+        <div className = "ingbuttons"> 
+            {this.props.default_ing_filter !== undefined ? null : 
+                            (<div className = "manugoalbutton hoverable"
+                            onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}
+                            primary={true}
+                            >
+                            Add To Manufacturing Goal
+                            </div>)}
+            {this.props.default_ing_filter !== undefined ? null : (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}   
+        </div>
+        );
+    }
+
     render() {
 
         return (
@@ -315,55 +330,13 @@ export default class ListPage extends React.Component {
                         />
                 </Modal>
                 <AddToManuGoal selected_skus={this.state.selected_items} isOpen={this.state.manu_goals_modal} toggle={(toggler) => this.toggle(toggler)} manu_goals_data={this.state.manu_goals_data}></AddToManuGoal> 
-
-                <div className = "pagination-wrapper">
-                <Pagination aria-label="Page navigation example">
-                <div>
-                    <PaginationItem disabled={this.state.currentPage <= 0}>
-                        <PaginationLink
-                            onClick={e => this.handlePageClick(e, this.state.currentPage - 1)}
-                            previous
-                            href="#"
-                        />
-                    </PaginationItem>
-                    {[...Array(this.state.pagesCount)].map((page, i) => 
-                    <PaginationItem active={i === this.state.currentPage} key={i}>
-                        <PaginationLink onClick={e => {
-                            //this.handlePageClick(e, i)
-                            this.setState({
-                                currentPage: i
-                            });
-                            this.loadDataFromServer();     
-                        }
-                    } href="#">
-                        {i + 1}
-                        </PaginationLink>
-                    </PaginationItem>
-                    )}
-                    <PaginationItem disabled={this.state.currentPage >= this.state.pagesCount - 1}>
-                        <PaginationLink
-                            onClick={e => this.handlePageClick(e, this.state.currentPage + 1)}
-                            next
-                            href="#"
-                        />
-                        </PaginationItem>
-                    </div>
-                    <div className = "ingbuttons"> 
-                        
-                        {this.props.default_ing_filter !== undefined ? null : (<div className = "manugoalbutton hoverable"
-                            onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}
-                            primary={true}
-                            >
-                            Add To Manufacturing Goal
-                        </div>)}
-                        {this.props.default_ing_filter !== undefined ? null : (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}   
-                     
-                    </div>
-                    
-                    </Pagination>
-                    
-                    
-                </div>  
+                <TablePagination
+                 currentPage = {this.state.currentPage}
+                 pagesCount = {this.state.pagesCount}
+                 handlePageClick = {this.handlePageClick}
+                 getButtons = {this.getButtons}
+                >
+                </TablePagination>
             </div>
         );
     }
