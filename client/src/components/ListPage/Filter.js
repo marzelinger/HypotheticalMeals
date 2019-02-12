@@ -24,26 +24,23 @@ export default class Filter extends React.Component {
     }
 
     getNewOptions = (input) => {
-            let optionsdata = [];
             if(input == ""){
+                // TODO: need to fix this to have some kind of default state
                 return;
             }
         switch (this.props.type) {
                 case 'ingredients':
                     response  =  SubmitRequest.submitGetIngredientsByNameSubstring(input).then((response) => {
-                        console.log("setting");
                         this.setState({options: response.data.map((item) => ({label: item.name, value: item._id}))});
                     });
                     break;
                 case 'skus':
                     var response =  SubmitRequest.submitGetSkusByNameSubstring(input).then((response) => {
-                        console.log("setting");
                         this.setState({options: response.data.map((item) => ({label: item.name, value: item._id}))});
                     })
                     break;
                 case 'products':
                     response =  SubmitRequest.submitGetProductLinesByNameSubstring(input).then((response) => {
-                        console.log("setting");
                         this.setState({options: response.data.map((item) => ({label: item.name, value: item._id}))});
                     });
             }
