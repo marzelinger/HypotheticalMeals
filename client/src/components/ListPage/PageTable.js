@@ -79,7 +79,7 @@ export default class PageTable extends Component {
 
   getDetailsCol = () => {
     {if(this.state.showDetails){
-      return (<TableHeaderColumn> See More Details </TableHeaderColumn>);
+      return (<TableHeaderColumn style={{ height: 'auto !important', cursor: "default" }}> See More Details </TableHeaderColumn>);
       }
     }
   }
@@ -87,12 +87,12 @@ export default class PageTable extends Component {
   getColumnComponent = (prop) => {
     if(this.props.sortable != undefined && this.props.sortable){
       return (                  
-        <TableHeaderColumn style={{ height: 'auto !important' }} tooltip = {"Sort By " + this.getPropertyLabel(prop)} className = "hoverable" key={prop}>
+        <TableHeaderColumn style={{ height: 'auto !important', cursor: "pointer" }} tooltip = {"Sort By " + this.getPropertyLabel(prop)} className = "hoverable" key={prop}>
           <div onClick={e => this.props.handleSort(e, prop)}>{this.getPropertyLabel(prop)}</div>
         </TableHeaderColumn>
       )
     }
-    return (<TableHeaderColumn>{this.getPropertyLabel(prop)}</TableHeaderColumn>);
+    return (<TableHeaderColumn style={{ height: 'auto !important', cursor: "default" }} >{this.getPropertyLabel(prop)}</TableHeaderColumn>);
   }
 
   getTableSuperHeader = () => {
@@ -124,6 +124,7 @@ export default class PageTable extends Component {
   }
 
   render() {
+    console.log(`myrow ${this.state.showCheckboxes ? " trselect":""}`);
     return (
       <div>
         <Table
@@ -154,7 +155,7 @@ export default class PageTable extends Component {
             stripedRows={this.state.stripedRows}
           >
               {this.props.list_items.map((item, index) => 
-                <TableRow className = "myrow" selected = {this.determineSelected(index)} key={index}>
+                <TableRow className = {`myrow ${this.state.showCheckboxes ? " trselect":""}`} selected = {this.determineSelected(index)} key={index}>
                   {this.props.table_properties.map(prop => 
                     <TableRowColumn
                       key={prop}

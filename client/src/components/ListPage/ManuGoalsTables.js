@@ -84,8 +84,7 @@ export default class ManuGoalsTables extends React.Component {
                         handleSelect={this.onSelect}
                         handleDetailViewSelect={this.onDetailViewSelect}
                     />
-                </div>
-                <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/>               
+                </div>              
             </div>
         );
     }

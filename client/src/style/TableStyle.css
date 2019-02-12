@@ -1,6 +1,15 @@
 td {
     padding: 5px;
     height: auto !important;
+    cursor: default;
+}
+
+.trselect > th {
+    cursor: pointer;
+}
+
+.trselect > td{
+    cursor: pointer;
 }
 
 tr > th {
@@ -39,6 +48,7 @@ input {
     margin-bottom: 10px;
     font-size: 20px !important;
     text-align: left;
+    cursor: default;
 }
 
 #complex > .filter-item {

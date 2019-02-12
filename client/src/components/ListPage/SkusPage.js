@@ -316,7 +316,6 @@ export default class ListPage extends React.Component {
                     />
                 </div>
                 <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
-                    <ModalHeader toggle={this.toggle}>SKU Details</ModalHeader>
                     <SkuDetails
                             item={this.state.detail_view_item}
                             detail_view_options={this.state.detail_view_options}
