@@ -5,22 +5,18 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Filter from './Filter';
 import PageTable from './PageTable'
-import TableOptions from './TableOptions'
 import SubmitRequest from '../../helpers/SubmitRequest'
 import ItemStore from '../../helpers/ItemStore'
 import AddToManuGoal from './AddToManuGoal'
-import { 
-    Alert,
-    Modal, ModalHeader} from 'reactstrap';
+import {Modal, ModalHeader} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import './../../style/SkusPage.css';
 import ExportSimple from '../export/ExportSimple';
 import DataStore from '../../helpers/DataStore'
-import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
+import TablePagination from './TablePagination'
 import SkuDetails from './SkuDetails';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
 import '../../style/SkusPage.css'
 const jwt_decode = require('jwt-decode');
 
@@ -61,8 +57,8 @@ export default class ListPage extends React.Component {
             pagesCount: 0,
             filters: {
                 'keyword': '',
-                'ingredient': [],
-                'product_line': []
+                'ingredients': [],
+                'products': []
             },
             filterChange: false,
             ingredients: [], 
@@ -99,7 +95,7 @@ export default class ListPage extends React.Component {
 
     async componentDidMount() {
         if (this.props.default_ing_filter !== undefined){
-            await this.onFilterValueSelection([this.props.default_ing_filter.name], null, 'ingredient');
+            await this.onFilterValueSelection([this.props.default_ing_filter.name], null, 'ingredients');
         }
         this.loadDataFromServer();
         this.setNumberPages();
@@ -122,15 +118,14 @@ export default class ListPage extends React.Component {
 
     async loadDataFromServer() {
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        var final_ing_filter = this.state.filters['ingredient'].join(',');
+        var final_ing_filter = this.state.filters['ingredients'].join(',');
         var final_keyword_filter = this.state.filters['keyword'];
-        var final_prod_line_filter = this.state.filters['product_line'].join(',');
+        var final_prod_line_filter = this.state.filters['products'].join(',');
         if (final_ing_filter === '') final_ing_filter = '_';
         if (final_keyword_filter === '') final_keyword_filter = '_';
         if (final_prod_line_filter === '') final_prod_line_filter = '_';
         var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
             this.state.sort_field, final_ing_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize, final_prod_line_filter);
-
             var resALL = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
                 this.state.sort_field, final_ing_filter, final_keyword_filter, 0, allData.data.length, final_prod_line_filter);
         
@@ -274,6 +269,21 @@ export default class ListPage extends React.Component {
         this.setState({ data: newData });
     };
 
+    getButtons = () => {
+        return (
+        <div className = "ingbuttons"> 
+            {this.props.default_ing_filter !== undefined ? null : 
+                            (<div className = "manugoalbutton hoverable"
+                            onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}
+                            primary={true}
+                            >
+                            Add To Manufacturing Goal
+                            </div>)}
+            {this.props.default_ing_filter !== undefined ? null : (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}   
+        </div>
+        );
+    }
+
     render() {
 
         return (
@@ -301,7 +311,7 @@ export default class ListPage extends React.Component {
                         onFilterValueChange = {this.onFilterValueChange}
                         onRemoveFilter = {this.onRemoveFilter}
                         ingredients = {this.state.ingredients}
-                        product_lines = {this.state.product_lines}
+                        products = {this.state.product_lines}
                         onTableOptionSelection = {this.onTableOptionSelection}
                     />
                 </div>
@@ -315,55 +325,13 @@ export default class ListPage extends React.Component {
                         />
                 </Modal>
                 <AddToManuGoal selected_skus={this.state.selected_items} isOpen={this.state.manu_goals_modal} toggle={(toggler) => this.toggle(toggler)} manu_goals_data={this.state.manu_goals_data}></AddToManuGoal> 
-
-                <div className = "pagination-wrapper">
-                <Pagination aria-label="Page navigation example">
-                <div>
-                    <PaginationItem disabled={this.state.currentPage <= 0}>
-                        <PaginationLink
-                            onClick={e => this.handlePageClick(e, this.state.currentPage - 1)}
-                            previous
-                            href="#"
-                        />
-                    </PaginationItem>
-                    {[...Array(this.state.pagesCount)].map((page, i) => 
-                    <PaginationItem active={i === this.state.currentPage} key={i}>
-                        <PaginationLink onClick={e => {
-                            //this.handlePageClick(e, i)
-                            this.setState({
-                                currentPage: i
-                            });
-                            this.loadDataFromServer();     
-                        }
-                    } href="#">
-                        {i + 1}
-                        </PaginationLink>
-                    </PaginationItem>
-                    )}
-                    <PaginationItem disabled={this.state.currentPage >= this.state.pagesCount - 1}>
-                        <PaginationLink
-                            onClick={e => this.handlePageClick(e, this.state.currentPage + 1)}
-                            next
-                            href="#"
-                        />
-                        </PaginationItem>
-                    </div>
-                    <div className = "ingbuttons"> 
-                        
-                        {this.props.default_ing_filter !== undefined ? null : (<div className = "manugoalbutton hoverable"
-                            onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}
-                            primary={true}
-                            >
-                            Add To Manufacturing Goal
-                        </div>)}
-                        {this.props.default_ing_filter !== undefined ? null : (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}   
-                     
-                    </div>
-                    
-                    </Pagination>
-                    
-                    
-                </div>  
+                <TablePagination
+                 currentPage = {this.state.currentPage}
+                 pagesCount = {this.state.pagesCount}
+                 handlePageClick = {this.handlePageClick}
+                 getButtons = {this.getButtons}
+                >
+                </TablePagination>
             </div>
         );
     }
