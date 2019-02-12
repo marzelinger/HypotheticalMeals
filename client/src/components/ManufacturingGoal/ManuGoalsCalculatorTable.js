@@ -1,6 +1,6 @@
 
 import React from 'react';
-import ExportSimple from './export/ExportSimple';
+import ExportSimple from '../export/ExportSimple';
 import PropTypes from 'prop-types';
 import {
     Table,
@@ -12,7 +12,7 @@ import {
     TableRowColumn,
   } from 'material-ui/Table';
 import { Button, ModalBody, ModalFooter } from 'reactstrap';
-import '../style/printing.css'
+import '../../style/printing.css'
 const html2canvas = require('html2canvas');
 const jsPDF = require('jspdf');
 

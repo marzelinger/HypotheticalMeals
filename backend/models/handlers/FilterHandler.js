@@ -21,17 +21,18 @@ class FilterHandler{
             }
             var keyword = req.params.keyword;
             if (keyword !== undefined && keyword !== "_"){
-                and_query.push({$or: [{name: { $regex: keyword , $options: "$i"}}, {pkg_size:{ $regex: keyword , $options: "$i"}}, {vendor_info: { $regex: keyword , $options: "$i"}}, {comment: { $regex: keyword , $options: "$i"}}]}); 
+                and_query.push({$or: [{name: { $regex: keyword , $options: "$i"}}, 
+                {num: { $regex: keyword , $options: "$i"}}]}); 
             }
             //ADDED FOR THE PAGINATION STUFF    
             var currentPage = Number(req.params.currentPage);
             var pageSize = Number(req.params.pageSize);
-            //console.log('this is the currentpage: '+currentPage);
-            //console.log('this is the pageSize: '+pageSize);
-            //console.log('this is the query length: '+and_query.length);
-            let results = (and_query.length === 0) ? await Ingredient.find().skip(currentPage*pageSize).limit(pageSize).populate('skus').sort(sort_field) : await Ingredient.find( {$and: and_query }).skip(currentPage*pageSize).limit(pageSize).populate('skus').sort(sort_field).skip(currentPage*pageSize).limit(pageSize);
+            let results = (and_query.length === 0) ? 
+                await Ingredient.find().skip(currentPage*pageSize).limit(pageSize).populate('skus').sort(sort_field)
+                    .collation({locale: "en_US", numericOrdering: true}) : 
+                await Ingredient.find( {$and: and_query }).skip(currentPage*pageSize).limit(pageSize).populate('skus')
+                    .sort(sort_field).skip(currentPage*pageSize).limit(pageSize).collation({locale: "en_US", numericOrdering: true});
 
-            //console.log('this is the results: '+results);
 
 
             // this.data.slice(this.state.currentPage *this.state.pageSize, 
@@ -51,7 +52,6 @@ class FilterHandler{
 
     static async getSkusByFilter(req, res){
         try{
-            console.log(req);
             var and_query = [];
             var ids = [];
             var sort_field = req.params.sort_field;
@@ -64,7 +64,9 @@ class FilterHandler{
             }
             var keyword = req.params.keyword;
             if (keyword !== undefined && keyword !== "_"){
-                and_query.push({$or: [{name: { $regex: keyword , $options: "$i"}}, {unit_size: { $regex: keyword , $options: "$i"}}, {comment: { $regex: keyword , $options: "$i"}}]}); 
+                and_query.push({$or: [{name: { $regex: keyword , $options: "$i"}}, 
+                {num: { $regex: keyword , $options: "$i"}}, {case_upc: { $regex: keyword , $options: "$i"}},
+                {unit_upc: { $regex: keyword , $options: "$i"}}]}); 
             }
 
             var currentPage = Number(req.params.currentPage);
@@ -75,9 +77,12 @@ class FilterHandler{
                 prod_line_ids = prod_line_ids.replace(/\s/g, "").split(',');
                 and_query.push({ prod_line: prod_line_ids }); 
             }
-            console.log(and_query)
-            let results = (and_query.length === 0) ? await SKU.find( ).skip(currentPage*pageSize).limit(pageSize).populate('ingredients').populate('prod_line').sort(sort_field) : 
-                                                     await SKU.find( {$and: and_query }).skip(currentPage*pageSize).limit(pageSize).populate('ingredients').populate('prod_line').sort(sort_field);
+            let results = (and_query.length === 0) ? await SKU.find( ).skip(currentPage*pageSize).limit(pageSize)
+                                                        .populate('ingredients').populate('prod_line').sort(sort_field)
+                                                        .collation({locale: "en_US", numericOrdering: true}) : 
+                                                     await SKU.find( {$and: and_query }).skip(currentPage*pageSize)
+                                                        .limit(pageSize).populate('ingredients').populate('prod_line')
+                                                        .sort(sort_field).collation({locale: "en_US", numericOrdering: true});
             if (results.length == 0) results = [];
             return res.json({ success: true, data: results});
         }

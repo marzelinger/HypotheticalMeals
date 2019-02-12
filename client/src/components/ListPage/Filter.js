@@ -9,6 +9,7 @@ import {
     InputGroupAddon } from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import Select from 'react-select'
+import SubmitRequest from './../../helpers/SubmitRequest'
 
 
 export default class Filter extends React.Component {
@@ -17,24 +18,43 @@ export default class Filter extends React.Component {
         this.state = {
             width: 100,
             focus: false,
-            open: false
+            open: false,
+            options: [{label: 'starting', value: 'test'}]
         };
     }
 
+    getNewOptions = (input) => {
+            if(input == ""){
+                // TODO: need to fix this to have some kind of default state
+                return;
+            }
+        switch (this.props.type) {
+                case 'ingredients':
+                    response  =  SubmitRequest.submitGetIngredientsByNameSubstring(input).then((response) => {
+                        this.setState({options: response.data.map((item) => ({label: item.name, value: item._id}))});
+                    });
+                    break;
+                case 'skus':
+                    var response =  SubmitRequest.submitGetSkusByNameSubstring(input).then((response) => {
+                        this.setState({options: response.data.map((item) => ({label: item.name, value: item._id}))});
+                    })
+                    break;
+                case 'products':
+                    response =  SubmitRequest.submitGetProductLinesByNameSubstring(input).then((response) => {
+                        this.setState({options: response.data.map((item) => ({label: item.name, value: item._id}))});
+                    });
+            }
+    }
+
     render() {
-        // var style = {
-        //     height: '10px !important',
-        //     width: '80%',
-        //     marginTop: '10px',
-        //     marginBottom: '10px'
-        // }
         return (
         <div className='filter-item'>
             <Select
                 placeholder = {`Filter by ${this.props.type}`}
                 isMulti
+                onInputChange = { (input) => this.getNewOptions(input)}
                 onChange={(opt, e) => this.props.handleFilterValueSelection(opt, e, this.props.type)}
-                options={this.props.data.map((item) => ({label: item.name, value: item._id}))}
+                options={this.state.options}
                 noOptionsMessage={() => null}
                 theme={(theme) => ({
                     ...theme,
@@ -45,7 +65,6 @@ export default class Filter extends React.Component {
                     },
                   })}
             />
-            {/* <InputGroupAddon addonType="append">{this.props.type}</InputGroupAddon> */}
         </div>
         );
     }

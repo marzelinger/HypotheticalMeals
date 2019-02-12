@@ -27,3 +27,7 @@
 #displaytable{
     margin-bottom: 0px;
 }
+
+.close {
+    display: none;
+}
