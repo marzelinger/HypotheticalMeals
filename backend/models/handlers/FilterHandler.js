@@ -21,12 +21,16 @@ class FilterHandler{
             }
             var keyword = req.params.keyword;
             if (keyword !== undefined && keyword !== "_"){
-                and_query.push({$or: [{name: { $regex: keyword , $options: "$i"}}, {pkg_size:{ $regex: keyword , $options: "$i"}}, {vendor_info: { $regex: keyword , $options: "$i"}}, {comment: { $regex: keyword , $options: "$i"}}]}); 
+                and_query.push({$or: [{name: { $regex: keyword , $options: "$i"}}, 
+                {num: { $regex: keyword , $options: "$i"}}]}); 
             }
             //ADDED FOR THE PAGINATION STUFF    
             var currentPage = Number(req.params.currentPage);
             var pageSize = Number(req.params.pageSize);
-            let results = (and_query.length === 0) ? await Ingredient.find().skip(currentPage*pageSize).limit(pageSize).populate('skus').sort(sort_field) : await Ingredient.find( {$and: and_query }).skip(currentPage*pageSize).limit(pageSize).populate('skus').sort(sort_field).skip(currentPage*pageSize).limit(pageSize);
+            let results = (and_query.length === 0) ? 
+                await Ingredient.find().skip(currentPage*pageSize).limit(pageSize).populate('skus').sort(sort_field) : 
+                await Ingredient.find( {$and: and_query }).skip(currentPage*pageSize).limit(pageSize).populate('skus')
+                    .sort(sort_field).skip(currentPage*pageSize).limit(pageSize);
 
 
 
@@ -59,7 +63,9 @@ class FilterHandler{
             }
             var keyword = req.params.keyword;
             if (keyword !== undefined && keyword !== "_"){
-                and_query.push({$or: [{name: { $regex: keyword , $options: "$i"}}, {unit_size: { $regex: keyword , $options: "$i"}}, {comment: { $regex: keyword , $options: "$i"}}]}); 
+                and_query.push({$or: [{name: { $regex: keyword , $options: "$i"}}, 
+                {num: { $regex: keyword , $options: "$i"}}, {case_upc: { $regex: keyword , $options: "$i"}},
+                {unit_upc: { $regex: keyword , $options: "$i"}}]}); 
             }
 
             var currentPage = Number(req.params.currentPage);

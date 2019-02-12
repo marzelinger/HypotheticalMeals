@@ -11,11 +11,11 @@ export default class DataStore{
       return {
         page_name: Constants.ingredients_page_name,
         page_title: 'Ingredients',
-        table_columns: ['Name', 'Number', 'Package Size', 'Package Cost (USD)', 'Associated SKUs'],
+        table_columns: ['Name', 'Ingr#', 'Package Size', 'Package Cost (USD)', 'Associated SKUs'],
         table_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'sku_count'],
         table_options: [Constants.create_item, Constants.add_keyword_filter, Constants.add_sku_filter],
         item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment'],
-        item_property_labels: ['Name', 'Number', 'Package Size', 'Package Cost (USD)', 'Vendor Info', 'Comments'],
+        item_property_labels: ['Name', 'Ingr#', 'Package Size', 'Package Cost (USD)', 'Vendor Info', 'Comments'],
         item_property_patterns: ['.+', '^[0-9]+$', '.+', '^[+]?([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2})$', '.*', '.*'],
         item_property_field_type: ['text', 'text', 'text', 'text', 'textarea', 'textarea'],  
       };
@@ -46,7 +46,7 @@ export default class DataStore{
 
     static getIngredientDataSimple() {
       var results = DataStore.getIngredientData();
-      results.table_columns = ['Name', 'Number'];
+      results.table_columns = ['Name', 'Ingr#'];
       results.table_properties = ['name', 'num'];
       return results;
     }
