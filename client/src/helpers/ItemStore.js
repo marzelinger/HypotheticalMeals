@@ -52,7 +52,7 @@ export default class ItemStore{
           num: new_id,
           vendor_info: '',
           pkg_size: '',
-          pkg_cost: '',
+          pkg_cost: 0,
           sku_count: 0,
           comment: ''
         };
