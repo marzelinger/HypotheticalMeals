@@ -11,7 +11,7 @@ const IngredientsSchema = new Schema({
   num: Number,
   vendor_info: String,
   pkg_size: String,
-  pkg_cost: String,
+  pkg_cost: Number,
   sku_count: Number,
   comment: String
 }, { timestamps: true });

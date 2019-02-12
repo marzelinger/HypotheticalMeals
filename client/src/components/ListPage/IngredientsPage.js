@@ -238,6 +238,7 @@ export default class IngredientsPage extends React.Component {
     };
 
     onDetailViewSelect = (event, item) => {
+        console.log('yo')
         this.setState({ 
             detail_view_item: item ,
             detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]

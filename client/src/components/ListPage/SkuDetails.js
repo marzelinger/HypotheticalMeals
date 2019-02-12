@@ -4,6 +4,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types';
+import CheckDigit from 'checkdigit';
 import * as Constants from '../../resources/Constants';
 import { 
     Button,
@@ -135,7 +136,9 @@ export default class SKUDetails extends React.Component {
         this.state.item_properties.map(prop => {
             if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
         })
-        if (this.state.prod_line_item.name === undefined) inv_in.push('prod_line')
+        if (this.state.prod_line_item.name === undefined) inv_in.push('prod_line');
+        if (!CheckDigit.mod10.isValid('' + this.props.item['case_upc'])) inv_in.push('case_upc');
+        if (!CheckDigit.mod10.isValid('' + this.props.item['unit_upc'])) inv_in.push('unit_upc');
         await this.setState({ invalid_inputs: inv_in });
     }
 
