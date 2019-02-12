@@ -4,6 +4,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types';
+import CheckDigit from 'checkdigit';
 import * as Constants from '../../resources/Constants';
 import { 
     Button,
@@ -24,12 +25,15 @@ export default class SKUDetails extends React.Component {
         let {
             item_properties, 
             item_property_labels,
-            item_property_patterns } = DataStore.getSkuData();
+            item_property_patterns,
+            item_property_field_type } = DataStore.getSkuData();
 
         this.state = {
+            item: props.item,
             item_properties,
             item_property_labels,
             item_property_patterns,
+            item_property_field_type,
             invalid_inputs: [],
             assisted_search_results: [],
             prod_line_item: {}
@@ -61,12 +65,23 @@ export default class SKUDetails extends React.Component {
         return this.state.item_property_patterns[this.state.item_properties.indexOf(prop)];
     }
 
+    getPropertyFieldType = (prop) => {
+        return this.state.item_property_field_type[this.state.item_properties.indexOf(prop)];
+    }
+
     onSelectProductLine = (pl) => {
-        this.props.handlePropChange(pl._id, this.props.item, 'prod_line');
+        var newItem = this.state.item;
+        newItem['prod_line'] = pl._id;
         this.setState({
+            item: newItem,
             prod_line_item: pl
         })
     }
+
+    onPropChange = (value, item, prop) => {
+        item[prop] = value
+        this.setState({ item: item });
+    };
 
     onModifyList = (option, value, qty) => {
         var item = this.props.item;
@@ -126,8 +141,16 @@ export default class SKUDetails extends React.Component {
             return;
         }
         await this.validateInputs();
-        if (this.state.invalid_inputs.length === 0) this.props.handleDetailViewSubmit(e, this.props.item, opt)
-        else alert('Invalid Fields');
+        let alert_string = 'Invalid Fields';
+        let inv = this.state.invalid_inputs;
+        if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.props.item, opt)
+        else {
+            if (inv.includes('case_upc') && this.state.item['case_upc'].length > 11)
+                alert_string += '\nTry Case UPC: ' + CheckDigit.mod10.apply(this.state.item['case_upc'].slice(0,11));
+            if (inv.includes('unit_upc') && this.state.item['unit_upc'].length > 11)
+                alert_string += '\nTry Unit UPC: ' + CheckDigit.mod10.apply(this.state.item['unit_upc'].slice(0,11));
+            alert(alert_string);
+        } 
     }
 
     async validateInputs() { 
@@ -135,7 +158,9 @@ export default class SKUDetails extends React.Component {
         this.state.item_properties.map(prop => {
             if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
         })
-        if (this.state.prod_line_item.name === undefined) inv_in.push('prod_line')
+        if (this.state.prod_line_item.name === undefined) inv_in.push('prod_line');
+        if (!CheckDigit.mod10.isValid(this.props.item['case_upc'])) inv_in.push('case_upc');
+        if (!CheckDigit.mod10.isValid(this.props.item['unit_upc'])) inv_in.push('unit_upc');
         await this.setState({ invalid_inputs: inv_in });
     }
 
@@ -145,9 +170,10 @@ export default class SKUDetails extends React.Component {
                 <FormGroup key={prop}>
                     <Label>{this.getPropertyLabel(prop)}</Label>
                     <Input 
+                        type={this.getPropertyFieldType(prop)}
                         value={ this.props.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
-                        onChange={ (e) => this.props.handlePropChange(e.target.value, this.props.item, prop)}
+                        onChange={ (e) => this.onPropChange(e.target.value, this.props.item, prop)}
                     />
                 </FormGroup>));
         }
@@ -176,7 +202,7 @@ export default class SKUDetails extends React.Component {
                 />
                 <IngredientsViewSimple 
                     sku={this.props.item} 
-                    handlePropChange={this.props.handlePropChange}
+                    handlePropChange={this.onPropChange}
                 />
             </div>
             <div className='item-options'>
@@ -196,6 +222,5 @@ export default class SKUDetails extends React.Component {
 SKUDetails.propTypes = {
     item: PropTypes.object,
     detail_view_options: PropTypes.arrayOf(PropTypes.string),
-    handlePropChange: PropTypes.func,
     handleDetailViewSubmit: PropTypes.func
   };
