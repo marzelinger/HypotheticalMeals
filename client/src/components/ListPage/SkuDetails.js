@@ -25,13 +25,15 @@ export default class SKUDetails extends React.Component {
         let {
             item_properties, 
             item_property_labels,
-            item_property_patterns } = DataStore.getSkuData();
+            item_property_patterns,
+            item_property_field_type } = DataStore.getSkuData();
 
         this.state = {
             item: props.item,
             item_properties,
             item_property_labels,
             item_property_patterns,
+            item_property_field_type,
             invalid_inputs: [],
             assisted_search_results: [],
             prod_line_item: {}
@@ -61,6 +63,10 @@ export default class SKUDetails extends React.Component {
 
     getPropertyPattern = (prop) => {
         return this.state.item_property_patterns[this.state.item_properties.indexOf(prop)];
+    }
+
+    getPropertyFieldType = (prop) => {
+        return this.state.item_property_field_type[this.state.item_properties.indexOf(prop)];
     }
 
     onSelectProductLine = (pl) => {
@@ -156,6 +162,7 @@ export default class SKUDetails extends React.Component {
                 <FormGroup key={prop}>
                     <Label>{this.getPropertyLabel(prop)}</Label>
                     <Input 
+                        type={this.getPropertyFieldType(prop)}
                         value={ this.props.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
                         onChange={ (e) => this.onPropChange(e.target.value, this.props.item, prop)}

@@ -16,7 +16,8 @@ export default class DataStore{
         table_options: [Constants.create_item, Constants.add_keyword_filter, Constants.add_sku_filter],
         item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment'],
         item_property_labels: ['Name', 'Number', 'Package Size', 'Package Cost (USD)', 'Vendor Info', 'Comments'],
-        item_property_patterns: ['.+', '^[0-9]+$', '.+', '^[+]?([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2})$', '.*', '.*'], 
+        item_property_patterns: ['.+', '^[0-9]+$', '.+', '^[+]?([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2})$', '.*', '.*'],
+        item_property_field_type: ['text', 'text', 'text', 'text', 'textarea', 'textarea'],  
       };
     }
 
@@ -32,6 +33,7 @@ export default class DataStore{
           item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'comment'],
           item_property_labels: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Count per Case', 'Comment'],
           item_property_patterns: ['.+', '^[0-9]+$', '^[016789][0-9]{11}$', '^[016789][0-9]{11}$', '.+', '^[0-9]+$', '.*'], 
+          item_property_field_type: ['text', 'text', 'text', 'text', 'text', 'text','textarea'],
         };
     }
 
