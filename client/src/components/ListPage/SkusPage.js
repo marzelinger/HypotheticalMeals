@@ -193,10 +193,6 @@ export default class ListPage extends React.Component {
         this.toggle(Constants.details_modal);
     }
 
-    onRemoveFilter = (e, id) => {
-        
-    }
-
     onTableOptionSelection = async(e, opt) => {
         switch (opt){
             case Constants.create_item:
