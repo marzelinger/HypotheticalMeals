@@ -236,6 +236,7 @@ export default class IngredientsPage extends React.Component {
     };
 
     async onDetailViewSubmit(event, item, option) {
+        console.log(item)
         var res = {};
         var newData = this.state.data.splice();
         switch (option) {

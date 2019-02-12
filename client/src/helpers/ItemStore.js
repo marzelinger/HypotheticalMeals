@@ -48,11 +48,12 @@ export default class ItemStore{
     switch (page_name){
       case Constants.ingredients_page_name:
         return {
+          _id: 'unassigned',
           name: '',
           num: new_id,
           vendor_info: '',
           pkg_size: '',
-          pkg_cost: 0,
+          pkg_cost: '',
           sku_count: 0,
           comment: ''
         };

@@ -71,7 +71,7 @@ export default class PageTable extends Component {
       case 'prod_line':
         return item[prop].name;
       case 'pkg_cost':
-        return '$' + item[prop].toFixed(2);
+        return '$' + (item[prop] === '') ? item[prop] : item[prop].toFixed(2);
       default:
         return item[prop];
     }
