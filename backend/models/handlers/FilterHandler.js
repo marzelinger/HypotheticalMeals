@@ -70,7 +70,6 @@ class FilterHandler{
                 prod_line_ids = prod_line_ids.replace(/\s/g, "").split(',');
                 and_query.push({ prod_line: prod_line_ids }); 
             }
-            console.log(and_query)
             let results = (and_query.length === 0) ? await SKU.find( ).skip(currentPage*pageSize).limit(pageSize).populate('ingredients').populate('prod_line').sort(sort_field) : 
                                                      await SKU.find( {$and: and_query }).skip(currentPage*pageSize).limit(pageSize).populate('ingredients').populate('prod_line').sort(sort_field);
             if (results.length == 0) results = [];

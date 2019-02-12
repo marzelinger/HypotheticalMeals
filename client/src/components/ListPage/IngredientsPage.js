@@ -15,10 +15,10 @@ import {
     Modal, ModalHeader} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import './../../style/SkusPage.css';
+import DataStore from './../../helpers/DataStore'
+import TablePagination from './TablePagination'
 import DependencyReport from "../export/DependencyReport";
 import ExportSimple from '../export/ExportSimple';
-import DataStore from './../../helpers/DataStore'
-import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 
 
 
@@ -55,7 +55,7 @@ export default class IngredientsPage extends React.Component {
             pagesCount: 0,
             filters: {
                 'keyword': '',
-                'sku': []
+                'skus': []
             },
             filterChange: false,
             skus: []
@@ -105,7 +105,7 @@ export default class IngredientsPage extends React.Component {
     async loadDataFromServer() {
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
         var final_keyword_filter = this.state.filters['keyword'];
-        var final_sku_filter = this.state.filters['sku'].join(',');
+        var final_sku_filter = this.state.filters['skus'].join(',');
         if (final_keyword_filter === '') final_keyword_filter = '_';
         if (final_sku_filter === '') final_sku_filter = '_';
 
@@ -151,6 +151,7 @@ export default class IngredientsPage extends React.Component {
 
     async setNumberPages(){
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
+        console.log(allData);
         var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
         this.setState({
             currentPage: 0,
@@ -281,6 +282,15 @@ export default class IngredientsPage extends React.Component {
         this.setState({ data: newData });
     };
 
+    getButtons = () => {
+        return (
+        <div className = "ingbuttons">     
+            <DependencyReport data = {this.state.exportData} />
+            <ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> 
+        </div>
+        );
+    }
+
     render() {
         return (
             <div className="list-page">
@@ -318,47 +328,13 @@ export default class IngredientsPage extends React.Component {
                             handleDetailViewSubmit={this.onDetailViewSubmit}
                         />
                 </Modal>   
-                <div className = "pagination-wrapper">
-                <Pagination aria-label="Page navigation example">
-                <div>
-                    <PaginationItem disabled={this.state.currentPage <= 0}>
-                        <PaginationLink
-                            onClick={e => this.handlePageClick(e, this.state.currentPage - 1)}
-                            previous
-                            href="#"
-                        />
-                    </PaginationItem>
-
-                    {[...Array(this.state.pagesCount)].map((page, i) => 
-                    <PaginationItem active={i === this.state.currentPage} key={i}>
-                        <PaginationLink onClick={e => {
-                            //this.handlePageClick(e, i)
-                            this.setState({
-                                currentPage: i
-                            });
-                            this.loadDataFromServer();     
-                        }
-                    } href="#">
-                        {i + 1}
-                        </PaginationLink>
-                    </PaginationItem>
-                    )}
-
-                    <PaginationItem disabled={this.state.currentPage >= this.state.pagesCount - 1}>
-              
-                    <PaginationLink
-                        onClick={e => this.handlePageClick(e, this.state.currentPage + 1)}
-                        next
-                        href="#"
-                    />
-                    </PaginationItem>
-                    </div>
-                    <div className = "ingbuttons">     
-                        <DependencyReport data = {this.state.exportData} />
-                        <ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> 
-                    </div>
-                    </Pagination>
-                </div>  
+                <TablePagination
+                 currentPage = {this.state.currentPage}
+                 pagesCount = {this.state.pagesCount}
+                 handlePageClick = {this.handlePageClick}
+                 getButtons = {this.getButtons}
+                >
+                </TablePagination>
             </div>
         );
     }

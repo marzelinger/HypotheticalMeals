@@ -12,6 +12,7 @@ export default class ProductLine extends React.Component{
   }
 
   onProdLineChange = async (newval, sku, action) => {
+          console.log('updating here');
           let updated_sku = this.props.skus[sku];
           updated_sku.prod_line = newval.value;
           await SubmitRequest.submitUpdateItem('skus', updated_sku);
