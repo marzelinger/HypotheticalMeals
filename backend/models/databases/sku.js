@@ -9,8 +9,8 @@ const Schema = mongoose.Schema;
 const SkusSchema = new Schema({
   name: String,
   num: Number,
-  case_upc: Number,
-  unit_upc: Number,
+  case_upc: String,
+  unit_upc: String,
   unit_size: String,
   cpc: Number,
   prod_line: 

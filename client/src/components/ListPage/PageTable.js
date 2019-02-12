@@ -66,6 +66,19 @@ export default class PageTable extends Component {
     this.setState({height: event.target.value});
   };
 
+  displayValue(item, prop) {
+    switch (prop){
+      case 'prod_line':
+        return item[prop].name;
+      case 'pkg_cost':
+        return '$' + item[prop].toFixed(2);
+      default:
+        return item[prop];
+    }
+    // return (['string','number'].includes(typeof item[prop]) || item[prop] === null || item[prop] === undefined) 
+    //                       ? item[prop] : item[prop].name
+  }
+
   determineSelected= (index) => {
     if(this.state.selectable){
       return this.props.selected_indexes.includes(index);
@@ -161,8 +174,7 @@ export default class PageTable extends Component {
                       onClick={e => this.props.handleSelect(e, item)}
                       style={{ height: 'auto !important' }}
                     >
-                      {(['string','number'].includes(typeof item[prop]) || item[prop] === null || item[prop] === undefined) 
-                          ? item[prop] : item[prop].name}
+                      {this.displayValue(item, prop)}
                     </TableRowColumn>
                   )}
                   {([undefined,null].includes(this.props.quantities)) ? 

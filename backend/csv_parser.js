@@ -248,8 +248,8 @@ export default class CSV_parser{
                     var sku = new SKU();
                     sku.name = obj.Name;
                     sku.num = Number(obj["SKU#"]);
-                    sku.case_upc = Number(obj["Case UPC"]);
-                    sku.unit_upc = Number(obj["Unit UPC"]);
+                    sku.case_upc = obj["Case UPC"];
+                    sku.unit_upc = obj["Unit UPC"];
                     sku.unit_size = obj["Unit size"];
                     let prod_line = await Prod_Line.find({ name : obj["Product Line Name"]});
                     sku.prod_line = prod_line[0]._id;

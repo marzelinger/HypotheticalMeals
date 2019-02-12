@@ -141,8 +141,16 @@ export default class SKUDetails extends React.Component {
             return;
         }
         await this.validateInputs();
-        if (this.state.invalid_inputs.length === 0) this.props.handleDetailViewSubmit(e, this.props.item, opt)
-        else alert('Invalid Fields');
+        let alert_string = 'Invalid Fields';
+        let inv = this.state.invalid_inputs;
+        if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.props.item, opt)
+        else {
+            if (inv.includes('case_upc') && this.state.item['case_upc'].length > 11)
+                alert_string += '\nTry Case UPC: ' + CheckDigit.mod10.apply(this.state.item['case_upc'].slice(0,11));
+            if (inv.includes('unit_upc') && this.state.item['unit_upc'].length > 11)
+                alert_string += '\nTry Unit UPC: ' + CheckDigit.mod10.apply(this.state.item['unit_upc'].slice(0,11));
+            alert(alert_string);
+        } 
     }
 
     async validateInputs() { 
@@ -151,8 +159,8 @@ export default class SKUDetails extends React.Component {
             if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
         })
         if (this.state.prod_line_item.name === undefined) inv_in.push('prod_line');
-        if (!CheckDigit.mod10.isValid('' + this.props.item['case_upc'])) inv_in.push('case_upc');
-        if (!CheckDigit.mod10.isValid('' + this.props.item['unit_upc'])) inv_in.push('unit_upc');
+        if (!CheckDigit.mod10.isValid(this.props.item['case_upc'])) inv_in.push('case_upc');
+        if (!CheckDigit.mod10.isValid(this.props.item['unit_upc'])) inv_in.push('unit_upc');
         await this.setState({ invalid_inputs: inv_in });
     }
 
