@@ -51,7 +51,7 @@ export default class IngredientsPage extends React.Component {
             modal: false,
             simple: props.simple || false,
             currentPage: 0,
-            pageSize: 7,
+            pageSize: 20,
             pagesCount: 0,
             filters: {
                 'keyword': '',
@@ -112,7 +112,7 @@ export default class IngredientsPage extends React.Component {
             var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
                 this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
                 var resALL = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-                    this.state.sort_field, final_sku_filter, final_keyword_filter, 0, allData.data.length);
+                    this.state.sort_field, final_sku_filter, final_keyword_filter, 0, 0);
         if (res === undefined || !res.success) {
             res.data = [];
             resALL.data = [];
@@ -123,6 +123,8 @@ export default class IngredientsPage extends React.Component {
             filterChange: false
         })
         this.updateDataState();
+        //this.setNumberPages();
+
     }
 
     async updateSkuCounts() {
@@ -138,6 +140,8 @@ export default class IngredientsPage extends React.Component {
             }
         );
         this.setState({ data: data })
+        //this.setNumberPages();
+
         // MAYBE NEED TO ADD SOMETHING TO RECALCULATE PAGES?
     }
 
@@ -147,12 +151,18 @@ export default class IngredientsPage extends React.Component {
             filters[filterType] = value;
         }
         this.setState({filters: filters, filterChange: true}) ;
+        //this.setNumberPages();
     }
 
     async setNumberPages(){
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
         console.log(allData);
+        //if(allData.data != undefined){
         var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
+        //}
+        //else{
+          //  var curCount = 0;
+        //}
         this.setState({
             currentPage: 0,
             pagesCount: curCount,
@@ -174,6 +184,8 @@ export default class IngredientsPage extends React.Component {
             filters[filterType] = value;
         }
         this.setState({filters: filters, filterChange: true}) ;
+        //this.setNumberPages();
+
     }
 
     onFilterValueSelection (vals, e, type)  {
@@ -186,6 +198,8 @@ export default class IngredientsPage extends React.Component {
             filters: filters,
             filterChange: true
         });
+        //this.setNumberPages();
+
     }
 
     async onCreateNewItem() {
@@ -198,6 +212,8 @@ export default class IngredientsPage extends React.Component {
             detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
         })
         this.toggleModal();
+        //this.setNumberPages();
+
     }
 
 
@@ -216,6 +232,8 @@ export default class IngredientsPage extends React.Component {
                 this.onAddFilter(Constants.keyword_label);
                 break;
         }
+        //this.setNumberPages();
+
     }
 
     async onSort(event, sortKey) {

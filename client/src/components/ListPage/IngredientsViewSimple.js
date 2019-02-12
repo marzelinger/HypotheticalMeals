@@ -30,7 +30,7 @@ export default class IngredientsViewSimple extends React.Component {
             selected_items: [],
             curPageData: [],
             currentPage: 0,
-            pageSize: 2,
+            pageSize: 20,
             pagesCount: 0
 
         };
@@ -82,6 +82,9 @@ export default class IngredientsViewSimple extends React.Component {
     var allIngs = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
                 "_", this.state.sku_id, "_", 0, 0);
         console.log('this is the allData: '+allIngs);
+        console.log('this is the the stringify'+JSON.stringify(allIngs));
+
+        if (allIngs.data != undefined){
         console.log('this is the the number length'+allIngs.data.length);
         console.log('this is the the stringify'+JSON.stringify(allIngs));
 
@@ -94,6 +97,14 @@ export default class IngredientsViewSimple extends React.Component {
         }); 
 
         console.log('this is the pagesCount1: '+this.state.pagesCount);
+    }
+    else{
+        this.setState({
+            currentPage: 0,
+            pagesCount: 0
+        }); 
+
+    }
 
     }
 
