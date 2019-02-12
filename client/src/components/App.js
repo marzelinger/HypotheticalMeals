@@ -11,11 +11,11 @@ import Dashboard from "./dashboard/Dashboard";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "../utils/setAuthToken";
 import GeneralNavBar from "./GeneralNavBar";
-import ManufacturingGoalsPage from "./ManufacturingGoalsPage";
+import ManufacturingGoalsPage from "./ManufacturingGoal/ManufacturingGoalsPage";
 import ImportPage from "./ImportPage";
 import IngredientsPage from "./ListPage/IngredientsPage";
-import ProductLinePage from "../ProductLine/ProductLinePage";
-import * as Constants from './../resources/Constants';
+import ProductLinePage from "./ProductLine/ProductLinePage";
+import * as Constants from '../resources/Constants';
 import Logout from '../components/auth/Logout';
 
 import { setCurrentUser, logoutUser, getAllUsers } from "../actions/authActions";

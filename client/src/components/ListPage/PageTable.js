@@ -109,9 +109,9 @@ export default class PageTable extends Component {
                 onFilterValueChange = {this.props.onFilterValueChange}
                 onRemoveFilter = {this.props.onRemoveFilter}
                 filters = {this.props.filters}
-                ingredient = {this.props.ingredients}
-                product_line = {this.props.product_lines}
-                sku = {this.props.skus}
+                ingredients = {this.props.ingredients}
+                products = {this.props.product_lines}
+                skus = {this.props.skus}
                 id = "tableactions"
                 onTableOptionSelection = {this.props.onTableOptionSelection}
               >
