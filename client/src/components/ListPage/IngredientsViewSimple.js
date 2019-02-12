@@ -79,8 +79,8 @@ export default class IngredientsViewSimple extends React.Component {
 
     async setNumberPages(){
         console.log("this is the state.sku.id"+this.state.sku_id);
-        var allIngs = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-                "_", this.state.sku_id, "_", 0, 0);
+        var allIngs = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, "_", 
+            (this.state.sku_id===undefined) ? '_' : this.state.sku_id, "_", 0, 0);
         console.log('this is the allData: '+allIngs);
         console.log('this is the the number length'+allIngs.data.length);
         console.log('this is the the stringify'+JSON.stringify(allIngs));

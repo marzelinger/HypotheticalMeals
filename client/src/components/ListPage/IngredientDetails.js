@@ -24,6 +24,7 @@ export default class IngredientDetails extends React.Component {
             item_property_patterns } = DataStore.getIngredientData();
 
         this.state = {
+            item: props.item,
             item_properties,
             item_property_labels,
             item_property_patterns,
@@ -38,6 +39,11 @@ export default class IngredientDetails extends React.Component {
     getPropertyPattern = (prop) => {
         return this.state.item_property_patterns[this.state.item_properties.indexOf(prop)];
     }
+
+    onPropChange = (value, item, prop) => {
+        item[prop] = value;
+        this.setState({ item: item });
+    };
 
     async handleSubmit(e, opt) {
         if (![Constants.details_save, Constants.details_create].includes(opt)) {
@@ -69,7 +75,7 @@ export default class IngredientDetails extends React.Component {
                     <Input 
                         value={ this.props.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
-                        onChange={ (e) => this.props.handlePropChange(e.target.value, this.props.item, prop) }
+                        onChange={ (e) => this.onPropChange(e.target.value, this.props.item, prop) }
                     />
                 </FormGroup>));
         }
@@ -102,6 +108,5 @@ export default class IngredientDetails extends React.Component {
 IngredientDetails.propTypes = {
     item: PropTypes.object,
     detail_view_options: PropTypes.arrayOf(PropTypes.string),
-    handlePropChange: PropTypes.func,
     handleDetailViewSubmit: PropTypes.func
   };

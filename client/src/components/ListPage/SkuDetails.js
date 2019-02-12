@@ -28,6 +28,7 @@ export default class SKUDetails extends React.Component {
             item_property_patterns } = DataStore.getSkuData();
 
         this.state = {
+            item: props.item,
             item_properties,
             item_property_labels,
             item_property_patterns,
@@ -63,11 +64,18 @@ export default class SKUDetails extends React.Component {
     }
 
     onSelectProductLine = (pl) => {
-        this.props.handlePropChange(pl._id, this.props.item, 'prod_line');
+        var newItem = this.state.item;
+        newItem['prod_line'] = pl._id;
         this.setState({
+            item: newItem,
             prod_line_item: pl
         })
     }
+
+    onPropChange = (value, item, prop) => {
+        item[prop] = value
+        this.setState({ item: item });
+    };
 
     onModifyList = (option, value, qty) => {
         var item = this.props.item;
@@ -150,7 +158,7 @@ export default class SKUDetails extends React.Component {
                     <Input 
                         value={ this.props.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
-                        onChange={ (e) => this.props.handlePropChange(e.target.value, this.props.item, prop)}
+                        onChange={ (e) => this.onPropChange(e.target.value, this.props.item, prop)}
                     />
                 </FormGroup>));
         }
@@ -179,7 +187,7 @@ export default class SKUDetails extends React.Component {
                 />
                 <IngredientsViewSimple 
                     sku={this.props.item} 
-                    handlePropChange={this.props.handlePropChange}
+                    handlePropChange={this.onPropChange}
                 />
             </div>
             <div className='item-options'>
@@ -198,6 +206,5 @@ export default class SKUDetails extends React.Component {
 SKUDetails.propTypes = {
     item: PropTypes.object,
     detail_view_options: PropTypes.arrayOf(PropTypes.string),
-    handlePropChange: PropTypes.func,
     handleDetailViewSubmit: PropTypes.func
   };

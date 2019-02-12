@@ -239,7 +239,6 @@ export default class IngredientsPage extends React.Component {
     };
 
     onDetailViewSelect = (event, item) => {
-        console.log('yo')
         this.setState({ 
             detail_view_item: item ,
             detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
@@ -274,13 +273,6 @@ export default class IngredientsPage extends React.Component {
             this.toggleModal();
         }
     }
-
-    onPropChange = (value, item, prop) => {
-        var newData = this.state.data.slice();
-        var ind = newData.indexOf(item);
-        newData[ind][prop] = value;
-        this.setState({ data: newData });
-    };
 
     getButtons = () => {
         return (
@@ -324,7 +316,6 @@ export default class IngredientsPage extends React.Component {
                     <IngredientDetails
                             item={this.state.detail_view_item}
                             detail_view_options={this.state.detail_view_options}
-                            handlePropChange={this.onPropChange}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
                         />
                 </Modal>   

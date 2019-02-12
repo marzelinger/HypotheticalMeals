@@ -21,7 +21,6 @@ export default class ItemStore{
     while(true){
       var c_upc = Math.floor(Math.random() * 39999999999) + 60000000000;
       c_upc = CheckDigit.mod10.apply(c_upc.toString())
-      console.log(c_upc)
       var success = true;
       list.map(item => { if (item.case_upc === c_upc) success = false; });
       if (success) return c_upc;
@@ -32,7 +31,6 @@ export default class ItemStore{
     while(true){
       var u_upc = Math.floor(Math.random() * 39999999999) + 60000000000;
       u_upc = CheckDigit.mod10.apply(u_upc.toString())
-      console.log(u_upc)
       var success = true;
       list.map(item => { 
         if (item.case_upc === case_upc) { 
