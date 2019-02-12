@@ -102,3 +102,7 @@ li {
     border-radius: 100px;
     cursor: pointer;
 }
+
+.close {
+    display: none;
+}

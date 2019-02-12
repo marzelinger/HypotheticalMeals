@@ -224,7 +224,7 @@ export default class CSV_parser{
                     updated = updated + 1;
                     var old_sku = await SKU.find({ num: Number(obj["SKU#"])});
                     obj.name = obj.Name;
-                    obj.num = Number(obj["SKU#"]);
+                    obj.num = obj["SKU#"];
                     obj.case_upc = obj["Case UPC"];
                     obj.unit_upc = obj["Unit UPC"];
                     obj.unit_size = obj["Unit size"];
@@ -247,9 +247,9 @@ export default class CSV_parser{
                     added = added + 1;
                     var sku = new SKU();
                     sku.name = obj.Name;
-                    sku.num = Number(obj["SKU#"]);
-                    sku.case_upc = Number(obj["Case UPC"]);
-                    sku.unit_upc = Number(obj["Unit UPC"]);
+                    sku.num = obj["SKU#"];
+                    sku.case_upc = obj["Case UPC"];
+                    sku.unit_upc = obj["Unit UPC"];
                     sku.unit_size = obj["Unit size"];
                     let prod_line = await Prod_Line.find({ name : obj["Product Line Name"]});
                     sku.prod_line = prod_line[0]._id;
@@ -261,7 +261,7 @@ export default class CSV_parser{
                 }
                 else {
                     obj.name = obj.Name;
-                    obj.num = Number(obj["SKU#"]);
+                    obj.num = obj["SKU#"];
                     obj.case_upc = obj["Case UPC"];
                     obj.unit_upc = obj["Unit UPC"];
                     obj.unit_size = obj["Unit size"];
@@ -327,7 +327,7 @@ export default class CSV_parser{
         var returningUpdate = [];
         var returningAdd = [];
         for(var i = 0; i < updateArray.length; i++){
-            let updated_sku = await SKU.findOneAndUpdate({ num : Number(updateArray[i].num)},
+            let updated_sku = await SKU.findOneAndUpdate({ num : updateArray[i].num},
                 {$set: {name : updateArray[i].name, case_upc : updateArray[i].case_upc, unit_upc : updateArray[i].unit_upc,
                         unit_size : updateArray[i].unit_size, cpc: updateArray[i].cpc, prod_line: updateArray[i].prod_line,
                         comment : updateArray[i].comment}}, {upsert : true, new : true});
@@ -448,7 +448,7 @@ export default class CSV_parser{
                     updated = updated + 1;
                     var old_ingr = await Ingredient.find({ num: Number(obj["Ingr#"])});
                     obj.name = obj.Name;
-                    obj.num = Number(obj["Ingr#"]);
+                    obj.num = obj["Ingr#"];
                     obj.vendor_info = obj["Vendor Info"];
                     obj.pkg_size = obj["Size"];
                     obj.pkg_cost = Number(obj["Cost"]);
@@ -466,7 +466,7 @@ export default class CSV_parser{
                     added = added + 1;
                     var ingredient = new Ingredient();
                     ingredient.name = obj.Name;
-                    ingredient.num = Number(obj["Ingr#"]);
+                    ingredient.num = obj["Ingr#"];
                     ingredient.vendor_info = obj["Vendor Info"];
                     ingredient.pkg_size = obj["Size"]
                     ingredient.pkg_cost = Number(obj["Cost"]);
@@ -474,7 +474,7 @@ export default class CSV_parser{
                     intermediate_ingrs_added.push(ingredient);
                 } else {
                     obj.name = obj.Name;
-                    obj.num = Number(obj["Ingr#"]);
+                    obj.num = obj["Ingr#"];
                     obj.vendor_info = obj["Vendor Info"];
                     obj.pkg_size = obj["Size"];
                     obj.pkg_cost = Number(obj["Cost"]);
@@ -538,7 +538,7 @@ export default class CSV_parser{
         var updateArray = JSON.parse(req.body.updates);
         var addArray = JSON.parse(req.body.adds);
         for(var i = 0; i < updateArray.length; i++){
-            let updated_ingr = await Ingredient.findOneAndUpdate({ num: Number(updateArray[i].num)},
+            let updated_ingr = await Ingredient.findOneAndUpdate({ num: updateArray[i].num},
                 {$set: {name: updateArray[i].name, vendor_info : updateArray[i].vendor_info, pkg_size: updateArray[i].pkg_size, 
                         pkg_cost: updateArray[i].pkg_cost, comment: updateArray[i].comment}}, 
                         {upsert : true, new : true});
@@ -548,7 +548,7 @@ export default class CSV_parser{
         for(var i = 0; i < addArray.length; i++){
             var ingr = new Ingredient();
             ingr.name = addArray[i].name;
-            ingr.num = Number(addArray[i].num);
+            ingr.num = addArray[i].num;
             ingr.vendor_info = addArray[i].vendor_info;
             ingr.pkg_size = addArray[i].pkg_size;
             ingr.pkg_cost = Number(addArray[i].pkg_cost);

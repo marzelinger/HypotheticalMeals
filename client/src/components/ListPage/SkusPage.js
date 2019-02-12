@@ -193,10 +193,6 @@ export default class ListPage extends React.Component {
         this.toggle(Constants.details_modal);
     }
 
-    onRemoveFilter = (e, id) => {
-        
-    }
-
     onTableOptionSelection = async(e, opt) => {
         switch (opt){
             case Constants.create_item:
@@ -237,14 +233,20 @@ export default class ListPage extends React.Component {
 
     async onDetailViewSubmit(event, item, option) {
         var res = {};
+        var newData = this.state.data.splice();
         switch (option) {
             case Constants.details_create:
+                newData.push(item);
                 res = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_save:
+                let toSave = newData.findIndex(obj => {return obj._id === item._id});
+                newData[toSave] = item;
                 res = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_delete:
+                let toDelete = newData.findIndex(obj => {return obj._id === item._id});
+                newData.splice(toDelete, 1);
                 res = await SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
                 break;
             case Constants.details_cancel:
@@ -254,6 +256,7 @@ export default class ListPage extends React.Component {
         if (!res.success) alert(res.error);
         else {
             this.setState({ 
+                data: newData,
                 detail_view_item: null,
                 detail_view_options: []
             });
@@ -261,13 +264,6 @@ export default class ListPage extends React.Component {
             this.toggle(Constants.details_modal);
         }
     }
-
-    onPropChange = (value, item, prop) => {
-        var newData = this.state.data.slice();
-        var ind = newData.indexOf(item);
-        newData[ind][prop] = value;
-        this.setState({ data: newData });
-    };
 
     getButtons = () => {
         return (
@@ -320,7 +316,6 @@ export default class ListPage extends React.Component {
                     <SkuDetails
                             item={this.state.detail_view_item}
                             detail_view_options={this.state.detail_view_options}
-                            handlePropChange={this.onPropChange}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
                         />
                 </Modal>
