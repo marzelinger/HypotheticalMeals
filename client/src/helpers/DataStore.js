@@ -26,12 +26,12 @@ export default class DataStore{
           page_name: Constants.skus_page_name,
           page_title: 'SKUs',
           filter_options: [Constants.keyword_label, Constants.ingredient_label, Constants.prod_line_label],
-          table_columns: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Count per Case', 'Product Line'],
+          table_columns: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Product Line'],
           table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line'],
           table_options: [Constants.create_item, Constants.add_to_manu_goals, Constants.add_keyword_filter, 
             Constants.add_ing_filter, Constants.add_prod_filter],
           item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'comment'],
-          item_property_labels: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Count per Case', 'Comment'],
+          item_property_labels: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Comment'],
           item_property_patterns: ['.+', '^[0-9]+$', '^[016789][0-9]{11}$', '^[016789][0-9]{11}$', '.+', '^[0-9]+$', '.*'], 
           item_property_field_type: ['text', 'text', 'text', 'text', 'text', 'text','textarea'],
         };
@@ -46,7 +46,7 @@ export default class DataStore{
 
     static getIngredientDataSimple() {
       var results = DataStore.getIngredientData();
-      results.table_columns = ['Name', 'Ingr#'];
+      results.table_columns = ['Ingredient Name', 'Ingr#'];
       results.table_properties = ['name', 'num'];
       return results;
     }
