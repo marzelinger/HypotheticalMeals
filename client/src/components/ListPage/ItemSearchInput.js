@@ -10,6 +10,7 @@ import {
 import * as Constants from '../../resources/Constants';
 import SubmitRequest from './../../helpers/SubmitRequest'
 import ReactSelect from 'react-select'
+import Filter from './Filter';
 
 
 export default class ItemSearchInput extends React.Component {
@@ -69,13 +70,13 @@ export default class ItemSearchInput extends React.Component {
         return this.state.substr;
     }
 
-    onFilterValueSelection (name, value, e) {
+    onFilterValueSelection (label, value) {
         this.setState({
-            substr: name,
+            substr: label,
             value: value,
             assisted_search_results: []
         });
-        this.props.handleSelectItem({name: name, _id: value});
+        this.props.handleSelectItem({name: label, _id: value});
     }
 
     render() {
@@ -91,14 +92,12 @@ export default class ItemSearchInput extends React.Component {
         <div className='filter-item' style={{width: this.state.width + '%'}}>
             <FormGroup>
                 <Label>{this.props.item_type}</Label>
-                <ReactSelect 
-                    inputValue={this.state.substr}
-                    onChange={(opt, e) => this.onFilterValueSelection(opt.label, opt.value, e)}
-                    onInputChange={(val, e) => this.onFilterValueChange(val, e)} 
-                    options={this.state.assisted_search_results.map(res => ({ label: res.name, value: res._id }))}
-                    styles={customStyles}
-                    placeholder={'Select Product Line...'}
-                />
+                <Filter
+                handleFilterValueSelection = {(opt, e) => this.onFilterValueSelection(opt.label, opt.value)}
+                type = {'products'}
+                multi = {false}
+                >
+                </Filter>
             </FormGroup>
         </div>
         );

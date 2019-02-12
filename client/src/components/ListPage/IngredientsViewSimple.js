@@ -20,7 +20,7 @@ export default class IngredientsViewSimple extends React.Component {
         let {
             table_columns, 
             table_properties } = DataStore.getIngredientDataSimple();
-
+            console.log(props);
         this.state = {
             sku: props.sku,
             sku_id: props.sku._id,
@@ -51,13 +51,8 @@ export default class IngredientsViewSimple extends React.Component {
     }
 
     async loadDataFromServer() {
-        console.log("this loaddata page: "+this.state.currentPage);
-        let allData = await SubmitRequest.submitGetData("ingredients");
-
         var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
                     "_", this.state.sku_id, "_", this.state.currentPage, this.state.pageSize);
-             
-        console.log("this is the res; "+res);
 
         if (res === undefined || !res.success) {
             res.data = [];
@@ -79,14 +74,10 @@ export default class IngredientsViewSimple extends React.Component {
 
     async setNumberPages(){
         console.log("this is the state.sku.id"+this.state.sku_id);
-    var allIngs = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
+        var allIngs = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
                 "_", this.state.sku_id, "_", 0, 0);
-        console.log('this is the allData: '+allIngs);
-        console.log('this is the the number length'+allIngs.data.length);
-        console.log('this is the the stringify'+JSON.stringify(allIngs));
-
-
-        var curCount = Math.ceil(allIngs.data.length/Number(this.state.pageSize));
+        console.log(allIngs);
+        var curCount = allIngs == undefined || !allIngs.success ? 1 : Math.ceil(allIngs.data.length/Number(this.state.pageSize));
 
         this.setState({
             currentPage: 0,

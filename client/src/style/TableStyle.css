@@ -38,6 +38,7 @@ tr > th {
     margin-left: 20px;
     margin-right: 10px;
     padding-bottom: 10px;
+   
 }
 
 input {
@@ -58,6 +59,15 @@ input {
 .filter-item > div > div:first-of-type {
     height: 50px !important;
     padding: 0px;
+   
+}
+
+div.css-15k3avv {
+    cursor: pointer !important;
+}
+
+.filter-item > div > * {
+    cursor: pointer !important;
 }
 
 .filter-item > div > div:first-of-type::selection {
@@ -66,6 +76,7 @@ input {
 
 td > .select {
     height: 50px !important;
+
 }
 
 
