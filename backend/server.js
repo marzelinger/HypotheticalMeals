@@ -122,7 +122,6 @@ router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword
 router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
 
 
-<<<<<<< HEAD
 /*
 https.createServer({
   key: fs.readFileSync('./../server.key'),
@@ -131,15 +130,9 @@ https.createServer({
 .listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));*/
 
 // app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
-=======
->>>>>>> 3297e667626fce67f43cec0b4816a9985ce2a316
 
 //pagination router api calls
 
-<<<<<<< HEAD
-router.get('/ingredientspagget', (req, res, next) => PaginationHandler.getIngredientsPag(req, res, next));
-=======
->>>>>>> 3297e667626fce67f43cec0b4816a9985ce2a316
 // Gives constant name to long directory home page.
 // const appPage = path.join(__dirname, '../client/build/index.html');
 
