@@ -184,7 +184,12 @@ export default class PageTable extends Component {
                       </IconButton>
                     </TableRowColumn>) : 
                     (<TableRowColumn>
-                      <Input onChange = {(e) => this.props.handleQuantityChange(e, index)} className = "inputs" placeholder={this.props.quantities[index]} type="number" step="1" />
+                      <Input 
+                        onChange = {(e) => this.props.handleQuantityChange(e, index)} 
+                        className = "inputs" 
+                        value={this.props.quantities[index]} 
+                        type="number" 
+                        step="1" />
                     </TableRowColumn>)}
                 </TableRow>
               )}
