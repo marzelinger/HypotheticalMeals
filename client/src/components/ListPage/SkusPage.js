@@ -76,6 +76,7 @@ export default class ListPage extends React.Component {
         this.onSort = this.onSort.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
         this.setNumberPages();
+        console.log(props.default_ing_filter)
     }
 
     toggle = (modalType) => {
@@ -95,7 +96,7 @@ export default class ListPage extends React.Component {
 
     async componentDidMount() {
         if (this.props.default_ing_filter !== undefined){
-            await this.onFilterValueSelection([this.props.default_ing_filter.name], null, 'ingredients');
+            await this.onFilterValueSelection([{ value: this.props.default_ing_filter._id }], null, 'ingredients');
         }
         this.loadDataFromServer();
         this.setNumberPages();
@@ -169,7 +170,6 @@ export default class ListPage extends React.Component {
     }
 
     onFilterValueSelection (vals, e, type)  {
-        console.log(filters);
         var filters = this.state.filters;
         filters[type] = vals.map((item) => {
             return item.value

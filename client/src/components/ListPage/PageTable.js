@@ -71,7 +71,7 @@ export default class PageTable extends Component {
       case 'prod_line':
         return item[prop].name;
       case 'pkg_cost':
-        return '$' + item[prop].toFixed(2);
+        return '$' + (item[prop] === '') ? item[prop] : item[prop].toFixed(2);
       default:
         return item[prop];
     }
@@ -184,7 +184,12 @@ export default class PageTable extends Component {
                       </IconButton>
                     </TableRowColumn>) : 
                     (<TableRowColumn>
-                      <Input onChange = {(e) => this.props.handleQuantityChange(e, index)} className = "inputs" placeholder={this.props.quantities[index]} type="number" step="1" />
+                      <Input 
+                        onChange = {(e) => this.props.handleQuantityChange(e, index)} 
+                        className = "inputs" 
+                        value={this.props.quantities[index]} 
+                        type="number" 
+                        step="1" />
                     </TableRowColumn>)}
                 </TableRow>
               )}
