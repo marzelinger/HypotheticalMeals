@@ -100,7 +100,7 @@ export default class ItemSearchModifyList extends React.Component {
 
     render() {
         return (
-        <div className='filter-item' style={{width: this.state.width + '%'}}>
+        <div className='filter-item detailsfilter' style={{width: this.state.width + '%'}}>
             <FormGroup>
                 <Label>{this.props.item_type}</Label>
                 <Filter

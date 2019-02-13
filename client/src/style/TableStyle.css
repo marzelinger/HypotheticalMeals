@@ -35,10 +35,9 @@ tr > th {
 
 .filter-item {
     width: 60%;
-    margin-left: 20px;
+
     margin-right: 10px;
     padding-bottom: 10px;
-   
 }
 
 input {
@@ -54,6 +53,7 @@ input {
 
 #complex > .filter-item {
     padding: 0px;
+    margin-left: 20px;
 }
 
 .filter-item > div > div:first-of-type {

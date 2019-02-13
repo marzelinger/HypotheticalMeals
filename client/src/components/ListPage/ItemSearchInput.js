@@ -89,7 +89,7 @@ export default class ItemSearchInput extends React.Component {
         const getValue = (opts, val) => opts.find(o => o.value === val); 
 
         return (
-        <div className='filter-item' style={{width: this.state.width + '%'}}>
+        <div className='filter-item detailsfilter' style={{width: this.state.width + '%'}}>
             <FormGroup>
                 <Label>{this.props.item_type}</Label>
                 <Filter

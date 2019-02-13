@@ -120,3 +120,11 @@ Button {
 .close {
     display: none;
 }
+
+.detailsfilter{
+    margin-left: 0px;
+}
+
+.detailsfilter > div.filter-item {
+    margin-left: 0px !important;
+}
