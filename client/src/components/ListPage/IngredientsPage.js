@@ -18,6 +18,8 @@ import TablePagination from './TablePagination'
 import DependencyReport from "../export/DependencyReport";
 import ExportSimple from '../export/ExportSimple';
 
+const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
+
 
 
 export default class IngredientsPage extends React.Component {
@@ -244,10 +246,18 @@ export default class IngredientsPage extends React.Component {
     };
 
     onDetailViewSelect = (event, item) => {
-        this.setState({ 
+        if(currentUserIsAdmin().isValid){
+            this.setState({ 
             detail_view_item: item ,
             detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
-        });
+            });
+        }
+        else{
+            this.setState({ 
+                detail_view_item: item ,
+                detail_view_options: [Constants.details_cancel]
+                });
+        }
         this.toggleModal();
     };
 

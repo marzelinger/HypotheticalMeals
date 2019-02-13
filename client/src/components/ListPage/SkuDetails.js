@@ -16,6 +16,8 @@ import IngredientsViewSimple from './IngredientsViewSimple'
 import ItemSearchInput from './ItemSearchInput';
 import ItemSearchModifyList from './ItemSearchModifyList';
 import SubmitRequest from '../../helpers/SubmitRequest';
+const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
+
 
 
 export default class SKUDetails extends React.Component {
@@ -181,7 +183,8 @@ export default class SKUDetails extends React.Component {
                         value={ this.state.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
                         onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
-                    />
+                        disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
+                   />
                 </FormGroup>));
         }
         return;
