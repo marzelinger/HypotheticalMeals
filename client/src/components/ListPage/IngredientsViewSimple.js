@@ -35,7 +35,6 @@ export default class IngredientsViewSimple extends React.Component {
     }
 
     async componentDidMount() {
-        this.loadDataFromServer();
         this.setNumberPages();
     }
 
