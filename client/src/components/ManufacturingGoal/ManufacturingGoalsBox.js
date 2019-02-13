@@ -5,12 +5,15 @@ import ManufacturingGoalForm from './ManufacturingGoalForm';
 import '../../style/ManufacturingGoalsBox.css';
 import * as Constants from '../../resources/Constants';
 import SubmitRequest from '../../helpers/SubmitRequest';
+import ManufacturingGoalDetails from './ManufacturingGoalDetails';
+import ItemStore from '../../helpers/ItemStore';
 const jwt_decode = require('jwt-decode');
 
 class ManufacturingGoalsBox extends Component {
   constructor() {
     super();
     this.state = {
+      page_name: 'manugoals',
       data: [],
       error: null,
       name: '',
@@ -29,6 +32,7 @@ class ManufacturingGoalsBox extends Component {
     this.onDeleteGoal = this.onDeleteGoal.bind(this);
     this.loadGoalsFromServer = this.loadGoalsFromServer.bind(this);
     this.submitUpdatedGoal = this.submitUpdatedGoal.bind(this);
+    this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
   }
 
   onChangeText = (e) => {
@@ -78,8 +82,9 @@ class ManufacturingGoalsBox extends Component {
   }
 
   async submitNewGoal() {
-    const { name, skus, user } = this.state;
-    let res = await SubmitRequest.submitCreateItem(Constants.manugoals_page_name, { name, skus, user });
+    const { name, skus, user, quantities } = this.state;
+    console.log(skus);
+    let res = await SubmitRequest.submitCreateItem(Constants.manugoals_page_name, { name, skus, quantities, user });
     if (!res.success) {
       this.setState({ error: res.error });
     }
@@ -97,6 +102,7 @@ class ManufacturingGoalsBox extends Component {
     }
     else {
       this.setState({ name: '', skus: '', quantities: '', error: null })
+      this.loadGoalsFromServer();
     }
   }
 
@@ -122,6 +128,29 @@ class ManufacturingGoalsBox extends Component {
     }
   }
 
+  async onDetailViewSubmit(event, item, option) {
+    var newData = this.state.data;
+    console.log(item);
+    switch (option) {
+        case Constants.details_create:
+            newData.push(item);
+            await this.setState({
+              name: item.name,
+              skus: item.skus,
+              quantities: item.quantities
+            })
+            this.submitNewGoal();
+            break;
+        case Constants.details_cancel:
+            break;
+    }
+      this.setState({ 
+          data: newData,
+      });
+      this.loadGoalsFromServer();
+      return true;
+  }
+
   render() {
     return (
       <div className = "goalsbox">
@@ -134,13 +163,16 @@ class ManufacturingGoalsBox extends Component {
           />
         </div>
         <div className="form">
-          <ManufacturingGoalForm
+          {/* <ManufacturingGoalForm
             name={this.state.name}
             user={this.state.user}
             skus={this.state.skus}
             handleChangeText={this.onChangeText}
             handleSubmit={this.submitGoal}
-          />
+          /> */}
+          <ManufacturingGoalDetails
+          handleDetailViewSubmit = {this.onDetailViewSubmit}
+          ></ManufacturingGoalDetails>
         </div>
         {this.state.error && <p>{this.state.error}</p>}
       </div>

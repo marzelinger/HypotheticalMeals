@@ -9,19 +9,23 @@ class Manu_GoalHandler{
         try {
             var manu_goal = new Manu_Goal();
             var new_name = req.body.name;
+            var new_skus = req.body.skus;
+            var new_quantities = req.body.quantities;
             var new_user = req.body.user || "default_user";
             if(!new_name || !new_user){
                 return res.json({
                     success: false, error: 'You must provide a name'
                 });
             }
-            let conflict = await Manu_Goal.find({ name : new_name, user: new_user});
+            let conflict = await Manu_Goal.find({ name : new_name, user: new_user, skus: new_skus, quantities: new_quantities});
             if(conflict.length > 0){
                 return res.json({ success: false, error: 'Manufacturing Goal ' + new_name + ' exists for user ' + new_user});
             }
 
             manu_goal.name = new_name;
             manu_goal.user = new_user;
+            manu_goal.quantities = new_quantities;
+            manu_goal.skus = new_skus;
             let new_manu_goal = await manu_goal.save();
             return res.json({ success: true, data: new_manu_goal});
         }
@@ -38,7 +42,6 @@ class Manu_GoalHandler{
             }
             var new_skus = req.body.skus;
             var new_quantities = req.body.quantities
-            this.checkForZeroQtys(new_skus, new_quantities);
             let updated_manu_goal = await Manu_Goal.findOneAndUpdate({_id : target_id},
                 {$set: {skus: new_skus, quantities: new_quantities}}, {upsert: true, new: true});
             if(!updated_manu_goal){
@@ -53,15 +56,6 @@ class Manu_GoalHandler{
         catch (err) {
             return res.json({ success: false, error: err});
         }
-    }
-
-    static checkForZeroQtys(new_items, new_quantities) {
-        var toRemove = [];
-        new_quantities.map((qty, index) => {if (parseInt(qty) <= 0) toRemove.push(index)});
-        toRemove.map(ind => {
-            new_items.splice(ind, 1);
-            new_quantities.splice(ind, 1);
-        });
     }
 
     static async getAllManufacturingGoals(req, res){

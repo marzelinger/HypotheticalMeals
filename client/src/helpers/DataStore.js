@@ -21,6 +21,15 @@ export default class DataStore{
       };
     }
 
+    static getGoalData() {
+      return {
+        item_properties: ['name'],
+        item_property_labels: ['Name'],
+        item_property_patterns: ['.*'],
+        item_property_field_type: ['text']  
+      };
+    }
+
     static getSkuData() {
         return {
           page_name: Constants.skus_page_name,
