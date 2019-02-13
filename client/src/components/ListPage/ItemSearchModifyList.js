@@ -85,13 +85,8 @@ export default class ItemSearchModifyList extends React.Component {
     }
 
     async onFilterValueSelection (name, value, e) {
-        var item = {};
-        this.state.assisted_search_results.map(res => {if (res._id === value) item = res})
-        await this.setState({
-            substr: name,
-            value: item,
-            assisted_search_results: []
-        });
+        console.log(value);
+        this.setState({value: value});
     }
 
     determineButtonDisplay(state, option) {

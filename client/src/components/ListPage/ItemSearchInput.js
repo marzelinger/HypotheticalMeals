@@ -93,7 +93,7 @@ export default class ItemSearchInput extends React.Component {
             <FormGroup>
                 <Label>{this.props.item_type}</Label>
                 <Filter
-                handleFilterValueSelection = {(opt, e) => this.onFilterValueSelection(opt.label, opt.value)}
+                handleFilterValueSelection = {(opt, e) => this.onFilterValueSelection(opt.label, opt.value._id)}
                 type = {'products'}
                 multi = {false}
                 place_holder = {this.props.curr_item}

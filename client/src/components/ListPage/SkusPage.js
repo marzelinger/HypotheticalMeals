@@ -172,7 +172,7 @@ export default class ListPage extends React.Component {
     onFilterValueSelection (vals, e, type)  {
         var filters = this.state.filters;
         filters[type] = vals.map((item) => {
-            return item.value
+            return item.value._id
         })
         
         this.setState({

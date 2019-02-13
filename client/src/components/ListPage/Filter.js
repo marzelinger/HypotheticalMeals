@@ -28,7 +28,7 @@ export default class Filter extends React.Component {
             this.setState({options: []})
         }
         else{
-            this.setState({options: response.data.map((item) => ({label: item.name, value: item._id}))});
+            this.setState({options: response.data.map((item) => ({label: item.name, value: item}))});
         }
             
     }
@@ -55,15 +55,15 @@ export default class Filter extends React.Component {
                     });
             }
     }
+    getDetailsPlaceholder = () => {
+        return (this.props.place_holder != undefined ? this.props.place_holder.name : `Add ${this.props.type}`);
+    }
 
     render() {
-        if(this.props.place_holder != undefined){
-            console.log(this.props.place_holder);
-        }
         return (
         <div className='filter-item'>
             <Select
-                placeholder = {this.props.multi != undefined ? `Add ${this.props.type}` : `Filter by ${this.props.type}`}
+                placeholder = {this.props.multi != undefined ? this.getDetailsPlaceholder() : `Filter by ${this.props.type}`}
                 isMulti = {this.props.multi != undefined ? this.props.multi : true}
                 onInputChange = { (input) => this.getNewOptions(input)}
                 onChange={(opt, e) => this.props.handleFilterValueSelection(opt, e, this.props.type)}

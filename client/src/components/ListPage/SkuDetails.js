@@ -120,12 +120,16 @@ export default class SKUDetails extends React.Component {
     }
 
     addIngredient(item, value, qty) {
+        console.log('adding')
+        console.log(value);
+        console.log(item);
         let ind = -1;
         qty = parseInt(qty);
         item.ingredients.map((ing, index) => {
             if (ing._id === value._id)
                 ind = index;
         });
+        console.log()
         if (ind > -1){
             let curr_qty = item.ingredient_quantities[ind];
             curr_qty = curr_qty + qty;
