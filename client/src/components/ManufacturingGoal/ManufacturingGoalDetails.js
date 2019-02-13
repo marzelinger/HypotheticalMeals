@@ -146,9 +146,7 @@ export default class ManufacturingGoalDetails extends React.Component {
     }
 
     injectProperties = () => {
-        console.log(this.state.item)
         if (this.state.item!=undefined){
-            console.log('injecting properties')
             return (this.state.item_properties.map(prop => 
                 <FormGroup key={prop}>
                     <Label>{this.getPropertyLabel(prop)}</Label>

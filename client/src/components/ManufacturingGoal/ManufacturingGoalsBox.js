@@ -41,17 +41,19 @@ class ManufacturingGoalsBox extends Component {
     this.setState(newState);
   }
 
-  onUpdateGoal = async (id) => {
+  onUpdateGoal = async (id,new_name) => {
     console.log('updating goal')
+    console.log(new_name);
     const oldGoal = this.state.data.find(c => c._id === id);
     console.log(oldGoal.quantities)
     if (!oldGoal) return;
     await this.setState({
-        name: oldGoal.name,
+        name: new_name || oldGoal.name,
         skus: oldGoal.skus,
         updateId: id,
         quantities: oldGoal.quantities
     });
+    console.log(this.state.name);
     this.submitUpdatedGoal();
   }
 
