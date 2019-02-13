@@ -105,7 +105,7 @@ export default class ItemSearchModifyList extends React.Component {
                 <Label>{this.props.item_type}</Label>
                 <Filter
                 handleFilterValueSelection = {(opt, e) => this.onFilterValueSelection(opt.label, opt.value)}
-                type = {'ingredients'}
+                type = {this.props.api_route}
                 multi = {false}
                 >
                 </Filter>
