@@ -23,6 +23,7 @@ export default class IngredientsViewSimple extends React.Component {
             table_properties: [...table_properties, 'quantity'],
             selected_items: [],
             currentPage: 0,
+            previousPage: 0,
             pageSize: 20,
             pagesCount: 0,
             itemCount: 0,
