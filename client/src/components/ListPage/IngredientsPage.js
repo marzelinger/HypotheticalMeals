@@ -67,9 +67,7 @@ export default class IngredientsPage extends React.Component {
         this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
-        this.setNumberPages();
-
-
+        this.setInitPages();
     }
 
     toggleModal(){
@@ -85,7 +83,7 @@ export default class IngredientsPage extends React.Component {
         }
         await this.loadDataFromServer();
         await this.updateSkuCounts();
-        this.setNumberPages();
+        //this.updateNumberPages();
 
     }
 
@@ -94,12 +92,13 @@ export default class IngredientsPage extends React.Component {
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }
-        //this.setNumberPages();
+//        this.updateNumberPages();
     }
 
     updateDataState = async() => {
         var {data: skus} = await SubmitRequest.submitGetData(Constants.skus_page_name);
         this.setState({skus: skus});
+        //this.updateNumberPages();
     }
 
     async loadDataFromServer() {
@@ -111,7 +110,7 @@ export default class IngredientsPage extends React.Component {
 
             var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
                 this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
-                var resALL = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
+            var resALL = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
                     this.state.sort_field, final_sku_filter, final_keyword_filter, 0, 0);
         if (res === undefined || !res.success) {
             res.data = [];
@@ -123,7 +122,7 @@ export default class IngredientsPage extends React.Component {
             filterChange: false
         })
         this.updateDataState();
-        //this.setNumberPages();
+        this.updateNumberPages();
 
     }
 
@@ -140,9 +139,7 @@ export default class IngredientsPage extends React.Component {
             }
         );
         this.setState({ data: data })
-        //this.setNumberPages();
-
-        // MAYBE NEED TO ADD SOMETHING TO RECALCULATE PAGES?
+        this.updateNumberPages();
     }
 
     onFilterValueChange = (e, value, filterType) => {
@@ -151,18 +148,22 @@ export default class IngredientsPage extends React.Component {
             filters[filterType] = value;
         }
         this.setState({filters: filters, filterChange: true}) ;
-        //this.setNumberPages();
+        this.updateNumberPages();
     }
 
-    async setNumberPages(){
+    async setInitPages(){
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        console.log(allData);
-        //if(allData.data != undefined){
         var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
-        //}
-        //else{
-          //  var curCount = 0;
-        //}
+        this.setState({
+            currentPage: 0,
+            pagesCount: curCount,
+        }); 
+    }
+
+    async updateNumberPages(){
+        let allData = await SubmitRequest.submitGetData(this.state.page_name);
+        var curCount = Math.ceil(this.state.exportData.length/Number(this.state.pageSize));
+
         this.setState({
             currentPage: 0,
             pagesCount: curCount,
@@ -184,8 +185,7 @@ export default class IngredientsPage extends React.Component {
             filters[filterType] = value;
         }
         this.setState({filters: filters, filterChange: true}) ;
-        //this.setNumberPages();
-
+        //this.updateNumberPages();
     }
 
     onFilterValueSelection (vals, e, type)  {
@@ -198,8 +198,7 @@ export default class IngredientsPage extends React.Component {
             filters: filters,
             filterChange: true
         });
-        //this.setNumberPages();
-
+        //this.updateNumberPages();
     }
 
     async onCreateNewItem() {
@@ -212,8 +211,7 @@ export default class IngredientsPage extends React.Component {
             detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
         })
         this.toggleModal();
-        //this.setNumberPages();
-
+        //this.updateNumberPages();
     }
 
     onTableOptionSelection = (e, opt) => {
@@ -228,13 +226,12 @@ export default class IngredientsPage extends React.Component {
                 this.onAddFilter(Constants.keyword_label);
                 break;
         }
-        //this.setNumberPages();
-
+        //this.updateNumberPages();
     }
 
     async onSort(event, sortKey) {
         await this.setState({sort_field: sortKey})
-        this.loadDataFromServer();
+        //this.loadDataFromServer();
     };
 
     onSelect = (rowIndexes) => {
@@ -242,7 +239,7 @@ export default class IngredientsPage extends React.Component {
         rowIndexes.forEach( index => {
             newState.push(this.state.data[index]);
         });
-        this.setState({ selected_items: newState, selected_indexes: rowIndexes});
+        //this.setState({ selected_items: newState, selected_indexes: rowIndexes});
     };
 
     onDetailViewSelect = (event, item) => {
