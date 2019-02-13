@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
+import { CustomInput, Form, FormGroup, Label } from 'reactstrap';
+
 const currentUserIsAdmin = require("./currentUserIsAdmin");
 
 var userIsAdmin = false;
@@ -45,6 +47,13 @@ componentWillReceiveProps(nextProps) {
 onChange(e){
     this.setState({ [e.target.id]: e.target.value });
   };
+
+
+setPrivileges(privilege){
+  this.setState({ 
+    privileges: privilege});
+};
+
 
 onSubmit(e){
     e.preventDefault();
@@ -141,6 +150,13 @@ return (
                 <label htmlFor="password2">Confirm Password</label>
                 <span className="red-text">{errors.password2}</span>
               </div>
+
+              <FormGroup>
+          <div>
+            <CustomInput type="checkbox" id="admin" label="Assign Admin Privilige" onSelect = {this.setPrivileges("Admin")}/>
+            
+          </div>
+        </FormGroup>
               <div className="col s12" style={{ paddingLeft: "11.250px" }}>
                 <button
                   style={{

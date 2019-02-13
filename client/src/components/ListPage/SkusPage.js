@@ -53,7 +53,7 @@ export default class ListPage extends React.Component {
             simple: props.simple || false,
             user:'',
             currentPage: 0,
-            pageSize: 7,
+            pageSize: 20,
             pagesCount: 0,
             filters: {
                 'keyword': '',
@@ -127,7 +127,7 @@ export default class ListPage extends React.Component {
         var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
             this.state.sort_field, final_ing_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize, final_prod_line_filter);
             var resALL = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
-                this.state.sort_field, final_ing_filter, final_keyword_filter, 0, allData.data.length, final_prod_line_filter);
+                this.state.sort_field, final_ing_filter, final_keyword_filter, 0, 0, final_prod_line_filter);
         
         if (res === undefined || !res.success) {
             res.data = [];
