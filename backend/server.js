@@ -9,7 +9,6 @@ import mongoose from 'mongoose';
 import SkuHandler from './models/handlers/SkuHandler';
 import Prod_LineHandler from './models/handlers/Prod_LineHandler';
 import IngredientHandler from './models/handlers/IngredientHandler';
-import PaginationHandler from './models/handlers/PaginationHandler';
 import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
 import UserHandler from './models/handlers/UserHandler';
 import FilterHandler from './models/handlers/FilterHandler';
@@ -108,7 +107,6 @@ require("./config/passport")(passport);
 // @desc Register user
 // @access Public
 router.post("/users/register", (req, res) => UserHandler.createUser(req, res));
-//router.post("/users/register", (req, res, user) => UserHandler.createUser(req, res, user));
 
 
 // @route POST api/users/login
