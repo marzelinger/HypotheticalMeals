@@ -76,6 +76,7 @@ export default class ListPage extends React.Component {
         this.onSort = this.onSort.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
         this.setNumberPages();
+        console.log(props.default_ing_filter)
     }
 
     toggle = (modalType) => {
@@ -95,7 +96,7 @@ export default class ListPage extends React.Component {
 
     async componentDidMount() {
         if (this.props.default_ing_filter !== undefined){
-            await this.onFilterValueSelection([this.props.default_ing_filter.name], null, 'ingredients');
+            await this.onFilterValueSelection([{ value: this.props.default_ing_filter._id }], null, 'ingredients');
         }
         this.loadDataFromServer();
         this.setNumberPages();
@@ -169,10 +170,9 @@ export default class ListPage extends React.Component {
     }
 
     onFilterValueSelection (vals, e, type)  {
-        console.log(filters);
         var filters = this.state.filters;
         filters[type] = vals.map((item) => {
-            return item.value
+            return item.value._id
         })
         
         this.setState({
@@ -191,10 +191,6 @@ export default class ListPage extends React.Component {
             detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
         })
         this.toggle(Constants.details_modal);
-    }
-
-    onRemoveFilter = (e, id) => {
-        
     }
 
     onTableOptionSelection = async(e, opt) => {
@@ -237,14 +233,20 @@ export default class ListPage extends React.Component {
 
     async onDetailViewSubmit(event, item, option) {
         var res = {};
+        var newData = this.state.data.splice();
         switch (option) {
             case Constants.details_create:
+                newData.push(item);
                 res = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_save:
+                let toSave = newData.findIndex(obj => {return obj._id === item._id});
+                newData[toSave] = item;
                 res = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_delete:
+                let toDelete = newData.findIndex(obj => {return obj._id === item._id});
+                newData.splice(toDelete, 1);
                 res = await SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
                 break;
             case Constants.details_cancel:
@@ -254,6 +256,7 @@ export default class ListPage extends React.Component {
         if (!res.success) alert(res.error);
         else {
             this.setState({ 
+                data: newData,
                 detail_view_item: null,
                 detail_view_options: []
             });
@@ -261,13 +264,6 @@ export default class ListPage extends React.Component {
             this.toggle(Constants.details_modal);
         }
     }
-
-    onPropChange = (value, item, prop) => {
-        var newData = this.state.data.slice();
-        var ind = newData.indexOf(item);
-        newData[ind][prop] = value;
-        this.setState({ data: newData });
-    };
 
     getButtons = () => {
         return (
@@ -316,11 +312,9 @@ export default class ListPage extends React.Component {
                     />
                 </div>
                 <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
-                    <ModalHeader toggle={this.toggle}>SKU Details</ModalHeader>
                     <SkuDetails
                             item={this.state.detail_view_item}
                             detail_view_options={this.state.detail_view_options}
-                            handlePropChange={this.onPropChange}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
                         />
                 </Modal>

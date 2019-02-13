@@ -4,22 +4,9 @@
 // THIS PAGE IS DEPRICATED
 
 import React from 'react';
-import Filter from './Filter';
 import GoalsSkuTable from './GoalsSkuTable'
-import TableOptions from './TableOptions'
-import ItemStore from './../../helpers/ItemStore'
-import ItemDetails from './ItemDetails'
-import AddToManuGoal from './AddToManuGoal'
-import { 
-    Alert,
-    Button,
-    DropdownToggle,
-    Modal} from 'reactstrap';
 import * as Constants from './../../resources/Constants';
 import './../../style/SkusPage.css';
-import GeneralNavBar from "../GeneralNavBar";
-import ExportSimple from '../export/ExportSimple';
-import DependencyReport from '../export/DependencyReport';
 import SubmitRequest from './../../helpers/SubmitRequest';
 
 
@@ -84,8 +71,7 @@ export default class ManuGoalsTables extends React.Component {
                         handleSelect={this.onSelect}
                         handleDetailViewSelect={this.onDetailViewSelect}
                     />
-                </div>
-                <ExportSimple data = {this.state.data} fileTitle = {this.state.page_name}/>               
+                </div>              
             </div>
         );
     }

@@ -1,6 +1,15 @@
 td {
     padding: 5px;
     height: auto !important;
+    cursor: default;
+}
+
+.trselect > th {
+    cursor: pointer;
+}
+
+.trselect > td{
+    cursor: pointer;
 }
 
 tr > th {
@@ -26,7 +35,7 @@ tr > th {
 
 .filter-item {
     width: 60%;
-    margin-left: 20px;
+
     margin-right: 10px;
     padding-bottom: 10px;
 }
@@ -39,15 +48,26 @@ input {
     margin-bottom: 10px;
     font-size: 20px !important;
     text-align: left;
+    cursor: default;
 }
 
 #complex > .filter-item {
     padding: 0px;
+    margin-left: 20px;
 }
 
 .filter-item > div > div:first-of-type {
     height: 50px !important;
     padding: 0px;
+   
+}
+
+div.css-15k3avv {
+    cursor: pointer !important;
+}
+
+.filter-item > div > * {
+    cursor: pointer !important;
 }
 
 .filter-item > div > div:first-of-type::selection {
@@ -56,6 +76,7 @@ input {
 
 td > .select {
     height: 50px !important;
+
 }
 
 

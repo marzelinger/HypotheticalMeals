@@ -5,6 +5,9 @@ import { UncontrolledCollapse, CardBody, Card } from 'reactstrap';
 import deleteButton from'../../resources/delete.png';
 import ProductLineTables from './ProductLineTables';
 import SubmitRequest from '../../helpers/SubmitRequest';
+const currentUserIsAdmin = require("../../components/auth/currentUserIsAdmin");
+
+
 
 export default class ProductLine extends React.Component{
   constructor(props){
@@ -35,7 +38,7 @@ export default class ProductLine extends React.Component{
         </div>
           <div className="singleGoalButtons">
             {/* <a onClick={() => { props.handleUpdateGoal(props.id); }}>update</a> */}
-            <img id ="deleteButton" onClick={() => {this.props.handleDeleteProdLine(this.props.id); }} src= {deleteButton}></img>
+            {currentUserIsAdmin().isValid ? (<img id ="deleteButton" onClick={() => {this.props.handleDeleteProdLine(this.props.id); }} src= {deleteButton}></img>):(<div/>)}
           </div>
       </div>
     )
