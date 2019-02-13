@@ -128,3 +128,9 @@ Button {
 .detailsfilter > div.filter-item {
     margin-left: 0px !important;
 }
+
+.delete {
+    margin: 10px;
+    width: 150px;
+    cursor: pointer;
+}

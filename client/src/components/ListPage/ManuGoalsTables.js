@@ -28,10 +28,14 @@ export default class ManuGoalsTables extends React.Component {
 
     componentDidMount = () => {
         this.loadDataFromServer();
+        if (!this.pollInterval) {
+            this.pollInterval = setInterval(this.loadDataFromServer, 1000);
+        }
+        
     }
 
     async loadDataFromServer() {
-        console.log(this.state.query);
+
         let res = await SubmitRequest.submitQueryString(this.state.query);
         if (!res.success) {
             this.setState({ error: res.error });
@@ -70,6 +74,7 @@ export default class ManuGoalsTables extends React.Component {
                         handleSort={this.onSort}
                         handleSelect={this.onSelect}
                         handleDetailViewSelect={this.onDetailViewSelect}
+                        handleDeleteSkus = {this.props.handleDeleteSkus}
                     />
                 </div>              
             </div>

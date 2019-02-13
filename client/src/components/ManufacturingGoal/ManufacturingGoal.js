@@ -10,6 +10,23 @@ import ManuGoalsTables from './../ListPage/ManuGoalsTables';
 export default class ManufacturingGoal extends React.Component{
   constructor(props){
     super(props);
+    this.state = {
+      disabled: false,
+      name: this.props.name
+    }
+
+  }
+
+  onNameChange = (event) => {
+    this.setState({name: event.target.value})
+  }
+
+  onNameSubmit = (event) => {
+    console.log(event.charCode)
+    if(event.charCode == 13){
+      this.props.handleUpdateGoal(this.props.id, this.state.name);
+    }
+    
   }
 
   onQuantityChange = (event, sku_index) => {
@@ -17,17 +34,33 @@ export default class ManufacturingGoal extends React.Component{
       this.props.handleUpdateGoal(this.props.id);
   }
 
+  handleDeleteSkus = (selectedSkusIndexes) => {
+    if(selectedSkusIndexes == undefined){
+      return;
+    }
+    console.log('wtf')
+    console.log(selectedSkusIndexes);
+
+    selectedSkusIndexes.forEach( (index) => {
+      console.log('iterating');
+      this.props.skus.splice(index, 1);
+      this.props.quantities.splice(index, 1);
+    })
+
+    this.props.handleUpdateGoal(this.props.id);
+  }
+
   render() {
     return (
       <div id="singleGoal">
         <div className="textContent">
           <div className="singleGoalContent hoverable" id={'goal' + this.props.id}>
-            <h3>{this.props.name}</h3>
+            <input onKeyPress = {(event) => this.onNameSubmit(event)} type = "text" value = {this.state.name} onChange = {(event) => this.onNameChange(event)}></input>
           </div>
           <UncontrolledCollapse toggler={'#goal' + this.props.id}>
                 <Card>
                     <CardBody>
-                        <ManuGoalsTables onQuantityChange = {this.onQuantityChange} query = {`api/manugoals/${this.props.user}/${this.props.id}/skus`}></ManuGoalsTables>
+                        <ManuGoalsTables handleDeleteSkus = {this.handleDeleteSkus} onQuantityChange = {this.onQuantityChange} query = {`api/manugoals/${this.props.user}/${this.props.id}/skus`}></ManuGoalsTables>
                     </CardBody>
                 </Card>
             </UncontrolledCollapse>
