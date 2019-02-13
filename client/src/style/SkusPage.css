@@ -66,6 +66,7 @@ li {
     justify-content: center;
     border-radius: 12px;
     margin-left: 20px;
+    cursor: pointer;
 }
 
 .depbutton{
@@ -103,6 +104,27 @@ li {
     cursor: pointer;
 }
 
+Button {
+    cursor: pointer;
+}
+
+.detailButtons {
+    background-color: rgb(0, 188, 212) !important;
+    border-color: #212529;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    color: #f8f9fa;
+}
 .close {
     display: none;
+}
+
+.detailsfilter{
+    margin-left: 0px;
+}
+
+.detailsfilter > div.filter-item {
+    margin-left: 0px !important;
 }

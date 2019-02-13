@@ -4,9 +4,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Filter from './Filter';
 import PageTable from './PageTable'
-import TableOptions from './TableOptions'
 import SubmitRequest from '../../helpers/SubmitRequest'
 import ItemStore from '../../helpers/ItemStore'
 import IngredientDetails from './IngredientDetails'
@@ -179,7 +177,7 @@ export default class IngredientsPage extends React.Component {
     onFilterValueSelection (vals, e, type)  {
         var filters = this.state.filters;
         filters[type] = vals.map((item) => {
-            return item.value
+            return item.value._id
         })
         
         this.setState({

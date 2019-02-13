@@ -29,7 +29,7 @@ export class GoalSkuTable extends React.Component{
     }
 
     createQuantityElement = (item, index) => {
-        return <Input onChange = {(e) => this.props.onQuantityChange(e, index)} placeholder={item['quantity']} type="number" step="1" />
+        return <Input min = {0} onChange = {(e) => this.props.onQuantityChange(e, index)} placeholder={item['quantity']} type="number" step="1" />
     }
     
     render() {
@@ -51,7 +51,7 @@ export class GoalSkuTable extends React.Component{
         <div>
           <Table>
             <TableHeader displaySelectAll={this.state.showCheckboxes} adjustForCheckbox={this.state.showCheckboxes}>
-              <TableRow class = "cols">
+              <TableRow class = "cols trselect">
                 {this.props.table_properties.map(prop => 
                   <TableHeaderColumn tooltip = {"Sort By " + this.getPropertyLabel(prop)} className = "hoverable" key={prop}>
                     <div onClick={e => this.props.handleSort(e, prop)}>{this.getPropertyLabel(prop)}</div>

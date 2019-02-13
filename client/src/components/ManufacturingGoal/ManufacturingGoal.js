@@ -13,8 +13,8 @@ export default class ManufacturingGoal extends React.Component{
   }
 
   onQuantityChange = (event, sku_index) => {
-        this.props.quantities[sku_index] = Number(event.target.value);
-        this.props.handleUpdateGoal(this.props.id);
+      this.props.quantities[sku_index] = Number(event.target.value);
+      this.props.handleUpdateGoal(this.props.id);
   }
 
   render() {

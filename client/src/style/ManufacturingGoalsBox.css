@@ -42,6 +42,7 @@
     height: 60px;
     display:flex;
     justify-content: center;
+    cursor: pointer;
   }
 
   
@@ -78,6 +79,7 @@
     padding: 0px;
     border-radius: 50%;
     float: right;
+    cursor: pointer;
   }
   
   #popup input {
@@ -88,10 +90,8 @@
     width: 100%;
   }
 
-  #popup button {
-    color: #646464;
-    border-radius: 5px;
-    /* border: 1px solid #999; */
+  .pdfbutton {
+    width: 100px !important;
   }
 
   #submitbutton{
@@ -104,6 +104,7 @@
     font-size: 24px;
     padding-left: 52px;
     padding-top: 24px;
+    cursor: default;
   }
 
   

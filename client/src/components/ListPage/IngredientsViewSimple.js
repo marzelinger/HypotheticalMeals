@@ -20,7 +20,7 @@ export default class IngredientsViewSimple extends React.Component {
         let {
             table_columns, 
             table_properties } = DataStore.getIngredientDataSimple();
-
+            console.log(props);
         this.state = {
             sku_id: props.sku._id,
             table_columns: [...table_columns, 'Quantity'],
