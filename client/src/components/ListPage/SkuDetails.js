@@ -29,14 +29,15 @@ export default class SKUDetails extends React.Component {
             item_property_field_type } = DataStore.getSkuData();
 
         this.state = {
-            item: props.item,
+            item: Object.assign({}, props.item),
             item_properties,
             item_property_labels,
             item_property_patterns,
             item_property_field_type,
             invalid_inputs: [],
             assisted_search_results: [],
-            prod_line_item: {}
+            prod_line_item: {},
+            to_undo: {}
         }
     }
 
@@ -46,8 +47,8 @@ export default class SKUDetails extends React.Component {
 
     async fillProductLine() {
         var res = {};
-        if (this.props.item.prod_line !== null && this.props.item.prod_line !== '') {
-            res = await SubmitRequest.submitGetProductLineByID(this.props.item.prod_line._id);
+        if (this.state.item.prod_line !== null && this.state.item.prod_line !== '') {
+            res = await SubmitRequest.submitGetProductLineByID(this.state.item.prod_line._id);
             if (res === undefined || !res.success) res.data[0] = {};
         }
         else {
@@ -84,7 +85,7 @@ export default class SKUDetails extends React.Component {
     };
 
     onModifyList = (option, value, qty) => {
-        var item = this.props.item;
+        var item = Object.assign({}, this.state.item);
         switch (option) {
             case Constants.details_add:
                 this.addIngredient(item, value, qty);
@@ -115,6 +116,7 @@ export default class SKUDetails extends React.Component {
                 item.ingredient_quantities.splice(ind,1);
             }
         }
+        this.setState({ item: item })
     }
 
     addIngredient(item, value, qty) {
@@ -133,17 +135,18 @@ export default class SKUDetails extends React.Component {
             item.ingredients.push(value);
             item.ingredient_quantities.push(qty);
         }
+        this.setState({ item: item })
     }
 
     async handleSubmit(e, opt) {
         if (![Constants.details_save, Constants.details_create].includes(opt)) {
-            this.props.handleDetailViewSubmit(e, this.props.item, opt);
+            this.props.handleDetailViewSubmit(e, this.state.item, opt);
             return;
         }
         await this.validateInputs();
         let alert_string = 'Invalid Fields';
         let inv = this.state.invalid_inputs;
-        if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.props.item, opt)
+        if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.state.item, opt)
         else {
             if (inv.includes('case_upc') && this.state.item['case_upc'].length > 11)
                 alert_string += '\nTry Case UPC: ' + CheckDigit.mod10.apply(this.state.item['case_upc'].slice(0,11));
@@ -156,24 +159,24 @@ export default class SKUDetails extends React.Component {
     async validateInputs() { 
         var inv_in = [];
         this.state.item_properties.map(prop => {
-            if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
+            if (!this.state.item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
         })
         if (this.state.prod_line_item.name === undefined) inv_in.push('prod_line');
-        if (!CheckDigit.mod10.isValid(this.props.item['case_upc'])) inv_in.push('case_upc');
-        if (!CheckDigit.mod10.isValid(this.props.item['unit_upc'])) inv_in.push('unit_upc');
+        if (!CheckDigit.mod10.isValid(this.state.item['case_upc'])) inv_in.push('case_upc');
+        if (!CheckDigit.mod10.isValid(this.state.item['unit_upc'])) inv_in.push('unit_upc');
         await this.setState({ invalid_inputs: inv_in });
     }
 
     injectProperties = () => {
-        if (this.props.item){
+        if (this.state.item){
             return (this.state.item_properties.map(prop => 
                 <FormGroup key={prop}>
                     <Label>{this.getPropertyLabel(prop)}</Label>
                     <Input 
                         type={this.getPropertyFieldType(prop)}
-                        value={ this.props.item[prop] }
+                        value={ this.state.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
-                        onChange={ (e) => this.onPropChange(e.target.value, this.props.item, prop)}
+                        onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
                     />
                 </FormGroup>));
         }
@@ -184,7 +187,7 @@ export default class SKUDetails extends React.Component {
         return (
         <div className='item-details'>
             <div className='item-title'>
-                <h1>{ this.props.item  ? this.props.item.name : Constants.undefined }</h1>
+                <h1>{ this.state.item  ? this.state.item.name : Constants.undefined }</h1>
             </div>
             <div className='item-properties'>
                 { this.injectProperties() }
@@ -201,7 +204,7 @@ export default class SKUDetails extends React.Component {
                     handleModifyList={this.onModifyList}
                 />
                 <IngredientsViewSimple 
-                    sku={this.props.item} 
+                    sku={this.state.item} 
                     handlePropChange={this.onPropChange}
                 />
             </div>

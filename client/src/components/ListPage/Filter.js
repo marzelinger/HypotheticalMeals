@@ -57,6 +57,9 @@ export default class Filter extends React.Component {
     }
 
     render() {
+        if(this.props.place_holder != undefined){
+            console.log(this.props.place_holder);
+        }
         return (
         <div className='filter-item'>
             <Select

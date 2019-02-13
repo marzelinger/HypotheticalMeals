@@ -29,7 +29,7 @@ export class GoalSkuTable extends React.Component{
     }
 
     createQuantityElement = (item, index) => {
-        return <Input onChange = {(e) => this.props.onQuantityChange(e, index)} placeholder={item['quantity']} type="number" step="1" />
+        return <Input min = {0} onChange = {(e) => this.props.onQuantityChange(e, index)} placeholder={item['quantity']} type="number" step="1" />
     }
     
     render() {
