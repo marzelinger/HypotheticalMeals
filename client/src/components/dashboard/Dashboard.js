@@ -3,6 +3,10 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import PageTemplate from "../PageTemplate";
 import GeneralNavBar from "../GeneralNavBar";
+import { Link, withRouter } from "react-router-dom";
+import { Route, Redirect } from "react-router-dom";
+
+
 
 class Dashboard extends Component {
 
@@ -11,7 +15,9 @@ class Dashboard extends Component {
 
     return (
       <div style={{ height: "75vh" }} className="container valign-wrapper">
-            <PageTemplate></PageTemplate>
+      {//add the buttons to the different pages.
+      }
+        <Redirect to="/skus" />
       </div>
     );
   }
