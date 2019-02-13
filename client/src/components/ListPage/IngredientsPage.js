@@ -84,8 +84,6 @@ export default class IngredientsPage extends React.Component {
         }
         await this.loadDataFromServer();
         await this.updateSkuCounts();
-        //this.updateNumberPages();
-
     }
 
     async componentDidUpdate (prevProps, prevState) {
@@ -93,7 +91,6 @@ export default class IngredientsPage extends React.Component {
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }
-        this.updateNumberPages();
     }
 
     updateDataState = async() => {
@@ -107,11 +104,11 @@ export default class IngredientsPage extends React.Component {
         var final_sku_filter = this.state.filters['skus'].join(',');
         if (final_keyword_filter === '') final_keyword_filter = '_';
         if (final_sku_filter === '') final_sku_filter = '_';
-
-            var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-                this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
-            var resALL = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-                    this.state.sort_field, final_sku_filter, final_keyword_filter, 0, 0);
+        var resALL = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
+            this.state.sort_field, final_sku_filter, final_keyword_filter, 0, 0);
+        await this.checkCurrentPageInBounds(resALL);
+        var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
+            this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
         if (res === undefined || !res.success) {
             res.data = [];
             resALL.data = [];
@@ -122,32 +119,69 @@ export default class IngredientsPage extends React.Component {
             filterChange: false
         })
         this.updateDataState();
-        this.updateNumberPages();
+        //this.updateNumberPages();
 
     }
-
-    async loadNewPageDataFromServer() {
-        let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        var final_keyword_filter = this.state.filters['keyword'];
-        var final_sku_filter = this.state.filters['skus'].join(',');
-        if (final_keyword_filter === '') final_keyword_filter = '_';
-        if (final_sku_filter === '') final_sku_filter = '_';
-
-            var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-                this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
-            var resALL = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-                    this.state.sort_field, final_sku_filter, final_keyword_filter, 0, 0);
-        if (res === undefined || !res.success) {
-            res.data = [];
-            resALL.data = [];
+    
+    async checkCurrentPageInBounds(dataResAll){
+        var prev = this.state.previousPage;
+        //there is no data. update the current index stuff
+        if (dataResAll === undefined || !dataResAll.success) {
+            this.setState({
+                currentPage: 0,
+                previousPage: prev,
+                pagesCount: 0,
+            });
         }
-        await this.setState({
-            data: res.data,
-            exportData: resALL.data,
-            filterChange: false
-        })
-        this.updateDataState();
+        else{
+            //there is some sort of data response
+            var dataLength = dataResAll.data.length;
+            var curCount = Math.ceil(dataLength/Number(this.state.pageSize));
+            if(curCount != this.state.pagesCount){
+                //number pages changed.
+                if(this.state.currentPage> curCount){
+                    //previous index out of bounds. want to set the index to be 0.
+                    this.setState({
+                        currentPage: 0,
+                        previousPage: prev,
+                        pagesCount: curCount,
+                    }); 
+                }
+                else{
+                    //the number of pages has changed but the index is still in bounds.
+                    //don't need to page change here.
+                    this.setState({
+                        pagesCount: curCount,
+                    }); 
+                }
+            }
+        }
+
     }
+
+
+    // async loadNewPageDataFromServer() {
+    //     let allData = await SubmitRequest.submitGetData(this.state.page_name);
+    //     var final_keyword_filter = this.state.filters['keyword'];
+    //     var final_sku_filter = this.state.filters['skus'].join(',');
+    //     if (final_keyword_filter === '') final_keyword_filter = '_';
+    //     if (final_sku_filter === '') final_sku_filter = '_';
+
+    //         var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
+    //             this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
+    //         var resALL = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
+    //                 this.state.sort_field, final_sku_filter, final_keyword_filter, 0, 0);
+    //     if (res === undefined || !res.success) {
+    //         res.data = [];
+    //         resALL.data = [];
+    //     }
+    //     await this.setState({
+    //         data: res.data,
+    //         exportData: resALL.data,
+    //         filterChange: false
+    //     })
+    //     this.updateDataState();
+    // }
 
     async updateSkuCounts() {
         let data = this.state.data.slice();
@@ -160,7 +194,7 @@ export default class IngredientsPage extends React.Component {
             }
         );
         this.setState({ data: data })
-        this.updateNumberPages();
+        //this.updateNumberPages();
     }
 
     onFilterValueChange = (e, value, filterType) => {
@@ -169,7 +203,8 @@ export default class IngredientsPage extends React.Component {
             filters[filterType] = value;
         }
         this.setState({filters: filters, filterChange: true}) ;
-        this.updateNumberPages();
+        //MAYBE ADD BACK IN
+        //this.updateNumberPages();
     }
 
     async setInitPages(){
@@ -182,6 +217,7 @@ export default class IngredientsPage extends React.Component {
         }); 
     }
 
+    //COULD POTENTIALLY REMOVE THIS METHOD?
     async updateNumberPages(){
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
         var curCount = Math.ceil(this.state.exportData.length/Number(this.state.pageSize));
@@ -191,20 +227,15 @@ export default class IngredientsPage extends React.Component {
             pagesCount: curCount,
         }); 
     }
-    else{
-        // this.setState({
-        //     currentPage: 0,
-        //     pagesCount: curCount,
-        // }); 
     }
-    }
+
 
     handlePageClick = (e, index) => {
         e.preventDefault();
         this.setState({
             currentPage: index
         });
-        this.loadNewPageDataFromServer();
+        this.loadDataFromServer();
     }
 
 
@@ -214,7 +245,8 @@ export default class IngredientsPage extends React.Component {
             filters[filterType] = value;
         }
         this.setState({filters: filters, filterChange: true}) ;
-        this.updateNumberPages();
+                //MAYBE ADD BACK IN
+        //this.updateNumberPages();
     }
 
     onFilterValueSelection (vals, e, type)  {
@@ -234,13 +266,22 @@ export default class IngredientsPage extends React.Component {
         var item = await ItemStore.getEmptyItem(this.state.page_name);
         const newData = this.state.data.slice();
         newData.push(item);
+
+        //for the pagination stuff
+        const newExportData = this.state.exportData.slice();
+        newExportData.push(item);
+
         this.setState({ 
             data: newData,
+            exportData: newExportData,
             detail_view_item: item,
             detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
         })
         this.toggleModal();
-        this.updateNumberPages();
+        //MAYBE ADD BACK
+        //maybe don't need the load DAtaFromServer?
+        this.loadDataFromServer();
+        //this.updateNumberPages();
     }
 
     onTableOptionSelection = (e, opt) => {
@@ -260,7 +301,6 @@ export default class IngredientsPage extends React.Component {
 
     async onSort(event, sortKey) {
         await this.setState({sort_field: sortKey})
-        //TODO IS THIS SUPPOSED TO BE COMMENTED OUT?
         this.loadDataFromServer();
     };
 
@@ -292,9 +332,12 @@ export default class IngredientsPage extends React.Component {
         console.log(item)
         var res = {};
         var newData = this.state.data.splice();
+        //
+        //var newExportData = this.state.exportData.splice();
         switch (option) {
             case Constants.details_create:
                 newData.push(item);
+                //newExportData.push(item);
                 res = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_save:
