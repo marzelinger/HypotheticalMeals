@@ -50,10 +50,6 @@ export default class IngredientsViewSimple extends React.Component {
     }
 
     async loadDataFromServer() {
-<<<<<<< HEAD
-        var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-                    "_", this.state.sku_id, "_", this.state.currentPage, this.state.pageSize);
-=======
         // console.log("this loaddata page: "+this.state.currentPage);
         // let allData = await SubmitRequest.submitGetData("ingredients");
 
@@ -61,7 +57,6 @@ export default class IngredientsViewSimple extends React.Component {
         //             "_", this.state.sku_id, "_", this.state.currentPage, this.state.pageSize);
              
         // console.log("this is the res; "+res);
->>>>>>> 1c41b7cdc9440907f9bc6e6a7f76475a96e53d48
 
         // if (res === undefined || !res.success) {
         //     res.data = [];
