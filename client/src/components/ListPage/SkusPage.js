@@ -1,4 +1,5 @@
 // ListPage.js
+// SkusPage.js
 // Riley
 // Larger page component to be shown in PageTemplate
 // THIS PAGE IS DEPRICATED
@@ -55,7 +56,8 @@ export default class ListPage extends React.Component {
             simple: props.simple || false,
             user:'',
             currentPage: 0,
-            pageSize: 20,
+            previousPage: 0,
+            pageSize: 3,
             pagesCount: 0,
             filters: {
                 'keyword': '',
@@ -77,7 +79,7 @@ export default class ListPage extends React.Component {
         this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
-        this.setNumberPages();
+        this.setInitPages();
         console.log(props.default_ing_filter)
     }
 
@@ -101,20 +103,18 @@ export default class ListPage extends React.Component {
             await this.onFilterValueSelection([{ value: this.props.default_ing_filter._id }], null, 'ingredients');
         }
         this.loadDataFromServer();
-        this.setNumberPages();
     }
 
     async componentDidUpdate (prevProps, prevState) {
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }
-        //this.setNumberPages();
     }
 
     updateDataState = async () => {
         var {data: ingredients} = await SubmitRequest.submitGetData(Constants.ingredients_page_name);
         var {data: productlines} = await SubmitRequest.submitGetData(Constants.prod_line_page_name);
-        console.log(productlines)
+        //console.log(productlines)
         this.setState({ingredients: ingredients, product_lines: productlines});
     }
 
@@ -127,11 +127,11 @@ export default class ListPage extends React.Component {
         if (final_ing_filter === '') final_ing_filter = '_';
         if (final_keyword_filter === '') final_keyword_filter = '_';
         if (final_prod_line_filter === '') final_prod_line_filter = '_';
+        var resALL = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
+            this.state.sort_field, final_ing_filter, final_keyword_filter, 0, 0, final_prod_line_filter);
+        await this.checkCurrentPageInBounds(resALL);
         var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
-            this.state.sort_field, final_ing_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize, final_prod_line_filter);
-            var resALL = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
-                this.state.sort_field, final_ing_filter, final_keyword_filter, 0, 0, final_prod_line_filter);
-        
+            this.state.sort_field, final_ing_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize, final_prod_line_filter); 
         if (res === undefined || !res.success) {
             res.data = [];
             resALL.data = [];
@@ -144,23 +144,59 @@ export default class ListPage extends React.Component {
         this.updateDataState();
     }
 
+    async checkCurrentPageInBounds(dataResAll){
+        var prev = this.state.previousPage;
+        //there is no data. update the current index stuff
+        if (dataResAll === undefined || !dataResAll.success) {
+            this.setState({
+                currentPage: 0,
+                previousPage: prev,
+                pagesCount: 0,
+            });
+        }
+        else{
+            //there is some sort of data response
+            var dataLength = dataResAll.data.length;
+            var curCount = Math.ceil(dataLength/Number(this.state.pageSize));
+            if(curCount != this.state.pagesCount){
+                //number pages changed.
+                if(this.state.currentPage>= curCount){
+                    //previous index out of bounds. want to set the index to be 0.
+                    this.setState({
+                        currentPage: 0,
+                        previousPage: prev,
+                        pagesCount: curCount,
+                    }); 
+                }
+                else{
+                    //the number of pages has changed but the index is still in bounds.
+                    //don't need to page change here.
+                    this.setState({
+                        pagesCount: curCount,
+                    }); 
+                }
+            }
+        }
+
+    }
+
+
+    async setInitPages(){
+        let allData = await SubmitRequest.submitGetData(this.state.page_name);
+        var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
+        this.setState({
+            currentPage: 0,
+            previousPage: 0,
+            pagesCount: curCount,
+        }); 
+    }
+
     onFilterValueChange = (e, value, filterType) => {
         var filters = this.state.filters;
         if(filterType == 'keyword'){
             filters[filterType] = value;
         }
         this.setState({filters: filters, filterChange: true}) ;
-    }
-
-    async setNumberPages(){
-        let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
-
-        this.setState({
-            currentPage: 0,
-            pagesCount: curCount,
-        }); 
-
     }
 
     handlePageClick = (e, index) => {
@@ -187,12 +223,20 @@ export default class ListPage extends React.Component {
         var item = await ItemStore.getEmptyItem(this.state.page_name);
         const newData = this.state.data.slice();
         newData.push(item);
+
+        //for the pagination stuff
+        const newExportData = this.state.exportData.slice();
+        newExportData.push(item);
+
         this.setState({ 
             data: newData,
+            exportData: newExportData,
             detail_view_item: item,
             detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
         })
         this.toggle(Constants.details_modal);
+        this.loadDataFromServer();
+
     }
 
     onTableOptionSelection = async(e, opt) => {

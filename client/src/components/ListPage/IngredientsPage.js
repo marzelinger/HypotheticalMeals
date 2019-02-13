@@ -119,8 +119,6 @@ export default class IngredientsPage extends React.Component {
             filterChange: false
         })
         this.updateDataState();
-        //this.updateNumberPages();
-
     }
     
     async checkCurrentPageInBounds(dataResAll){
@@ -170,7 +168,6 @@ export default class IngredientsPage extends React.Component {
             }
         );
         this.setState({ data: data })
-        //this.updateNumberPages();
     }
 
     onFilterValueChange = (e, value, filterType) => {
@@ -179,8 +176,6 @@ export default class IngredientsPage extends React.Component {
             filters[filterType] = value;
         }
         this.setState({filters: filters, filterChange: true}) ;
-        //MAYBE ADD BACK IN
-        //this.updateNumberPages();
     }
 
     async setInitPages(){
@@ -191,18 +186,6 @@ export default class IngredientsPage extends React.Component {
             previousPage: 0,
             pagesCount: curCount,
         }); 
-    }
-
-    //COULD POTENTIALLY REMOVE THIS METHOD?
-    async updateNumberPages(){
-        let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        var curCount = Math.ceil(this.state.exportData.length/Number(this.state.pageSize));
-        if(curCount != this.state.pagesCount){
-        this.setState({
-            currentPage: 0,
-            pagesCount: curCount,
-        }); 
-    }
     }
 
 
@@ -221,8 +204,6 @@ export default class IngredientsPage extends React.Component {
             filters[filterType] = value;
         }
         this.setState({filters: filters, filterChange: true}) ;
-                //MAYBE ADD BACK IN
-        //this.updateNumberPages();
     }
 
     onFilterValueSelection (vals, e, type)  {
@@ -235,7 +216,6 @@ export default class IngredientsPage extends React.Component {
             filters: filters,
             filterChange: true
         });
-        //this.updateNumberPages();
     }
 
     async onCreateNewItem() {
@@ -254,10 +234,7 @@ export default class IngredientsPage extends React.Component {
             detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
         })
         this.toggleModal();
-        //MAYBE ADD BACK
-        //maybe don't need the load DAtaFromServer?
         this.loadDataFromServer();
-        //this.updateNumberPages();
     }
 
     onTableOptionSelection = (e, opt) => {
@@ -272,7 +249,6 @@ export default class IngredientsPage extends React.Component {
                 this.onAddFilter(Constants.keyword_label);
                 break;
         }
-        //this.updateNumberPages();
     }
 
     async onSort(event, sortKey) {
