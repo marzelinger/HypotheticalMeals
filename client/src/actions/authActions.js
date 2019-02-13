@@ -12,7 +12,7 @@ const adminHasInit = require("../../src/components/auth/adminHasInit");
 // Register New User
 export const registerUser = (userData, history) => dispatch => {
   console.log(history);
-  console.log(userData);
+  console.log("THIS IS THE USER DATA: "+JSON.stringify(userData));
   console.log(localStorage);
       if(currentUserIsAdmin().isValid){
         console.log("curUserIsAdmin has been confirmed to be true");
@@ -136,104 +136,3 @@ export const getAllUsers = () => dispatch => {
     );
     return count;
 };
-
-
-
-
-
-//   // // Get all Users
-//   export default getAllUsers = () => dispatch  {
-//     var count = 0;
-  
-  
-//     return fetch('/api/users/getall', { method: 'GET' })
-//     .then(data => data.json())
-//     .then((res) => {
-//       if (!res.success) return { success: res.success, error: res.error.message || res.error};
-//       else return ({ 
-//           success: res.success,
-//           data: res.data,
-//           loaded: true
-//       });
-//     });
-  
-  
-//   }
-
-// // export default class AuthActions {
-
-
-
-
-// // // // Get all Users
-// // static getAllUsers = () => {
-// //   var count = 0;
-
-
-// //   return fetch('/api/users/getall', { method: 'GET' })
-// //   .then(data => data.json())
-// //   .then((res) => {
-// //     if (!res.success) return { success: res.success, error: res.error.message || res.error};
-// //     else return ({ 
-// //         success: res.success,
-// //         data: res.data,
-// //         loaded: true
-// //     });
-// //   });
-
-
-// // }
-// // }
-
-// //   return fetch("/api/users/getall", { method: 'GET' })
-// //   .then(data => data.json())
-// //   .then((res) => {
-// //     if (!res.success) return { error: res.error.message || res.error };
-// //     else {
-
-// //     console.log("this is the response in authActions: "+ res);
-// //        console.log("this is the length: "+ res.data.data.length);
-
-// //        if(res.data.data.length>0){
-// //          //sessionStorage.setItem("firstAdminCreated", true);
-// //          localStorage.setItem("firstAdminCreated", true);
-// //          count = res.data.data.length;
-// //        }
-// //     return ({ 
-// //         success: res.success,
-// //         data: res.data,
-// //         loaded: true
-// //     });
-// //     }
-// // }
-// //   );
-
-
-
-
-
-//   // axios
-//   //   .get("/api/users/getall")
-//   //   .then(res => {
-//   //     console.log("this is the response in authActions: "+ res);
-//   //     console.log("this is the length: "+ res.data.data.length);
-
-//   //     if(res.data.data.length>0){
-//   //       //sessionStorage.setItem("firstAdminCreated", true);
-//   //       localStorage.setItem("firstAdminCreated", true);
-//   //       count = res.data.data.length;
-//   //    }
-//   //    else{
-//   //     //sessionStorage.setItem("firstAdminCreated", false);
-//   //     }
-//   //     //console.log("this is the firstAdminCreated flag: "+ sessionStorage.getItem("firstAdminCreated"));
-//   //     console.log("this is the firstAdminCreated flag: "+ localStorage.getItem("firstAdminCreated"));
-
-//   //         }) // re-direct to login on successful register
-  //   .catch(err =>
-  //     dispatch({
-  //       type: GET_ERRORS,
-  //       payload: err.response.data
-  //     })
-  //   );
-   // return count;

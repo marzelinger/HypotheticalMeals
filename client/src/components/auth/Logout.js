@@ -19,7 +19,7 @@ render() {
     const { user } = this.props.auth;
 return (
           <FlatButton
-            label={`Log out ${user.name}`}
+            label={`Log out ${user.username}`}
             labelPosition="after"
             primary={true}
             cursor
