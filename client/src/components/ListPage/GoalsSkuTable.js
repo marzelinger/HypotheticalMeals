@@ -41,7 +41,7 @@ export class GoalSkuTable extends React.Component{
     }
 
     createQuantityElement = (item, index) => {
-        return <Input min = {0} onChange = {(e) => this.props.onQuantityChange(e, index)} placeholder={item['quantity']} type="number" step="1" />
+        return <Input min = {1} onChange = {(e) => this.props.onQuantityChange(e, index)} placeholder={item['quantity']} type="number" step="1" />
     }
 
     handleSelectedRow  = async (indexes) => {

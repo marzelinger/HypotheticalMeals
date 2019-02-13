@@ -41,9 +41,10 @@ class Manu_GoalHandler{
                 return res.json({ success: false, error: 'No manufacturing goal named provided'});
             }
             var new_skus = req.body.skus;
-            var new_quantities = req.body.quantities
+            var new_quantities = req.body.quantities;
+            var new_name = req.body.name;
             let updated_manu_goal = await Manu_Goal.findOneAndUpdate({_id : target_id},
-                {$set: {skus: new_skus, quantities: new_quantities}}, {upsert: true, new: true});
+                {$set: {skus: new_skus, quantities: new_quantities, name: new_name}}, {upsert: true, new: true});
             if(!updated_manu_goal){
                 return res.json({
                     success: true, error: 'This document does not exist'
