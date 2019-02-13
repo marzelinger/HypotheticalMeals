@@ -139,7 +139,7 @@ export default class IngredientsPage extends React.Component {
             var curCount = Math.ceil(dataLength/Number(this.state.pageSize));
             if(curCount != this.state.pagesCount){
                 //number pages changed.
-                if(this.state.currentPage> curCount){
+                if(this.state.currentPage>= curCount){
                     //previous index out of bounds. want to set the index to be 0.
                     this.setState({
                         currentPage: 0,
@@ -158,30 +158,6 @@ export default class IngredientsPage extends React.Component {
         }
 
     }
-
-
-    // async loadNewPageDataFromServer() {
-    //     let allData = await SubmitRequest.submitGetData(this.state.page_name);
-    //     var final_keyword_filter = this.state.filters['keyword'];
-    //     var final_sku_filter = this.state.filters['skus'].join(',');
-    //     if (final_keyword_filter === '') final_keyword_filter = '_';
-    //     if (final_sku_filter === '') final_sku_filter = '_';
-
-    //         var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-    //             this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
-    //         var resALL = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-    //                 this.state.sort_field, final_sku_filter, final_keyword_filter, 0, 0);
-    //     if (res === undefined || !res.success) {
-    //         res.data = [];
-    //         resALL.data = [];
-    //     }
-    //     await this.setState({
-    //         data: res.data,
-    //         exportData: resALL.data,
-    //         filterChange: false
-    //     })
-    //     this.updateDataState();
-    // }
 
     async updateSkuCounts() {
         let data = this.state.data.slice();
@@ -333,11 +309,9 @@ export default class IngredientsPage extends React.Component {
         var res = {};
         var newData = this.state.data.splice();
         //
-        //var newExportData = this.state.exportData.splice();
         switch (option) {
             case Constants.details_create:
                 newData.push(item);
-                //newExportData.push(item);
                 res = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_save:
