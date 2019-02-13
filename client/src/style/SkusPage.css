@@ -104,7 +104,6 @@ li {
     cursor: pointer;
 }
 
-<<<<<<< HEAD
 Button {
     cursor: pointer;
 }
@@ -117,8 +116,7 @@ Button {
     justify-content: center;
     border-radius: 12px;
     color: #f8f9fa;
-=======
+}
 .close {
     display: none;
->>>>>>> 3768116e5ea58fbbba769b508fdd34b42cc7d97d
 }
