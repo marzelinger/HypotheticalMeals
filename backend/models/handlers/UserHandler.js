@@ -61,7 +61,7 @@ class UserHandler{
     //const email = req.body.email;
     const username = req.body.username;
     const password = req.body.password;
-    // Find user by email
+    // Find user by username
     User.findOne({ username }).then(user => {
       // Check if user exists
       if (!user) {

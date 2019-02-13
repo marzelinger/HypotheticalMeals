@@ -17,7 +17,7 @@ export default class UserMenu extends React.Component {
     super(props);
     this.state = {
       open: false,
-      username: jwt_decode(localStorage.getItem("jwtToken")).name
+      username: jwt_decode(localStorage.getItem("jwtToken")).username
     };
 
   }

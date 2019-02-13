@@ -5,21 +5,21 @@ const isEmpty = require("is-empty");
 module.exports = function adminHasInit(){
 
     let errors = {};
-    console.log("this is the adminHasinit flag: "+ localStorage.getItem("firstAdminCreated"));
+    //console.log("this is the adminHasinit flag: "+ localStorage.getItem("firstAdminCreated"));
 
      if(localStorage != null){
-      console.log("first");
+      //console.log("first");
 
         if(localStorage.getItem("firstAdminCreated")!= null){
 
-        console.log("second");
+        //console.log("second");
         
-        console.log("this is the adminHasinit boolean: "+ localStorage.getItem("firstAdminCreated"));
+        //console.log("this is the adminHasinit boolean: "+ localStorage.getItem("firstAdminCreated"));
 
         if(Boolean(localStorage.getItem("firstAdminCreated"))){
  
-          console.log("this is admin will be true: ");
-          console.log("third");
+          //console.log("this is admin will be true: ");
+          //console.log("third");
 
           return{
           errors,

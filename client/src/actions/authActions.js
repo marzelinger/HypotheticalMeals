@@ -18,7 +18,6 @@ export const registerUser = (userData, history) => dispatch => {
         console.log("curUserIsAdmin has been confirmed to be true");
         axios
         .post("/api/users/register", userData)
-        //.then(res => history.push("/login")) // re-direct to login on successful register
         .then(res => history.push("/skus")) //re-direct to skus on successful register.
         .catch(err =>
           dispatch({

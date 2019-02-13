@@ -6,7 +6,6 @@ import * as Constants from '../../resources/Constants';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import '../../style/ManufacturingGoalsBox.css'
 import ExportSimple from '../export/ExportSimple';
-const jwt_decode = require('jwt-decode');
 
 class ProductLinesBox extends Component {
   constructor() {
