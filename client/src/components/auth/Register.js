@@ -29,6 +29,7 @@ class Register extends Component {
     console.log("trying to mount the register" +this.props.history);
 
     // If logged in and user navigates to Register page, should redirect them to dashboard
+    //TODO refactor the below to use this.props.auth.isAdmin
     if (this.props.auth.isAuthenticated && !currentUserIsAdmin().isValid) {
       this.props.history.push("/skus"); //if they are not an admin, get redirected to skus.
       console.log("mounted" +this.props.history);
@@ -47,19 +48,13 @@ onChange(e){
     this.setState({ [e.target.id]: e.target.value });
   };
 
-
-// setPrivileges(privilege){
-//   this.setState({ 
-//     privileges: privilege});
-// };
-
-
 onSubmit(e){
     e.preventDefault();
 const newUser = {
       username: this.state.username,
       password: this.state.password,
       password2: this.state.password2,
+      admin_creator: 
       privileges: []
     };
     console.log(e);

@@ -15,6 +15,8 @@ class AdminRegister extends Component {
       username: "",
       password: "",
       password2: "",
+      privileges: [],
+      admin: true,
       errors: {}
     };
   }
@@ -46,13 +48,9 @@ const newUser = {
       username: this.state.username,
       password: this.state.password,
       password2: this.state.password2,
-      privileges: ['Admin']
+      privileges: ['Admin'],
+      admin: this.state.admin
     };
-    console.log(e);
-    console.log(this.state);
-    console.log(this.props.history);
-    console.log(this.props);
-    console.log(newUser);
     this.props.registerFirstAdmin(newUser, this.props.history); 
   };
 

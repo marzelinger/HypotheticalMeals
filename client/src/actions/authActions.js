@@ -1,5 +1,6 @@
 import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
+import setAdminToken from "../utils/setAdminToken";
 import jwt_decode from "jwt-decode";
 import {
   GET_ERRORS,
@@ -39,8 +40,12 @@ export const loginUser = userData => dispatch => {
       localStorage.setItem("jwtToken", token);
       // Set token to Auth header
       setAuthToken(token);
-      // Decode token to get user data
       const decoded = jwt_decode(token);
+
+      if(decoded.admin==true){
+        setAdminToken(token);
+      }
+      // Decode token to get user data
       console.log("logging in user and setting if admin in authActions: "+decoded.admin);
       // Set current user
       dispatch(setCurrentUser(decoded));
@@ -72,6 +77,7 @@ export const logoutUser = () => dispatch => {
   localStorage.removeItem("jwtToken");
   // Remove auth header for future requests
   setAuthToken(false);
+  setAdminToken(false);
   // Set current user to empty object {} which will set isAuthenticated to false
   dispatch(setCurrentUser({}));
   console.log(SET_CURRENT_USER);

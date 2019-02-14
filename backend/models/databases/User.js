@@ -22,11 +22,15 @@ const UserSchema = new Schema({
       type: Date,
       default: Date.now
     },
-    //id: uuid,
     privileges : [String],
     import_ids : [String],
     admin_creator : String,
-    comment : String
+    comment : String,
+    isAdmin : {
+      type : boolean,
+      required : true
+    }
+
 
   });
 // export our module to use in server.js

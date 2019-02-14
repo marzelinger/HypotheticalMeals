@@ -7,9 +7,11 @@ import Register from "./auth/Register";
 import AdminRegister from "./auth/AdminRegister";
 import Login from "./auth/Login";
 import PrivateRoute from "./private-route/PrivateRoute";
+import AdminPrivateRoute from "./private-route/AdminPrivateRoute";
 import Dashboard from "./dashboard/Dashboard";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "../utils/setAuthToken";
+import setAdminToken from "../utils/setAdminToken";
 import GeneralNavBar from "./GeneralNavBar";
 import ManufacturingPage from "./ManufacturingGoal/ManufacturingPage";
 import ImportPage from "./ImportPage";
@@ -50,8 +52,12 @@ class App extends React.Component{
         // Set auth token header auth
         const token = localStorage.jwtToken;
         setAuthToken(token);
+        
         // Decode token and get user info and exp
         const decoded = jwt_decode(token);
+        if(decoded.admin==true){
+          setAdminToken(token);
+        }
         // Set user and isAuthenticated
         store.dispatch(setCurrentUser(decoded));
         // Check for expired token
@@ -81,13 +87,13 @@ class App extends React.Component{
                <Route exact path="/adminregister" component={AdminRegister} />         
               <Switch>
                 <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
-                <PrivateRoute exact path="/register" component={Register} />
+                <AdminPrivateRoute exact path="/register" component={Register} />
                 <PrivateRoute exact path="/" component={Dashboard} />
                 <PrivateRoute exact path="/skus" component={SkusPage} />
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingPage} />
                 <PrivateRoute exact path="/prod_lines" component={ProductLinePage} />
-                <PrivateRoute exact path="/import" component={ImportPage} />
-                <PrivateRoute exact path="/users" component={UserPage}/>
+                <AdminPrivateRoute exact path="/import" component={ImportPage} />
+                <AdminPrivateRoute exact path="/users" component={UserPage}/>
               </Switch>
             </div>
           </Router>

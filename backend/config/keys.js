@@ -7,4 +7,3 @@ module.exports = {
     secretOrKey: "secret"
   };
   
-  //export const getConfig = key => config[key];

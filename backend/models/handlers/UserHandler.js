@@ -6,6 +6,7 @@ import isAdmin from '../../validation/isAdmin';
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
+import printFuncBack from "../../printFuncBack";
 
 
 
@@ -76,7 +77,6 @@ class UserHandler{
           const payload = {
             id: user.id,
             username: user.username,
-            //email: user.email,
             admin: isAdmin(user).isValid
           };
   // Sign token
@@ -93,6 +93,7 @@ class UserHandler{
               });
             }
           );
+          printFuncBack("this is the payload token. " +JSON.stringify(payload));
         } else {
           return res
             .status(400)
@@ -110,11 +111,6 @@ class UserHandler{
             return res.json({ success: true, data: users });
           });
     }
-    // static getUserByID(req, res){
-    // }
-    // static deleteUserByID(req, res){
-    // }
-
 }
 
 export default UserHandler;

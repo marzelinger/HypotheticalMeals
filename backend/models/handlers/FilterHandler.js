@@ -108,9 +108,10 @@ class FilterHandler{
             }
             var keyword = req.params.keyword;
             if (keyword !== undefined && keyword !== "_"){
-                and_query.push({$or: [{username: { $regex: keyword , $options: "$i"}}, 
-                {privileges: { $regex: keyword , $options: "$i"}}, {admin_creator: { $regex: keyword , $options: "$i"}},
-                {comment: { $regex: keyword , $options: "$i"}}]}); 
+                // and_query.push({$or: [{username: { $regex: keyword , $options: "$i"}}, 
+                // {privileges: { $regex: keyword , $options: "$i"}}, 
+                // {admin_creator: { $regex: keyword , $options: "$i"}},
+                // {comment: { $regex: keyword , $options: "$i"}}]}); 
             }
             printFuncBack('this is the and_query: '+and_query);
 
