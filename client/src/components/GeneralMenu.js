@@ -32,7 +32,7 @@ export default class GeneralMenu extends React.Component {
             <MenuIcon color = '#424242'></MenuIcon>
           </div>
           
-        <Drawer openSecondary = {true} open={this.state.open} docked = {false} onRequestChange={(open) => this.setState({open})}>
+        <Drawer open={this.state.open} docked = {false} onRequestChange={(open) => this.setState({open})}>
         <Link to="/manu_goals" >
           <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Manufacturing Goals'}></MenuItem>
         </Link>

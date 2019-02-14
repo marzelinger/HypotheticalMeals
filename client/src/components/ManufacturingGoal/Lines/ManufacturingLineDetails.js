@@ -2,22 +2,19 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 import CheckDigit from 'checkdigit';
-import * as Constants from '../../resources/Constants';
+import * as Constants from '../../../resources/Constants';
 import { 
     Button,
     Input,
     FormGroup,
     Label,
     Modal } from 'reactstrap';
-import DataStore from '../../helpers/DataStore'
-import ItemStore from '../../helpers/ItemStore';
-import addButton from '../../resources/add.png';
-import ItemSearchModifyList from '../../components/ListPage/ItemSearchModifyList'
-import GoalsSkuTable from '../ListPage/GoalsSkuTable';
-import SimpleGoalTable from './SimpleGoalTable';
+import DataStore from '../../../helpers/DataStore'
+import ItemStore from '../../../helpers/ItemStore';
+import addButton from '../../../resources/add.png';
+import ItemSearchModifyList from '../../ListPage/ItemSearchModifyList';
 
-
-export default class ManufacturingGoalDetails extends React.Component {
+export default class ManufacturingLineDetails extends React.Component {
     constructor(props) {
         super(props);
 
@@ -25,7 +22,7 @@ export default class ManufacturingGoalDetails extends React.Component {
             item_properties, 
             item_property_labels,
             item_property_patterns,
-            item_property_field_type } = DataStore.getGoalData();
+            item_property_field_type } = DataStore.getLineData();
 
         this.state = {
             item_properties,
@@ -35,7 +32,7 @@ export default class ManufacturingGoalDetails extends React.Component {
             invalid_inputs: [],
             modal: false,
             detail_view_options: [Constants.details_create, Constants.details_cancel],
-            item: {},
+            item: {skus: []},
             page_title: 'SKUs',
             data: [],
         }
@@ -63,14 +60,14 @@ export default class ManufacturingGoalDetails extends React.Component {
         this.setState({ item: item });
     };
 
-    onModifyList = (option, value, qty) => {
+    onModifyList = (option, value) => {
         var item = Object.assign({}, this.state.item);
         switch (option) {
             case Constants.details_add:
-                this.addSku(item, value, qty);
+                this.addSku(item, value);
                 break;
             case Constants.details_remove:
-                this.removeSku(item, value, qty);
+                this.removeSku(item, value);
                 break;
         }
         this.setState({ 
@@ -79,40 +76,29 @@ export default class ManufacturingGoalDetails extends React.Component {
         })
     }
 
-    removeSku(item, value, qty) {
+    removeSku(item, value) {
         let ind = -1;
-        qty = parseInt(qty);
         item.skus.map((sku, index) => {
             if (sku._id === value._id)
                 ind = index;
         });
         if (ind > -1) {
-            let curr_qty = item.quantities[ind];
-            curr_qty = curr_qty - qty;
-            if (curr_qty > 0) item.quantities[ind] = curr_qty;
-            else {
-                item.skus.splice(ind,1);
-                item.quantities.splice(ind,1);
-            }
+            item.skus.splice(ind,1);
         }
         this.setState({ item: item })
     }
 
-    addSku(item, value, qty) {
+    addSku(item, value) {
         let ind = -1;
-        qty = parseInt(qty);
         item.skus.map((sku, index) => {
             if (sku._id === value._id)
                 ind = index;
         });
         if (ind > -1){
-            let curr_qty = item.quantities[ind];
-            curr_qty = curr_qty + qty;
-            item.quantities[ind] = curr_qty;
+            return;
         }
         else {
             item.skus.push(value);
-            item.quantities.push(qty);
         }
         this.setState({ item: item })
     }
@@ -142,6 +128,12 @@ export default class ManufacturingGoalDetails extends React.Component {
         this.state.item_properties.map(prop => {
             if (!this.state.item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
         })
+        if(!inv_in.includes('short_name')){
+            let vsm = await this.props.validateShortName(this.state.item.short_name);
+            if(!vsm){
+                inv_in.push('short_name');
+            }
+        }
         await this.setState({ invalid_inputs: inv_in });
     }
 
@@ -164,7 +156,7 @@ export default class ManufacturingGoalDetails extends React.Component {
     toggle = async () => {
         console.log('toggling');
         try{
-            var item = await ItemStore.getEmptyItem(Constants.manugoals_page_name);
+            var item = await ItemStore.getEmptyItem(Constants.manu_line_page_name);
             console.log(item);
             await this.setState({ 
                 modal: !this.state.modal,
@@ -193,11 +185,13 @@ export default class ManufacturingGoalDetails extends React.Component {
                         item_type={Constants.details_add_sku}
                         options={[Constants.details_add, Constants.details_remove]}
                         handleModifyList={this.onModifyList}
+                        simple = {true}
                     />
-                    <SimpleGoalTable
-                    skus = {this.state.item.skus}
-                    quantities = {this.state.item.quantities}
-                    ></SimpleGoalTable>
+                    {
+                        this.state.item.skus.map(sku => {
+                            return (<h3>{sku.name}</h3>)
+                        })
+                    }
                 </div>
                 <div className='item-options'>
                     { this.state.detail_view_options.map(opt => 
@@ -215,6 +209,6 @@ export default class ManufacturingGoalDetails extends React.Component {
     }
 }
 
-ManufacturingGoalDetails.propTypes = {
+ManufacturingLineDetails.propTypes = {
     handleDetailViewSubmit: PropTypes.func
   };

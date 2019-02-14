@@ -8,6 +8,7 @@ import logger from 'morgan';
 import mongoose from 'mongoose';
 import SkuHandler from './models/handlers/SkuHandler';
 import Prod_LineHandler from './models/handlers/Prod_LineHandler';
+import Manu_LineHandler from './models/handlers/Manu_LineHandler';
 import IngredientHandler from './models/handlers/IngredientHandler';
 import PaginationHandler from './models/handlers/PaginationHandler';
 import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
@@ -70,6 +71,14 @@ router.get('/products/:prod_line_id', (req, res) => Prod_LineHandler.getProductL
 router.delete('/products/:prod_line_id', (req, res) => Prod_LineHandler.deleteProductLineByID(req, res));
 router.get('/products_name/:search_substr', (req, res) => Prod_LineHandler.getProductLinesByNameSubstring(req, res));
 
+// Manufacturing Line database APIs
+router.post('/manulines', (req, res) => Manu_LineHandler.createManufacturingLine(req, res));
+router.put('/manulines/:manu_line_id', (req, res) => Manu_LineHandler.updateManufacturingLineByID(req, res));
+router.get('/manulines', (req, res) => Manu_LineHandler.getAllManufacturingLines(req, res));
+router.get('/manulines/:manu_line_id', (req, res) => Manu_LineHandler.getManufacturingLineByID(req, res));
+router.delete('/manulines/:manu_line_id', (req, res) => Manu_LineHandler.deleteManufacturingLineByID(req, res));
+router.get('/manulines_name/:search_substr', (req, res) => Manu_LineHandler.getManufacturingLinesByNameSubstring(req, res));
+router.get('/manulines_shortname/:short_name', (req, res) => Manu_LineHandler.getManufacturingLinesByShortName(req, res));
 // Ingredient database APIs
 router.post('/ingredients', (req, res) => IngredientHandler.createIngredient(req, res));
 router.put('/ingredients/:ingredient_id', (req, res) => IngredientHandler.updateIngredientByID(req, res));

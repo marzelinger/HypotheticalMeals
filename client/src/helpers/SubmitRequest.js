@@ -119,6 +119,24 @@ export default class SubmitRequest{
     }
   }
 
+  static async submitGetManufacturingLineByShortName(shortname) {
+    try {
+      console.log('/api/manulines_shortname/' + shortname);
+      return fetch('/api/manulines_shortname/' + shortname)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
   static async submitGetProductLinesByNameSubstring(substr) {
     try {
       return fetch('/api/products_name/' + substr)
