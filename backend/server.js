@@ -98,6 +98,8 @@ router.get('/manugoals_filter/:name_substr/:user_substr/:user', (req, res) => Ma
 // Multiple database APIs
 router.get('/ingredients_filter/:sort_field/:sku_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
 router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize/:prod_line_ids', (req, res) => FilterHandler.getSkusByFilter(req, res));
+router.get('/users_filter/:sort_field/:user_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getUsersByFilter(req, res));
+
 
 router.post('/parseSkus', upload.single('file'), (req, res) => CSV_parser.parseSKUCSV(req, res));
 router.post('/parseProdLines', upload.single('file'), (req, res) => CSV_parser.parseProdLineCSV(req,res));
@@ -126,7 +128,7 @@ router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword
 // @route GET api/users/getall
 // @desc Get all users in the mlab db and return them.
 // @access Public
-router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
+router.get('/users', (req, res) => UserHandler.getAllUsers(req, res));
 
 
 

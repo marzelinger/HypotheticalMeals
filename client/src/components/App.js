@@ -14,6 +14,7 @@ import GeneralNavBar from "./GeneralNavBar";
 import ManufacturingPage from "./ManufacturingGoal/ManufacturingPage";
 import ImportPage from "./ImportPage";
 import IngredientsPage from "./ListPage/IngredientsPage";
+import UserPage from "./ListPage/UsersPage";
 import ProductLinePage from "./ProductLine/ProductLinePage";
 import * as Constants from '../resources/Constants';
 import Logout from '../components/auth/Logout';
@@ -86,6 +87,7 @@ class App extends React.Component{
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingPage} />
                 <PrivateRoute exact path="/prod_lines" component={ProductLinePage} />
                 <PrivateRoute exact path="/import" component={ImportPage} />
+                <PrivateRoute exact path="/users" component={UserPage}/>
               </Switch>
             </div>
           </Router>

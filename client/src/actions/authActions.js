@@ -110,7 +110,7 @@ export const registerFirstAdmin = (userData, history) => dispatch => {
 export const getAllUsers = () => dispatch => {
   var count = 0;
   axios
-    .get("/api/users/getall")
+    .get("/api/users")
     .then(res => {
       console.log("this is the response in authActions: "+ res);
       console.log("this is the length: "+ res.data.data.length);

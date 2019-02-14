@@ -3,6 +3,8 @@
 
 import Ingredient from '../databases/ingredient';
 import SKU from '../databases/sku';
+import User from '../databases/User';
+import printFuncBack from '../../printFuncBack';
 
 class FilterHandler{
 
@@ -90,5 +92,51 @@ class FilterHandler{
             return res.json({ success: false, error: err});
         }
     }
+
+    static async getUsersByFilter(req, res){
+        try{
+            printFuncBack('in the getUsersByFilter');
+            var and_query = [];
+            var ids = [];
+            var sort_field = req.params.sort_field;
+            var user_ids = req.params.ingredient_ids;
+            if (user_ids !== undefined && user_ids !== "_"){
+                // user_ids = user_ids.replace(/\s/g, "").split(',');
+                // let skus = await SKU.find({ ingredients : {$in : ingredient_ids } });
+                // skus.map(sku => ids.push(sku._id));
+                // and_query.push( {_id: { $in: ids } } );
+            }
+            var keyword = req.params.keyword;
+            if (keyword !== undefined && keyword !== "_"){
+                and_query.push({$or: [{username: { $regex: keyword , $options: "$i"}}, 
+                {privileges: { $regex: keyword , $options: "$i"}}, {admin_creator: { $regex: keyword , $options: "$i"}},
+                {comment: { $regex: keyword , $options: "$i"}}]}); 
+            }
+            printFuncBack('this is the and_query: '+and_query);
+
+            var currentPage = Number(req.params.currentPage);
+            var pageSize = Number(req.params.pageSize);
+            let results = (and_query.length === 0) ? await User.find( ).skip(currentPage*pageSize).limit(pageSize)
+                                                        .populate('users').sort(sort_field)
+                                                        .collation({locale: "en_US", numericOrdering: true}) : 
+                                                     await User.find( {$and: and_query }).skip(currentPage*pageSize)
+                                                        .limit(pageSize).populate('users')
+                                                        .sort(sort_field).collation({locale: "en_US", numericOrdering: true});
+            if (results.length == 0) results = [];
+            printFuncBack('this is the results: '+results);
+            return res.json({ success: true, data: results});
+        }
+        catch (err) {
+            return res.json({ success: false, error: err});
+        }    
+    }
+
+
+
+
+
+
+
+
 }
 export default FilterHandler;

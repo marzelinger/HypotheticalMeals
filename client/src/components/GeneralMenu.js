@@ -56,6 +56,16 @@ export default class GeneralMenu extends React.Component {
             :
             (<div></div>)
           }
+           {
+            currentUserIsAdmin().isValid ? 
+            (
+              <Link to="/users" >
+              <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'User Settings'}></MenuItem>
+            </Link>
+            )
+            :
+            (<div></div>)
+          }
           {
             currentUserIsAdmin().isValid ? 
             (

@@ -3,6 +3,7 @@
 // Simple functions for submitting HTTP requests from the front end
 
 import * as Constants from './../resources/Constants';
+import printFuncFront from '../printFuncFront';
 
 export default class SubmitRequest{
 
@@ -205,6 +206,7 @@ export default class SubmitRequest{
   static submitGetFilterData = (route, sort_field, filter_value, keyword, currentPage, pageSize, prod_line) => {
     var path = '/api/' + route + '/' + sort_field + '/' + filter_value + '/' + keyword + '/' + currentPage +'/' + pageSize;
     path += (prod_line === undefined) ? '' : ('/' + prod_line);
+    printFuncFront("this is path in submitGetFilterData"+path);
     return fetch(path, { method: 'GET' })
       .then(data => data.json())
       .then((res) => {

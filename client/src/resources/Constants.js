@@ -15,8 +15,10 @@ export const SkuTitle = "SKUs"
 export const ManuGoalTitle = "MANUFACTURING GOALS"
 
 export const ingredients_page_name = 'ingredients';
+export const users_page_name = 'users';
 export const ing_filter_path = 'ingredients_filter';
 export const sku_filter_path = 'skus_filter';
+export const users_filter_path = 'users_filter';
 export const skus_page_name = 'skus';
 export const manugoals_page_name = 'manugoals';
 export const manu_line_page_name = 'manulines';
@@ -26,6 +28,7 @@ export const options = 'Options'
 export const keyword_label = "Keyword"
 export const sku_label = "SKU"
 export const ingredient_label = "Ingredient"
+export const user_label = "User"
 export const prod_line_label = 'Product Line'
 export const undefined = 'Undefined'
 
@@ -33,6 +36,7 @@ export const unselected_row_color = 'White'
 export const selected_row_color = 'PaleTurquoise'
 
 export const create_item = 'Create Item'
+export const create_user = 'Create User'
 export const details_save = 'Save'
 export const details_delete = 'Delete'
 export const details_cancel = 'Cancel'
@@ -48,6 +52,7 @@ export const details_modify_sku_quantities ="Modify Quantity"
 export const add_keyword_filter = 'Add Keyword Filter'
 export const add_sku_filter = 'Add SKU Filter'
 export const add_ing_filter = 'Add Ingredient Filter'
+export const add_user_filter = 'Add User Filter'
 export const add_prod_filter = 'Add Product Line Filter'
 export const remove_filter_label = 'X'
 export const filter_removed = 'removed'
