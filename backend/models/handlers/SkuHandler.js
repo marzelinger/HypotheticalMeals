@@ -32,14 +32,14 @@ class SkuHandler{
             SkuHandler.checkForZeroQtys(new_ingredients, new_ingredient_quantities);
 
 
-            let conflict1 = await SKU.find({ num : Number(new_sku_num) });
-            let conflict2 = await SKU.find({ case_upc : Number(new_case_upc) });
-            if(conflict1.length > 0){
-                return res.json({ success: false, error: 'Conflict: SKU#'});
-            }
-            if(conflict2.length > 0){
-                return res.json({ success: false, error: 'Conflict: Case UPC'});
-            }
+            // let conflict1 = await SKU.find({ num : Number(new_sku_num) });
+            // let conflict2 = await SKU.find({ case_upc : Number(new_case_upc) });
+            // if(conflict1.length > 0){
+            //     return res.json({ success: false, error: 'Conflict: SKU#'});
+            // }
+            // if(conflict2.length > 0){
+            //     return res.json({ success: false, error: 'Conflict: Case UPC'});
+            // }
 
             sku.name = new_name;
             sku.num = new_sku_num;

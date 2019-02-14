@@ -12,8 +12,7 @@ class AdminRegister extends Component {
     this.onChange = this.onChange.bind(this);
 
     this.state = {
-      name: "",
-      email: "",
+      username: "",
       password: "",
       password2: "",
       errors: {}
@@ -21,8 +20,6 @@ class AdminRegister extends Component {
   }
 
   componentDidMount() {
-    console.log("trying to mount the adminregister" +this.props.history);
-
     // If logged in and user navigates to Register page, should redirect them to skus
     if (this.props.auth.isAuthenticated) {
       this.props.history.push("/skus");
@@ -46,8 +43,7 @@ onChange(e){
 onSubmit(e){
     e.preventDefault();
 const newUser = {
-      name: this.state.name,
-      email: this.state.email,
+      username: this.state.username,
       password: this.state.password,
       password2: this.state.password2,
       privileges: ['Admin']
@@ -81,18 +77,20 @@ return (
               <div className="input-field col s12">
                 <input
                   onChange={this.onChange}
-                  value={this.state.name}
-                  error={errors.name}
-                  id="name"
+                  value={this.state.username}
+                  error={errors.username}
+                  id="username"
                   type="text"
                   className={classnames("", {
-                    invalid: errors.name
+                    invalid: errors.username
                   })}
                 />
-                <label htmlFor="name">Name</label>
-                <span className="red-text">{errors.name}</span>
+                {//TODO: potentially change the below htmlFor to username.
+                }
+                <label htmlFor="name">Username</label>
+                <span className="red-text">{errors.username}</span>
               </div>
-              <div className="input-field col s12">
+              {/* {<div className="input-field col s12">
                 <input
                   onChange={this.onChange}
                   value={this.state.email}
@@ -106,6 +104,7 @@ return (
                 <label htmlFor="email">Email</label>
                 <span className="red-text">{errors.email}</span>
               </div>
+              } */}
               <div className="input-field col s12">
                 <input
                   onChange={this.onChange}

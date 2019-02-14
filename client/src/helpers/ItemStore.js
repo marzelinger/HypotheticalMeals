@@ -43,11 +43,13 @@ export default class ItemStore{
   }
 
   static async getEmptyItem(page_name) {
-    var res = await SubmitRequest.submitGetData(page_name);
-    var new_id = await ItemStore.getUniqueNumber(res.data);
+    
+    
     switch (page_name){
       case Constants.ingredients_page_name:
+      var new_id = await ItemStore.getUniqueNumber(res.data);
         return {
+          _id: 'unassigned',
           name: '',
           num: new_id,
           vendor_info: '',
@@ -57,6 +59,8 @@ export default class ItemStore{
           comment: ''
         };
       case Constants.skus_page_name: 
+      var res = await SubmitRequest.submitGetData(page_name);
+      var new_id = await ItemStore.getUniqueNumber(res.data);
         let new_case_upc = ItemStore.getUniqueCaseUPC(res.data);
         let new_unit_upc = ItemStore.getUniqueUnitUPC(new_case_upc, res.data);
         return {
@@ -71,6 +75,19 @@ export default class ItemStore{
           ingredients: [],
           ingredient_quantities: []
         };
+      case Constants.manugoals_page_name:
+        return {
+          name: '',
+          skus: [],
+          quantities: []
+        }
+      case Constants.manu_line_page_name:
+      return {
+        name: '',
+        short_name: '',
+        comment: '',
+        skus: []
+      }
     }
     
   }

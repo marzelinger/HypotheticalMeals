@@ -11,7 +11,7 @@ import Dashboard from "./dashboard/Dashboard";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "../utils/setAuthToken";
 import GeneralNavBar from "./GeneralNavBar";
-import ManufacturingGoalsPage from "./ManufacturingGoal/ManufacturingGoalsPage";
+import ManufacturingPage from "./ManufacturingGoal/ManufacturingPage";
 import ImportPage from "./ImportPage";
 import IngredientsPage from "./ListPage/IngredientsPage";
 import ProductLinePage from "./ProductLine/ProductLinePage";
@@ -73,18 +73,17 @@ class App extends React.Component{
         <Provider store={store}>
           <Router>
             <div className="App">
-
                 <PrivateRoute component={GeneralNavBar}/>
-
+                {//<Route exact path="/" component={Landing} />
+                }
                <Route exact path="/login" component={Login} />
-               <Route exact path="/register" component={Register} />
-               <Route exact path="/adminregister" component={AdminRegister} />
-              
+               <Route exact path="/adminregister" component={AdminRegister} />         
               <Switch>
                 <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
-                <PrivateRoute exact path="/dashboard" component={Dashboard} />
+                <PrivateRoute exact path="/register" component={Register} />
+                <PrivateRoute exact path="/" component={Dashboard} />
                 <PrivateRoute exact path="/skus" component={SkusPage} />
-                <PrivateRoute exact path="/manu_goals" component={ManufacturingGoalsPage} />
+                <PrivateRoute exact path="/manu_goals" component={ManufacturingPage} />
                 <PrivateRoute exact path="/prod_lines" component={ProductLinePage} />
                 <PrivateRoute exact path="/import" component={ImportPage} />
               </Switch>
@@ -97,9 +96,3 @@ class App extends React.Component{
 }
 
 export default App;
-
-
-// <Route exact path="/" component={Landing} />
-//               <Route exact path="/login" component={Login} />
-//               <Route exact path="/register" component={Register} />
-//               <Route exact path="/adminregister" component={AdminRegister} />

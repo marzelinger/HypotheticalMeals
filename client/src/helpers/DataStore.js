@@ -21,6 +21,24 @@ export default class DataStore{
       };
     }
 
+    static getLineData() {
+      return {
+        item_properties: ['name', 'short_name', 'comment'],
+        item_property_labels: ['Name', 'Short Name', 'Comment'],
+        item_property_patterns: ['.+', '.+', '.*'],
+        item_property_field_type: ['text', 'text', 'textara']  
+      };
+    }
+
+    static getGoalData() {
+      return {
+        item_properties: ['name'],
+        item_property_labels: ['Name'],
+        item_property_patterns: ['.+'],
+        item_property_field_type: ['text']  
+      };
+    }
+
     static getSkuData() {
         return {
           page_name: Constants.skus_page_name,

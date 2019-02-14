@@ -119,9 +119,26 @@ export default class SubmitRequest{
     }
   }
 
+  static async submitGetManufacturingLineByShortName(shortname) {
+    try {
+      console.log('/api/manulines_shortname/' + shortname);
+      return fetch('/api/manulines_shortname/' + shortname)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
   static async submitGetProductLinesByNameSubstring(substr) {
     try {
-      console.log("here")
       return fetch('/api/products_name/' + substr)
       .then(data => data.json())
       .then((res) => {
@@ -171,6 +188,20 @@ export default class SubmitRequest{
     }
   }
 
+  static submitGetManuGoalsByFilter = (name_filter, username_filter, user) => {
+    return fetch(`/api/manugoals_filter/${name_filter || '_'}/${username_filter || '_'}/${user}`, {method: 'GET'})
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return ({ 
+            success: res.success,
+            data: res.data
+          }
+        )
+      }
+    )
+  }
+
   static submitGetFilterData = (route, sort_field, filter_value, keyword, currentPage, pageSize, prod_line) => {
     var path = '/api/' + route + '/' + sort_field + '/' + filter_value + '/' + keyword + '/' + currentPage +'/' + pageSize;
     path += (prod_line === undefined) ? '' : ('/' + prod_line);
@@ -191,7 +222,6 @@ export default class SubmitRequest{
     return fetch(`/api/manugoals/${user}`, { method: 'GET' })
       .then(data => data.json())
       .then((res) => {
-        console.log(res.data);
         if (!res.success) return { error: res.error } ;
         else return { 
           success: res.success,
