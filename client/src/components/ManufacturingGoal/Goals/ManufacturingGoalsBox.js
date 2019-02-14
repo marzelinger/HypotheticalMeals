@@ -7,6 +7,9 @@ import * as Constants from '../../../resources/Constants';
 import SubmitRequest from '../../../helpers/SubmitRequest';
 import ManufacturingGoalDetails from './ManufacturingGoalDetails';
 import ItemStore from '../../../helpers/ItemStore';
+import TextField from 'material-ui/TextField';
+import SearchIcon from 'material-ui/svg-icons/action/search'
+import currentUserIsAdmin from '../../auth/currentUserIsAdmin'
 const jwt_decode = require('jwt-decode');
 
 class ManufacturingGoalsBox extends Component {
@@ -19,11 +22,17 @@ class ManufacturingGoalsBox extends Component {
       name: '',
       skus: [],
       user: '',
-      quantities: []
+      quantities: [],
+      isAdmin: currentUserIsAdmin(),
+      filters: {
+        'username':'_',
+        'name':'_'
+      }
     };
     if(localStorage != null){
       if(localStorage.getItem("jwtToken")!= null){
-        this.state.user = jwt_decode(localStorage.getItem("jwtToken")).id;
+        this.state.user = jwt_decode(localStorage.getItem("jwtToken")).username;
+        console.log(jwt_decode(localStorage.getItem("jwtToken")).username);
       }
     }
 
@@ -111,7 +120,7 @@ class ManufacturingGoalsBox extends Component {
   componentDidMount() {
     this.loadGoalsFromServer();
     if (!this.pollInterval) {
-      this.pollInterval = setInterval(this.loadGoalsFromServer, 2000);
+      this.pollInterval = setInterval(this.loadGoalsFromServer, 1000);
     }
   }
 
@@ -121,7 +130,9 @@ class ManufacturingGoalsBox extends Component {
   }
 
   async loadGoalsFromServer() {
-    let res = await SubmitRequest.submitGetManuGoalsData(this.state.user);
+    // let res = await SubmitRequest.submitGetManuGoalsData(this.state.user);
+    // pass in the actual user if the current user is NOT an admin.
+    var res = await SubmitRequest.submitGetManuGoalsByFilter(this.state.filters.name,this.state.filters.username, this.state.isAdmin ? '_' : this.state.user);
     if (!res.success) {
       this.setState({ error: res.error });
     }
@@ -153,10 +164,34 @@ class ManufacturingGoalsBox extends Component {
       return true;
   }
 
+  onFilterValueChange = (e, value, filterType) => {
+    var filters = this.state.filters;
+    filters[filterType] = value;
+    this.setState({filters: filters, filterChange: true}) ;
+}
+
   render() {
     return (
       <div className = "goalsbox">
-              <h1 id = "manufacturing_goals_title">{Constants.MANUFACTURING_TITLE}</h1>
+      <h1 id = "manufacturing_goals_title">{Constants.MANUFACTURING_TITLE}</h1>
+      <div className = "searches">
+      {this.state.isAdmin ? 
+      (<div className = "searchfield">
+      <SearchIcon style = {{width: '20px', height: '20px'}}></SearchIcon>
+      <TextField
+        hintText="Username Search"
+        onChange = {(e, val) => this.onFilterValueChange(e, val, 'username')}
+      />
+      </div>) : <div></div>
+      }
+      <div className = "searchfield">
+      <SearchIcon style = {{width: '20px', height: '20px'}}></SearchIcon>
+      <TextField
+        hintText="Goal Name Search"
+        onChange = {(e, val) => this.onFilterValueChange(e, val, 'name')}
+      />
+      </div>
+      </div>
         <div className="goals">
           <ManufacturingGoalList
             data={this.state.data}

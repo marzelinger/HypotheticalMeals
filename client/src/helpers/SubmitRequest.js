@@ -188,6 +188,20 @@ export default class SubmitRequest{
     }
   }
 
+  static submitGetManuGoalsByFilter = (name_filter, username_filter, user) => {
+    return fetch(`/api/manugoals_filter/${name_filter || '_'}/${username_filter || '_'}/${user}`, {method: 'GET'})
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return ({ 
+            success: res.success,
+            data: res.data
+          }
+        )
+      }
+    )
+  }
+
   static submitGetFilterData = (route, sort_field, filter_value, keyword, currentPage, pageSize, prod_line) => {
     var path = '/api/' + route + '/' + sort_field + '/' + filter_value + '/' + keyword + '/' + currentPage +'/' + pageSize;
     path += (prod_line === undefined) ? '' : ('/' + prod_line);

@@ -120,4 +120,14 @@
     opacity: 1; /* Firefox */
   }
 
+  .searches {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .searchfield {
+    display: flex;
+    align-items: center;
+  }
+
   
