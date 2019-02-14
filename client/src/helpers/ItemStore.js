@@ -81,6 +81,13 @@ export default class ItemStore{
           skus: [],
           quantities: []
         }
+      case Constants.manu_line_page_name:
+      return {
+        name: '',
+        short_name: '',
+        comment: '',
+        skus: []
+      }
     }
     
   }

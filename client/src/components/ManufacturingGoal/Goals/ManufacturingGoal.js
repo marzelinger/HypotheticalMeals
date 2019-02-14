@@ -4,9 +4,9 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import ReactMarkdown from 'react-markdown';
 import { UncontrolledCollapse, CardBody, Card } from 'reactstrap';
-import deleteButton from'./../../resources/delete.png';
+import deleteButton from'../../../resources/delete.png';
 import ManufacturingGoalCalculator from'./ManufacturingGoalCalculator';
-import ManuGoalsTables from './../ListPage/ManuGoalsTables';
+import ManuGoalsTables from '../../ListPage/ManuGoalsTables';
 export default class ManufacturingGoal extends React.Component{
   constructor(props){
     super(props);
@@ -26,7 +26,6 @@ export default class ManufacturingGoal extends React.Component{
     if(event.charCode == 13){
       this.props.handleUpdateGoal(this.props.id, this.state.name);
     }
-    
   }
 
   onQuantityChange = (event, sku_index) => {
@@ -38,11 +37,8 @@ export default class ManufacturingGoal extends React.Component{
     if(selectedSkusIndexes == undefined){
       return;
     }
-    console.log('wtf')
-    console.log(selectedSkusIndexes);
 
     selectedSkusIndexes.forEach( (index) => {
-      console.log('iterating');
       this.props.skus.splice(index, 1);
       this.props.quantities.splice(index, 1);
     })

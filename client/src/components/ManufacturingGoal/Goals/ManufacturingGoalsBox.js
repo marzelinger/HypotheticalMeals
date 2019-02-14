@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import 'whatwg-fetch';
 import ManufacturingGoalList from './ManufacturingGoalList';
 import ManufacturingGoalForm from './ManufacturingGoalForm';
-import '../../style/ManufacturingGoalsBox.css';
-import * as Constants from '../../resources/Constants';
-import SubmitRequest from '../../helpers/SubmitRequest';
+import '../../../style/ManufacturingGoalsBox.css';
+import * as Constants from '../../../resources/Constants';
+import SubmitRequest from '../../../helpers/SubmitRequest';
 import ManufacturingGoalDetails from './ManufacturingGoalDetails';
-import ItemStore from '../../helpers/ItemStore';
+import ItemStore from '../../../helpers/ItemStore';
 const jwt_decode = require('jwt-decode');
 
 class ManufacturingGoalsBox extends Component {

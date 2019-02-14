@@ -92,9 +92,9 @@ export default class ItemSearchModifyList extends React.Component {
     determineButtonDisplay(state, option) {
         switch (option) {
             case Constants.details_add:
-                return (state.value === '' || state.qty <= 0)
+                return (state.value === '' || (state.qty <= 0 && (this.props.simple == undefined || this.props.simple == false)))
             case Constants.details_remove:
-                return (state.value === '' || state.qty <= 0)
+                return (state.value === '' || (state.qty <= 0 && (this.props.simple == undefined || this.props.simple == false)))
         }
     }
 
@@ -109,12 +109,16 @@ export default class ItemSearchModifyList extends React.Component {
                 multi = {false}
                 >
                 </Filter>
-                <Label>{Constants.details_modify_ingredient_quantities}</Label>
-                <Input 
-                    type="text"
-                    value={this.state.qty}
-                    onChange={(e) => this.onQuantityChange(e)}
-                />
+                {this.props.simple != undefined && this.props.simple ? <div></div> : 
+                (<div>
+                    <Label>{Constants.details_modify_ingredient_quantities}</Label>
+                    <Input 
+                        type="text"
+                        value={this.state.qty}
+                        onChange={(e) => this.onQuantityChange(e)}
+                    />
+                </div>)
+                }
                 {this.props.options.map(opt => 
                     <Button 
                         disabled={this.determineButtonDisplay(this.state, opt)}
