@@ -23,7 +23,8 @@ export default class IngredientsViewSimple extends React.Component {
             table_properties: [...table_properties, 'quantity'],
             selected_items: [],
             currentPage: 0,
-            pageSize: 2,
+            previousPage: 0,
+            pageSize: 20,
             pagesCount: 0,
             itemCount: 0,
             currItems: [],
@@ -65,7 +66,9 @@ export default class IngredientsViewSimple extends React.Component {
             currItems: cItems,
             currQtys: cQtys
         }); 
+    
     }
+    
 
 
     onSort = () => {}

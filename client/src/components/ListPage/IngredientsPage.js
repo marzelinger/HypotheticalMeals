@@ -18,6 +18,8 @@ import TablePagination from './TablePagination'
 import DependencyReport from "../export/DependencyReport";
 import ExportSimple from '../export/ExportSimple';
 
+const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
+
 
 
 export default class IngredientsPage extends React.Component {
@@ -49,7 +51,8 @@ export default class IngredientsPage extends React.Component {
             modal: false,
             simple: props.simple || false,
             currentPage: 0,
-            pageSize: 7,
+            previousPage: 0,
+            pageSize: 20,
             pagesCount: 0,
             filters: {
                 'keyword': '',
@@ -65,9 +68,7 @@ export default class IngredientsPage extends React.Component {
         this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
-        this.setNumberPages();
-
-
+        this.setInitPages();
     }
 
     toggleModal(){
@@ -83,8 +84,6 @@ export default class IngredientsPage extends React.Component {
         }
         await this.loadDataFromServer();
         await this.updateSkuCounts();
-        this.setNumberPages();
-
     }
 
     async componentDidUpdate (prevProps, prevState) {
@@ -92,7 +91,6 @@ export default class IngredientsPage extends React.Component {
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }
-        //this.setNumberPages();
     }
 
     updateDataState = async() => {
@@ -106,11 +104,11 @@ export default class IngredientsPage extends React.Component {
         var final_sku_filter = this.state.filters['skus'].join(',');
         if (final_keyword_filter === '') final_keyword_filter = '_';
         if (final_sku_filter === '') final_sku_filter = '_';
-
-            var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-                this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
-                var resALL = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-                    this.state.sort_field, final_sku_filter, final_keyword_filter, 0, allData.data.length);
+        var resALL = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
+            this.state.sort_field, final_sku_filter, final_keyword_filter, 0, 0);
+        await this.checkCurrentPageInBounds(resALL);
+        var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
+            this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
         if (res === undefined || !res.success) {
             res.data = [];
             resALL.data = [];
@@ -122,10 +120,44 @@ export default class IngredientsPage extends React.Component {
         })
         this.updateDataState();
     }
+    
+    async checkCurrentPageInBounds(dataResAll){
+        var prev = this.state.previousPage;
+        //there is no data. update the current index stuff
+        if (dataResAll === undefined || !dataResAll.success) {
+            this.setState({
+                currentPage: 0,
+                previousPage: prev,
+                pagesCount: 0,
+            });
+        }
+        else{
+            //there is some sort of data response
+            var dataLength = dataResAll.data.length;
+            var curCount = Math.ceil(dataLength/Number(this.state.pageSize));
+            if(curCount != this.state.pagesCount){
+                //number pages changed.
+                if(this.state.currentPage>= curCount){
+                    //previous index out of bounds. want to set the index to be 0.
+                    this.setState({
+                        currentPage: 0,
+                        previousPage: prev,
+                        pagesCount: curCount,
+                    }); 
+                }
+                else{
+                    //the number of pages has changed but the index is still in bounds.
+                    //don't need to page change here.
+                    this.setState({
+                        pagesCount: curCount,
+                    }); 
+                }
+            }
+        }
+
+    }
 
     async updateSkuCounts() {
-        console.log('this is the data in updateSkuCounts: '+this.state.data);
-
         let data = this.state.data.slice();
         await data.map(async (item) => {
                        let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', this.state.currentPage, this.state.pageSize,'_');
@@ -136,7 +168,6 @@ export default class IngredientsPage extends React.Component {
             }
         );
         this.setState({ data: data })
-        // MAYBE NEED TO ADD SOMETHING TO RECALCULATE PAGES?
     }
 
     onFilterValueChange = (e, value, filterType) => {
@@ -147,15 +178,16 @@ export default class IngredientsPage extends React.Component {
         this.setState({filters: filters, filterChange: true}) ;
     }
 
-    async setNumberPages(){
+    async setInitPages(){
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        console.log(allData);
         var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
         this.setState({
             currentPage: 0,
+            previousPage: 0,
             pagesCount: curCount,
         }); 
     }
+
 
     handlePageClick = (e, index) => {
         e.preventDefault();
@@ -190,12 +222,19 @@ export default class IngredientsPage extends React.Component {
         var item = await ItemStore.getEmptyItem(this.state.page_name);
         const newData = this.state.data.slice();
         newData.push(item);
+
+        //for the pagination stuff
+        const newExportData = this.state.exportData.slice();
+        newExportData.push(item);
+
         this.setState({ 
             data: newData,
+            exportData: newExportData,
             detail_view_item: item,
             detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
         })
         this.toggleModal();
+        this.loadDataFromServer();
     }
 
     onTableOptionSelection = (e, opt) => {
@@ -222,14 +261,22 @@ export default class IngredientsPage extends React.Component {
         rowIndexes.forEach( index => {
             newState.push(this.state.data[index]);
         });
-        this.setState({ selected_items: newState, selected_indexes: rowIndexes});
+        //this.setState({ selected_items: newState, selected_indexes: rowIndexes});
     };
 
     onDetailViewSelect = (event, item) => {
-        this.setState({ 
+        if(currentUserIsAdmin().isValid){
+            this.setState({ 
             detail_view_item: item ,
             detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
-        });
+            });
+        }
+        else{
+            this.setState({ 
+                detail_view_item: item ,
+                detail_view_options: [Constants.details_cancel]
+                });
+        }
         this.toggleModal();
     };
 
@@ -237,6 +284,7 @@ export default class IngredientsPage extends React.Component {
         console.log(item)
         var res = {};
         var newData = this.state.data.splice();
+        //
         switch (option) {
             case Constants.details_create:
                 newData.push(item);

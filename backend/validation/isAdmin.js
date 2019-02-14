@@ -2,7 +2,7 @@ const isEmpty = require("is-empty");
 
 module.exports = function isAdmin(user){
     let errors = {};
-    console.log("this is the user being logged in: "+user);
+    ///console.log("this is the user being logged in: "+user);
     if (user == null){    
       errors.isEmpty = "This user is null."
     return {
@@ -10,8 +10,8 @@ module.exports = function isAdmin(user){
       isValid: isEmpty(errors)
   }
   }
-  console.log("user.privileges is: "+user.privileges);
-  console.log("user.privileges.includes is: "+user.privileges.includes('Admin'));
+  //console.log("user.privileges is: "+user.privileges);
+  //console.log("user.privileges.includes is: "+user.privileges.includes('Admin'));
 
 
   if (user.privileges.includes('Admin')){

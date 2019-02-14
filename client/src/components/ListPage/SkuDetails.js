@@ -16,6 +16,8 @@ import IngredientsViewSimple from './IngredientsViewSimple'
 import ItemSearchInput from './ItemSearchInput';
 import ItemSearchModifyList from './ItemSearchModifyList';
 import SubmitRequest from '../../helpers/SubmitRequest';
+const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
+
 
 
 export default class SKUDetails extends React.Component {
@@ -71,12 +73,14 @@ export default class SKUDetails extends React.Component {
     }
 
     onSelectProductLine = (pl) => {
-        var newItem = this.state.item;
-        newItem['prod_line'] = pl._id;
-        this.setState({
-            item: newItem,
-            prod_line_item: pl
-        })
+        if(currentUserIsAdmin().isValid){
+            var newItem = this.state.item;
+            newItem['prod_line'] = pl._id;
+            this.setState({
+                item: newItem,
+                prod_line_item: pl
+            })
+        }
     }
 
     onPropChange = (value, item, prop) => {
@@ -85,22 +89,25 @@ export default class SKUDetails extends React.Component {
     };
 
     onModifyList = (option, value, qty) => {
-        var item = Object.assign({}, this.state.item);
-        switch (option) {
-            case Constants.details_add:
-                this.addIngredient(item, value, qty);
-                break;
-            case Constants.details_remove:
-                this.removeIngredient(item, value, qty);
-                break;
+        if(currentUserIsAdmin().isValid){
+            var item = Object.assign({}, this.state.item);
+            switch (option) {
+                case Constants.details_add:
+                    this.addIngredient(item, value, qty);
+                    break;
+                case Constants.details_remove:
+                    this.removeIngredient(item, value, qty);
+                    break;
+            }
+            this.setState({ 
+                item: item,
+                item_changed: true 
+            })
         }
-        this.setState({ 
-            item: item,
-            item_changed: true 
-        })
     }
 
     removeIngredient(item, value, qty) {
+        
         let ind = -1;
         qty = parseInt(qty);
         item.ingredients.map((ing, index) => {
@@ -181,7 +188,8 @@ export default class SKUDetails extends React.Component {
                         value={ this.state.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
                         onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
-                    />
+                        disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
+                   />
                 </FormGroup>));
         }
         return;
@@ -200,12 +208,14 @@ export default class SKUDetails extends React.Component {
                     item_type={Constants.prod_line_label}
                     invalid_inputs={this.state.invalid_inputs}
                     handleSelectItem={this.onSelectProductLine}
+                    disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
                 />
                 <ItemSearchModifyList
                     api_route={Constants.ingredients_page_name}
                     item_type={Constants.details_modify_ingredient}
                     options={[Constants.details_add, Constants.details_remove]}
                     handleModifyList={this.onModifyList}
+                    disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
                 />
                 <IngredientsViewSimple 
                     sku={this.state.item} 

@@ -32,7 +32,6 @@ class Landing extends Component {
 
   change(){
     var response = this.props.getAllUsers();
-
     this.setState = {
       user: 0
     }
