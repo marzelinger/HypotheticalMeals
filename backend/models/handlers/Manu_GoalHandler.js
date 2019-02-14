@@ -83,6 +83,41 @@ class Manu_GoalHandler{
         }
     }
 
+    static async getManufacturingGoalByUser(req, res){
+        try {
+            var target_id = req.params.manu_goal_id;
+            var user_id = req.params.user_id;
+            let to_return = await Manu_Goal.find({ _id : target_id, user:user_id});
+
+            if(to_return.length == 0) return res.json({success: false, error: '404'});
+            return res.json({ success: true, data: to_return});
+        } catch (err){
+            return res.json({ success: false, error: err});
+        }
+    }
+
+    static async getManufacturingGoalByFilter(req, res){
+        try {
+            var name_substr = req.params.name_substr;
+            var user_substr = req.params.user_substr;
+            var user = req.params.user;
+            var and_query = [];
+            if(name_substr != '_'){
+                and_query.push({name:{ $regex: name_substr , $options: "$i"}})
+            }
+            if(user_substr != '_'){
+                and_query.push({user:{ $regex: user_substr , $options: "$i"}})
+            }
+            if(user != '_'){
+                and_query.push({user: user});
+            }
+            let to_return = and_query.length == 0 ? await Manu_Goal.find() : await Manu_Goal.find({$and: and_query});
+            return res.json({ success: true, data: to_return});
+        } catch (err){
+            return res.json({ success: false, error: err});
+        }
+    }
+
     static async getManufacturingGoalByIDSkus(req, res){
         try {
             var target_id = req.params.manu_goal_id;
