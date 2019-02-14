@@ -5,12 +5,13 @@ import ItemStore from './../client/src/helpers/ItemStore';
 
 const csv = require('csvtojson');
 const fs = require('fs');
+const checkdigit = require('checkdigit');
 
 
 export default class CSV_parser{
 
     static async parseProdLineCSV (req, res){
-        try{
+      //  try{
             // Extracts all prod lines from database
             var db_prod_lines = new Set();
             let all_prod_lines = await Prod_Line.find()
@@ -18,31 +19,25 @@ export default class CSV_parser{
                 db_prod_lines.add(prod_line.name);
             });
 
-            // Converts the CSV input to JSON
+            // Converts the CSV input to JSON and checks to see at least one entry exists
             var prod_lines_to_add = new Set();
             const jsonArray = await csv().fromFile(req.file.path);
             fs.unlinkSync(req.file.path);
-
             if(jsonArray.length == 0){
                 return res.json({ success: false, empty: true});
             }
             
             // Checks to see if the CSV column names are specified correctly
-            var count = 0;
-            for(var key in jsonArray[0]){
-                if(key != "Name") {
-                    return res.json({ success: false, header: 1, expected: "Name", actual: key});
-                }
-                count = count + 1;
-            }
-            if(count != 1) {
-                return res.json({ success: false, requiredFields:1, numFields: (count-1)});
+            var requiredNumFields = 1;
+            var columnsObj = await this.checkColumns(jsonArray[0], ["Name"], requiredNumFields);
+            if(columnsObj.success == false){
+                return await this.indicateColumnFailure(res, columnsObj, requiredNumFields);
             }
 
-            var added = 0;
-            var ignored = 0;
             // For each CSV to potentially add, check if it would cause a collision
             // If it doesn't, add it to a set indicating it will be added
+            var added = 0;
+            var ignored = 0;
             for(var i = 0; i < jsonArray.length; i++){
                 var obj = jsonArray[i];
                 if(db_prod_lines.has(obj.Name)){
@@ -76,9 +71,54 @@ export default class CSV_parser{
             return res.json({ success: true, added: added, ignored: ignored, 
                             data: prod_lines_added, showImport: true,
                             ignored_data: prod_lines_ignored});
-        } catch (err){
-            fs.unlinkSync(req.file.path);
-            return res.json({ success: false, error: 'Catch all error'});
+    }
+
+    static async checkColumns(obj, correctColumnNames, correctColumnNum){
+        var toReturn = {};
+        var count = 0;
+        console.log(obj);
+        for(var key in obj){
+            console.log(key);
+            console.log(count);
+            if(count >= correctColumnNum){
+                toReturn.success = false;
+                toReturn.colCountIncorrect = true;
+                return toReturn;
+            }
+            else if(key != correctColumnNames[count]){
+                toReturn.success = false;
+                toReturn.colHeadersIncorrect = true;
+                toReturn.colIssue = count;
+                toReturn.actual = key;
+                toReturn.expected = correctColumnNames[count];
+                return toReturn;
+            }
+            count++;
+        }
+        console.log(count);
+        console.log(correctColumnNum);
+        if(count != correctColumnNum){
+            console.log('gest here');
+            toReturn.success = false;
+            toReturn.colCountIncorrect = true;
+            return toReturn;
+        }
+        toReturn.success = true;
+        return toReturn;
+    }
+
+    static async indicateColumnFailure(res, columnsObj, requiredNumFields){
+        if(columnsObj.colCountIncorrect == true) {
+            return res.json({ success: false, 
+                              incorrectNumHeaders: true,
+                              requiredFields: requiredNumFields})
+        }
+        else if(columnsObj.colHeadersIncorrect == true){
+            return res.json({ success: false,
+                              incorrectHeaders: true, 
+                              header: columnsObj.colIssue+1, 
+                              actual:  columnsObj.actual,
+                              expected: columnsObj.expected});
         }
     }
 
@@ -107,104 +147,30 @@ export default class CSV_parser{
                 return res.json({ success: false, empty: true});
             }
 
-            // Checks to see if the CSV column names are specified correctly
-            var count = 0;
-            for(var key in jsonArray[0]){
-                if(count == 0 && key != "SKU#") return res.json({ success: false, header: 1, expected:"SKU#", actual: key});
-                else if(count == 1 && key != "Name") return res.json({ success: false, header: 2, expected:"Name", actual: key});
-                else if(count == 2 && key != "Case UPC") return res.json({ success: false, header: 3, expected:"Case UPC", actual: key});
-                else if(count == 3 && key != "Unit UPC") return res.json({ succes: false, header: 4, expected:"Unit UPC", actual: key});
-                else if(count == 4 && key != "Unit size") return res.json({ success: false, header: 5, expected:"Unit size", actual: key});
-                else if(count == 5 && key != "Count per case") return res.json({ success: false, header: 6, expected:"Count per case", actual: key});
-                else if(count == 6 && key != "Product Line Name") return res.json({ success: false, header: 7, expected:"Product Line Name", actual: key});
-                else if(count == 7 && key != "Comment") return res.json({ success: false, header: 8, expected:"Comment", actual: key});
-                count++;
+            var requiredNumFields = 8;
+            var columnsObj = await this.checkColumns(jsonArray[0], ["SKU#", "Name", "Case UPC", "Unit UPC", "Unit size", "Count per case", "Product Line Name", "Comment"], requiredNumFields);
+            if(columnsObj.success == false){
+                return this.indicateColumnFailure(res, columnsObj, requiredNumFields);
             }
-            if(count != 8) return res.json({ success: false, requiredFields: 8, numFields: (count-1)});
 
             // Iterates over each SKU to add and checks if any collisions are present
             // and if all the product lines actually exist
-            
-            var skus_to_add = new Set();
-            var skus_to_add_names = new Set();
+            var skus_to_add_num = new Set();
+            var skus_to_add_caseUPC = new Set();
             var skus_to_update = new Set();
             var skus_to_ignore = new Set();
             for(var i = 0; i < jsonArray.length; i++){
                 var obj = jsonArray[i];
                 //Validate required fields
-                if(!obj["Name"] || !obj["Case UPC"] || !obj["Unit UPC"] ||
-                   !obj["Unit size"] || !obj["Count per case"] || !obj["Product Line Name"]) {
-                       return res.json({ success: false, incompleteEntry: i})
+
+                var dataValidationObj = await this.validateDataSKUs(obj);
+                if(dataValidationObj.success == false){
+                    return await this.indicateSKUDataFailure(res, dataValidationObj, i+2);
                 }
-
-                if(obj["SKU#"] == "\"\"" || !obj["SKU#"]) obj["SKU#"] = ItemStore.getUniqueNumber(all_skus);
-
-                //TODO check if any of the fields are null, if they are and they're autogenerable, generate, if not return an error
                 
-                // DATA VALIDATION
-                if(obj["Name"].length < 1 || obj["Name"].length > 32) return res.json({success: false, badData: i});
-
-                var isNum1 = /^\d+$/.test(obj["SKU#"]);
-                if(!isNum1) return res.json({ success: false, badData: i});
-
-                if(obj["Case UPC"].length != 12) return res.json({ success: false, badData: i});
-                var isNum2 = /^\d+$/.test(obj["Unit UPC"]);
-                if(!isNum2) return res.json({ success: false, badData: i});
-                var firstChar = obj["Case UPC"].substring(0,1);
-                if(firstChar != '0' && firstChar != '1' && firstChar !='6' && firstChar != '7' && firstChar !='8' && firstChar != '9') return res.json({ success: false, badData: i});
-                
-                if(obj["Unit UPC"].length != 12) return res.json({ success4: false, badData: i});
-                var isNum3 = /^\d+$/.test(obj["Case UPC"]);
-                if(!isNum3) return res.json({ success: false, badData: i});
-                var firstChar2 = obj["Unit UPC"].substring(0,1);
-                if(firstChar2 != '0' && firstChar2 != '1' && firstChar2 !='6' && firstChar2 != '7' && firstChar2 !='8' && firstChar2 != '9') return res.json({ success: false, badData: i});
-
-                var isNum4 =  /^\d+$/.test(obj["Count per case"]);
-                if(!isNum4) return res.json({ success: false, badData: i});
-
-                // If the specified product line doesn't exist, indicate to the user
-                if(!db_prod_lines.has(obj["Product Line Name"])) {
-                    return res.json({ success: false, row: i+1, prod_line_name: obj["Product Line Name"]});
-                } 
-                // Check for a duplicate in the same CSV file
-                else if(skus_to_add.has(obj["SKU#"]) || skus_to_add_names.has(obj["Name"])){
-                    return res.json({ success: false, duplicate: i});
-                }  
-                // If a unique identifier of the object is in the db but the primary key is not, return an error
-                else if( db_caseUPCs.has(Number(obj["Case UPC"])) && !db_skus.has(Number(obj["SKU#"])) ){
-                    return res.json({ success: false, collision: i});
-                } 
-                // Checking for collisions with the primary key
-                else if(db_skus.has(Number(obj["SKU#"]))){
-                    var db_sku_arr= await SKU.find({ num : Number(obj["SKU#"]) });
-                    var curr_prod_line_arr = await Prod_Line.find({ name: obj["Product Line Name"] });
-                    // If it is a duplicate from something in the database, ignore it
-                    var db_sku = db_sku_arr[0];
-                    var curr_prod_line = curr_prod_line_arr[0];
-                    if(db_sku.name == obj["Name"] &&
-                    db_sku.num == obj["SKU#"] &&
-                    db_sku.case_upc == obj["Case UPC"] &&
-                    db_sku.unit_upc == obj["Unit UPC"] &&
-                    db_sku.unit_size == obj["Unit size"] &&
-                    db_sku.cpc == obj["Count per case"] &&
-                    db_sku.prod_line._id + "" == curr_prod_line._id + "" &&
-                    db_sku.comment == obj["Comment"]) {
-                        skus_to_ignore.add(obj["SKU#"])
-                    }
-                    // If its an ambiguous collision, indicate to the user
-                    else if(db_skus.get(Number(obj["SKU#"])) != obj["Case UPC"] && db_caseUPCs.has(Number(obj["Case UPC"]))) {
-                        return res.json({ success: false, collision: i});
-                    }
-                    // Otherwise indicate that this record will be added and use the *_to_add* to check for duplicates in the same CSV
-                    else {
-                        skus_to_update.add(obj["SKU#"]);
-                        skus_to_add.add(obj["SKU#"]);
-                        skus_to_add_names.add(obj.Name);
-                    }
-                }
-                else{
-                    skus_to_add.add(obj["SKU#"]);
-                    skus_to_add_names.add(obj["Name"]);
+                var collisionObj = await this.searchForSKUCollision(obj, db_prod_lines, skus_to_add_num, skus_to_add_caseUPC, db_skus, db_caseUPCs, skus_to_update, skus_to_ignore)
+                if(collisionObj.success == false){
+                    return await this.indicateSKUCollisionFailure(res, collisionObj, i+2);
                 }
             }
 
@@ -222,63 +188,21 @@ export default class CSV_parser{
                 var obj = jsonArray[i];
                 if(skus_to_update.has(obj["SKU#"])){
                     updated = updated + 1;
-                    var old_sku = await SKU.find({ num: Number(obj["SKU#"])});
-                    obj.name = obj.Name;
-                    obj.num = obj["SKU#"];
-                    obj.case_upc = obj["Case UPC"];
-                    obj.unit_upc = obj["Unit UPC"];
-                    obj.unit_size = obj["Unit size"];
-                    obj.cpc = obj["Count per case"];
-                    let prod_line = await Prod_Line.find({ name : obj["Product Line Name"]});
-                    obj.prod_line = prod_line[0]._id;
-                    obj.comment = obj["Comment"];
-                    delete obj["Name"];
-                    delete obj["SKU#"];
-                    delete obj["Case UPC"];
-                    delete obj["Unit UPC"];
-                    delete obj["Unit size"];
-                    delete obj["Count per case"];
-                    delete obj["Product Line Name"];
-                    delete obj["Comment"];
-                    skus_to_update_new.push(obj);
+                    var old_sku = await SKU.find({ num: obj["SKU#"]});
+                    var reformattedSKUS = reformatSKU(obj, obj);
+                    skus_to_update_new.push(reformattedSKUS[0]);
                     skus_to_update_old.push(old_sku[0]);
                 }
-                else if(skus_to_add.has(obj["SKU#"])){
+                else if(skus_to_add_num.has(obj["SKU#"])){
                     added = added + 1;
                     var sku = new SKU();
-                    sku.name = obj.Name;
-                    sku.num = obj["SKU#"];
-                    sku.case_upc = obj["Case UPC"];
-                    sku.unit_upc = obj["Unit UPC"];
-                    sku.unit_size = obj["Unit size"];
-                    let prod_line = await Prod_Line.find({ name : obj["Product Line Name"]});
-                    sku.prod_line = prod_line[0]._id;
-                    sku.cpc = Number(obj["Count per case"]);
-                    sku.comment = obj["Comment"];
-                    intermediate_skus_added.push(sku);
-                    //let new_sku = await sku.save();
-                    //skus_added.push(new_sku);
+                    var reformattedSKUS = reformatSKU(sku, obj);
+                    intermediate_skus_added.push(reformattedSKUS[0]);
                 }
                 else {
-                    obj.name = obj.Name;
-                    obj.num = obj["SKU#"];
-                    obj.case_upc = obj["Case UPC"];
-                    obj.unit_upc = obj["Unit UPC"];
-                    obj.unit_size = obj["Unit size"];
-                    obj.cpc = obj["Count per case"];
-                    let prod_line = await Prod_Line.find({ name : obj["Product Line Name"]});
-                    obj.prod_line = prod_line[0]._id;
-                    obj.comment = obj["Comment"];
-                    delete obj["Name"];
-                    delete obj["SKU#"];
-                    delete obj["Case UPC"];
-                    delete obj["Unit UPC"];
-                    delete obj["Unit size"];
-                    delete obj["Count per case"];
-                    delete obj["Product Line Name"];
-                    delete obj["Comment"];
-                    skus_to_ignore_arr.push(obj);
-                    ignored = ignored + 1;;
+                    ignored = ignored + 1;
+                    var reformattedSKUS = reformatSKU(obj, obj);
+                    skus_to_ignore_arr.push(reformattedSKUS[0]);
                 }
             }  
 
@@ -300,25 +224,179 @@ export default class CSV_parser{
         }*/
     }
 
-   /* static async compareSKUs(db_sku, obj){
-        return (db_sku.name == obj["Name"] &&
-                db_sku.num == obj["SKU#"] &&
-                db_sku.case_upc == obj["Case UPC"] &&
-                db_sku.unit_upc == obj["Unit UPC"] &&
-                db_sku.unit_size == obj["Unit size"] &&
-                db_sku.cpc == obj["Count per case"] &&
-                db_sku.prod_line == obj["Product Line Name"] &&
-                db_sku.comment == obj["Comment"]);
+    static async indicateSKUDataFailure(res, dataValidationObj, row){
+        if(dataValidationObj.missingRequiredField){
+            console.log('1');
+            return res.json({ success: false,
+                              badData: row});
+        } else if(dataValidationObj.nameIssue){
+            console.log('2');
+            return res.json({ success: false,
+                badData: row});
+        } else if(dataValidationObj.skuNumIssue){
+            console.log('3');
+            return res.json({ success: false,
+                badData: row});
+        } else if(dataValidationObj.caseUPCIssue){
+            console.log('4');
+            return res.json({ success: false,
+                badData: row});
+        } else if(dataValidationObj.unitUPCIssue){
+            console.log('5');
+            return res.json({ success: false,
+                badData: row});
+        } else if(dataValidationObj.cpcIssue){
+            console.log('6');
+            return res.json({ success: false,
+                badData: row});
+        }
     }
 
-    static async isAmbiguousCollisionSKUs(sku_to_add, db_sku_num_caseUPC, db_sku_caseUPC){
-        var sku_to_add_num = sku_to_add["SKU#"];
-        var sku_to_add_caseUPC = sku_to_add["Case UPC"];
-        if(db_sku_num_caseUPC.get(sku_to_add_num) != sku_to_add_caseUPC && db_sku_caseUPC.has(sku_to_add_caseUPC)) {
-            return true;
+    static async validateDataSKUs(obj) {
+        var toReturn = {};
+        // Checks to make sure we have all required fields
+        if(!obj["Name"] || !obj["Case UPC"] || !obj["Unit UPC"] ||
+        !obj["Unit size"] || !obj["Count per case"] || !obj["Product Line Name"]) {
+            toReturn.success = false;
+            toReturn.missingRequiredField = true;
+            return toReturn;
         }
-        return false;
-    }*/
+
+        // Auto generates SKU# if left blank
+        if(obj["SKU#"] == "\"\"" || !obj["SKU#"]) obj["SKU#"] = ItemStore.getUniqueNumber(all_skus);
+        if(obj["Name"].length < 1 || obj["Name"].length > 32) {
+            toReturn.success = false;
+            toReturn.nameIssue = true;
+            return toReturn;
+        }
+        var isNum1 = /^\d+$/.test(obj["SKU#"]);
+        if(!isNum1) {
+            toReturn.success = false;
+            toReturn.skuNumIssue = true;
+            return toReturn;
+        }
+        var isCheckSumCase = checkdigit.mod10.isValid('036000241457');
+        console.log(isCheckSumCase);
+        console.log(obj["Case UPC"]);
+        var isNum3 = /^\d+$/.test(obj["Case UPC"]);
+        var firstCharCase = obj["Case UPC"].substring(0,1);
+        if((obj["Case UPC"].length != 12) ||
+           (!isNum3) ||
+           (!isCheckSumCase) ||
+           (firstCharCase != '0' && firstCharCase != '1' && firstCharCase !='6' && firstCharCase != '7' && firstCharCase !='8' && firstCharCase != '9')) {
+            toReturn.success = false;
+            toReturn.caseUPCIssue = true;
+            return toReturn;
+        }
+        var isCheckSumUnit = checkdigit.mod10.isValid(obj["Unit UPC"]);
+        var isNum2 = /^\d+$/.test(obj["Unit UPC"]);
+        var firstCharUnit = obj["Unit UPC"].substring(0,1);
+        if((obj["Unit UPC"].length != 12) || 
+           (!isNum2) || 
+           (!isCheckSumUnit) ||
+           (firstCharUnit != '0' && firstCharUnit != '1' && firstCharUnit !='6' && firstCharUnit != '7' && firstCharUnit !='8' && firstCharUnit != '9')){
+            toReturn.success = false;
+            toReturn.unitUPCIssue = true;
+            return toReturn;
+        }
+        var isNum4 =  /^\d+$/.test(obj["Count per case"]);
+        if(!isNum4){
+            toReturn.success = false;
+            toReturn.cpcIssue = true;
+            return toReturn;
+        }
+        toReturn.success = true;
+        return toReturn;
+    }
+
+    static async searchForSKUCollision(obj, db_prod_lines, skus_to_add_num, skus_to_add_caseUPC, db_skus, db_caseUPCs, skus_to_update, skus_to_ignore) {
+        var toReturn = {};
+        // If the specified product line doesn't exist, indicate to the user
+        if(!db_prod_lines.has(obj["Product Line Name"])) {
+            toReturn.success = false;
+            toReturn.prod_line_error = true;
+            toReturn.prod_line_name = obj["Product Line Name"];
+            return toReturn;
+        } 
+        // Check for a duplicate in the same CSV file
+        if(skus_to_add_num.has(obj["SKU#"]) || skus_to_add_caseUPC.has(obj["Case UPC"])){
+            toReturn.success = false;
+            toReturn.duplicate = true;
+            return toReturn;
+        }  
+        // If a unique identifier of the object is in the db but the primary key is not, return an error
+        if( db_caseUPCs.has(obj["Case UPC"]) && !db_skus.has(obj["SKU#"]) ){
+            toReturn.success = false;
+            toReturn.ambiguousCollision = true;
+            return toReturn;
+        } 
+        // Checking for collisions with the primary key
+        else if(db_skus.has(obj["SKU#"])){
+            var db_sku_arr= await SKU.find({ num : obj["SKU#"] });
+            var curr_prod_line_arr = await Prod_Line.find({ name: obj["Product Line Name"] });
+            var db_sku = db_sku_arr[0];
+            var curr_prod_line = curr_prod_line_arr[0];
+
+            if(db_sku.name == obj["Name"] &&
+            db_sku.num == obj["SKU#"] &&
+            db_sku.case_upc == obj["Case UPC"] &&
+            db_sku.unit_upc == obj["Unit UPC"] &&
+            db_sku.unit_size == obj["Unit size"] &&
+            db_sku.cpc == obj["Count per case"] &&
+            db_sku.prod_line._id + "" == curr_prod_line._id + "" &&
+            db_sku.comment == obj["Comment"]) {
+                skus_to_ignore.add(obj["SKU#"])
+            }
+            // If its an ambiguous collision, indicate to the user
+            else if(db_skus.get(obj["SKU#"]) != obj["Case UPC"] && db_caseUPCs.has(obj["Case UPC"])) {
+                toReturn.success = false;
+                toReturn.ambiguousCollision = true;
+                return toReturn;
+            }
+            // Otherwise indicate that this record will be added and use the *_to_add* to check for duplicates in the same CSV
+            else {
+                skus_to_update.add(obj["SKU#"]);
+                skus_to_add_num.add(obj["SKU#"]);
+                skus_to_add_caseUPC.add(obj.Name);
+            }
+        }
+        else{
+            skus_to_add_num.add(obj["SKU#"]);
+            skus_to_add_caseUPC.add(obj["Name"]);
+        }
+        toReturn.success = true;
+        return toReturn;
+    }
+
+    static async indicateSKUCollisionFailure(res, collisionObj, row){
+        if(collisionObj.prod_line_error == true) return res.json({ success: false, row: row+1, prod_line_name: collisionObj.prod_line_name,});
+        else if(collisionObj.duplicate == true) return res.json({ success: false, duplicate: row})
+        else if(collisionObj.ambiguousCollision == true) return res.json({ success: false, collision: row})
+    }
+
+    static async reformatSKU(objNew, objOld){
+        objNew.name = objOld.Name;
+        objNew.num = objOld["SKU#"];
+        objNew.case_upc = objOld["Case UPC"];
+        objNew.unit_upc = objOld["Unit UPC"];
+        objNew.unit_size = objOld["Unit size"];
+        objNew.cpc = objOld["Count per case"];
+        let prod_line = await Prod_Line.find({ name : objOld["Product Line Name"]});
+        objNew.prod_line = prod_line[0]._id;
+        objNew.comment = objOld["Comment"];
+        delete objOld["Name"];
+        delete objOld["SKU#"];
+        delete objOld["Case UPC"];
+        delete objOld["Unit UPC"];
+        delete objOld["Unit size"];
+        delete objOld["Count per case"];
+        delete objOld["Product Line Name"];
+        delete objOld["Comment"];
+        var toReturn = [];
+        toReturn[0] = objNew;
+        toReturn[1] = objOld;
+        return toReturn;
+    }
 
     static async parseUpdateSKU(req, res){
         var updateArray = JSON.parse(req.body.updates);
@@ -367,18 +445,11 @@ export default class CSV_parser{
                 return res.json({ success: false, empty: true});
             }
             
-            // Checks to see if the CSV column names are specified correctly
-            var count = 0;
-            for(var key in jsonArray[0]){
-                if(count == 0 && key != "Ingr#") return res.json({ success: false, header: 1, actual: key, expected: "Ingr#"});
-                else if(count == 1 && key != "Name") return res.json({ success: false, header: 2, actual: key, expected: "Name"});
-                else if(count == 2 && key != "Vendor Info") return res.json({ success: false, header: 3, actual: key, expected: "Vendor Info"});
-                else if(count == 3 && key != "Size") return res.json({ succes: false, header: 4, actual: key, expected: "Size"});
-                else if(count == 4 && key != "Cost") return res.json({ success: false, header: 5, actual: key, expected: "Cost"});
-                else if(count == 5 && key != "Comment") return res.json({ success: false, header: 6, actual: key, expected: "Comment"});
-                count++;
+            var requiredNumFields = 6;
+            var columnsObj = await this.checkColumns(jsonArray[0], ["Ingr#", "Name", "Vendor Info", "Size", "Cost", "Comment"], requiredNumFields);
+            if(columnsObj.success == false){
+                return await this.indicateColumnFailure(res, columnsObj, requiredNumFields);
             }
-            if(count != 6) return res.json({ success: false, requiredFields: 6, numFields: (count-1)});
 
             // For each entry, check if there is a collision with whats in the database
             // If there isn't any, indicate that we need to add this entry
@@ -389,49 +460,15 @@ export default class CSV_parser{
             for(var i = 0; i < jsonArray.length; i++){
                 var obj = jsonArray[i];
 
-                // TODO: autogenerate any fields that are "" if autogenerable
-
-                if(!obj["Name"] || !obj["Size"] || !obj["Cost"]) return res.json({ success: false, incompleteEntry: i});
-                if(obj["Ingr#"] == "\"\"" || !obj["Ingr#"]) obj["Ingr#"] = ItemStore.getUniqueNumber(all_ingredients);
-
-                var isNum = /^\d+$/.test(obj["Ingr#"]);
-                if(!isNum) return res.json({ success: false, badData: i});
-
-                var isValid = obj["Cost"].search(/^\$?\d+(,\d{3})*(\.\d*)?$/) >= 0;
-                if(!isValid) return res.json({ success: false, badData: i});
-
-                // Check for a duplicate in the same CSV file
-                if(ingrs_to_add_nums.has(Number(obj["Ingr#"])) || ingrs_to_add_names.has(obj["Name"])) {
-                    return res.json({ success: false, duplicate: i});
-                } // If a unique identifier of the object is in the db but the primary key is not, return an error
-                else if(db_ingredients_name.has(obj["Name"]) && !db_ingredients_nums.has(Number(obj["Ingr#"]))){
-                    return res.json({ success: false, collision: i});
-                // Check for a collision based on the primary key
-                } else if(db_ingredients_nums.has(Number(obj["Ingr#"]))) {
-                    var db_ingredient_list = await Ingredient.find({ num : obj["Ingr#"]});
-                    var db_ingredient = db_ingredient_list[0];
-                    // If it is a duplicate from something in the database, ignore it
-                    if(db_ingredient.name == obj["Name"] && 
-                        db_ingredient.num == obj["Ingr#"] &&
-                        db_ingredient.vendor_info == obj["Vendor Info"] &&
-                        db_ingredient.pkg_size == obj["Size"] &&
-                        db_ingredient.pkg_cost == obj["Cost"] &&
-                        db_ingredient.comment == obj["Comment"]){
-                        ingrs_to_ignore.add(obj["Ingr#"]);
-                    } // If it is an ambiguous collision with something in the database, return an error
-                    else if(db_ingredients_nums.get(Number(obj["Ingr#"])) != obj["Name"] && db_ingredients_name.has(obj["Name"])) {
-                        return res.json({ success: false, collision: i})
-                    } // If it is neither, indicate that it will be updated, its added to *_to_add_* to indicate it exists in the file
-                    else {
-                        ingrs_to_update.add(obj["Ingr#"]);
-                        ingrs_to_add_nums.add(obj["Ingr#"]);
-                        ingrs_to_add_names.add(obj["Name"]);
-                    }
-                // If it wasn't a collision or duplicate, then just add it straight to the database
-                } else {
-                    ingrs_to_add_nums.add(obj["Ingr#"]);
-                    ingrs_to_add_names.add(obj["Name"]);
+                var dataValidationObj = await this.validateDataIngredients(obj);
+                if(dataValidationObj.success == false){
+                    return await this.indicateIngrDataFailure(res, dataValidationObj, i+1);
                 }
+
+                var collisionObj = await this.searchForIngrCollision(obj, ingrs_to_add_nums, ingrs_to_add_names, db_ingredients_name, db_ingredients_nums, ingrs_to_update, ingrs_to_ignore);
+                if(collisionObj.success == false){
+                    return await this.indicateIngrCollisionFailure(res, collisionObj, i+1);
+                }  
             }
 
             var added = 0;
@@ -446,46 +483,19 @@ export default class CSV_parser{
                 var obj = jsonArray[i];
                 if(ingrs_to_update.has(obj["Ingr#"])) {
                     updated = updated + 1;
-                    var old_ingr = await Ingredient.find({ num: Number(obj["Ingr#"])});
-                    obj.name = obj.Name;
-                    obj.num = obj["Ingr#"];
-                    obj.vendor_info = obj["Vendor Info"];
-                    obj.pkg_size = obj["Size"];
-                    obj.pkg_cost = Number(obj["Cost"]);
-                    obj.comment = obj["Comment"];
-                    delete obj["Name"];
-                    delete obj["Ingr#"];
-                    delete obj["Vendor Info"];
-                    delete obj["Size"];
-                    delete obj["Cost"];
-                    delete obj["Comment"];
-                    ingrs_to_update_new.push(obj);
+                    var old_ingr = await Ingredient.find({ num: obj["Ingr#"]});
+                    var reformattedIngrs = reformatIngredient(obj, obj);
+                    ingrs_to_update_new.push(reformattedIngrs[0]);
                     ingrs_to_update_old.push(old_ingr[0]);
                 }
                 else if(ingrs_to_add_nums.has(obj["Ingr#"])){
                     added = added + 1;
                     var ingredient = new Ingredient();
-                    ingredient.name = obj.Name;
-                    ingredient.num = obj["Ingr#"];
-                    ingredient.vendor_info = obj["Vendor Info"];
-                    ingredient.pkg_size = obj["Size"]
-                    ingredient.pkg_cost = Number(obj["Cost"]);
-                    ingredient.comment = obj["Comment"];
-                    intermediate_ingrs_added.push(ingredient);
+                    var reformattedIngrs = reformatIngredient(ingredient, obj);
+                    intermediate_ingrs_added.push(reformattedIngrs[0]);
                 } else {
-                    obj.name = obj.Name;
-                    obj.num = obj["Ingr#"];
-                    obj.vendor_info = obj["Vendor Info"];
-                    obj.pkg_size = obj["Size"];
-                    obj.pkg_cost = Number(obj["Cost"]);
-                    obj.comment = obj["Comment"];
-                    delete obj["Name"];
-                    delete obj["Ingr#"];
-                    delete obj["Vendor Info"];
-                    delete obj["Size"];
-                    delete obj["Cost"];
-                    delete obj["Comment"];
-                    ingrs_to_ignore_arr.push(obj);
+                    var reformattedIngrs = reformatIngredient(obj, obj);
+                    ingrs_to_ignore_arr.push(reformattedIngrs[0]);
                     ignored = ignored+1;
                 }
             }
@@ -511,24 +521,112 @@ export default class CSV_parser{
             return res.json({ success: false, error : err});
         }*/
     }
-/*
-    static async compareIngredients(db_ingredient, obj){
-        return(db_ingredient.name == obj["Name"] && 
-               db_ingredient.num == obj["Ingr#"] &&
-               db_ingredient.vendor_info == obj["Vendor Info"] &&
-               db_ingredient.pkg_size == obj["Size"] &&
-               db_ingredient.pkg_cost == obj["Cost"] &&
-               db_ingredient.comment == obj["Comment"]);
+
+    static async validateDataIngredients(obj){
+        var toReturn = {};
+        if(!obj["Name"] || !obj["Size"] || !obj["Cost"]) {
+            toReturn.success = false;
+            toReturn.missingRequiredField = true;
+            return toReturn;
+        }
+        if(obj["Ingr#"] == "\"\"" || !obj["Ingr#"]) obj["Ingr#"] = ItemStore.getUniqueNumber(all_ingredients);
+        var isNum = /^\d+$/.test(obj["Ingr#"]);
+        if(!isNum) {
+            toReturn.success = false;
+            toReturn.ingrNumIssue = true;
+            return toReturn;
+        } 
+        var isValid = obj["Cost"].search(/^\$?\d+(,\d{3})*(\.\d*)?$/) >= 0;
+        if(!isValid) {
+            toReturn.success = false;
+            toReturn.costIssue = true;
+            return toReturn;
+        }
+        toReturn.success = true;
+        return toReturn;
     }
 
-    static async isAmbiguousCollisionIngrs(ingredient_to_add, db_ingredient_num_name, db_ingredients_name){
-        var ingr_to_add_num = ingredient_to_add["Ingr#"];
-        var ingr_to_add_name = ingredient_to_add["Name"];
-        if(db_ingredient_num_name.get(ingr_to_add_num) != ingr_to_add_name && db_ingredients_name.has(ingr_to_add_name)){
-            return true;
+    static async indicateIngrDataFailure(res, dataValidationObj, row){
+        if(dataValidationObj.missingRequiredField){
+            return res.json({ success: false,
+                              badData: row});
+        } else if(dataValidationObj.ingrNumIssue){
+            return res.json({ success: false,
+                badData: row});
+        } else if(dataValidationObj.costIssue){
+            return res.json({ success: false,
+                badData: row});
         }
-        return false;
-    }*/
+    }
+
+    static async searchForIngrCollision(obj, ingrs_to_add_nums, ingrs_to_add_names, db_ingredients_name, db_ingredients_nums, ingrs_to_update, ingrs_to_ignore){
+        var toReturn = {};
+        // Check for a duplicate in the same CSV file
+        if(ingrs_to_add_nums.has(obj["Ingr#"]) || ingrs_to_add_names.has(obj["Name"])) {
+            toReturn.success = false;
+            toReturn.duplicate = true;
+            return toReturn;
+        } // If a unique identifier of the object is in the db but the primary key is not, return an error
+        else if(db_ingredients_name.has(obj["Name"]) && !db_ingredients_nums.has(obj["Ingr#"])){
+            toReturn.ambiguousCollision = true;
+            toReturn.success = false;
+            return toReturn;
+        // Check for a collision based on the primary key
+        } else if(db_ingredients_nums.has(obj["Ingr#"])) {
+            var db_ingredient_list = await Ingredient.find({ num : obj["Ingr#"]});
+            var db_ingredient = db_ingredient_list[0];
+            // If it is a duplicate from something in the database, ignore it
+            if(db_ingredient.name == obj["Name"] && 
+                db_ingredient.num == obj["Ingr#"] &&
+                db_ingredient.vendor_info == obj["Vendor Info"] &&
+                db_ingredient.pkg_size == obj["Size"] &&
+                db_ingredient.pkg_cost == obj["Cost"] &&
+                db_ingredient.comment == obj["Comment"]){
+                ingrs_to_ignore.add(obj["Ingr#"]);
+            } // If it is an ambiguous collision with something in the database, return an error
+            else if(db_ingredients_nums.get(obj["Ingr#"]) != obj["Name"] && db_ingredients_name.has(obj["Name"])) {
+                toReturn.ambiguousCollision = true;
+                toReturn.success = false;
+                return toReturn;
+            } // If it is neither, indicate that it will be updated, its added to *_to_add_* to indicate it exists in the file
+            else {
+                ingrs_to_update.add(obj["Ingr#"]);
+                ingrs_to_add_nums.add(obj["Ingr#"]);
+                ingrs_to_add_names.add(obj["Name"]);
+            }
+        // If it wasn't a collision or duplicate, then just add it straight to the database
+        } else {
+            ingrs_to_add_nums.add(obj["Ingr#"]);
+            ingrs_to_add_names.add(obj["Name"]);
+        }
+        toReturn.success = true;
+        return toReturn;
+    }
+
+    static async indicateIngrCollisionFailure(res, collisionObj, row){
+        if(collisionObj.duplicate == true) return res.json({ success: false, duplicate: i});
+        if(collisionObj.ambiguousCollision == true) return res.json({ success: false, collision: row});
+    }
+
+    static async reformatIngredient(objNew, objOld){
+        objNew.name = objOld.Name;
+        objNew.num = objOld["Ingr#"];
+        objNew.vendor_info = objOld["Vendor Info"];
+        objNew.pkg_size = objOld["Size"];
+        objNew.pkg_cost = objOld["Cost"];
+        objNew.comment = objOld["Comment"];
+        delete objOld["Name"];
+        delete objOld["Ingr#"];
+        delete objOld["Vendor Info"];
+        delete objOld["Size"];
+        delete objOld["Cost"];
+        delete objOld["Comment"];
+        var toReturn = [];
+        toReturn[0] = objNew;
+        toReturn[1] = objOld;
+        return toReturn;
+    }
+
 
     static async parseUpdateIngredients(req, res){
         var returningAdds = [];
@@ -551,7 +649,7 @@ export default class CSV_parser{
             ingr.num = addArray[i].num;
             ingr.vendor_info = addArray[i].vendor_info;
             ingr.pkg_size = addArray[i].pkg_size;
-            ingr.pkg_cost = Number(addArray[i].pkg_cost);
+            ingr.pkg_cost = addArray[i].pkg_cost;
             ingr.comment = addArray[i].comment;
             let new_ingr = await ingr.save();
             returningAdds.push(new_ingr);
@@ -560,7 +658,7 @@ export default class CSV_parser{
                         updates: returningUpdates, ignores: ignoreArray});
     }
 
-    static async parseFormulasCSV(req, res){
+  /*  static async parseFormulasCSV(req, res){
         var db_ingredients_nums = new Set();
         var db_skus_nums = new Set();
 
@@ -657,7 +755,7 @@ export default class CSV_parser{
         }
 
         return res.json({ success: true, sku_data: updated_skus, showImport: true});
-    }
+    } */
 
 
 }
