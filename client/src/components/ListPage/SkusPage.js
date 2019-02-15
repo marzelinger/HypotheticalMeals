@@ -57,7 +57,7 @@ export default class ListPage extends React.Component {
             user:'',
             currentPage: 0,
             previousPage: 0,
-            pageSize: 20,
+            pageSize: props.simple ? 4 : 20,
             pagesCount: 0,
             filters: {
                 'keyword': '',

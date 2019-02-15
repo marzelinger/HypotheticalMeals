@@ -57,8 +57,8 @@ export default class DataStore{
 
     static getSkuDataSimple() {
       var results = DataStore.getSkuData();
-      results.table_columns = ['SKU Name', 'Unit Size', 'Count per Case'];
-      results.table_properties = ['name', 'unit_size', 'cpc'];
+      results.table_columns = ['SKU Name', 'Unit Size', 'Count per Case', 'SKU#'];
+      results.table_properties = ['name', 'unit_size', 'cpc', 'num'];
       return results;
     }
 
