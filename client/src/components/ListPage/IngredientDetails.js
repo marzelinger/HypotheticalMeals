@@ -13,6 +13,9 @@ import {
 import DataStore from './../../helpers/DataStore'
 import DetailsViewSkuTable from './DetailsViewSkuTable'
 
+const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
+
+
 
 export default class IngredientDetails extends React.Component {
     constructor(props) {
@@ -84,6 +87,7 @@ export default class IngredientDetails extends React.Component {
                         value={ this.props.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
                         onChange={ (e) => this.onPropChange(e.target.value, this.props.item, prop) }
+                        disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
                     />
                 </FormGroup>));
         }
@@ -103,6 +107,7 @@ export default class IngredientDetails extends React.Component {
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
                     <Button 
+                        className = "detailButtons"
                         key={opt} 
                         onClick={(e) => this.handleSubmit(e, opt)}
                     >{opt}</Button>

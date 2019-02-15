@@ -19,39 +19,52 @@ export default class Filter extends React.Component {
             width: 100,
             focus: false,
             open: false,
-            options: [{label: 'starting', value: 'test'}]
+            options: []
         };
+    }
+
+    handleResponse = (response) => {
+        if(response.data == undefined){
+            this.setState({options: []})
+        }
+        else{
+            this.setState({options: response.data.map((item) => ({label: item.name, value: item}))});
+        }
+            
     }
 
     getNewOptions = (input) => {
             if(input == ""){
-                // TODO: need to fix this to have some kind of default state
+                this.setState({options: []})
                 return;
             }
         switch (this.props.type) {
                 case 'ingredients':
                     response  =  SubmitRequest.submitGetIngredientsByNameSubstring(input).then((response) => {
-                        this.setState({options: response.data.map((item) => ({label: item.name, value: item._id}))});
+                        this.handleResponse(response)
                     });
                     break;
                 case 'skus':
                     var response =  SubmitRequest.submitGetSkusByNameSubstring(input).then((response) => {
-                        this.setState({options: response.data.map((item) => ({label: item.name, value: item._id}))});
+                        this.handleResponse(response)
                     })
                     break;
                 case 'products':
                     response =  SubmitRequest.submitGetProductLinesByNameSubstring(input).then((response) => {
-                        this.setState({options: response.data.map((item) => ({label: item.name, value: item._id}))});
+                        this.handleResponse(response)
                     });
             }
+    }
+    getDetailsPlaceholder = () => {
+        return (this.props.place_holder != undefined ? this.props.place_holder.name : `Add ${this.props.type}`);
     }
 
     render() {
         return (
         <div className='filter-item'>
             <Select
-                placeholder = {`Filter by ${this.props.type}`}
-                isMulti
+                placeholder = {this.props.multi != undefined ? this.getDetailsPlaceholder() : `Filter by ${this.props.type}`}
+                isMulti = {this.props.multi != undefined ? this.props.multi : true}
                 onInputChange = { (input) => this.getNewOptions(input)}
                 onChange={(opt, e) => this.props.handleFilterValueSelection(opt, e, this.props.type)}
                 options={this.state.options}

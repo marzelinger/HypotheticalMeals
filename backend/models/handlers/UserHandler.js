@@ -17,24 +17,20 @@ class UserHandler{
     // Creates a User in the Database
     // If the User exists, return error if it exists
     static createUser(req, res){
-      //const user = getCurUser();
-    // Form validation
-  const { errors, isValid } = validateRegisterInput(req.body);
-  // Check validation
-    if (!isValid) {
-      return res.status(400).json(errors);
-    }
-  User.findOne({ email: req.body.email })
+      // Form validation
+      console.log("this is the stringify: "+JSON.stringify(req.body));
+      const { errors, isValid } = validateRegisterInput(req.body);
+      // Check validation
+      if (!isValid) {
+        return res.status(400).json(errors);
+      }
+      User.findOne({ username: req.body.username })
       .then(user => {
       if (user) {
-        return res.status(400).json({ email: "Email already exists" });
+        return res.status(400).json({ username: "Username already exists" });
       } 
-  //we assume by here that the user that is creating this person has
-  //the permission to because we checked it in the validateRegisterInput function
-
-  const newUser = new User({
-          name: req.body.name,
-          email: req.body.email,
+      const newUser = new User({
+          username: req.body.username,
           password: req.body.password,
           privileges : req.body.privileges,
           admin_creator: req.body.admin_creator,
@@ -49,37 +45,38 @@ class UserHandler{
               .save()
               .then(user => res.json(user))
               .catch(err => console.log(err));
+            });
           });
-        });
+        } 
+      )
       }
-  )
-    }
 
-    static loginUserByNameAndPassword(req,res){
+  static loginUserByNameAndPassword(req,res){
     // Form validation
-  const { errors, isValid } = validateLoginInput(req.body);
-  // Check validation
+    const { errors, isValid } = validateLoginInput(req.body);
+    // Check validation
     if (!isValid) {
       return res.status(400).json(errors);
     }
-    const email = req.body.email;
+    //const email = req.body.email;
+    const username = req.body.username;
     const password = req.body.password;
-  // Find user by email
-    User.findOne({ email }).then(user => {
+    // Find user by username
+    User.findOne({ username }).then(user => {
       // Check if user exists
       if (!user) {
-        return res.status(404).json({ emailnotfound: "Email not found" });
+        return res.status(404).json({ usernamenotfound: "Username not found" });
       }
-  // Check password
+    // Check password
       bcrypt.compare(password, user.password).then(isMatch => {
         if (isMatch) {
           // User matched
           // Create JWT Payload
-          console.log("admin of new user: "+ user.email+" is: "+ isAdmin(user).isValid);
+          //console.log("admin of new user: "+ user.email+" is: "+ isAdmin(user).isValid);
           const payload = {
             id: user.id,
-            name: user.name,
-            email: user.email,
+            username: user.username,
+            //email: user.email,
             admin: isAdmin(user).isValid
           };
   // Sign token
@@ -103,12 +100,8 @@ class UserHandler{
         }
       });
     });
-  
-
     }
 
-    static updateUserByID(req, res){
-    }
 
     // Gets all Users in the database
     static getAllUsers(req, res){
@@ -117,10 +110,10 @@ class UserHandler{
             return res.json({ success: true, data: users });
           });
     }
-    static getUserByID(req, res){
-    }
-    static deleteUserByID(req, res){
-    }
+    // static getUserByID(req, res){
+    // }
+    // static deleteUserByID(req, res){
+    // }
 
 }
 

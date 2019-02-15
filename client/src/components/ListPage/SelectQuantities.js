@@ -30,7 +30,7 @@ export default class SelectQuantities extends React.Component {
         const skuNodes = this.props.data.map(sku => (
             <InputGroup key = {sku._id}>
                 <InputGroupAddon addonType="prepend">{sku.name}</InputGroupAddon>
-                    <Input onChange = {(e) => this.updateQuantity(e, sku._id)} className = "inputs" placeholder="Amount" type="number" step="1" />
+                    <Input min = {1} onChange = {(e) => this.updateQuantity(e, sku._id)} className = "inputs" placeholder="Amount" type="number" step="1" />
                 <InputGroupAddon addonType="append">{'* ' + sku.unit_size + ' * ' + sku.cpc} </InputGroupAddon>
             </InputGroup>
           ));

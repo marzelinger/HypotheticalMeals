@@ -9,7 +9,6 @@ module.exports = function currentUserIsAdmin(){
         const decoded = jwt_decode(localStorage.getItem("jwtToken"));
         const curUserIsAdmin = decoded.admin;
         console.log("the decoded is: "+ decoded);
-        console.log("curUser email is: "+ decoded.email);
         console.log("curUser admin status is is: "+ curUserIsAdmin);
 
         if(curUserIsAdmin){

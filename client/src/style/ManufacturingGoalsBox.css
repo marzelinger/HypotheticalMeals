@@ -9,7 +9,9 @@
   }
 
   .goals div {
-      display:flex;
+      /* display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); */
+      display: flex;
       flex-direction: column;
   }
   
@@ -18,38 +20,45 @@
   }
   
   #singleGoal {
-    padding: 10px 20px;
-    margin-bottom: 10px;
     width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 50px;
+    padding: 5px 10px;
+    /* margin-bottom: 10px; */
+    display: flex;
+    flex-direction: row;
     align-items: center;
+    justify-content: flex-start;
   }
 
   .singleGoalContent:hover{
     border: solid grey thin;
     background-color: rgb(223, 223, 223);
   }
-  
+  .textContent {
+    width: 100%;
+  }
+
   .singleGoalContent {
-    min-width: 100px;
     border:solid rgb(230, 230, 230) thin;
     box-shadow: 1px 1px 5px #646464;
     -moz-border-radius: 10px; 
     -webkit-border-radius: 10px;
     border-radius: 5px;
-    padding: 10px;
+    padding: 5px 5px 5px 5px;
     height: 60px;
-    display:flex;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
     justify-content: center;
+    align-content: center;
   }
 
   
-  .singleGoalContent h3 {
-    margin: 0;
-    padding-right: 5px;
+  .singleGoalContent > input {
     font-size: 20px;
     color: #424242;
+    cursor: text;
+    border: none !important;
+    padding: 5px !important;
   }
   
   .singleGoalContent p {
@@ -69,7 +78,6 @@
   .form {
     width: 100%;
     padding: 10px 5%;
-    min-width: 300px;
   }
   
   .form #button {
@@ -78,6 +86,7 @@
     padding: 0px;
     border-radius: 50%;
     float: right;
+    cursor: pointer;
   }
   
   #popup input {
@@ -88,10 +97,8 @@
     width: 100%;
   }
 
-  #popup button {
-    color: #646464;
-    border-radius: 5px;
-    /* border: 1px solid #999; */
+  .pdfbutton {
+    width: 100px !important;
   }
 
   #submitbutton{
@@ -104,6 +111,23 @@
     font-size: 24px;
     padding-left: 52px;
     padding-top: 24px;
+    cursor: auto;
+
+  }
+
+  ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #424242;
+    opacity: 1; /* Firefox */
+  }
+
+  .searches {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .searchfield {
+    display: flex;
+    align-items: center;
   }
 
   

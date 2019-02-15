@@ -17,7 +17,7 @@ const DetailsViewSkuTable = props => {
       <SkusPage
         {
         ...skuTableData
-        } simple = {true}
+        } 
       />
     </div>
   );

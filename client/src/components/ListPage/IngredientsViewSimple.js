@@ -4,14 +4,10 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import PageTable from './PageTable'
-import SubmitRequest from '../../helpers/SubmitRequest'
-import * as Constants from '../../resources/Constants';
+import PageTable from './PageTable';
 import './../../style/SkusPage.css';
-import DataStore from './../../helpers/DataStore'
+import DataStore from './../../helpers/DataStore';
 import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
-
-
 
 export default class IngredientsViewSimple extends React.Component {
     constructor(props) {
@@ -20,19 +16,19 @@ export default class IngredientsViewSimple extends React.Component {
         let {
             table_columns, 
             table_properties } = DataStore.getIngredientDataSimple();
-
+            console.log(props);
         this.state = {
-            sku: props.sku,
             sku_id: props.sku._id,
-            data: props.sku.ingredients,
             table_columns: [...table_columns, 'Quantity'],
             table_properties: [...table_properties, 'quantity'],
             selected_items: [],
-            curPageData: [],
             currentPage: 0,
-            pageSize: 2,
-            pagesCount: 0
-
+            previousPage: 0,
+            pageSize: 20,
+            pagesCount: 0,
+            itemCount: 0,
+            currItems: [],
+            currQtys: []
         };
         this.onQuantityChange = this.onQuantityChange.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
@@ -40,62 +36,39 @@ export default class IngredientsViewSimple extends React.Component {
     }
 
     async componentDidMount() {
-        this.loadDataFromServer();
         this.setNumberPages();
     }
 
     async componentDidUpdate (prevProps, prevState) {
-        if (prevState.data !== this.state.data){
+        if (this.props.sku.ingredients.length != this.state.itemCount){
+            this.setNumberPages();
         }
-        //this.setNumberPages();
     }
 
-    async loadDataFromServer() {
-        console.log("this loaddata page: "+this.state.currentPage);
-        let allData = await SubmitRequest.submitGetData("ingredients");
-
-        var res = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, 
-                    "_", this.state.sku_id, "_", this.state.currentPage, this.state.pageSize);
-             
-        console.log("this is the res; "+res);
-
-        if (res === undefined || !res.success) {
-            res.data = [];
-        }
-        this.setState({
-            curPageData: res.data
-        })
-
-    }
-
-    handlePageClick = (e, index) => {
+    async handlePageClick(e, index) {
         e.preventDefault();
-        console.log("this is current page1; "+this.state.currentPage);
-        this.setState({
+        await this.setState({
             currentPage: index
         });
-        this.loadDataFromServer();
+        await this.setNumberPages();
     }
 
     async setNumberPages(){
-        console.log("this is the state.sku.id"+this.state.sku_id);
-        var allIngs = await SubmitRequest.submitGetFilterData(Constants.ing_filter_path, "_", 
-            (this.state.sku_id===undefined) ? '_' : this.state.sku_id, "_", 0, 0);
-        console.log('this is the allData: '+allIngs);
-        console.log('this is the the number length'+allIngs.data.length);
-        console.log('this is the the stringify'+JSON.stringify(allIngs));
+        var curCount = Math.ceil(this.props.sku.ingredients.length/Number(this.state.pageSize));
 
-
-        var curCount = Math.ceil(allIngs.data.length/Number(this.state.pageSize));
-
-        this.setState({
-            currentPage: 0,
-            pagesCount: curCount
+        let starting_index = this.state.pageSize * this.state.currentPage;
+        let cItems = this.props.sku.ingredients.slice(starting_index, starting_index+2);
+        let cQtys = this.props.sku.ingredient_quantities.slice(starting_index, starting_index+2);
+        await this.setState({
+            itemCount: this.props.sku.ingredients.length,
+            currentPage: this.state.currentPage <= curCount ? this.state.currentPage : this.state.currentPage-1,
+            pagesCount: curCount,
+            currItems: cItems,
+            currQtys: cQtys
         }); 
-
-        console.log('this is the pagesCount1: '+this.state.pagesCount);
-
+    
     }
+    
 
 
     onSort = () => {}
@@ -105,8 +78,13 @@ export default class IngredientsViewSimple extends React.Component {
     onDetailViewSelect = () => {}
 
     onQuantityChange (e, index) {
+        let cQtys = this.state.currQtys.slice();
+        cQtys[index] = e.target.value;
+        this.setState({ currQtys: cQtys })
+
+        let ind_actual = this.state.currentPage * this.state.pageSize + index;
         var ing_quant = this.props.sku.ingredient_quantities.slice();
-        ing_quant[index] = e.target.value;
+        ing_quant[ind_actual] = e.target.value;
         this.props.handlePropChange(ing_quant, this.props.sku, 'ingredient_quantities');
     }
 
@@ -117,8 +95,8 @@ export default class IngredientsViewSimple extends React.Component {
                     <PageTable 
                         columns={this.state.table_columns} 
                         table_properties={this.state.table_properties} 
-                        list_items={this.state.curPageData}
-                        quantities={(this.props.sku !== null) ? this.props.sku.ingredient_quantities : null}
+                        list_items={this.state.currItems}
+                        quantities={(this.state.currItems !== null) ? this.state.currQtys : null}
                         selected_items={this.state.selected_items}
                         handleSort={this.onSort}
                         handleSelect={this.onSelect}
@@ -139,16 +117,7 @@ export default class IngredientsViewSimple extends React.Component {
                     </PaginationItem>
                     {[...Array(this.state.pagesCount)].map((page, i) => 
                     <PaginationItem active={i === this.state.currentPage} key={i}>
-                        <PaginationLink onClick={e => {
-                        //this.handlePageClick(e, i)
-                        console.log("this is before click page: "+this.state.currentPage);
-                        this.setState({
-                            currentPage: i
-                        });
-                        console.log("this is after click page: "+this.state.currentPage);
-                        this.loadDataFromServer();     
-                        }
-                        } href="#">
+                        <PaginationLink onClick={e => this.handlePageClick(e, i) } href="#">
                         {i + 1}
                         </PaginationLink>
                     </PaginationItem>

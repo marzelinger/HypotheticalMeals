@@ -6,7 +6,6 @@ import * as Constants from '../../resources/Constants';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import '../../style/ManufacturingGoalsBox.css'
 import ExportSimple from '../export/ExportSimple';
-const jwt_decode = require('jwt-decode');
 
 class ProductLinesBox extends Component {
   constructor() {
@@ -29,12 +28,12 @@ class ProductLinesBox extends Component {
     this.setState(newState);
   }
 
-  onUpdateProdLine = async (id) => {
+  onUpdateProdLine = async (id, name) => {
     console.log('updating line')
     const oldProdLine = this.state.data.find(c => c._id === id);
     if (!oldProdLine) return;
     await this.setState({
-        name: oldProdLine.name,
+        name: name || oldProdLine.name,
         updateId: id
     });
     this.submitUpdatedProdLine();
@@ -96,7 +95,7 @@ class ProductLinesBox extends Component {
 
   async submitUpdatedProdLine() {
     const { name, updateId } = this.state;
-    let item = { name };
+    let item = { name, _id: updateId };
     let res = await SubmitRequest.submitUpdateItem(Constants.prod_line_page_name, item);
     if (!res.success) {
       this.setState({ error: res.error});
@@ -157,7 +156,7 @@ class ProductLinesBox extends Component {
           <ProductLineList
             data={this.state.data}
             handleDeleteProdLine={this.onDeleteProdLine}
-            handleUpdateGoal={this.onUpdateProdLine}
+            handleUpdateProdLine={this.onUpdateProdLine}
           />
         </div>
         <div className="form">

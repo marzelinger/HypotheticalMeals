@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import calculatorButton from '../../resources/calculator.png';
-import ManuGoalsCalculatorTable from './ManuGoalsCalculatorTable';
-import SubmitRequest from '../../helpers/SubmitRequest';
+import calculatorButton from '../../../resources/calculator.png';
+import ManuGoalsCalculatorTable from '../ManuGoalsCalculatorTable';
+import SubmitRequest from '../../../helpers/SubmitRequest';
 
 // * 1. need to iterate through each sku and get the quantity, calculate the quantity of the sku units
 // * 2. for each sku need to iterate through each ingredient

@@ -14,6 +14,7 @@ import {
 import * as Constants from '../../resources/Constants';
 import SubmitRequest from '../../helpers/SubmitRequest'
 import Select from 'react-select'
+import Filter from './Filter'
 
 
 export default class ItemSearchModifyList extends React.Component {
@@ -84,42 +85,40 @@ export default class ItemSearchModifyList extends React.Component {
     }
 
     async onFilterValueSelection (name, value, e) {
-        var item = {};
-        this.state.assisted_search_results.map(res => {if (res._id === value) item = res})
-        await this.setState({
-            substr: name,
-            value: item,
-            assisted_search_results: []
-        });
+        console.log(value);
+        this.setState({value: value});
     }
 
     determineButtonDisplay(state, option) {
         switch (option) {
             case Constants.details_add:
-                return (state.value === '' || state.qty <= 0)
+                return (state.value === '' || (state.qty <= 0 && (this.props.simple == undefined || this.props.simple == false)))
             case Constants.details_remove:
-                return (state.value === '' || state.qty <= 0)
+                return (state.value === '' || (state.qty <= 0 && (this.props.simple == undefined || this.props.simple == false)))
         }
     }
 
     render() {
         return (
-        <div className='filter-item' style={{width: this.state.width + '%'}}>
+        <div className='filter-item detailsfilter' style={{width: this.state.width + '%'}}>
             <FormGroup>
                 <Label>{this.props.item_type}</Label>
-                <Select 
-                    inputValue={this.state.substr}
-                    onChange={(opt, e) => this.onFilterValueSelection(opt.label, opt.value, e)}
-                    onInputChange={(val, e) => this.onFilterValueChange(val, e)} 
-                    options={this.state.assisted_search_results.map(res => ({ label: res.name, value: res._id }))}
-                    placeholder={'Select Ingredient...'}
-                />
-                <Label>{Constants.details_modify_ingredient_quantities}</Label>
-                <Input 
-                    type="text"
-                    value={this.state.qty}
-                    onChange={(e) => this.onQuantityChange(e)}
-                />
+                <Filter
+                handleFilterValueSelection = {(opt, e) => this.onFilterValueSelection(opt.label, opt.value)}
+                type = {this.props.api_route}
+                multi = {false}
+                >
+                </Filter>
+                {this.props.simple != undefined && this.props.simple ? <div></div> : 
+                (<div>
+                    <Label>{Constants.details_modify_ingredient_quantities}</Label>
+                    <Input 
+                        type="text"
+                        value={this.state.qty}
+                        onChange={(e) => this.onQuantityChange(e)}
+                    />
+                </div>)
+                }
                 {this.props.options.map(opt => 
                     <Button 
                         disabled={this.determineButtonDisplay(this.state, opt)}
