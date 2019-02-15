@@ -447,7 +447,12 @@ export default class ImportPage extends React.Component {
     render() {
         return (
             <div className = "Import">
-
+                <div className = "centerContainer">
+                    <h1> Please enter a CSV below to bulk import.</h1>
+                </div>
+                <div className = "centerContainer">
+                    <h3> Please upload one file at a time with the appropriate extension. </h3>
+                </div>
                 <div className="centerContainer">
                     <Input className="centerFile" type="file" onChange={this.handleSelectedFile} />
                 </div>
