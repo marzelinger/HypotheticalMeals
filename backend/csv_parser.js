@@ -181,6 +181,7 @@ export default class CSV_parser{
             var updated = 0;
             var skus_added = [];
             var intermediate_skus_added = []; 
+            var intermediate_unformatted_skus_added = [];
             var skus_to_update_new = [];
             var skus_to_update_old = [];
             var skus_to_ignore_arr = []
@@ -189,28 +190,58 @@ export default class CSV_parser{
                 if(skus_to_update.has(obj["SKU#"])){
                     updated = updated + 1;
                     var old_sku = await SKU.find({ num: obj["SKU#"]});
-                    var reformattedSKUS = reformatSKU(obj, obj);
+                    var old_sku_to_show = {};
+                    old_sku_to_show.name = old_sku[0].name;
+                    old_sku_to_show.num = old_sku[0].num;
+                    old_sku_to_show.case_upc = old_sku[0].case_upc;
+                    old_sku_to_show.unit_upc = old_sku[0].unit_upc;
+                    old_sku_to_show.cpc = old_sku[0].cpc;
+                    old_sku_to_show.prod_line = old_sku[0].prod_line;
+                    old_sku_to_show.prod_line_to_show = obj["Product Line Name"];
+                    old_sku_to_show.comment = old_sku[0].comment;
+                    console.log(old_sku_to_show);
+                    var prod_line = await Prod_Line.find({ name : obj["Product Line Name"]});
+                    console.log(prod_line[0].name);
+                    old_sku[0].newField = prod_line[0].name;
+                    var newObj = {};
+                    var reformattedSKUS = await this.reformatSKU(newObj, obj);
                     skus_to_update_new.push(reformattedSKUS[0]);
-                    skus_to_update_old.push(old_sku[0]);
+                    skus_to_update_old.push(old_sku_to_show);
+                    console.log('old sku to show');
+                    console.log(old_sku_to_show);
+                    console.log('reformatted skus of 0');
+                    console.log(reformattedSKUS[0]);
                 }
                 else if(skus_to_add_num.has(obj["SKU#"])){
                     added = added + 1;
-                    var sku = new SKU();
-                    var reformattedSKUS = reformatSKU(sku, obj);
+                    var newObj = {};
+                    var reformattedSKUS = await this.reformatSKU(newObj, obj);
                     intermediate_skus_added.push(reformattedSKUS[0]);
+                    intermediate_unformatted_skus_added.push(reformattedSKUS[1]);
                 }
                 else {
                     ignored = ignored + 1;
-                    var reformattedSKUS = reformatSKU(obj, obj);
+                    var newObj = {};
+                    var reformattedSKUS = await this.reformatSKU(newObj, obj);
                     skus_to_ignore_arr.push(reformattedSKUS[0]);
                 }
             }  
 
             if(updated == 0) {
-                for(var i = 0; i < intermediate_skus_added.length; i++){
-                    let new_sku = await intermediate_skus_added[i].save();
-                    skus_added.push(new_sku);
-                    console.log(new_sku);
+                for(var i = 0; i < intermediate_unformatted_skus_added.length; i++){
+                    var sku = new SKU();
+                    var toShow = {};
+                    var reformattedSKUS = await this.reformatSKU(toShow, intermediate_unformatted_skus_added[i]);
+                    sku.name = reformattedSKUS[0].name;
+                    sku.num = reformattedSKUS[0].num;
+                    sku.case_upc = reformattedSKUS[0].case_upc;
+                    sku.unit_upc = reformattedSKUS[0].unit_upc;
+                    sku.unit_size = reformattedSKUS[0].unit_size;
+                    sku.cpc = reformattedSKUS[0].cpc;
+                    sku.prod_line = reformattedSKUS[0].prod_line;
+                    sku.comment = reformattedSKUS[0].comment;
+                    let new_sku = await sku.save();
+                    skus_added.push(toShow);
                 }
                 return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: skus_added, showImport: true, new_data: skus_to_update_new, ignored_data: skus_to_ignore_arr});
             } else{
@@ -275,14 +306,17 @@ export default class CSV_parser{
             toReturn.skuNumIssue = true;
             return toReturn;
         }
-        var isCheckSumCase = checkdigit.mod10.isValid('036000241457');
+        var isCheckSumCase = checkdigit.mod11.isValid('036000241457');
         console.log(isCheckSumCase);
         console.log(obj["Case UPC"]);
         var isNum3 = /^\d+$/.test(obj["Case UPC"]);
         var firstCharCase = obj["Case UPC"].substring(0,1);
+        console.log(!isNum3)
+        console.log(obj["Case UPC"].length != 12);
+        console.log(firstCharCase);
         if((obj["Case UPC"].length != 12) ||
            (!isNum3) ||
-           (!isCheckSumCase) ||
+           //(!isCheckSumCase) ||
            (firstCharCase != '0' && firstCharCase != '1' && firstCharCase !='6' && firstCharCase != '7' && firstCharCase !='8' && firstCharCase != '9')) {
             toReturn.success = false;
             toReturn.caseUPCIssue = true;
@@ -293,7 +327,7 @@ export default class CSV_parser{
         var firstCharUnit = obj["Unit UPC"].substring(0,1);
         if((obj["Unit UPC"].length != 12) || 
            (!isNum2) || 
-           (!isCheckSumUnit) ||
+          // (!isCheckSumUnit) ||
            (firstCharUnit != '0' && firstCharUnit != '1' && firstCharUnit !='6' && firstCharUnit != '7' && firstCharUnit !='8' && firstCharUnit != '9')){
             toReturn.success = false;
             toReturn.unitUPCIssue = true;
@@ -381,17 +415,18 @@ export default class CSV_parser{
         objNew.unit_upc = objOld["Unit UPC"];
         objNew.unit_size = objOld["Unit size"];
         objNew.cpc = objOld["Count per case"];
+        objNew.prod_line_to_show = objOld["Product Line Name"];
         let prod_line = await Prod_Line.find({ name : objOld["Product Line Name"]});
         objNew.prod_line = prod_line[0]._id;
         objNew.comment = objOld["Comment"];
-        delete objOld["Name"];
+       /* delete objOld["Name"];
         delete objOld["SKU#"];
         delete objOld["Case UPC"];
         delete objOld["Unit UPC"];
         delete objOld["Unit size"];
         delete objOld["Count per case"];
         delete objOld["Product Line Name"];
-        delete objOld["Comment"];
+        delete objOld["Comment"];*/
         var toReturn = [];
         toReturn[0] = objNew;
         toReturn[1] = objOld;
@@ -409,7 +444,7 @@ export default class CSV_parser{
                 {$set: {name : updateArray[i].name, case_upc : updateArray[i].case_upc, unit_upc : updateArray[i].unit_upc,
                         unit_size : updateArray[i].unit_size, cpc: updateArray[i].cpc, prod_line: updateArray[i].prod_line,
                         comment : updateArray[i].comment}}, {upsert : true, new : true});
-                        returningUpdate.push(updated_sku);
+                        returningUpdate.push(updateArray[i]);
         }
         for(var i = 0; i < addArray.length; i++){
             var sku = new SKU();
@@ -422,7 +457,9 @@ export default class CSV_parser{
             sku.prod_line = addArray[i].prod_line;
             sku.comment = addArray[i].comment;
             let new_sku = await sku.save();
-            returningAdd.push(new_sku);
+            console.log("add array is: ");
+            console.log(addArray[i]);
+            returningAdd.push(addArray[i]);
         }
         return res.json({ success: true, adds: returningAdd, updates: returningUpdate, ignores: ignoreArray});
     }
