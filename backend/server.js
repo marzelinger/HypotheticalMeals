@@ -13,6 +13,7 @@ import IngredientHandler from './models/handlers/IngredientHandler';
 import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
 import UserHandler from './models/handlers/UserHandler';
 import FilterHandler from './models/handlers/FilterHandler';
+import FormulaHandler from './models/handlers/FormulasHandler';
 import { getSecret } from './secrets';
 const passport = require("passport");
 import CSV_parser from './csv_parser';
@@ -62,6 +63,14 @@ router.delete('/skus/:sku_id', (req, res) => SkuHandler.deleteSkuByID(req, res))
 router.get('/ingredients_by_sku/:sku_id', (req, res) => SkuHandler.getIngredientsBySkuID(req, res));
 router.get('/skus_name/:search_substr', (req, res) => SkuHandler.getSkusByNameSubstring(req, res));
 
+// Formula database APIs
+router.post('/formulas', (req, res) => FormulaHandler.createFormula(req, res));
+router.put('/formulas/:formula_id', (req, res) => FormulaHandler.updateFormulaByID(req, res));
+router.get('/formulas', (req, res), FormulaHandler.getAllFormulas(req, res));
+router.get('/formulas/:formula_id', (req, res) => FormulaHandler.getFormulaByID(req, res));
+router.delete('formulas/:formula_id', (req, res) => FormulaHandler.deleteFormulaByID(req, res));
+router.get('/formulas_name/:search_substr', (req, res) => FormulaHandler.getFormulasByNameSubstring(req, res));
+
 // Product Line database APIs
 router.post('/products', (req, res) => Prod_LineHandler.createProductLine(req, res));
 router.put('/products/:prod_line_id', (req, res) => Prod_LineHandler.updateProductLineByID(req, res));
@@ -78,6 +87,7 @@ router.get('/manulines/:manu_line_id', (req, res) => Manu_LineHandler.getManufac
 router.delete('/manulines/:manu_line_id', (req, res) => Manu_LineHandler.deleteManufacturingLineByID(req, res));
 router.get('/manulines_name/:search_substr', (req, res) => Manu_LineHandler.getManufacturingLinesByNameSubstring(req, res));
 router.get('/manulines_shortname/:short_name', (req, res) => Manu_LineHandler.getManufacturingLinesByShortName(req, res));
+
 // Ingredient database APIs
 router.post('/ingredients', (req, res) => IngredientHandler.createIngredient(req, res));
 router.put('/ingredients/:ingredient_id', (req, res) => IngredientHandler.updateIngredientByID(req, res));

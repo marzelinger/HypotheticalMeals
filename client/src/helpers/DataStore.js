@@ -21,6 +21,16 @@ export default class DataStore{
       };
     }
 
+    static getFormulaData() {
+      return {
+        page_name: Constants.formulas_page_name,
+        page_title: 'Formulas',
+        table_columns: ['Name', 'Formula#'],
+        table_properties: ['name', 'num'],
+        table_options: [Constants.create_item, Constants.add_keyword_filter, Constants.add_ing_filter],
+      }
+    }
+
     static getLineData() {
       return {
         item_properties: ['name', 'short_name', 'comment'],
