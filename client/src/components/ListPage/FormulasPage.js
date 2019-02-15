@@ -49,5 +49,61 @@ export default class FormulasPage extends React.Component {
 
         this.toggleModal = this.toggleModalModa.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
+        this.onFilterValueChange = this.onFilterValueChange.bind(this);
+        this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
+        this.onSort = this.onSort.bind(this);
+        this.handlePageClick=this.handlePageClick.bind(this);
+        this.setInitPages();
+    }
+
+    toggleModal(){
+        this.state({
+            modal: !this.state.modal
+        });
+    }
+
+    render(){
+        return(
+            <div className="list-page">
+                <div>
+                    <PageTable
+                        columns={this.state.table_columns}
+                        table_properties={this.state.table_properties}
+                        list_items={this.state.data}
+                        selected_items={this.state.selected_items}
+                        selected_indexes={this.state.selected_indexes}
+                        handleSort={this.onSort}
+                        handleSelect={this.onSelect}
+                        handleDetailView={this.onDetailViewSubmit}
+                        showDetails={true}
+                        sortable={true}
+                        title={this.state.page_title}
+                        showHeader={true}
+                        simple={this.props.simple}
+                        filters={this.state.filters}
+                        table_options={this.state.table_options}
+                        onTableOptionSelection={this.onTableOptionSelection}
+                        onFilterValueSelection={this.onFilterValueSelection}
+                        onFilterValueChange={this.onFilterValueChange}
+                        onRemoveFilter={this.onRemoveFilter}
+                        //skus={this.state.skus}
+                        onTableOptionSelection={this.onTableOptionSelection}
+                    />
+                </div>
+                <Modal isOpen={this.state.modal} toggle={this.toggleModal} id="popup" className='item-detals'>
+                    <ModalHeader toggle={this.toggleModal}> Formula Details</ModalHeader>
+                    <FormulaDetails
+                        item={this.state.detail_view_item}
+                        detail_view_options={this.state.detail_view_options}
+                        handleDetailViewSubmit={this.onDetailViewSubmit} />
+                </Modal>
+                <TablePagination
+                    currentPage={this.state.currentPage}
+                    pagesCount={this.state.pagesCount}
+                    handlePageClick={this.handlePageClick}
+                    getButtons={this.getButtons}
+                ></TablePagination>
+            </div>
+        )
     }
 }
