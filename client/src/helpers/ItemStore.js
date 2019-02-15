@@ -20,7 +20,7 @@ export default class ItemStore{
   static getUniqueCaseUPC = (list) => {
     while(true){
       var c_upc = Math.floor(Math.random() * 39999999999) + 60000000000;
-      c_upc = CheckDigit.mod10.apply(c_upc.toString())
+      c_upc = CheckDigit.apply(c_upc.toString())
       var success = true;
       list.map(item => { if (item.case_upc === c_upc) success = false; });
       if (success) return c_upc;
@@ -30,7 +30,7 @@ export default class ItemStore{
   static getUniqueUnitUPC = (case_upc, list) => {
     while(true){
       var u_upc = Math.floor(Math.random() * 39999999999) + 60000000000;
-      u_upc = CheckDigit.mod10.apply(u_upc.toString())
+      u_upc = CheckDigit.apply(u_upc.toString())
       var success = true;
       list.map(item => { 
         if (item.case_upc === case_upc) { 

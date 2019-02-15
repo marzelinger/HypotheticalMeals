@@ -4,7 +4,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types';
-import CheckDigit from 'checkdigit';
+import CheckDigit from '../../helpers/CheckDigit';
 import * as Constants from '../../resources/Constants';
 import { 
     Button,
@@ -160,9 +160,9 @@ export default class SKUDetails extends React.Component {
         if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.state.item, opt)
         else {
             if (inv.includes('case_upc') && this.state.item['case_upc'].length > 11)
-                alert_string += '\nTry Case UPC: ' + CheckDigit.mod10.apply(this.state.item['case_upc'].slice(0,11));
+                alert_string += '\nTry Case UPC: ' + CheckDigit.apply(this.state.item['case_upc'].slice(0,11));
             if (inv.includes('unit_upc') && this.state.item['unit_upc'].length > 11)
-                alert_string += '\nTry Unit UPC: ' + CheckDigit.mod10.apply(this.state.item['unit_upc'].slice(0,11));
+                alert_string += '\nTry Unit UPC: ' + CheckDigit.apply(this.state.item['unit_upc'].slice(0,11));
             alert(alert_string);
         } 
     }
@@ -173,8 +173,8 @@ export default class SKUDetails extends React.Component {
             if (!this.state.item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
         })
         if (this.state.prod_line_item.name === undefined) inv_in.push('prod_line');
-        if (!CheckDigit.mod10.isValid(this.state.item['case_upc'])) inv_in.push('case_upc');
-        if (!CheckDigit.mod10.isValid(this.state.item['unit_upc'])) inv_in.push('unit_upc');
+        if (!CheckDigit.isValid(this.state.item['case_upc'])) inv_in.push('case_upc');
+        if (!CheckDigit.isValid(this.state.item['unit_upc'])) inv_in.push('unit_upc');
         await this.setState({ invalid_inputs: inv_in });
     }
 
