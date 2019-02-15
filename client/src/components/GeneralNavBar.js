@@ -26,7 +26,6 @@ export default class GeneralNavBar extends React.Component {
     });
   }
   render() {
-    console.log("in the general navbar: "+ localStorage.getItem("jwtToken"));
     return (
       <Navbar id = "bar" color="light" light expand="md">
         <GeneralMenu></GeneralMenu>

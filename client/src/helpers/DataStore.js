@@ -44,13 +44,18 @@ export default class DataStore{
           page_name: Constants.users_page_name,
           page_title: 'Users',
           filter_options: [Constants.keyword_label],
-          table_columns: ['Username', 'Privilege', 'Created By', 'Created On', 'Comment'],
-          table_properties: ['username', 'priviliges', 'admin_creator', 'dateCreated', 'comment'],
-          table_options: [Constants.create_user, Constants.add_keyword_filter],
-          item_properties: ['username', 'priviliges', 'admin_creator', 'dateCreated', 'comment'],
-          item_property_labels: ['Username', 'Privilege', 'Created By', 'Created On', 'Comment'],
-          //item_property_patterns: ['.+', '^[0-9]+$', '^[016789][0-9]{11}$', '^[016789][0-9]{11}$', '.+', '^[0-9]+$', '.*'], 
-          item_property_field_type: ['text', 'text', 'text', 'text', 'text'],
+          table_columns: ['Username', 'Admin', 'Created By', 'Comment'],
+          table_properties: ['username', 'isAdmin', 'admin_creator', 'comment'],
+          table_options: [Constants.add_keyword_filter],
+          //table_options: [Constants.create_user, Constants.add_keyword_filter],
+
+          item_properties: ['username', 'isAdmin', 'comment'],
+          item_property_labels: ['Username', 'Admin', 'Comment'],
+          // item_properties: ['username', 'password', 'isAdmin', 'admin_creator', 'comment'],
+          // item_property_labels: ['Username', 'Passowrd', 'Admin', 'Created By', 'Comment'],
+
+          item_property_patterns: ['.*', '.*', '.*', '.*'],
+          item_property_field_type: ['text', 'text', 'text', 'text'],
         };
     }
 

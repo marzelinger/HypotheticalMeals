@@ -9,7 +9,7 @@ import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
 
-const currentUserIsAdmin = require("../components/auth/currentUserIsAdmin");
+const currentUserIsAdmin = require("./auth/currentUserIsAdmin");
 
 
 export default class GeneralMenu extends React.Component {
@@ -45,37 +45,28 @@ export default class GeneralMenu extends React.Component {
         <Link to="/prod_lines" >
           <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Product Lines'}></MenuItem>
         </Link>
-
-        {
-            currentUserIsAdmin().isValid ? 
-            (
-              <Link to="/import" >
+        {currentUserIsAdmin().isValid ? 
+            (<Link to="/import" >
               <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Import'}></MenuItem>
-            </Link>
-            )
+            </Link>)
             :
             (<div></div>)
-          }
-           {
-            currentUserIsAdmin().isValid ? 
-            (
-              <Link to="/users" >
+        }
+        {currentUserIsAdmin().isValid ? 
+            (<Link to="/users" >
               <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'User Settings'}></MenuItem>
-            </Link>
-            )
+            </Link>)
             :
             (<div></div>)
-          }
-          {
-            currentUserIsAdmin().isValid ? 
-            (
+        }
+        {currentUserIsAdmin().isValid ? 
+              (
               <Link to="/register" >
                 <MenuItem style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Register New Users'}></MenuItem>
-              </Link>
-            )
+              </Link>)
             :
             (<div></div>)
-          }
+        }
         </Drawer>
       </div>
     );

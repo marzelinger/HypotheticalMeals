@@ -18,16 +18,16 @@ const UserSchema = new Schema({
       type: String,
       required: true
     },
-    dateCreated: {
-      type: Date,
-      default: Date.now
-    },
+    // dateCreated: {
+    //   type: Date,
+    //   default: Date.now
+    // },
     privileges : [String],
-    import_ids : [String],
+    //import_ids : [String],
     admin_creator : String,
     comment : String,
     isAdmin : {
-      type : boolean,
+      type : Boolean,
       required : true
     }
 

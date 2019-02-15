@@ -23,7 +23,6 @@ import Logout from '../components/auth/Logout';
 
 import { setCurrentUser, logoutUser, getAllUsers } from "../actions/authActions";
 import { Provider } from "react-redux";
-//import store from '../store/configureStore';
 import configureStore from '../store/configureStore';
 
 import PropTypes from "prop-types";

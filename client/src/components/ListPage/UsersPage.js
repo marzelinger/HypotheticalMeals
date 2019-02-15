@@ -58,11 +58,13 @@ export default class UsersPage extends React.Component {
             pageSize: 20,
             pagesCount: 0,
             filters: {
-                'keyword': '',
-                'users': [],
+                'keyword': ''
+                //,
+                // 'users': [],
             },
-            filterChange: false,
-            users: []
+            filterChange: false
+            // ,
+            // users: []
         };
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!= null){
@@ -85,9 +87,9 @@ export default class UsersPage extends React.Component {
     }   
 
     async componentDidMount() {
-        if (this.props.default_users_filter !== undefined){
-            await this.onFilterValueSelection([{ value: this.props.default_users_filter._id }], null, 'usernames');
-        }
+        // if (this.props.default_users_filter !== undefined){
+        //     await this.onFilterValueSelection([{ value: this.props.default_users_filter._id }], null, 'usernames');
+        // }
         // if (this.props.default_sku_filter !== undefined){
         //     await this.onAddFilter(Constants.sku_label)
         //     await this.onFilterValueSelection(undefined, this.props.default_sku_filter, 0);
@@ -103,14 +105,16 @@ export default class UsersPage extends React.Component {
     }
 
     updateDataState = async() => {
-        var {data: users} = await SubmitRequest.submitGetData(Constants.users_page_name);
-        this.setState({users: users});
+        //var {data: users} = await SubmitRequest.submitGetData(Constants.users_page_name);
+        //this.setState({users: users});
     }
 
     async loadDataFromServer() {
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
         var final_keyword_filter = this.state.filters['keyword'];
-        var final_users_filter = this.state.filters['users'].join(',');
+        //var final_users_filter = this.state.filters['users'].join(',');
+        var final_users_filter = '_';
+
         if (final_keyword_filter === '') final_keyword_filter = '_';
         if (final_users_filter === '') final_users_filter = '_';
         printFuncFront("here in loadDataFromServer");
@@ -170,17 +174,17 @@ export default class UsersPage extends React.Component {
 
     }
 
-    async updateUserCounts() {
-        let data = this.state.data.slice();
-        await data.map(async (item) => {
-                       let users = await SubmitRequest.submitGetFilterData(Constants.users_filter_path,'_', item._id, '_', this.state.currentPage, this.state.pageSize,'_');
+    // async updateUserCounts() {
+    //     let data = this.state.data.slice();
+    //     await data.map(async (item) => {
+    //                    let users = await SubmitRequest.submitGetFilterData(Constants.users_filter_path,'_', item._id, '_', this.state.currentPage, this.state.pageSize,'_');
 
-            item.users_count = users.data.length;
-            await SubmitRequest.submitUpdateItem(this.state.page_name, item);
-            }
-        );
-        this.setState({ data: data })
-    }
+    //         item.users_count = users.data.length;
+    //         await SubmitRequest.submitUpdateItem(this.state.page_name, item);
+    //         }
+    //     );
+    //     this.setState({ data: data })
+    // }
 
     onFilterValueChange = (e, value, filterType) => {
         var filters = this.state.filters;
@@ -231,32 +235,32 @@ export default class UsersPage extends React.Component {
     }
 
     async onCreateNewItem() {
-        var item = await ItemStore.getEmptyItem(this.state.page_name);
-        const newData = this.state.data.slice();
-        newData.push(item);
+        // var item = await ItemStore.getEmptyItem(this.state.page_name);
+        // const newData = this.state.data.slice();
+        // newData.push(item);
 
-        //for the pagination stuff
-        const newExportData = this.state.exportData.slice();
-        newExportData.push(item);
+        // //for the pagination stuff
+        // const newExportData = this.state.exportData.slice();
+        // newExportData.push(item);
 
-        this.setState({ 
-            data: newData,
-            exportData: newExportData,
-            detail_view_item: item,
-            detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
-        })
-        this.toggleModal();
-        this.loadDataFromServer();
+        // this.setState({ 
+        //     data: newData,
+        //     exportData: newExportData,
+        //     detail_view_item: item,
+        //     detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
+        // })
+        // this.toggleModal();
+        // this.loadDataFromServer();
     }
 
     onTableOptionSelection = (e, opt) => {
         switch (opt){
-            case Constants.create_item:
-                this.onCreateNewItem();
-                break;
-            case Constants.add_user_filter:
-                this.onAddFilter(Constants.user_label);
-                break;
+            // case Constants.create_item:
+            //     this.onCreateNewItem();
+            //     break;
+            // // case Constants.add_user_filter:
+            //     this.onAddFilter(Constants.user_label);
+            //     break;
             case Constants.add_keyword_filter:
                 this.onAddFilter(Constants.keyword_label);
                 break;
@@ -298,10 +302,10 @@ export default class UsersPage extends React.Component {
         var newData = this.state.data.splice();
         //
         switch (option) {
-            case Constants.details_create:
-                newData.push(item);
-                res = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
-                break;
+            // case Constants.details_create:
+            //     newData.push(item);
+            //     res = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
+            //     break;
             case Constants.details_save:
                 let toSave = newData.findIndex(obj => {return obj._id === item._id});
                 newData[toSave] = item;

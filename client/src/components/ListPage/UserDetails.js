@@ -12,6 +12,8 @@ import {
     Label } from 'reactstrap';
 import DataStore from '../../helpers/DataStore'
 import DetailsViewSkuTable from './DetailsViewSkuTable'
+import { Form, FormText } from 'reactstrap';
+
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
@@ -100,9 +102,34 @@ export default class UserDetails extends React.Component {
             <div className='item-title'>
                 <h1>{ this.props.item  ? this.props.item.name : Constants.undefined }</h1>
             </div>
+            <FormGroup check inline>
+          <Label check>
+            <Input type="checkbox" /> Some input
+          </Label>
+        </FormGroup>
             <div className='item-properties'>
                 { this.injectProperties() }
                 {/* <DetailsViewSkuTable id='1' ingredient={this.props.item}/> */}
+            </div>
+            <div className= 'privilege'>
+            <FormGroup check>
+              <Label check>
+                <Input type="checkbox" id="checkbox2" />{' '}
+                Check me out1
+              </Label>
+            </FormGroup>
+            <FormGroup check>
+              <Label check>
+                <Input type="checkbox" id="checkbox2" />{' '}
+                Check me out
+              </Label>
+            </FormGroup>
+            <FormGroup check>
+              <Label check>
+                <Input type="checkbox" id="checkbox2" />{' '}
+                Check me out
+              </Label>
+            </FormGroup>
             </div>
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 

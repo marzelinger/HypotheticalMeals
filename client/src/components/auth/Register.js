@@ -7,6 +7,7 @@ import classnames from "classnames";
 import { CustomInput, Form, FormGroup, Label } from 'reactstrap';
 
 const currentUserIsAdmin = require("./currentUserIsAdmin");
+const currentUserUsername = require("./currentUserUsername");
 
 var userIsAdmin = false;
 
@@ -21,6 +22,9 @@ class Register extends Component {
       username: "",
       password: "",
       password2: "",
+      privileges: [],
+      admin_creator: currentUserUsername(),
+      admin: false,
       errors: {}
     };
   }
@@ -50,18 +54,14 @@ onChange(e){
 
 onSubmit(e){
     e.preventDefault();
-const newUser = {
+    const newUser = {
       username: this.state.username,
       password: this.state.password,
       password2: this.state.password2,
-      admin_creator: 
-      privileges: []
+      admin_creator: this.state.admin_creator,
+      admin: this.state.admin,
+      privileges: [this.state.privileges]
     };
-    console.log(e);
-    console.log(this.state);
-    console.log(this.props.history);
-    console.log(this.props);
-    console.log(newUser);
 
     if(currentUserIsAdmin().isValid){
       this.props.registerUser(newUser, this.props.history); 
@@ -80,7 +80,6 @@ return (
       <div className="container">
         <div className="row">
           <div className="col s8 offset-s2">
-
             <div className="col s12" style={{ paddingLeft: "11.250px" }}>
               <h4>
                 <b>Register</b> New User Below
