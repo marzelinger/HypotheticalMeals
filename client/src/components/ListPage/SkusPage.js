@@ -78,7 +78,6 @@ export default class ListPage extends React.Component {
         this.onSort = this.onSort.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
         this.setInitPages();
-        console.log(props.default_ing_filter)
     }
 
     toggle = (modalType) => {

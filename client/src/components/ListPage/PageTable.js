@@ -137,7 +137,6 @@ export default class PageTable extends Component {
   }
 
   render() {
-    console.log(`myrow ${this.state.showCheckboxes ? " trselect":""}`);
     return (
       <div>
         <Table

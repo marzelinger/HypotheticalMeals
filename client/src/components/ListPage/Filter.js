@@ -79,7 +79,7 @@ export default class Filter extends React.Component {
     }
 
     render() {
-        if (this.props.defaultItems !== undefined && this.props.defaultItems.length === 0) {
+        if (this.props.defaultItems !== undefined && this.props.defaultItems[0] === 'loading') {
             return null;
         }
         return (
