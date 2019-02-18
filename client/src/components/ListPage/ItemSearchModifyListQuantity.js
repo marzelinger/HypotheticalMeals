@@ -1,4 +1,4 @@
-// ItemSearchModifyList.js
+// ItemSearchModifyListQuantity.js
 // Riley
 // Individual search component to add/delete items to a list
 
@@ -16,7 +16,7 @@ import SubmitRequest from '../../helpers/SubmitRequest'
 import Filter from './Filter'
 
 
-export default class ItemSearchModifyList extends React.Component {
+export default class ItemSearchModifyListQuantity extends React.Component {
     constructor(props) {
         super(props);
 
@@ -42,6 +42,9 @@ export default class ItemSearchModifyList extends React.Component {
     async updateResults() {
         if (this.props.item_type === Constants.details_modify_ingredient && this.state.substr.length > 0) {
             var res = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.substr);
+        }
+        if (this.props.item_type === Constants.modify_manu_lines_label && this.state.substr.length > 0) {
+            var res = await SubmitRequest.submitGetManufacturingLinesByNameSubstring(this.state.substr);
         }
         else {
             var res = {};
@@ -91,9 +94,9 @@ export default class ItemSearchModifyList extends React.Component {
     determineButtonDisplay(state, option) {
         switch (option) {
             case Constants.details_add:
-                return (state.value === '' || (state.qty <= 0 && (this.props.simple == undefined || this.props.simple == false)))
+                return (state.value === '' || (state.qty <= 0 && this.props.qty_disable !== true))
             case Constants.details_remove:
-                return (state.value === '' || (state.qty <= 0 && (this.props.simple == undefined || this.props.simple == false)))
+                return (state.value === '' || (state.qty <= 0 && this.props.qty_disable !== true))
         }
     }
 
@@ -103,12 +106,11 @@ export default class ItemSearchModifyList extends React.Component {
             <FormGroup>
                 <Label>{this.props.item_type}</Label>
                 <Filter
-                handleFilterValueSelection = {(opt, e) => this.onFilterValueSelection(opt.label, opt.value)}
-                type = {this.props.api_route}
-                multi = {false}
-                >
-                </Filter>
-                {this.props.simple != undefined && this.props.simple ? <div></div> : 
+                    handleFilterValueSelection = {(opt, e) => this.onFilterValueSelection(opt.label, opt.value)}
+                    type = {this.props.api_route}
+                    multi = {false}
+                />
+                {this.props.qty_disable !== undefined && this.props.qty_disable ? <div></div> : 
                 (<div>
                     <Label>{Constants.details_modify_ingredient_quantities}</Label>
                     <Input 
@@ -131,9 +133,10 @@ export default class ItemSearchModifyList extends React.Component {
     }
 }
 
-ItemSearchModifyList.propTypes = {
+ItemSearchModifyListQuantity.propTypes = {
     api_route: PropTypes.string,
     item_type: PropTypes.string,
     options: PropTypes.arrayOf(PropTypes.string),
-    handleModifyList: PropTypes.func
+    handleModifyList: PropTypes.func,
+    qty_disable: PropTypes.bool
   };

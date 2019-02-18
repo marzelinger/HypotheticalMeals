@@ -16,12 +16,19 @@ export default class ModifyManuLines extends React.Component {
         this.state = {
             width: 100,
             currLines : ['loading'],
-            lines: []
+            lines: [],
+            num_lines: 0
         };
     }
 
     componentDidMount = async () => {
-        await this.injectManuLines();
+        
+    }
+
+    async componentDidUpdate(prevProps, prevState) {
+        if (this.state.num_lines !== this.props.item['manu_lines'].length){
+            await this.injectManuLines();
+        }
     }
 
     async onFilterValueSelection (opts, e) {
@@ -32,6 +39,7 @@ export default class ModifyManuLines extends React.Component {
     }
 
     async injectManuLines() { 
+        console.log(this.props.item['manu_lines'])
         let to_return = await this.props.item['manu_lines'].map(async (id) => {
             let mLine = await SubmitRequest.submitGetManufacturingLineByID(id)
             return await {
@@ -42,6 +50,7 @@ export default class ModifyManuLines extends React.Component {
         let mLines = await Promise.all(to_return);
         this.setState({
             currLines: mLines,
+            num_lines: mLines.length
         })
     }
 
@@ -49,10 +58,10 @@ export default class ModifyManuLines extends React.Component {
         return (
         <div className='filter-item detailsfilter' style={{width: this.state.width + '%'}}>
             <FormGroup>
-            <Label>{Constants.modify_manu_lines_label}</Label>
+            <Label>{this.props.label}</Label>
                 <Filter
                     handleFilterValueSelection = {(opts, e) => this.onFilterValueSelection(opts)}
-                    type = {'manu_lines'}
+                    type = {Constants.manu_line_page_name}
                     multi = {true}
                     defaultItems = {this.state.currLines}
                 />
@@ -65,5 +74,6 @@ export default class ModifyManuLines extends React.Component {
 
 ModifyManuLines.propTypes = {
     item: PropTypes.object,
+    label: PropTypes.string,
     handleModifyManuLines: PropTypes.func
 }

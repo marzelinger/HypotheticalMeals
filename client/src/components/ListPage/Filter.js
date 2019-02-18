@@ -36,41 +36,44 @@ export default class Filter extends React.Component {
 
     getLabel(type) {
         switch (type){
-            case 'ingredients':
+            case Constants.ingredients_page_name:
                 return 'Ingredients'
-            case 'skus':
+            case Constants.skus_page_name:
                 return 'SKUs'
-            case 'products':
+            case Constants.prod_line_page_name:
                 return 'Product Lines'
-            case 'manu_lines':
+            case Constants.manu_line_page_name:
                 return 'Manufacturing Lines'
         }
     }
 
     getNewOptions = (input) => {
-            if(input == ""){
-                this.setState({options: []})
-                return;
-            }
+        if(input == ""){
+            this.setState({options: []})
+            return;
+        }
         switch (this.props.type) {
-                case 'ingredients':
+                case Constants.ingredients_page_name:
                     response  =  SubmitRequest.submitGetIngredientsByNameSubstring(input).then((response) => {
                         this.handleResponse(response)
                     });
                     break;
-                case 'skus':
+                case Constants.skus_page_name:
                     var response =  SubmitRequest.submitGetSkusByNameSubstring(input).then((response) => {
                         this.handleResponse(response)
                     })
                     break;
-                case 'products':
+                case Constants.prod_line_page_name:
                     response =  SubmitRequest.submitGetProductLinesByNameSubstring(input).then((response) => {
                         this.handleResponse(response)
                     });
-                case 'manu_lines':
+                    break;
+                case Constants.manu_line_page_name:
                     response =  SubmitRequest.submitGetManufacturingLinesByNameSubstring(input).then((response) => {
                         this.handleResponse(response)
                     });
+                    break;
+
             }
     }
 

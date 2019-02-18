@@ -14,7 +14,7 @@ import {
 import DataStore from '../../helpers/DataStore'
 import IngredientsViewSimple from './IngredientsViewSimple'
 import ItemSearchInput from './ItemSearchInput';
-import ItemSearchModifyList from './ItemSearchModifyList';
+import ItemSearchModifyListQuantity from './ItemSearchModifyListQuantity';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import ModifyManuLines from './ModifyManuLines';
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
@@ -111,8 +111,7 @@ export default class SKUDetails extends React.Component {
                     break;
             }
             this.setState({ 
-                item: item,
-                item_changed: true 
+                item: item
             })
         }
     }
@@ -138,9 +137,6 @@ export default class SKUDetails extends React.Component {
     }
 
     addIngredient(item, value, qty) {
-        console.log('adding')
-        console.log(value);
-        console.log(item);
         let ind = -1;
         qty = parseInt(qty);
         item.ingredients.map((ing, index) => {
@@ -216,6 +212,7 @@ export default class SKUDetails extends React.Component {
                 { this.injectProperties() }
                 <ModifyManuLines
                     item={this.state.item}
+                    label={Constants.modify_manu_lines_label}
                     handleModifyManuLines={this.onModifyManuLines}
                 />
                 <ItemSearchInput
@@ -225,7 +222,7 @@ export default class SKUDetails extends React.Component {
                     handleSelectItem={this.onSelectProductLine}
                     disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
                 />
-                <ItemSearchModifyList
+                <ItemSearchModifyListQuantity
                     api_route={Constants.ingredients_page_name}
                     item_type={Constants.details_modify_ingredient}
                     options={[Constants.details_add, Constants.details_remove]}
