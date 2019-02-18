@@ -292,6 +292,7 @@ export default class ListPage extends React.Component {
                 res = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_save:
+                console.log(item)
                 let toSave = newData.findIndex(obj => {return obj._id === item._id});
                 newData[toSave] = item;
                 res = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
@@ -372,10 +373,10 @@ export default class ListPage extends React.Component {
                 </Modal>
                 <AddToManuGoal selected_skus={this.state.selected_items} isOpen={this.state.manu_goals_modal} toggle={(toggler) => this.toggle(toggler)} manu_goals_data={this.state.manu_goals_data}></AddToManuGoal> 
                 <TablePagination
-                 currentPage = {this.state.currentPage}
-                 pagesCount = {this.state.pagesCount}
-                 handlePageClick = {this.handlePageClick}
-                 getButtons = {this.getButtons}
+                    currentPage = {this.state.currentPage}
+                    pagesCount = {this.state.pagesCount}
+                    handlePageClick = {this.handlePageClick}
+                    getButtons = {this.getButtons}
                 >
                 </TablePagination>
             </div>

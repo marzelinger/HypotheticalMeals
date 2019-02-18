@@ -79,11 +79,13 @@ export default class Filter extends React.Component {
     }
 
     render() {
+        if (this.props.defaultItems !== undefined && this.props.defaultItems.length === 0) {
+            return null;
+        }
         return (
         <div className='filter-item'>
-            {console.log(this.props.data === undefined ? 'nope' : this.props.data)} {/* rn the defaultValue is not being passed... */}
             <Select
-                defaultValue = {this.props.data === undefined ? null : this.props.data}
+                defaultValue = {this.props.defaultItems}
                 placeholder = {this.props.multi != undefined ? this.getDetailsPlaceholder() : `Filter by ${this.props.type}`}
                 isMulti = {this.props.multi != undefined ? this.props.multi : true}
                 onInputChange = { (input) => this.getNewOptions(input)}
@@ -106,7 +108,7 @@ export default class Filter extends React.Component {
 
 Filter.propTypes = {
     value: PropTypes.string,
-    data: PropTypes.arrayOf(PropTypes.object),
+    defaultItems: PropTypes.arrayOf(PropTypes.object),
     handleFilterValueChange: PropTypes.func,
     handleFilterValueSelection: PropTypes.func,
     handleRemoveFilter: PropTypes.func,

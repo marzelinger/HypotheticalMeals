@@ -14,33 +14,36 @@ export default class ModifyManuLines extends React.Component {
         super(props);
 
         this.state = {
+            width: 100,
             currLines : [],
             lines: []
         };
     }
 
-    componentDidMount () {
-        this.injectManuLines();
+    componentDidMount = async () => {
+        await this.injectManuLines();
     }
 
     async onFilterValueSelection (opts, e) {
         let newLines = opts.map(opt => {
             return opt.value._id
         })
+        console.log(newLines);
         this.props.handleModifyManuLines(newLines)
     }
 
     async injectManuLines() { 
         let to_return = await this.props.item['manu_lines'].map(async (id) => {
             let mLine = await SubmitRequest.submitGetManufacturingLineByID(id)
+            console.log(mLine)
             return await {
                 label: mLine.data[0].name,
-                value: mLine.data[0]._id
+                value: {_id : mLine.data[0]._id}
             }
         })
         let mLines = await Promise.all(to_return);
-        await console.log(mLines)
-        await this.setState({
+        console.log(mLines)
+        this.setState({
             currLines: mLines,
         })
     }
@@ -60,7 +63,7 @@ export default class ModifyManuLines extends React.Component {
                     handleFilterValueSelection = {(opts, e) => this.onFilterValueSelection(opts)}
                     type = {'manu_lines'}
                     multi = {true}
-                    data = {this.state.currLines.length ? this.state.currLines : undefined}
+                    defaultItems = {this.state.currLines}
                 />
             </FormGroup>
         </div>

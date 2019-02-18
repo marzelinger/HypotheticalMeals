@@ -88,7 +88,6 @@ export default class SKUDetails extends React.Component {
         if(currentUserIsAdmin().isValid){
             var newItem = this.state.item;
             newItem['manu_lines'] = list;
-            console.log(newItem)
             this.setState({
                 item: newItem
             })
