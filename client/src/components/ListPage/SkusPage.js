@@ -1,8 +1,6 @@
-// ListPage.js
 // SkusPage.js
 // Riley
 // Larger page component to be shown in PageTemplate
-// THIS PAGE IS DEPRICATED
 
 import React from 'react';
 import PropTypes from 'prop-types';

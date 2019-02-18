@@ -13,7 +13,6 @@ import {
     ListGroupItem} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import SubmitRequest from '../../helpers/SubmitRequest'
-import Select from 'react-select'
 import Filter from './Filter'
 
 

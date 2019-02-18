@@ -19,7 +19,8 @@ export default class Filter extends React.Component {
             width: 100,
             focus: false,
             open: false,
-            options: []
+            options: [],
+            loaded: false
         };
     }
 
@@ -31,6 +32,19 @@ export default class Filter extends React.Component {
             this.setState({options: response.data.map((item) => ({label: item.name, value: item}))});
         }
             
+    }
+
+    getLabel(type) {
+        switch (type){
+            case 'ingredients':
+                return 'Ingredients'
+            case 'skus':
+                return 'SKUs'
+            case 'products':
+                return 'Product Lines'
+            case 'manu_lines':
+                return 'Manufacturing Lines'
+        }
     }
 
     getNewOptions = (input) => {
@@ -53,16 +67,23 @@ export default class Filter extends React.Component {
                     response =  SubmitRequest.submitGetProductLinesByNameSubstring(input).then((response) => {
                         this.handleResponse(response)
                     });
+                case 'manu_lines':
+                    response =  SubmitRequest.submitGetManufacturingLinesByNameSubstring(input).then((response) => {
+                        this.handleResponse(response)
+                    });
             }
     }
+
     getDetailsPlaceholder = () => {
-        return (this.props.place_holder != undefined ? this.props.place_holder.name : `Add ${this.props.type}`);
+        return (this.props.place_holder != undefined ? this.props.place_holder.name : `Add ${this.getLabel(this.props.type)}`);
     }
 
     render() {
         return (
         <div className='filter-item'>
+            {console.log(this.props.data === undefined ? 'nope' : this.props.data)} {/* rn the defaultValue is not being passed... */}
             <Select
+                defaultValue = {this.props.data === undefined ? null : this.props.data}
                 placeholder = {this.props.multi != undefined ? this.getDetailsPlaceholder() : `Filter by ${this.props.type}`}
                 isMulti = {this.props.multi != undefined ? this.props.multi : true}
                 onInputChange = { (input) => this.getNewOptions(input)}

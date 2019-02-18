@@ -59,8 +59,8 @@ export default class ItemStore{
           comment: ''
         };
       case Constants.skus_page_name: 
-      var res = await SubmitRequest.submitGetData(page_name);
-      var new_id = await ItemStore.getUniqueNumber(res.data);
+        var res = await SubmitRequest.submitGetData(page_name);
+        var new_id = await ItemStore.getUniqueNumber(res.data);
         let new_case_upc = ItemStore.getUniqueCaseUPC(res.data);
         let new_unit_upc = ItemStore.getUniqueUnitUPC(new_case_upc, res.data);
         return {
@@ -73,7 +73,11 @@ export default class ItemStore{
           prod_line: '',
           comment: '',
           ingredients: [],
-          ingredient_quantities: []
+          ingredient_quantities: [],
+          formula: {},
+          scale_factor: 1,
+          manu_lines: [],
+          manu_rate: ''
         };
       case Constants.manugoals_page_name:
         return {

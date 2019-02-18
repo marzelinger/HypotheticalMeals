@@ -16,6 +16,7 @@ import IngredientsViewSimple from './IngredientsViewSimple'
 import ItemSearchInput from './ItemSearchInput';
 import ItemSearchModifyList from './ItemSearchModifyList';
 import SubmitRequest from '../../helpers/SubmitRequest';
+import ModifyManuLines from './ModifyManuLines';
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
 
@@ -79,6 +80,17 @@ export default class SKUDetails extends React.Component {
             this.setState({
                 item: newItem,
                 prod_line_item: pl
+            })
+        }
+    }
+
+    onModifyManuLines = (list) => {
+        if(currentUserIsAdmin().isValid){
+            var newItem = this.state.item;
+            newItem['manu_lines'] = list;
+            console.log(newItem)
+            this.setState({
+                item: newItem
             })
         }
     }
@@ -203,6 +215,10 @@ export default class SKUDetails extends React.Component {
             </div>
             <div className='item-properties'>
                 { this.injectProperties() }
+                <ModifyManuLines
+                    item={this.state.item}
+                    handleModifyManuLines={this.onModifyManuLines}
+                />
                 <ItemSearchInput
                     curr_item={this.state.prod_line_item}
                     item_type={Constants.prod_line_label}
