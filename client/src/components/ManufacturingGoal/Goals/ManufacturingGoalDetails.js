@@ -1,7 +1,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types';
-import CheckDigit from 'checkdigit';
+import CheckDigit from '../../../helpers/CheckDigit';
 import * as Constants from '../../../resources/Constants';
 import { 
     Button,
