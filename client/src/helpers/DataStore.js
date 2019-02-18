@@ -49,8 +49,8 @@ export default class DataStore{
           table_options: [Constants.add_keyword_filter],
           //table_options: [Constants.create_user, Constants.add_keyword_filter],
 
-          item_properties: ['username', 'isAdmin', 'comment'],
-          item_property_labels: ['Username', 'Admin', 'Comment'],
+          item_properties: ['username', 'comment'],
+          item_property_labels: ['Username', 'Comment'],
           // item_properties: ['username', 'password', 'isAdmin', 'admin_creator', 'comment'],
           // item_property_labels: ['Username', 'Passowrd', 'Admin', 'Created By', 'Comment'],
 

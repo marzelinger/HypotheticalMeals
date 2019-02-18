@@ -19,7 +19,6 @@ class UserHandler{
     // If the User exists, return error if it exists
     static createUser(req, res){
       // Form validation
-      console.log("this is the stringify: "+JSON.stringify(req.body));
       const { errors, isValid } = validateRegisterInput(req.body);
       // Check validation
       if (!isValid) {
@@ -73,7 +72,6 @@ class UserHandler{
         if (isMatch) {
           // User matched
           // Create JWT Payload
-          //console.log("admin of new user: "+ user.email+" is: "+ isAdmin(user).isValid);
           const payload = {
             id: user.id,
             username: user.username,
@@ -102,6 +100,42 @@ class UserHandler{
       });
     });
     }
+
+  static async updateUserByID(req, res){
+      try {
+          printFuncBack("here in the update user by id");
+          var target_id = req.params.user_id;
+          printFuncBack("target id stuff "+target_id);
+
+          if (!target_id) {
+              return res.json({ success: false, error: 'No user id provided'});
+          }
+          var new_username = req.body.username;
+          var new_isAdmin = req.body.isAdmin;
+          var new_comment = req.body.comment;
+          printFuncBack("new stuff: "+new_username+new_isAdmin+new_comment);
+
+          let updated_user = await User.findOneAndUpdate({ _id: target_id},
+              {$set: {username: new_username, isAdmin : new_isAdmin, comment: new_comment}}, {upsert: true, new: true});
+          //let test_user = await User.find(target_id);
+          printFuncBack("new updateduser: "+updated_user);
+          printFuncBack("new stringifty: "+JSON.stringify(updated_user));
+
+
+          if(!updated_user){
+              return res.json({
+                  success: true, error: 'This document does not exist'
+              });
+          }
+          return res.json({
+              success: true, data: updated_user
+          });    
+      }
+      catch (err) {
+          return res.json({ success: false, error: err});
+      }
+  }
+
 
 
     // Gets all Users in the database

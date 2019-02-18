@@ -12,11 +12,7 @@ const adminHasInit = require("../../src/components/auth/adminHasInit");
 
 // Register New User
 export const registerUser = (userData, history) => dispatch => {
-  console.log(history);
-  console.log("THIS IS THE USER DATA: "+JSON.stringify(userData));
-  console.log(localStorage);
       if(currentUserIsAdmin().isValid){
-        console.log("curUserIsAdmin has been confirmed to be true");
         axios
         .post("/api/users/register", userData)
         .then(res => history.push("/skus")) //re-direct to skus on successful register.
@@ -46,7 +42,6 @@ export const loginUser = userData => dispatch => {
         setAdminToken(token);
       }
       // Decode token to get user data
-      console.log("logging in user and setting if admin in authActions: "+decoded.admin);
       // Set current user
       dispatch(setCurrentUser(decoded));
     })
@@ -72,7 +67,6 @@ export const setUserLoading = () => {
 };
 // Log user out
 export const logoutUser = () => dispatch => {
-  console.log("this is logging out the user");
   // Remove token from local storage
   localStorage.removeItem("jwtToken");
   // Remove auth header for future requests
@@ -80,21 +74,13 @@ export const logoutUser = () => dispatch => {
   setAdminToken(false);
   // Set current user to empty object {} which will set isAuthenticated to false
   dispatch(setCurrentUser({}));
-  console.log(SET_CURRENT_USER);
-  console.log("localStorage: "+localStorage.getItem("jwtToken"));
 };
 
 
 
 // // Register First Admin
 export const registerFirstAdmin = (userData, history) => dispatch => {
-  console.log(history);
-  console.log(userData);
 
-  //console.log("this is the regfirstAdmin flag: "+ sessionStorage.getItem("firstAdminCreated"));
-  console.log("this is the regfirstAdmin flag: "+ localStorage.getItem("firstAdminCreated"));
-
-  console.log("this is the adminHasinit value: "+ adminHasInit().isValid);
   //if(!adminHasInit().isValid){
   axios
     .post("/api/users/register", userData)
@@ -106,7 +92,6 @@ export const registerFirstAdmin = (userData, history) => dispatch => {
       })
     );
     localStorage.setItem("firstAdminCreated", true);
-    console.log("this is the regfirstAdminLATER flag: "+ localStorage.getItem("firstAdminCreated"));
   //}
 };
 
@@ -118,9 +103,6 @@ export const getAllUsers = () => dispatch => {
   axios
     .get("/api/users")
     .then(res => {
-      console.log("this is the response in authActions: "+ res);
-      console.log("this is the length: "+ res.data.data.length);
-
       if(res.data.data.length>0){
         //sessionStorage.setItem("firstAdminCreated", true);
         localStorage.setItem("firstAdminCreated", true);
@@ -129,9 +111,6 @@ export const getAllUsers = () => dispatch => {
      else{
       //sessionStorage.setItem("firstAdminCreated", false);
       }
-      //console.log("this is the firstAdminCreated flag: "+ sessionStorage.getItem("firstAdminCreated"));
-      console.log("this is the firstAdminCreated flag: "+ localStorage.getItem("firstAdminCreated"));
-
           }) // re-direct to login on successful register
     .catch(err =>
       dispatch({

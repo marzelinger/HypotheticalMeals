@@ -108,6 +108,8 @@ router.post('/parseFormulas', upload.single('file'), (req, res) => CSV_parser.pa
 router.post('/parseUpdateSkus', (req, res) => CSV_parser.parseUpdateSKU(req, res));
 router.post('/parseUpdateIngredients', (req, res) => CSV_parser.parseUpdateIngredients(req, res));
 
+router.put('/users/:user_id', (req, res) => UserHandler.updateUserByID(req, res));
+
 // Use our router configuration when we call /api
 app.use('/api', router);
 app.use(passport.initialize());
@@ -129,6 +131,7 @@ router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword
 // @desc Get all users in the mlab db and return them.
 // @access Public
 router.get('/users', (req, res) => UserHandler.getAllUsers(req, res));
+
 
 
 

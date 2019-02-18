@@ -9,15 +9,24 @@ import {
     Button,
     Input,
     FormGroup,
-    Label } from 'reactstrap';
+    Label,
+    CustomInput } from 'reactstrap';
 import DataStore from '../../helpers/DataStore'
 import DetailsViewSkuTable from './DetailsViewSkuTable'
 import { Form, FormText } from 'reactstrap';
+import printFuncFront from '../../printFuncFront';
+import Checkbox from './Checkbox';
 
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
 
+// const items = [
+//     'One',
+//     'Two',
+//     'Three',
+//   ];
+  
 
 export default class UserDetails extends React.Component {
     constructor(props) {
@@ -39,6 +48,8 @@ export default class UserDetails extends React.Component {
         }
     }
 
+
+
     getPropertyLabel = (prop) => {
         return this.state.item_property_labels[this.state.item_properties.indexOf(prop)];
     }
@@ -55,6 +66,7 @@ export default class UserDetails extends React.Component {
     onPropChange = (value, item, prop) => {
         item[prop] = value;
         this.setState({ item: item });
+        printFuncFront("this is the item: "+JSON.stringify(item));
     };
 
     async handleSubmit(e, opt) {
@@ -78,6 +90,18 @@ export default class UserDetails extends React.Component {
         })
         await this.setState({ invalid_inputs: inv_in });
     }
+    onAdminCheckBoxClick = (value, item) => {
+        printFuncFront("the user admin has been selected.");
+        printFuncFront("the checkbox.: "+value);
+        printFuncFront("this is the item: "+JSON.stringify(item));
+        item["isAdmin"] = value;
+        this.setState({ item: item });
+        printFuncFront("this is the item: after "+JSON.stringify(item));
+
+
+    };
+
+
 
     injectProperties = () => {
         if (this.props.item){
@@ -102,35 +126,17 @@ export default class UserDetails extends React.Component {
             <div className='item-title'>
                 <h1>{ this.props.item  ? this.props.item.name : Constants.undefined }</h1>
             </div>
-            <FormGroup check inline>
-          <Label check>
-            <Input type="checkbox" /> Some input
-          </Label>
-        </FormGroup>
             <div className='item-properties'>
                 { this.injectProperties() }
-                {/* <DetailsViewSkuTable id='1' ingredient={this.props.item}/> */}
             </div>
             <div className= 'privilege'>
-            <FormGroup check>
-              <Label check>
-                <Input type="checkbox" id="checkbox2" />{' '}
-                Check me out1
-              </Label>
-            </FormGroup>
-            <FormGroup check>
-              <Label check>
-                <Input type="checkbox" id="checkbox2" />{' '}
-                Check me out
-              </Label>
-            </FormGroup>
-            <FormGroup check>
-              <Label check>
-                <Input type="checkbox" id="checkbox2" />{' '}
-                Check me out
-              </Label>
-            </FormGroup>
             </div>
+            <FormGroup>
+          <Label for="exampleCheckbox">Privileges</Label>
+          <div>
+            <CustomInput type="checkbox" id="exampleCustomSwitch" name="customSwitch" label="Admin" onChange={(e) => this.onAdminCheckBoxClick(e.target.checked, this.props.item)}/>
+          </div>
+        </FormGroup>
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
                     <Button 
