@@ -62,9 +62,10 @@ router.delete('/skus/:sku_id', (req, res) => SkuHandler.deleteSkuByID(req, res))
 router.get('/ingredients_by_sku/:sku_id', (req, res) => SkuHandler.getIngredientsBySkuID(req, res));
 router.get('/skus_name/:search_substr', (req, res) => SkuHandler.getSkusByNameSubstring(req, res));
 
+// Formula database APIs
 router.post('/formulas', (req, res) => FormulaHandler.createFormula(req, res));
 router.put('/formulas/:formula_id', (req, res) => FormulaHandler.updateFormulaByID(req, res));
-router.get('/formulas', (req, res), FormulaHandler.getAllFormulas(req, res));
+router.get('/formulas', (req, res) => FormulaHandler.getAllSkus(req, res));
 router.get('/formulas/:formula_id', (req, res) => FormulaHandler.getFormulaByID(req, res));
 router.delete('formulas/:formula_id', (req, res) => FormulaHandler.deleteFormulaByID(req, res));
 router.get('/formulas_name/:search_substr', (req, res) => FormulaHandler.getFormulasByNameSubstring(req, res));
@@ -85,6 +86,7 @@ router.get('/manulines/:manu_line_id', (req, res) => Manu_LineHandler.getManufac
 router.delete('/manulines/:manu_line_id', (req, res) => Manu_LineHandler.deleteManufacturingLineByID(req, res));
 router.get('/manulines_name/:search_substr', (req, res) => Manu_LineHandler.getManufacturingLinesByNameSubstring(req, res));
 router.get('/manulines_shortname/:short_name', (req, res) => Manu_LineHandler.getManufacturingLinesByShortName(req, res));
+
 // Ingredient database APIs
 router.post('/ingredients', (req, res) => IngredientHandler.createIngredient(req, res));
 router.put('/ingredients/:ingredient_id', (req, res) => IngredientHandler.updateIngredientByID(req, res));
@@ -102,10 +104,12 @@ router.get('/manugoals/:user_id/:manu_goal_id', (req, res) => Manu_GoalHandler.g
 router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteManufacturingGoalByID(req, res));
 router.get('/manugoals/:user_id/:manu_goal_id/skus', (req, res) => Manu_GoalHandler.getManufacturingGoalByIDSkus(req, res));
 router.get('/manugoals_filter/:name_substr/:user_substr/:user', (req, res) => Manu_GoalHandler.getManufacturingGoalByFilter(req, res));
+
 // Multiple database APIs
 router.get('/ingredients_filter/:sort_field/:sku_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
 router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize/:prod_line_ids', (req, res) => FilterHandler.getSkusByFilter(req, res));
 
+// CSV Parser database APIs
 router.post('/parseSkus', upload.single('file'), (req, res) => CSV_parser.parseSKUCSV(req, res));
 router.post('/parseProdLines', upload.single('file'), (req, res) => CSV_parser.parseProdLineCSV(req,res));
 router.post('/parseIngredients', upload.single('file'), (req,res) => CSV_parser.parseIngredientsCSV(req, res));
@@ -135,8 +139,6 @@ router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword
 // @access Public
 router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
 
-
-<<<<<<< HEAD
 /*
 https.createServer({
   key: fs.readFileSync('./../server.key'),
@@ -145,15 +147,10 @@ https.createServer({
 .listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));*/
 
 // app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
-=======
->>>>>>> 3297e667626fce67f43cec0b4816a9985ce2a316
 
 //pagination router api calls
-
-<<<<<<< HEAD
 router.get('/ingredientspagget', (req, res, next) => PaginationHandler.getIngredientsPag(req, res, next));
-=======
->>>>>>> 3297e667626fce67f43cec0b4816a9985ce2a316
+
 // Gives constant name to long directory home page.
 // const appPage = path.join(__dirname, '../client/build/index.html');
 

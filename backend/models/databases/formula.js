@@ -1,4 +1,4 @@
-// model/databases/formulas.js
+// model/databases/formula.js
 // Belal
 
 import mongoose from 'mongoose';
@@ -6,7 +6,7 @@ const Schema = mongoose.Schema;
 
 // create new instance of the mongoose.schema. the schema takes an
 // object that shows the shape of your database entries.
-const FormulasSchema = new Schema({
+const FormulaSchema = new Schema({
   name: String,
   num: String,
   ingredients: [
@@ -20,4 +20,4 @@ const FormulasSchema = new Schema({
 }, { timestamps: true });
 
 // export our module to use in server.js
-export default mongoose.model('Formulas', FormulasSchema);
+export default mongoose.model('Formula', FormulaSchema);
