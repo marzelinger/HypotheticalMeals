@@ -18,11 +18,10 @@ class ManufacturingGoalsBox extends Component {
     this.state = {
       page_name: 'manugoals',
       data: [],
+      activities: [],
       error: null,
       name: '',
-      skus: [],
       user: '',
-      quantities: [],
       isAdmin: currentUserIsAdmin(),
       filters: {
         'username':'_',
@@ -54,13 +53,11 @@ class ManufacturingGoalsBox extends Component {
     console.log('updating goal')
     console.log(new_name);
     const oldGoal = this.state.data.find(c => c._id === id);
-    console.log(oldGoal.quantities)
     if (!oldGoal) return;
     await this.setState({
         name: new_name || oldGoal.name,
-        skus: oldGoal.skus,
+        activities: oldGoal.activities,
         updateId: id,
-        quantities: oldGoal.quantities
     });
     console.log(this.state.name);
     this.submitUpdatedGoal();
@@ -82,6 +79,7 @@ class ManufacturingGoalsBox extends Component {
   }
 
   submitGoal = (e) => {
+    console.log('in submit goal')
     e.preventDefault();
     const { name, updateId } = this.state;
     if (!name) return;
@@ -92,27 +90,46 @@ class ManufacturingGoalsBox extends Component {
     }
   }
 
+  submitNewActivity = async(activities) => {
+    console.log('submit new activity');
+    console.log('submit')
+    let created_activities = [];
+    for(const activity of activities) {
+      try{
+        let new_activity = await SubmitRequest.submitCreateItem('manuactivities', activity);
+        created_activities.push(new_activity.data)
+      } catch (e){
+        console.log(e);
+      }
+    }
+    console.log('all done')
+    return created_activities;
+  }
+
   async submitNewGoal() {
-    const { name, skus, user, quantities } = this.state;
-    console.log(skus);
-    let res = await SubmitRequest.submitCreateItem(Constants.manugoals_page_name, { name, skus, quantities, user });
+    console.log('submitting new goal')
+    const { name, activities, user } = this.state;
+    console.log(activities);
+    let created_activities = await this.submitNewActivity(activities);
+    let res = await SubmitRequest.submitCreateItem(Constants.manugoals_page_name, { name, activities: created_activities, user });
     if (!res.success) {
+      console.log('not a success')
       this.setState({ error: res.error });
     }
     else {
-      this.setState({ name: '', skus: '', error: null });
+      this.setState({ name: '', activities: [], error: null });
     }
   }
 
   async submitUpdatedGoal() {
-    const { name, skus, user, updateId, quantities } = this.state;
-    let item = { name, skus, user, quantities };
+    const { name, activities, user, updateId } = this.state;
+    let item = { name, activities, user };
     let res = await SubmitRequest.submitUpdateGoal(user, updateId, item);
     if (!res.success) {
       this.setState({ error: res.error});
     }
     else {
-      this.setState({ name: '', skus: '', quantities: '', error: null })
+      this.setState({ name: '', activities: '', error: null })
       this.loadGoalsFromServer();
     }
   }
@@ -146,12 +163,17 @@ class ManufacturingGoalsBox extends Component {
     console.log(item);
     switch (option) {
         case Constants.details_create:
-            newData.push(item);
+            let activities = [];
+            newData.push({name: item.name, activities: activities});
+            item.skus.forEach((sku, index) => {
+              activities.push({sku: sku, quantity: item.quantities[index]});
+            })
             await this.setState({
               name: item.name,
-              skus: item.skus,
-              quantities: item.quantities
+              activities,
             })
+            console.log(this.state.name);
+            console.log(this.state.activities)
             this.submitNewGoal();
             break;
         case Constants.details_cancel:
@@ -200,13 +222,6 @@ class ManufacturingGoalsBox extends Component {
           />
         </div>
         <div className="form">
-          {/* <ManufacturingGoalForm
-            name={this.state.name}
-            user={this.state.user}
-            skus={this.state.skus}
-            handleChangeText={this.onChangeText}
-            handleSubmit={this.submitGoal}
-          /> */}
           <ManufacturingGoalDetails
           handleDetailViewSubmit = {this.onDetailViewSubmit}
           ></ManufacturingGoalDetails>

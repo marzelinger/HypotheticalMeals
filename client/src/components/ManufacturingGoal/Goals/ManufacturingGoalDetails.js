@@ -1,7 +1,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types';
-import CheckDigit from 'checkdigit';
+import CheckDigit from '../../../helpers/CheckDigit';
 import * as Constants from '../../../resources/Constants';
 import { 
     Button,
@@ -12,7 +12,7 @@ import {
 import DataStore from '../../../helpers/DataStore'
 import ItemStore from '../../../helpers/ItemStore';
 import addButton from '../../../resources/add.png';
-import ItemSearchModifyList from '../../ListPage/ItemSearchModifyList';
+import ItemSearchModifyListQuantity from '../../ListPage/ItemSearchModifyListQuantity';
 import SimpleGoalTable from '../SimpleGoalTable';
 
 
@@ -187,7 +187,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                 </div>
                 <div className='item-properties'>
                     { this.injectProperties() }
-                    <ItemSearchModifyList
+                    <ItemSearchModifyListQuantity
                         api_route={Constants.skus_page_name}
                         item_type={Constants.details_add_sku}
                         options={[Constants.details_add, Constants.details_remove]}

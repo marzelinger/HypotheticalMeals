@@ -11,10 +11,9 @@ const ManufacturingGoalList = (props) => {
       key={goal._id}
       id={goal._id}
       name={goal.name}
-      skus={goal.skus}
+      activities={goal.activities}
       handleUpdateGoal={props.handleUpdateGoal}
       handleDeleteGoal={props.handleDeleteGoal}
-      quantities = {goal.quantities}
     >
       { goal.name}
     </ManufacturingGoal>
@@ -31,7 +30,7 @@ ManufacturingGoalList.propTypes = {
     user: PropTypes.string,
     id: PropTypes.string,
     name: PropTypes.string,
-    skus: PropTypes.array
+    activities: PropTypes.array
   })),
   handleDeleteGoal: PropTypes.func,
   handleUpdateGoal: PropTypes.func,

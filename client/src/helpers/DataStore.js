@@ -16,7 +16,7 @@ export default class DataStore{
         table_options: [Constants.create_item, Constants.add_keyword_filter, Constants.add_sku_filter],
         item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment'],
         item_property_labels: ['Name', 'Ingr#', 'Package Size', 'Package Cost (USD)', 'Vendor Info', 'Comments'],
-        item_property_patterns: ['.+', '^[0-9]+$', '.+', '^[+]?([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2})$', '.*', '.*'],
+        item_property_patterns: ['.+', '^[0-9]+$', '^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$', '^[+]?([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2})$', '.*', '.*'],
         item_property_field_type: ['text', 'text', 'text', 'text', 'textarea', 'textarea'],  
       };
     }
@@ -69,17 +69,18 @@ export default class DataStore{
         table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line'],
         table_options: [Constants.create_item, Constants.add_to_manu_goals, Constants.add_keyword_filter, 
           Constants.add_ing_filter, Constants.add_prod_filter],
-        item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'comment'],
-        item_property_labels: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Comment'],
-        item_property_patterns: ['.+', '^[0-9]+$', '^[016789][0-9]{11}$', '^[016789][0-9]{11}$', '.+', '^[0-9]+$', '.*'], 
-        item_property_field_type: ['text', 'text', 'text', 'text', 'text', 'text','textarea'],
+        item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'comment', 'scale_factor', 'manu_rate'],
+        item_property_labels: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Comment', 'Formula Scale Factor', 'Manufactuing Rate'],
+        item_property_patterns: ['.+', '^[0-9]+$', '^[016789][0-9]{11}$', '^[016789][0-9]{11}$', '.+', '^[0-9]+$', '.*', '^[+]?[0-9]*\.?[0-9]*$', '^[+]?[0-9]*\.?[0-9]*$'], 
+        item_property_field_type: ['text', 'text', 'text', 'text', 'text', 'text', 'textarea', 'text', 'text'],
       };
   }
 
+
     static getSkuDataSimple() {
       var results = DataStore.getSkuData();
-      results.table_columns = ['SKU Name', 'Unit Size', 'Count per Case'];
-      results.table_properties = ['name', 'unit_size', 'cpc'];
+      results.table_columns = ['SKU Name', 'Unit Size', 'Count per Case', 'SKU#'];
+      results.table_properties = ['name', 'unit_size', 'cpc', 'num'];
       return results;
     }
 

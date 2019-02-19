@@ -41,6 +41,7 @@ export default class SubmitRequest{
 
   static submitCreateItem = (route, item) => {
     try {
+      console.log(item);
       return fetch(`/api/${route}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -267,5 +268,38 @@ export default class SubmitRequest{
       }
     });
   }
-  
+
+  static submitGetManufacturingLinesByNameSubstring(substr) {
+    try {
+      return fetch('/api/manulines_name/' + substr)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return {
+          success: res.success,
+          data: res.data
+        }
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
+  static async submitGetManufacturingLineByID(id) {
+    try {
+      return fetch('/api/manulines/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
 }

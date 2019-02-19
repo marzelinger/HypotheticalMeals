@@ -4,7 +4,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types';
-import CheckDigit from 'checkdigit';
+import CheckDigit from '../../helpers/CheckDigit';
 import * as Constants from '../../resources/Constants';
 import { 
     Button,
@@ -14,8 +14,9 @@ import {
 import DataStore from '../../helpers/DataStore'
 import IngredientsViewSimple from './IngredientsViewSimple'
 import ItemSearchInput from './ItemSearchInput';
-import ItemSearchModifyList from './ItemSearchModifyList';
+import ItemSearchModifyListQuantity from './ItemSearchModifyListQuantity';
 import SubmitRequest from '../../helpers/SubmitRequest';
+import ModifyManuLines from './ModifyManuLines';
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
 
@@ -74,11 +75,21 @@ export default class SKUDetails extends React.Component {
 
     onSelectProductLine = (pl) => {
         if(currentUserIsAdmin().isValid){
-            var newItem = this.state.item;
+            var newItem = Object.assign({}, this.state.item);
             newItem['prod_line'] = pl._id;
             this.setState({
                 item: newItem,
                 prod_line_item: pl
+            })
+        }
+    }
+
+    onModifyManuLines = (list) => {
+        if(currentUserIsAdmin().isValid){
+            var newItem = Object.assign({}, this.state.item);
+            newItem['manu_lines'] = list;
+            this.setState({
+                item: newItem
             })
         }
     }
@@ -100,8 +111,7 @@ export default class SKUDetails extends React.Component {
                     break;
             }
             this.setState({ 
-                item: item,
-                item_changed: true 
+                item: item
             })
         }
     }
@@ -127,9 +137,6 @@ export default class SKUDetails extends React.Component {
     }
 
     addIngredient(item, value, qty) {
-        console.log('adding')
-        console.log(value);
-        console.log(item);
         let ind = -1;
         qty = parseInt(qty);
         item.ingredients.map((ing, index) => {
@@ -160,9 +167,9 @@ export default class SKUDetails extends React.Component {
         if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.state.item, opt)
         else {
             if (inv.includes('case_upc') && this.state.item['case_upc'].length > 11)
-                alert_string += '\nTry Case UPC: ' + CheckDigit.mod10.apply(this.state.item['case_upc'].slice(0,11));
+                alert_string += '\nTry Case UPC: ' + CheckDigit.apply(this.state.item['case_upc'].slice(0,11));
             if (inv.includes('unit_upc') && this.state.item['unit_upc'].length > 11)
-                alert_string += '\nTry Unit UPC: ' + CheckDigit.mod10.apply(this.state.item['unit_upc'].slice(0,11));
+                alert_string += '\nTry Unit UPC: ' + CheckDigit.apply(this.state.item['unit_upc'].slice(0,11));
             alert(alert_string);
         } 
     }
@@ -173,8 +180,8 @@ export default class SKUDetails extends React.Component {
             if (!this.state.item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
         })
         if (this.state.prod_line_item.name === undefined) inv_in.push('prod_line');
-        if (!CheckDigit.mod10.isValid(this.state.item['case_upc'])) inv_in.push('case_upc');
-        if (!CheckDigit.mod10.isValid(this.state.item['unit_upc'])) inv_in.push('unit_upc');
+        if (!CheckDigit.isValid(this.state.item['case_upc'])) inv_in.push('case_upc');
+        if (!CheckDigit.isValid(this.state.item['unit_upc'])) inv_in.push('unit_upc');
         await this.setState({ invalid_inputs: inv_in });
     }
 
@@ -203,23 +210,30 @@ export default class SKUDetails extends React.Component {
             </div>
             <div className='item-properties'>
                 { this.injectProperties() }
+                <ModifyManuLines
+                    item={this.state.item}
+                    label={Constants.modify_manu_lines_label}
+                    handleModifyManuLines={this.onModifyManuLines}
+                    disabled = {currentUserIsAdmin().isValid ? false : true}
+                />
                 <ItemSearchInput
                     curr_item={this.state.prod_line_item}
                     item_type={Constants.prod_line_label}
                     invalid_inputs={this.state.invalid_inputs}
                     handleSelectItem={this.onSelectProductLine}
-                    disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
+                    disabled = {currentUserIsAdmin().isValid ? false : true}
                 />
-                <ItemSearchModifyList
+                <ItemSearchModifyListQuantity
                     api_route={Constants.ingredients_page_name}
                     item_type={Constants.details_modify_ingredient}
                     options={[Constants.details_add, Constants.details_remove]}
                     handleModifyList={this.onModifyList}
-                    disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
+                    disabled = {currentUserIsAdmin().isValid ? false : true}
                 />
                 <IngredientsViewSimple 
                     sku={this.state.item} 
                     handlePropChange={this.onPropChange}
+                    disabled={currentUserIsAdmin().isValid ? false : true}
                 />
             </div>
             <div className='item-options'>
