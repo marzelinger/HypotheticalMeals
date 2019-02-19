@@ -13,6 +13,7 @@ import IngredientHandler from './models/handlers/IngredientHandler';
 import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
 import UserHandler from './models/handlers/UserHandler';
 import FilterHandler from './models/handlers/FilterHandler';
+import Manu_ActivityHandler from './models/handlers/Manu_ActivityHandler';
 import { getSecret } from './secrets';
 const passport = require("passport");
 import CSV_parser from './csv_parser';
@@ -78,6 +79,14 @@ router.get('/manulines/:manu_line_id', (req, res) => Manu_LineHandler.getManufac
 router.delete('/manulines/:manu_line_id', (req, res) => Manu_LineHandler.deleteManufacturingLineByID(req, res));
 router.get('/manulines_name/:search_substr', (req, res) => Manu_LineHandler.getManufacturingLinesByNameSubstring(req, res));
 router.get('/manulines_shortname/:short_name', (req, res) => Manu_LineHandler.getManufacturingLinesByShortName(req, res));
+
+// Manufacturing Activity database APIs
+router.post('/manuactivities', (req, res) => Manu_ActivityHandler.createManufacturingActivity(req, res));
+router.put('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.updateManufacturingActivityByID(req, res));
+router.get('/manuactivities', (req, res) => Manu_ActivityHandler.getAllManufacturingActivities(req, res));
+router.get('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.getManufacturingActivityByID(req, res));
+router.delete('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.deleteManufacturingActivityByID(req, res));
+
 // Ingredient database APIs
 router.post('/ingredients', (req, res) => IngredientHandler.createIngredient(req, res));
 router.put('/ingredients/:ingredient_id', (req, res) => IngredientHandler.updateIngredientByID(req, res));

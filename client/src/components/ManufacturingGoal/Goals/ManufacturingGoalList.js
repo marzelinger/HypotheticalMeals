@@ -5,16 +5,17 @@ import ManufacturingGoal from './ManufacturingGoal';
 import GoalForm from './ManufacturingGoalForm';
 
 const ManufacturingGoalList = (props) => {
+  console.log(`list data`);
+  console.log(props.data)
   const goalNodes = props.data.map(goal => (
     <ManufacturingGoal
       user={goal.user}
       key={goal._id}
       id={goal._id}
       name={goal.name}
-      skus={goal.skus}
+      activities={goal.activities}
       handleUpdateGoal={props.handleUpdateGoal}
       handleDeleteGoal={props.handleDeleteGoal}
-      quantities = {goal.quantities}
     >
       { goal.name}
     </ManufacturingGoal>
@@ -31,7 +32,7 @@ ManufacturingGoalList.propTypes = {
     user: PropTypes.string,
     id: PropTypes.string,
     name: PropTypes.string,
-    skus: PropTypes.array
+    activities: PropTypes.array
   })),
   handleDeleteGoal: PropTypes.func,
   handleUpdateGoal: PropTypes.func,
