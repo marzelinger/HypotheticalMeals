@@ -93,10 +93,11 @@ export default class ItemSearchInput extends React.Component {
             <FormGroup>
                 <Label>{this.props.item_type}</Label>
                 <Filter
-                handleFilterValueSelection = {(opt, e) => this.onFilterValueSelection(opt.label, opt.value._id)}
-                type = {'products'}
-                multi = {false}
-                place_holder = {this.props.curr_item}
+                    handleFilterValueSelection = {(opt, e) => this.onFilterValueSelection(opt.label, opt.value._id)}
+                    type = {'products'}
+                    multi = {false}
+                    place_holder = {this.props.curr_item}
+                    disabled = {this.props.disabled}
                 >
                 </Filter>
             </FormGroup>
@@ -109,5 +110,6 @@ ItemSearchInput.propTypes = {
     curr_item: PropTypes.object,
     item_type: PropTypes.string,
     invalid_inputs: PropTypes.arrayOf(PropTypes.string),
-    handleSelectItem: PropTypes.func
+    handleSelectItem: PropTypes.func,
+    disabled: PropTypes.bool
   };

@@ -2,7 +2,7 @@
 // Riley
 // Store of empty items and default set items
 
-import CheckDigit from 'checkdigit';
+import CheckDigit from './CheckDigit';
 import SubmitRequest from './SubmitRequest';
 import * as Constants from '../resources/Constants';
 
@@ -20,7 +20,7 @@ export default class ItemStore{
   static getUniqueCaseUPC = (list) => {
     while(true){
       var c_upc = Math.floor(Math.random() * 39999999999) + 60000000000;
-      c_upc = CheckDigit.mod10.apply(c_upc.toString())
+      c_upc = CheckDigit.apply(c_upc.toString())
       var success = true;
       list.map(item => { if (item.case_upc === c_upc) success = false; });
       if (success) return c_upc;
@@ -30,7 +30,7 @@ export default class ItemStore{
   static getUniqueUnitUPC = (case_upc, list) => {
     while(true){
       var u_upc = Math.floor(Math.random() * 39999999999) + 60000000000;
-      u_upc = CheckDigit.mod10.apply(u_upc.toString())
+      u_upc = CheckDigit.apply(u_upc.toString())
       var success = true;
       list.map(item => { 
         if (item.case_upc === case_upc) { 
@@ -59,8 +59,8 @@ export default class ItemStore{
           comment: ''
         };
       case Constants.skus_page_name: 
-      var res = await SubmitRequest.submitGetData(page_name);
-      var new_id = await ItemStore.getUniqueNumber(res.data);
+        var res = await SubmitRequest.submitGetData(page_name);
+        var new_id = await ItemStore.getUniqueNumber(res.data);
         let new_case_upc = ItemStore.getUniqueCaseUPC(res.data);
         let new_unit_upc = ItemStore.getUniqueUnitUPC(new_case_upc, res.data);
         return {
@@ -73,7 +73,11 @@ export default class ItemStore{
           prod_line: '',
           comment: '',
           ingredients: [],
-          ingredient_quantities: []
+          ingredient_quantities: [],
+          formula: {},
+          scale_factor: 1,
+          manu_lines: [],
+          manu_rate: ''
         };
       case Constants.manugoals_page_name:
         return {

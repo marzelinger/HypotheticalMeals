@@ -56,4 +56,7 @@ export const obj_id_length = 24
 export const create_ingredient = 'Create Ingredient'
 export const add_to_manu_goals = 'Add to Manufacturing Goal'
 export const manu_goals_modal = 'manu_goal'
+export const edit_manu_lines = 'Bulk Edit Manufacturing Lines'
+export const manu_lines_modal = 'manu_lines'
 export const details_modal = 'details'
+export const modify_manu_lines_label = 'Modify Manufacturing Lines'
