@@ -62,6 +62,99 @@ export default class FormulasPage extends React.Component {
         });
     }
 
+    async componentDidMount() {
+        if(this.props.default_sku_filter !== undefined){
+            await this.onAddFilter(Constants.sku_label)
+            await this.onFilterValueSelection(undefined, this.props.default_sku_filter, 0);
+        }
+        await this.loadDataFromServer();
+        //await 
+    }
+
+    async componentDidUpdate (prevProps, prevState){
+        console.log(this.state.data);
+        if(this.state.filterChange){
+            await this.loadDataFromServer();
+        }
+    }
+
+    updateDateState = async() => {
+        var {data: skus} = await SubmitRequest.submitGetData(Constants.skus_page_name);
+        this.setState({skus: skus});
+    }
+
+    async loadDataFromServer() {
+        let allData = await SubmitRequest.submitGetData(this.state.page_name);
+        var final_keyword_filter = this.state.filters['keyword'];
+        var final_ingr_filter = this.state.filters['ingredients'].join(',');
+        if(final_keyword_filter === '') final_keyword_filter = '_';
+        if(final_ingr_filter === '') final_ingr_filter = '_';
+        var resALL = await SubmitRequest.submitGetFilterData(Constants.formula_filter_path,
+            this.state.sort_field, final_sku_filter, final_keyword_filter, 0, 0);
+        await this.checkCurrentPageInBounds(resALL);
+        var res = await SubmitRequest.submitGetFilterData(Constants.formula_filter_path, 
+            this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
+        if (res === undefined || !res.success){
+            res.data = [];
+            resALL.data = [];
+        }
+        await this.setState({
+            data: res.data,
+            exportData: resALL.data,
+            filterChange: false,
+        })
+        this.updateDataState();
+    }
+
+    async checkCurrentPageInBounds(dataResAll){
+        var prev = this.state.previousPage;
+        if(dataResAll === undefined || !dataResAll.success){
+            this.setState({
+                currentPage: 0,
+                previousPage: prev,
+                pagesCount: 0,
+            });
+        }
+        else {
+            var dataLength = dataResAll.data.length;
+            var curCount = Math.ceil(dataLength/Number(this.state.pageSize));
+            if(curCount != this.state.pagesCount){
+                if(this.state.currentPage>=curCount){
+                    this.setState({
+                        currentPage: 0,
+                        previousPage: prev,
+                        pagesCount: curCount,
+                    });
+                }
+            }
+            else {
+                this.setState({
+                    pagesCount: curCount,
+                });
+            }
+        }
+    }
+
+    onFilterValueChange = (e, value, filterType) => {
+        var filters = this.state.filters;
+        if(filterType == 'keyword'){
+            filters[filterType] = value;
+        }
+        this.setState({ filters: filters, filterChange: true});
+    }
+
+    async setInitPages(){
+        let allData = await SubmitRequest.submitGetData(this.state.page_name);
+        var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
+        this.setState({
+            currentPage: 0,
+            previousPage: 0,
+            pagesCount: curCount,
+        })
+    }
+
+
+
     render(){
         return(
             <div className="list-page">

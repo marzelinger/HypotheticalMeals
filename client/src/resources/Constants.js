@@ -17,6 +17,7 @@ export const ManuGoalTitle = "MANUFACTURING GOALS"
 export const ingredients_page_name = 'ingredients';
 export const ing_filter_path = 'ingredients_filter';
 export const sku_filter_path = 'skus_filter';
+export const formula_filter_path = 'formulas_filter';
 export const skus_page_name = 'skus';
 export const manugoals_page_name = 'manugoals';
 export const manu_line_page_name = 'manulines';
