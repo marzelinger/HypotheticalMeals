@@ -98,7 +98,7 @@ async loadDataFromServerForReport(ingredients){
           curSku.push(curSkuObj.num);
           console.log("this is the num: "+curSkuObj.num);
           curSku.push(curSkuObj.name);
-          curSku.push(curSkuObj.case_cpc);
+          curSku.push(curSkuObj.case_upc);
           curSku.push(curSkuObj.unit_upc);
           curSku.push(curSkuObj.unit_size);
           curSku.push(curSkuObj.cpc);
@@ -127,17 +127,6 @@ async loadDataFromServerForReport(ingredients){
     }
     }
 
-
-
-    // rows.forEach(function(rowArray){
-    //     let row = rowArray.join(",");
-    //     csvContent += row + "\r\n";
-    //  }); 
-
-    // for(var r in rows){
-    //   let row = rows[r].join(",");
-    //   csvContent += row + "\r\n";
-    // }
 
     fileDownload(csvContent, fileTitle+'.csv');
 };

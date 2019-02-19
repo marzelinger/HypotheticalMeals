@@ -18,7 +18,7 @@ export const exportSKUS = (dataIN, fileTitle)  => {
         var dataLine = [];
         dataLine.push(curData.num);
         dataLine.push(curData.name);
-        dataLine.push(curData.case_cpc);
+        dataLine.push(curData.case_upc);
         dataLine.push(curData.unit_upc);
         dataLine.push(curData.unit_size);
         dataLine.push(curData.cpc);
@@ -151,7 +151,7 @@ export const exportReportSKUs = (addedLabel, updatedLabel, ignoredLabel,added_it
         var addLine = [];
         addLine.push(curAdd.num);
         addLine.push(curAdd.name);
-        addLine.push(curAdd.case_cpc);
+        addLine.push(curAdd.case_upc);
         addLine.push(curAdd.unit_upc);
         addLine.push(curAdd.unit_size);
         addLine.push(curAdd.cpc);
@@ -172,7 +172,7 @@ export const exportReportSKUs = (addedLabel, updatedLabel, ignoredLabel,added_it
         var upLine = [];
         upLine.push(curUp.num);
         upLine.push(curUp.name);
-        upLine.push(curUp.case_cpc);
+        upLine.push(curUp.case_upc);
         upLine.push(curUp.unit_upc);
         upLine.push(curUp.unit_size);
         upLine.push(curUp.cpc);
@@ -193,7 +193,7 @@ export const exportReportSKUs = (addedLabel, updatedLabel, ignoredLabel,added_it
         var ignLine = [];
         ignLine.push(curIgn.num);
         ignLine.push(curIgn.name);
-        ignLine.push(curIgn.case_cpc);
+        ignLine.push(curIgn.case_upc);
         ignLine.push(curIgn.unit_upc);
         ignLine.push(curIgn.unit_size);
         ignLine.push(curIgn.cpc);
