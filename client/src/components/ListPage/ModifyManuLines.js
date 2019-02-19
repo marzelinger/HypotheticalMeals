@@ -22,7 +22,7 @@ export default class ModifyManuLines extends React.Component {
     }
 
     componentDidMount = async () => {
-        
+        await this.injectManuLines();
     }
 
     async componentDidUpdate(prevProps, prevState) {
@@ -39,7 +39,6 @@ export default class ModifyManuLines extends React.Component {
     }
 
     async injectManuLines() { 
-        console.log(this.props.item['manu_lines'])
         let to_return = await this.props.item['manu_lines'].map(async (id) => {
             let mLine = await SubmitRequest.submitGetManufacturingLineByID(id)
             return await {
@@ -63,7 +62,7 @@ export default class ModifyManuLines extends React.Component {
                     handleFilterValueSelection = {(opts, e) => this.onFilterValueSelection(opts)}
                     type = {Constants.manu_line_page_name}
                     multi = {true}
-                    defaultItems = {this.state.currLines}
+                    currItems = {this.state.currLines}
                 />
             </FormGroup>
         </div>

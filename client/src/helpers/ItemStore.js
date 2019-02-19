@@ -2,7 +2,7 @@
 // Riley
 // Store of empty items and default set items
 
-import CheckDigit from 'checkdigit';
+import CheckDigit from './CheckDigit';
 import SubmitRequest from './SubmitRequest';
 import * as Constants from '../resources/Constants';
 

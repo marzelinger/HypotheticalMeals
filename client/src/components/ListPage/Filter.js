@@ -54,22 +54,22 @@ export default class Filter extends React.Component {
         }
         switch (this.props.type) {
                 case Constants.ingredients_page_name:
-                    response  =  SubmitRequest.submitGetIngredientsByNameSubstring(input).then((response) => {
+                    SubmitRequest.submitGetIngredientsByNameSubstring(input).then((response) => {
                         this.handleResponse(response)
                     });
                     break;
                 case Constants.skus_page_name:
-                    var response =  SubmitRequest.submitGetSkusByNameSubstring(input).then((response) => {
+                    SubmitRequest.submitGetSkusByNameSubstring(input).then((response) => {
                         this.handleResponse(response)
                     })
                     break;
                 case Constants.prod_line_page_name:
-                    response =  SubmitRequest.submitGetProductLinesByNameSubstring(input).then((response) => {
+                    SubmitRequest.submitGetProductLinesByNameSubstring(input).then((response) => {
                         this.handleResponse(response)
                     });
                     break;
                 case Constants.manu_line_page_name:
-                    response =  SubmitRequest.submitGetManufacturingLinesByNameSubstring(input).then((response) => {
+                    SubmitRequest.submitGetManufacturingLinesByNameSubstring(input).then((response) => {
                         this.handleResponse(response)
                     });
                     break;
@@ -88,7 +88,7 @@ export default class Filter extends React.Component {
         return (
         <div className='filter-item'>
             <Select
-                defaultValue = {this.props.defaultItems}
+                value = {this.props.currItems}
                 placeholder = {this.props.multi != undefined ? this.getDetailsPlaceholder() : `Filter by ${this.props.type}`}
                 isMulti = {this.props.multi != undefined ? this.props.multi : true}
                 onInputChange = { (input) => this.getNewOptions(input)}
@@ -111,7 +111,7 @@ export default class Filter extends React.Component {
 
 Filter.propTypes = {
     value: PropTypes.string,
-    defaultItems: PropTypes.arrayOf(PropTypes.object),
+    currItems: PropTypes.arrayOf(PropTypes.object),
     handleFilterValueChange: PropTypes.func,
     handleFilterValueSelection: PropTypes.func,
     handleRemoveFilter: PropTypes.func,

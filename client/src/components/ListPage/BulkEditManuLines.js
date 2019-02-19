@@ -1,6 +1,6 @@
 // BulkEditManuLines.js
 import React from 'react';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import PropTypes from 'prop-types';
 import ModifyManuLines from './ModifyManuLines';
 import ItemSearchModifyListQuantity from './ItemSearchModifyListQuantity';
@@ -13,32 +13,34 @@ export default class BulkEditManuLines extends React.Component {
     constructor(props){
         super(props);
 
+        let newSkus = props.selected_skus.slice();
         this.state = {
-            skus: props.selected_skus
+            skus: newSkus,
+            submit_options: [Constants.details_save, Constants.details_cancel]
         }
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.selected_skus !== this.props.selected_skus){
+            let newSkus = this.props.selected_skus.slice();
             this.setState({
-                skus: this.props.selected_skus
+                skus: newSkus
             })
         }
     }
 
     onModifyList = (option, value, qty) => {
-        var skus = Object.assign([], this.state.skus);
-        console.log(skus)
-        var newSkus = Object.assign([], this.state.skus);
+        var skus = this.state.skus.slice();
+        var newSkus = this.state.skus.slice();
         switch (option) {
             case Constants.details_add:
                 skus.map((sku, ind) => {
-                    newSkus[ind] = this.addIngredient(sku, value, qty);
+                    newSkus[ind] = this.addManuLine(sku, value);
                 })
                 break;
             case Constants.details_remove:
                 skus.map((sku, ind) => {
-                    newSkus[ind] = this.removeIngredient(sku, value, qty);
+                    newSkus[ind] = this.removeManuLine(sku, value);
                 })
                 break;
         }
@@ -48,8 +50,7 @@ export default class BulkEditManuLines extends React.Component {
         })
     }
 
-    addIngredient(item, value, qty) {
-        console.log(value)
+    addManuLine(item, value) {
         let ind = -1;
         item.manu_lines.map((ml, index) => {
             if (ml === value._id)
@@ -59,7 +60,7 @@ export default class BulkEditManuLines extends React.Component {
         return item;
     }
 
-    removeIngredient(item, value, qty) {
+    removeManuLine(item, value) {
         let ind = -1;
         item.manu_lines.map((ml, index) => {
             if (ml === value._id)
@@ -102,6 +103,13 @@ export default class BulkEditManuLines extends React.Component {
                             handleModifyManuLines={(list) => this.onModifyManuLines(sku._id, list)}
                         />)
                 })}
+                {this.state.submit_options.map(opt => {
+                    return (<Button 
+                        className = "bulk-manu-lines"
+                        key={opt} 
+                        onClick={(e) => this.props.handleBulkManuLineSubmit(e, opt, this.state.skus)}
+                    >{opt}</Button>)
+                })}
             </ModalBody>
         </Modal>
         );
@@ -111,7 +119,6 @@ export default class BulkEditManuLines extends React.Component {
 BulkEditManuLines.propTypes = {
     isOpen: PropTypes.bool,
     toggle: PropTypes.func,
-    manu_goals_data: PropTypes.array,
-    handleGoalSelection: PropTypes.func,
-    selected_skus: PropTypes.array
+    selected_skus: PropTypes.array,
+    handleBulkManuLineSubmit: PropTypes.func
 }

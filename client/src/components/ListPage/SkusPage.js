@@ -80,8 +80,8 @@ export default class ListPage extends React.Component {
         this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
-        this.onEditManuGoals = this.onEditManuGoals.bind(this);
         this.onSelect = this.onSelect.bind(this)
+        this.onBulkManuLineSubmit = this.onBulkManuLineSubmit.bind(this);
         this.setInitPages();
     }
 
@@ -257,7 +257,7 @@ export default class ListPage extends React.Component {
                 await this.onAddManuGoals();
                 break;
             case Constants.edit_manu_lines:
-                await this.onEditManuGoals();
+                this.toggle(Constants.manu_lines_modal);
                 break;
         }
     }
@@ -268,10 +268,23 @@ export default class ListPage extends React.Component {
         this.setState({ manu_goals_data: res.data});
     }
 
-    onEditManuGoals = async() => {
-        console.log(this.state.selected_items)
+    async onBulkManuLineSubmit(event, opt, skus) {
+        var newSkus = Object.assign([], this.state.data);
+        console.log(opt)
+        switch (opt){
+            case Constants.details_save:
+                await skus.map(async (sku) => {
+                    newSkus[newSkus.findIndex(el => el._id === sku._id)] = sku;
+                    var res = await SubmitRequest.submitUpdateItem(Constants.skus_page_name, sku);
+                });
+                break;
+            case Constants.details_cancel:
+                break;
+        }
+        console.log(newSkus)
+        this.setState({ data: newSkus });
+        this.loadDataFromServer();
         this.toggle(Constants.manu_lines_modal);
-        //need anything else?
     }
 
     async onSort(event, sortKey) {
@@ -403,7 +416,7 @@ export default class ListPage extends React.Component {
                     selected_skus={this.state.selected_items} 
                     isOpen={this.state.manu_lines_modal} 
                     toggle={(toggler) => this.toggle(toggler)} 
-                    manu_lines_data={this.state.manu_lines_data}
+                    handleBulkManuLineSubmit={this.onBulkManuLineSubmit}
                 /> 
                 <TablePagination
                     currentPage = {this.state.currentPage}

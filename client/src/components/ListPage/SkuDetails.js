@@ -75,7 +75,7 @@ export default class SKUDetails extends React.Component {
 
     onSelectProductLine = (pl) => {
         if(currentUserIsAdmin().isValid){
-            var newItem = this.state.item;
+            var newItem = Object.assign({}, this.state.item);
             newItem['prod_line'] = pl._id;
             this.setState({
                 item: newItem,
@@ -86,7 +86,7 @@ export default class SKUDetails extends React.Component {
 
     onModifyManuLines = (list) => {
         if(currentUserIsAdmin().isValid){
-            var newItem = this.state.item;
+            var newItem = Object.assign({}, this.state.item);
             newItem['manu_lines'] = list;
             this.setState({
                 item: newItem
