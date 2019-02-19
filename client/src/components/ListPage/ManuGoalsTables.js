@@ -12,6 +12,7 @@ import SubmitRequest from './../../helpers/SubmitRequest';
 
 export default class ManuGoalsTables extends React.Component {
     constructor(props) {
+        console.log(props.query)
         super(props);
         this.state = {
             query: props.query,
@@ -41,7 +42,7 @@ export default class ManuGoalsTables extends React.Component {
             this.setState({ error: res.error });
         }
         else {
-            this.setState({ data: res.data });
+            this.setState({ data: res.data[0].activities });
         }
     }
 
@@ -74,7 +75,7 @@ export default class ManuGoalsTables extends React.Component {
                         handleSort={this.onSort}
                         handleSelect={this.onSelect}
                         handleDetailViewSelect={this.onDetailViewSelect}
-                        handleDeleteSkus = {this.props.handleDeleteSkus}
+                        handleDeleteActivities = {this.props.handleDeleteActivities}
                     />
                 </div>              
             </div>

@@ -65,7 +65,7 @@ router.get('/skus_name/:search_substr', (req, res) => SkuHandler.getSkusByNameSu
 
 router.post('/formulas', (req, res) => FormulaHandler.createFormula(req, res));
 router.put('/formulas/:formula_id', (req, res) => FormulaHandler.updateFormulaByID(req, res));
-router.get('/formulas', (req, res), FormulaHandler.getAllFormulas(req, res));
+router.get('/formulas', (req, res) => FormulaHandler.getAllFormulas(req, res));
 router.get('/formulas/:formula_id', (req, res) => FormulaHandler.getFormulaByID(req, res));
 router.delete('formulas/:formula_id', (req, res) => FormulaHandler.deleteFormulaByID(req, res));
 router.get('/formulas_name/:search_substr', (req, res) => FormulaHandler.getFormulasByNameSubstring(req, res));
@@ -145,24 +145,9 @@ router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword
 router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
 
 
-<<<<<<< HEAD
-/*
-https.createServer({
-  key: fs.readFileSync('./../server.key'),
-  cert: fs.readFileSync('./../server.cert')
-}, app)
-.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));*/
-
-// app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
-=======
->>>>>>> 3297e667626fce67f43cec0b4816a9985ce2a316
 
 //pagination router api calls
 
-<<<<<<< HEAD
-router.get('/ingredientspagget', (req, res, next) => PaginationHandler.getIngredientsPag(req, res, next));
-=======
->>>>>>> 3297e667626fce67f43cec0b4816a9985ce2a316
 // Gives constant name to long directory home page.
 // const appPage = path.join(__dirname, '../client/build/index.html');
 

@@ -25,7 +25,7 @@ export class GoalSkuTable extends React.Component{
         selected: '',
         list_items: props.list_items,
         simple: this.props.simple !=undefined ? this.props.simple : false
-      }
+      } 
     }
 
     componentDidUpdate(prevProps){
@@ -50,11 +50,12 @@ export class GoalSkuTable extends React.Component{
     }  
 
     handleDeleteButton = () =>{
-      this.props.handleDeleteSkus(this.state.selected);
+      this.props.handleDeleteActivities(this.state.selected);
       this.setState({selected: []});
     }
     
     render() {
+      console.log(this.props.list_items)
         let tablebody = (
             this.state.list_items.map((item, index) => 
             <TableRow
@@ -64,7 +65,7 @@ export class GoalSkuTable extends React.Component{
             >
               {this.props.table_properties.map(prop => 
                 <TableRowColumn key={prop}>
-                  {prop == 'quantity' ? this.createQuantityElement(item, index) : item[prop]}
+                  {prop == 'quantity' ? this.createQuantityElement(item, index) : item.sku[prop]}
                 </TableRowColumn>
               )}
 
@@ -89,7 +90,7 @@ export class GoalSkuTable extends React.Component{
                 {tablebody}
             </TableBody>
           </Table>
-          {!this.state.simple ? <div onClick = {() => this.handleDeleteButton()} className = "delete detailButtons hoverable">delete selected skus</div> : <div></div>}
+          {!this.state.simple ? <div onClick = {() => this.handleDeleteButton()} className = "delete detailButtons hoverable">delete selected activities</div> : <div></div>}
         </div>
       );
     }
@@ -105,7 +106,7 @@ GoalSkuTable.propTypes = {
   handleSelect: PropTypes.func,
   handleDetailViewSelect: PropTypes.func,
   onQuantityChange: PropTypes.func,
-  handleDeleteSkus: PropTypes.func
+  handleDeleteActivities: PropTypes.func
 };
 
 

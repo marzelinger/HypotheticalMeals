@@ -72,7 +72,7 @@ class Manu_GoalHandler{
         try {
             var target_id = req.params.manu_goal_id;
             var user_id = req.params.user_id;
-            let to_return = await Manu_Goal.find({ _id : target_id, user:user_id});
+            let to_return = await Manu_Goal.find({ _id : target_id, user:user_id}).populate('activities').populate({path: 'activities', populate: { path: 'sku' }});
 
             if(to_return.length == 0) return res.json({success: false, error: '404'});
             return res.json({ success: true, data: to_return});
@@ -87,7 +87,7 @@ class Manu_GoalHandler{
             var user_id = req.params.user_id;
             let to_return = await Manu_Goal.find({ _id : target_id, user:user_id});
 
-            if(to_return.length == 0) return res.json({success: false, error: '404'});
+            if(to_return.length == 0) return res.json({success: false, error: '404'}).populate('activities').populate({path: 'activities', populate: { path: 'sku' }});
             return res.json({ success: true, data: to_return});
         } catch (err){
             return res.json({ success: false, error: err});
@@ -120,7 +120,7 @@ class Manu_GoalHandler{
         try {
             var target_id = req.params.manu_goal_id;
             var user_id = req.params.user_id
-            let to_return = await Manu_Goal.find({ _id : target_id, user: user_id}).populate('activities').populate('sku');
+            let to_return = await Manu_Goal.find({ _id : target_id, user: user_id}).populate('activities').populate('sku').populate({path: 'activities', populate: { path: 'sku' }});
             if(to_return.length == 0) return res.json({success: false, error: '404'});
             return res.json({ success: true, data: to_return[0]});
         } catch (err){
