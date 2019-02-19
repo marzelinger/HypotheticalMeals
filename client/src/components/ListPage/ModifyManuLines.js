@@ -32,8 +32,11 @@ export default class ModifyManuLines extends React.Component {
     }
 
     async onFilterValueSelection (opts, e) {
-        let newLines = opts.map(opt => {
-            return opt.value._id
+        let newLines = [];
+        opts.map(opt => {
+            if (!newLines.includes(opt.value._id)){
+                newLines.push(opt.value._id)
+            }
         })
         this.props.handleModifyManuLines(newLines)
     }
@@ -42,7 +45,7 @@ export default class ModifyManuLines extends React.Component {
         let to_return = await this.props.item['manu_lines'].map(async (id) => {
             let mLine = await SubmitRequest.submitGetManufacturingLineByID(id)
             return await {
-                label: mLine.data[0].name,
+                label: mLine.data[0].short_name,
                 value: {_id : mLine.data[0]._id}
             }
         })

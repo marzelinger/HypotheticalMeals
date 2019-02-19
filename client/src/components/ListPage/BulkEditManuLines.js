@@ -85,7 +85,12 @@ export default class BulkEditManuLines extends React.Component {
 
     render(){
         return (
-        <Modal isOpen={this.props.isOpen} toggle={() =>  this.props.toggle(Constants.manu_lines_modal)} id="popup" className='item-details'>
+        <Modal 
+            isOpen={this.props.isOpen} 
+            id="popup" 
+            className='item-details'
+            shouldCloseOnOverlayClick={false}
+        >
             <ModalHeader toggle={() =>  this.props.toggle(Constants.manu_lines_modal)}>Bulk Edit Manufacturing Lines</ModalHeader>
             <ModalBody>
                 <ItemSearchModifyListQuantity
