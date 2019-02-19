@@ -16,7 +16,7 @@ export default class IngredientsViewSimple extends React.Component {
         let {
             table_columns, 
             table_properties } = DataStore.getIngredientDataSimple();
-            
+
         this.state = {
             sku_id: props.sku._id,
             table_columns: [...table_columns, 'Quantity'],
@@ -101,6 +101,7 @@ export default class IngredientsViewSimple extends React.Component {
                         handleQuantityChange={this.onQuantityChange}
                         selectable = {false}
                         title = {'Ingredients'}
+                        disable_inputs = {this.props.disabled}
                     />
                 </div>
                 <div className = "pagination-wrapper">
@@ -137,4 +138,5 @@ export default class IngredientsViewSimple extends React.Component {
 IngredientsViewSimple.propTypes = {
     sku: PropTypes.object,
     handlePropChange: PropTypes.func,
+    disabled: PropTypes.bool
 }

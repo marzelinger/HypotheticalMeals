@@ -88,6 +88,7 @@ export default class Filter extends React.Component {
         return (
         <div className='filter-item'>
             <Select
+                key = {this.props.type}
                 value = {this.props.currItems}
                 placeholder = {this.props.multi != undefined ? this.getDetailsPlaceholder() : `Filter by ${this.props.type}`}
                 isMulti = {this.props.multi != undefined ? this.props.multi : true}
@@ -103,6 +104,7 @@ export default class Filter extends React.Component {
                       primary: 'rgb(66, 66, 66)',
                     },
                   })}
+                isDisabled={this.props.disabled}
             />
         </div>
         );
@@ -115,5 +117,6 @@ Filter.propTypes = {
     handleFilterValueChange: PropTypes.func,
     handleFilterValueSelection: PropTypes.func,
     handleRemoveFilter: PropTypes.func,
-    type: PropTypes.string
+    type: PropTypes.string,
+    disabled: PropTypes.bool
   };

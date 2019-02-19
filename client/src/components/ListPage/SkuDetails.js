@@ -214,24 +214,26 @@ export default class SKUDetails extends React.Component {
                     item={this.state.item}
                     label={Constants.modify_manu_lines_label}
                     handleModifyManuLines={this.onModifyManuLines}
+                    disabled = {currentUserIsAdmin().isValid ? false : true}
                 />
                 <ItemSearchInput
                     curr_item={this.state.prod_line_item}
                     item_type={Constants.prod_line_label}
                     invalid_inputs={this.state.invalid_inputs}
                     handleSelectItem={this.onSelectProductLine}
-                    disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
+                    disabled = {currentUserIsAdmin().isValid ? false : true}
                 />
                 <ItemSearchModifyListQuantity
                     api_route={Constants.ingredients_page_name}
                     item_type={Constants.details_modify_ingredient}
                     options={[Constants.details_add, Constants.details_remove]}
                     handleModifyList={this.onModifyList}
-                    disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
+                    disabled = {currentUserIsAdmin().isValid ? false : true}
                 />
                 <IngredientsViewSimple 
                     sku={this.state.item} 
                     handlePropChange={this.onPropChange}
+                    disabled={currentUserIsAdmin().isValid ? false : true}
                 />
             </div>
             <div className='item-options'>

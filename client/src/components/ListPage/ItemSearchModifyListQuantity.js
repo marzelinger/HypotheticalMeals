@@ -109,6 +109,7 @@ export default class ItemSearchModifyListQuantity extends React.Component {
                     handleFilterValueSelection = {(opt, e) => this.onFilterValueSelection(opt.label, opt.value)}
                     type = {this.props.api_route}
                     multi = {false}
+                    disabled = {this.props.disabled}
                 />
                 {this.props.qty_disable !== undefined && this.props.qty_disable ? <div></div> : 
                 (<div>
@@ -117,6 +118,7 @@ export default class ItemSearchModifyListQuantity extends React.Component {
                         type="text"
                         value={this.state.qty}
                         onChange={(e) => this.onQuantityChange(e)}
+                        disabled={this.props.disabled}
                     />
                 </div>)
                 }
@@ -138,5 +140,6 @@ ItemSearchModifyListQuantity.propTypes = {
     item_type: PropTypes.string,
     options: PropTypes.arrayOf(PropTypes.string),
     handleModifyList: PropTypes.func,
-    qty_disable: PropTypes.bool
+    qty_disable: PropTypes.bool,
+    disabled: PropTypes.bool
   };

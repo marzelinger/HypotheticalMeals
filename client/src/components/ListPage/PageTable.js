@@ -153,7 +153,7 @@ export default class PageTable extends Component {
             enableSelectAll={false}
           >
               {this.getTableSuperHeader()}
-            <TableRow class = "cols" selectable = {true} >
+            <TableRow className = "cols" selectable = {true} >
                 {this.props.table_properties.map(prop => 
                   this.getColumnComponent(prop)
                 )}
@@ -189,7 +189,9 @@ export default class PageTable extends Component {
                         className = "inputs" 
                         value={this.props.quantities[index]} 
                         type="number" 
-                        step="1" />
+                        step="1"
+                        disabled={this.props.disable_inputs}
+                      />
                     </TableRowColumn>)}
                 </TableRow>
               )}
@@ -211,5 +213,6 @@ PageTable.propTypes = {
   handleSelect: PropTypes.func,
   handleDetailViewSelect: PropTypes.func,
   handleQuantityChange: PropTypes.func,
-  showHeader: PropTypes.bool.isRequired
+  showHeader: PropTypes.bool.isRequired,
+  disable_inputs: PropTypes.bool
 };

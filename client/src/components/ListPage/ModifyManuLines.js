@@ -66,6 +66,7 @@ export default class ModifyManuLines extends React.Component {
                     type = {Constants.manu_line_page_name}
                     multi = {true}
                     currItems = {this.state.currLines}
+                    disabled = {this.props.disabled}
                 />
             </FormGroup>
         </div>
@@ -77,5 +78,6 @@ export default class ModifyManuLines extends React.Component {
 ModifyManuLines.propTypes = {
     item: PropTypes.object,
     label: PropTypes.string,
-    handleModifyManuLines: PropTypes.func
+    handleModifyManuLines: PropTypes.func,
+    disabled: PropTypes.bool
 }
