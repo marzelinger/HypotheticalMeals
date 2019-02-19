@@ -19,7 +19,8 @@ export default class Filter extends React.Component {
             width: 100,
             focus: false,
             open: false,
-            options: []
+            options: [],
+            loaded: false
         };
     }
 
@@ -33,36 +34,62 @@ export default class Filter extends React.Component {
             
     }
 
+    getLabel(type) {
+        switch (type){
+            case Constants.ingredients_page_name:
+                return 'Ingredients'
+            case Constants.skus_page_name:
+                return 'SKUs'
+            case Constants.prod_line_page_name:
+                return 'Product Lines'
+            case Constants.manu_line_page_name:
+                return 'Manufacturing Lines'
+        }
+    }
+
     getNewOptions = (input) => {
-            if(input == ""){
-                this.setState({options: []})
-                return;
-            }
+        if(input == ""){
+            this.setState({options: []})
+            return;
+        }
         switch (this.props.type) {
-                case 'ingredients':
-                    response  =  SubmitRequest.submitGetIngredientsByNameSubstring(input).then((response) => {
+                case Constants.ingredients_page_name:
+                    SubmitRequest.submitGetIngredientsByNameSubstring(input).then((response) => {
                         this.handleResponse(response)
                     });
                     break;
-                case 'skus':
-                    var response =  SubmitRequest.submitGetSkusByNameSubstring(input).then((response) => {
+                case Constants.skus_page_name:
+                    SubmitRequest.submitGetSkusByNameSubstring(input).then((response) => {
                         this.handleResponse(response)
                     })
                     break;
-                case 'products':
-                    response =  SubmitRequest.submitGetProductLinesByNameSubstring(input).then((response) => {
+                case Constants.prod_line_page_name:
+                    SubmitRequest.submitGetProductLinesByNameSubstring(input).then((response) => {
                         this.handleResponse(response)
                     });
+                    break;
+                case Constants.manu_line_page_name:
+                    SubmitRequest.submitGetManufacturingLinesByNameSubstring(input).then((response) => {
+                        this.handleResponse(response)
+                    });
+                    break;
+
             }
     }
+
     getDetailsPlaceholder = () => {
-        return (this.props.place_holder != undefined ? this.props.place_holder.name : `Add ${this.props.type}`);
+        return (this.props.place_holder != undefined ? this.props.place_holder.name : `Add ${this.getLabel(this.props.type)}`);
     }
 
     render() {
+        if (this.props.defaultItems !== undefined && this.props.defaultItems[0] === 'loading') {
+            return null;
+        }
         return (
         <div className='filter-item'>
             <Select
+                key = {this.props.type}
+                value = {this.props.currItems}
                 placeholder = {this.props.multi != undefined ? this.getDetailsPlaceholder() : `Filter by ${this.props.type}`}
                 isMulti = {this.props.multi != undefined ? this.props.multi : true}
                 onInputChange = { (input) => this.getNewOptions(input)}
@@ -77,6 +104,7 @@ export default class Filter extends React.Component {
                       primary: 'rgb(66, 66, 66)',
                     },
                   })}
+                isDisabled={this.props.disabled}
             />
         </div>
         );
@@ -85,9 +113,10 @@ export default class Filter extends React.Component {
 
 Filter.propTypes = {
     value: PropTypes.string,
-    data: PropTypes.arrayOf(PropTypes.object),
+    currItems: PropTypes.arrayOf(PropTypes.object),
     handleFilterValueChange: PropTypes.func,
     handleFilterValueSelection: PropTypes.func,
     handleRemoveFilter: PropTypes.func,
-    type: PropTypes.string
+    type: PropTypes.string,
+    disabled: PropTypes.bool
   };
