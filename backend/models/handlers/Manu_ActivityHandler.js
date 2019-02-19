@@ -15,7 +15,7 @@ class Manu_ActivityHandler{
             var new_end = req.body.end
             var new_duration = req.body.duration
             var new_error = req.body.error;
-
+            console.log(req.body);
             if(!new_sku || !new_quantity){
                 return res.json({
                     success: false, error: 'You must provide a sku and quantity'

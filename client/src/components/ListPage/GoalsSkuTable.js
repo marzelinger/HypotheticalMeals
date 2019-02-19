@@ -55,7 +55,6 @@ export class GoalSkuTable extends React.Component{
     }
     
     render() {
-      console.log(this.props.list_items)
         let tablebody = (
             this.state.list_items.map((item, index) => 
             <TableRow
