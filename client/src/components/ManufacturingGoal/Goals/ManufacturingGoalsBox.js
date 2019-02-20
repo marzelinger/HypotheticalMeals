@@ -22,6 +22,7 @@ class ManufacturingGoalsBox extends Component {
       error: null,
       name: '',
       user: '',
+      enabled: false,
       isAdmin: currentUserIsAdmin(),
       filters: {
         'username':'_',
@@ -58,6 +59,7 @@ class ManufacturingGoalsBox extends Component {
         name: new_name || oldGoal.name,
         activities: oldGoal.activities,
         updateId: id,
+        enabled: oldGoal.enabled
     });
     console.log(this.state.name);
     this.submitUpdatedGoal();
@@ -121,15 +123,18 @@ class ManufacturingGoalsBox extends Component {
     }
   }
 
+
+
   async submitUpdatedGoal() {
-    const { name, activities, user, updateId } = this.state;
-    let item = { name, activities, user };
+    const { name, activities, user, updateId, enabled } = this.state;
+    let item = { name, activities, user, enabled };
     let res = await SubmitRequest.submitUpdateGoal(user, updateId, item);
     if (!res.success) {
+      console.log(res.error);
       this.setState({ error: res.error});
     }
     else {
-      this.setState({ name: '', activities: '', error: null })
+      this.setState({ name: '', activities: '', enabled: false, error: null })
       this.loadGoalsFromServer();
     }
   }

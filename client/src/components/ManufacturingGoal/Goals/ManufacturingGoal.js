@@ -15,7 +15,6 @@ export default class ManufacturingGoal extends React.Component{
       disabled: false,
       name: this.props.name
     }
-
   }
 
   onNameChange = (event) => {
@@ -47,9 +46,15 @@ export default class ManufacturingGoal extends React.Component{
     // this.props.handleUpdateGoal(this.props.id);
   }
 
+  onEnabled = () => {
+    this.props.goal['enabled'] = !this.props.goal['enabled']
+    this.props.handleUpdateGoal(this.props.id, this.state.name)
+  }
+
   render() {
     return (
       <div id="singleGoal">
+        <div className = {`hoverable enablebutton ${this.props.goal.enabled ? 'enabled' : 'disabled'}`} onClick = {() => this.onEnabled()}></div>
         <div className="textContent">
           <div className="singleGoalContent hoverable" id={'goal' + this.props.id}>
             <input onKeyPress = {(event) => this.onNameSubmit(event)} type = "text" value = {this.state.name} onChange = {(event) => this.onNameChange(event)}></input>
@@ -77,6 +82,7 @@ ManufacturingGoal.propTypes = {
   name: PropTypes.string.isRequired,
   activities: PropTypes.array.isRequired,
   id: PropTypes.string.isRequired,
+  enabled: PropTypes.bool.isRequired,
   handleUpdateGoal: PropTypes.func.isRequired,
-  handleDeleteGoal: PropTypes.func.isRequired,
+  handleDeleteGoal: PropTypes.func.isRequired
 };

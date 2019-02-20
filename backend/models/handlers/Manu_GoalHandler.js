@@ -25,6 +25,7 @@ class Manu_GoalHandler{
             manu_goal.name = new_name;
             manu_goal.user = new_user;
             manu_goal.activities = new_activities;
+            manu_goal.enabled = false;
             let new_manu_goal = await manu_goal.save();
             return res.json({ success: true, data: new_manu_goal});
         }
@@ -41,8 +42,9 @@ class Manu_GoalHandler{
             }
             var new_activities = req.body.activities;
             var new_name = req.body.name;
+            var new_enabled = req.body.enabled;
             let updated_manu_goal = await Manu_Goal.findOneAndUpdate({_id : target_id},
-                {$set: {activities: new_activities, name: new_name}}, {upsert: true, new: true});
+                {$set: {activities: new_activities, name: new_name, enabled: new_enabled}}, {upsert: true, new: true});
             if(!updated_manu_goal){
                 return res.json({
                     success: true, error: 'This document does not exist'

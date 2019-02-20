@@ -130,4 +130,24 @@
     align-items: center;
   }
 
+  .enablebutton {
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    margin: 4px;
+    cursor: pointer;
+    border: thin black solid;
+  }
+
+  .enabled{
+    background-color: #98FB98;
+  }
+
+  .disabled {
+    background-color: lightgrey;
+
+  }
+
+
+
   
