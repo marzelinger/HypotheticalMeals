@@ -9,6 +9,11 @@ import ItemStore from '../../helpers/ItemStore'
 import DataStore from './../../helpers/DataStore'
 import TablePagination from './TablePagination'
 import ListPage from './SkusPage';
+import ExportSimple from '../export/ExportSimple';
+import './../../style/SkusPage.css';
+import {Modal, ModalHeader} from 'reactstrap';
+import * as Constants from '../../resources/Constants';
+const jwt_decode = require('jwt-decode');
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
@@ -301,14 +306,7 @@ export default class FormulasPage extends React.Component {
                         onTableOptionSelection={this.onTableOptionSelection}
                     />
                 </div>
-                <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
-                    <SkuDetails
-                            item={this.state.detail_view_item}
-                            detail_view_options={this.state.detail_view_options}
-                            handleDetailViewSubmit={this.onDetailViewSubmit}
-                        />
-                </Modal>
-                <AddToManuGoal selected_skus={this.state.selected_items} isOpen={this.state.manu_goals_modal} toggle={(toggler) => this.toggle(toggler)} manu_goals_data={this.state.manu_goals_data}></AddToManuGoal> 
+                
                 <TablePagination
                  currentPage = {this.state.currentPage}
                  pagesCount = {this.state.pagesCount}

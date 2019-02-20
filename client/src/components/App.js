@@ -2,7 +2,7 @@ import React from 'react'
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import SkusPage from "./ListPage/SkusPage";
-import FormulasPage from "./ListPAge/FormulasPage";
+import FormulasPage from "./ListPage/FormulasPage";
 import Landing from "./layout/Landing";
 import Register from "./auth/Register";
 import AdminRegister from "./auth/AdminRegister";
