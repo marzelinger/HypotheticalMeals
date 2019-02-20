@@ -13,6 +13,7 @@ import IngredientHandler from './models/handlers/IngredientHandler';
 import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
 import UserHandler from './models/handlers/UserHandler';
 import FilterHandler from './models/handlers/FilterHandler';
+import Manu_ActivityHandler from './models/handlers/Manu_ActivityHandler';
 import { getSecret } from './secrets';
 const passport = require("passport");
 import CSV_parser from './csv_parser';
@@ -65,7 +66,7 @@ router.get('/skus_name/:search_substr', (req, res) => SkuHandler.getSkusByNameSu
 // Formula database APIs
 router.post('/formulas', (req, res) => FormulaHandler.createFormula(req, res));
 router.put('/formulas/:formula_id', (req, res) => FormulaHandler.updateFormulaByID(req, res));
-router.get('/formulas', (req, res) => FormulaHandler.getAllSkus(req, res));
+router.get('/formulas', (req, res) => FormulaHandler.getAllFormulas(req, res));
 router.get('/formulas/:formula_id', (req, res) => FormulaHandler.getFormulaByID(req, res));
 router.delete('formulas/:formula_id', (req, res) => FormulaHandler.deleteFormulaByID(req, res));
 router.get('/formulas_name/:search_substr', (req, res) => FormulaHandler.getFormulasByNameSubstring(req, res));
@@ -86,6 +87,13 @@ router.get('/manulines/:manu_line_id', (req, res) => Manu_LineHandler.getManufac
 router.delete('/manulines/:manu_line_id', (req, res) => Manu_LineHandler.deleteManufacturingLineByID(req, res));
 router.get('/manulines_name/:search_substr', (req, res) => Manu_LineHandler.getManufacturingLinesByNameSubstring(req, res));
 router.get('/manulines_shortname/:short_name', (req, res) => Manu_LineHandler.getManufacturingLinesByShortName(req, res));
+
+// Manufacturing Activity database APIs
+router.post('/manuactivities', (req, res) => Manu_ActivityHandler.createManufacturingActivity(req, res));
+router.put('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.updateManufacturingActivityByID(req, res));
+router.get('/manuactivities', (req, res) => Manu_ActivityHandler.getAllManufacturingActivities(req, res));
+router.get('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.getManufacturingActivityByID(req, res));
+router.delete('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.deleteManufacturingActivityByID(req, res));
 
 // Ingredient database APIs
 router.post('/ingredients', (req, res) => IngredientHandler.createIngredient(req, res));
@@ -139,17 +147,7 @@ router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword
 // @access Public
 router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
 
-/*
-https.createServer({
-  key: fs.readFileSync('./../server.key'),
-  cert: fs.readFileSync('./../server.cert')
-}, app)
-.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));*/
 
-// app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
-
-//pagination router api calls
-router.get('/ingredientspagget', (req, res, next) => PaginationHandler.getIngredientsPag(req, res, next));
 
 // Gives constant name to long directory home page.
 // const appPage = path.join(__dirname, '../client/build/index.html');

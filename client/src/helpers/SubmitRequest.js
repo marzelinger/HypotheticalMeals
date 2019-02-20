@@ -40,6 +40,7 @@ export default class SubmitRequest{
 
   static submitCreateItem = (route, item) => {
     try {
+      console.log(item);
       return fetch(`/api/${route}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

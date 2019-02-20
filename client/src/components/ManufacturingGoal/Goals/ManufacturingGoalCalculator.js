@@ -56,6 +56,7 @@ export default class ManufacturingGoalCalculator extends React.Component{
     }
   }
 
+  // broken rn bc using old structure of skus
   getIngredientInfo = async () => {
       console.log(this.props.skus);
       let index = 0;

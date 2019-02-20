@@ -31,17 +31,22 @@ export default class AddToManuGoal extends React.Component {
     async handleSubmit(quantities) {
         var goal = this.state.goal;
         console.log(goal);
-        Object.keys(quantities).forEach( (key) => {
-            if(!goal.skus.includes(key)){
-                goal.quantities.push(quantities[key]);
-                goal.skus.push(key);
+        let skus = goal.activities.map(activity => activity.sku);
+        console.log(skus);
+        for(const skukey in quantities){
+            if(!skus.includes(skukey)){
+                console.log('here');
+                let activity = await SubmitRequest.submitCreateItem('manuactivities', {sku: skukey, quantity: quantities[skukey]})
+                console.log(activity)
+                goal['activities'].push(activity.data);
             }
             else{
                 console.log('found it');
-                var index = goal.skus.indexOf(key);
-                goal.quantities[index] = goal.quantities[index]+ quantities[key];
+                var index = skus.indexOf(skukey);
+                goal.activities[index]['quantity'] = goal.activities[index]['quantity']+ quantities[skukey];
+                await SubmitRequest.submitUpdateItem('manuactivities', goal.activities[index]);
             }
-          });
+        };
         console.log(goal);
         let res = await SubmitRequest.submitUpdateGoal(goal.user, goal._id, goal);
         if (!res.success) {
