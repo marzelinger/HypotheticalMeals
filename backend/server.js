@@ -108,6 +108,8 @@ router.get('/manugoals_filter/:name_substr/:user_substr/:user', (req, res) => Ma
 // Multiple database APIs
 router.get('/ingredients_filter/:sort_field/:sku_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
 router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize/:prod_line_ids', (req, res) => FilterHandler.getSkusByFilter(req, res));
+router.get('/formulas_filter/:sort_field/:ingredient_ids/:keywod/:currentPage/:pageSize', (req, res) => FilterHandler.getFormulasbyFilter(req, res));
+
 
 router.post('/parseSkus', upload.single('file'), (req, res) => CSV_parser.parseSKUCSV(req, res));
 router.post('/parseProdLines', upload.single('file'), (req, res) => CSV_parser.parseProdLineCSV(req,res));

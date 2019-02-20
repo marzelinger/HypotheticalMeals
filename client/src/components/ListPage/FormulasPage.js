@@ -8,6 +8,7 @@ import SubmitRequest from '../../helpers/SubmitRequest'
 import ItemStore from '../../helpers/ItemStore'
 import DataStore from './../../helpers/DataStore'
 import TablePagination from './TablePagination'
+import ListPage from './SkusPage';
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
@@ -28,14 +29,17 @@ export default class FormulasPage extends React.Component {
             table_columns,
             table_properties,
             table_options,
-            detail_view_item: null,
-            detail_view_options,
+            selected_items: [],
+            selected_indexes: [],
+            detail_view_item: {},
+            detail_view_options: [],
             data: [],
             exportData: [],
             sort_field: '_',
             error: null,
-            modal: false,
+            details_modal: false,
             simple: props.simple || false,
+            user:'',
             currentPage: 0,
             previousPage: 0,
             pageSize: 20,
@@ -45,9 +49,14 @@ export default class FormulasPage extends React.Component {
                 'ingredients': []
             },
             filterChange: false,
+            ingredients:[],
         };
-
-        this.toggleModal = this.toggleModalModa.bind(this);
+        if(localStorage != null){
+            if(localStorage.getItem("jwtToken")!=null){
+                this.state.user = jwt_decode(localStorage.getItem("jwtToken")).id;
+            }
+        }
+        this.toggle = this.toggle.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onFilterValueChange = this.onFilterValueChange.bind(this);
         this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
@@ -56,52 +65,48 @@ export default class FormulasPage extends React.Component {
         this.setInitPages();
     }
 
-    toggleModal(){
-        this.state({
-            modal: !this.state.modal
-        });
+    toggle = () => {
+        this.setState({details_modal: !this.state.details_modal})
     }
 
     async componentDidMount() {
-        if(this.props.default_sku_filter !== undefined){
-            await this.onAddFilter(Constants.sku_label)
-            await this.onFilterValueSelection(undefined, this.props.default_sku_filter, 0);
+        if(this.props.default_ing_filter !== undefined){
+            await this.onFilterValueSelection([{ value: this.props.default_ing_filter._id }], null, 'ingredients');
         }
         await this.loadDataFromServer();
         //await 
     }
 
     async componentDidUpdate (prevProps, prevState){
-        console.log(this.state.data);
         if(this.state.filterChange){
             await this.loadDataFromServer();
         }
     }
 
     updateDateState = async() => {
-        var {data: skus} = await SubmitRequest.submitGetData(Constants.skus_page_name);
-        this.setState({skus: skus});
+        var {data: ingredients} = await SubmitRequest.submitGetData(Constants.ingredients_page_name);
+        this.setState({ingredients: ingredients});
     }
 
     async loadDataFromServer() {
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
+        var final_ing_filter = this.state.filters['ingredients'].join(',');
         var final_keyword_filter = this.state.filters['keyword'];
-        var final_ingr_filter = this.state.filters['ingredients'].join(',');
-        if(final_keyword_filter === '') final_keyword_filter = '_';
-        if(final_ingr_filter === '') final_ingr_filter = '_';
-        var resALL = await SubmitRequest.submitGetFilterData(Constants.formula_filter_path,
-            this.state.sort_field, final_sku_filter, final_keyword_filter, 0, 0);
+        if (final_ing_filter === '') final_ing_filter = '_';
+        if (final_keyword_filter === '') final_keyword_filter = '_';
+        var resALL = await SubmitRequest.submitGetFilterData(Constants.formula_filter_path, 
+            this.state.sort_field, final_ing_filter, final_keyword_filter, 0, 0, undefined);
         await this.checkCurrentPageInBounds(resALL);
         var res = await SubmitRequest.submitGetFilterData(Constants.formula_filter_path, 
-            this.state.sort_field, final_sku_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize);
-        if (res === undefined || !res.success){
+            this.state.sort_field, final_ing_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize); 
+        if (res === undefined || !res.success) {
             res.data = [];
             resALL.data = [];
         }
         await this.setState({
             data: res.data,
             exportData: resALL.data,
-            filterChange: false,
+            filterChange: false
         })
         this.updateDataState();
     }
@@ -135,14 +140,6 @@ export default class FormulasPage extends React.Component {
         }
     }
 
-    onFilterValueChange = (e, value, filterType) => {
-        var filters = this.state.filters;
-        if(filterType == 'keyword'){
-            filters[filterType] = value;
-        }
-        this.setState({ filters: filters, filterChange: true});
-    }
-
     async setInitPages(){
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
         var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
@@ -153,6 +150,126 @@ export default class FormulasPage extends React.Component {
         })
     }
 
+    onFilterValueChange = (e, value, filterType) => {
+        var filters = this.state.filters;
+        if(filterType == 'keyword'){
+            filters[filterType] = value;
+        }
+        this.setState({ filters: filters, filterChange: true});
+    }
+
+    handlePageClick = (e, index) => {
+        e.preventDefault();
+        this.setState({
+            currentPage: index,
+        });
+        this.loadDataFromServer();
+    }
+
+    onFilterValueSelection(vals, e, type){
+        var filters = this.state.filters;
+        filters[type] = vals.map((item) => {
+            return item.value_id
+        })
+
+        this.setState({
+            filters: filters,
+            filterChange: true
+        });
+    }
+
+    async onCreateNewItem(){ 
+        var item = await ItemStore.getEmptyItem(this.state.page_name);
+        const newData = this.state.data.slice();
+        newData.push(item);
+
+        //for the pagination stuff
+        const newExportData = this.state.exportData.slice();
+        newExportData.push(item);
+
+        this.setState({ 
+            data: newData,
+            exportData: newExportData,
+            detail_view_item: item,
+            detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
+        })
+        this.toggle(Constants.details_modal);
+        this.loadDataFromServer();
+    }
+
+    onTableOptionSelection = async(e, opt) => {
+        this.onCreateNewItem();
+    }
+
+    async onSort(event, sortKey){
+        await this.setState({ sort_field: sortKey})
+        this.loadDataFromServer();
+    }
+
+    onSelect = (rowIndexes) => {
+        var newState = [];
+        rowIndexes.forEach( index => {
+            newState.push(this.state.data[index]);
+        });
+        this.setState({ selected_items: newState, selected_indexes: rowIndexes});
+    };
+
+    onDetailViewSelect = (event, item) => {
+        if(currentUserIsAdmin().isValid){
+            this.setState({ 
+            detail_view_item: item ,
+            detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
+            });
+        }
+        else{
+            this.setState({ 
+                detail_view_item: item ,
+                detail_view_options: [Constants.details_cancel]
+                });
+        }
+        this.toggle(Constants.details_modal);
+    };
+
+    async onDetailViewSubmit(event, item, option) {
+        var res = {};
+        var newData = this.state.data.splice();
+        switch (option) {
+            case Constants.details_create:
+                newData.push(item);
+                res = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
+                break;
+            case Constants.details_save:
+                let toSave = newData.findIndex(obj => {return obj._id === item._id});
+                newData[toSave] = item;
+                res = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
+                break;
+            case Constants.details_delete:
+                let toDelete = newData.findIndex(obj => {return obj._id === item._id});
+                newData.splice(toDelete, 1);
+                res = await SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
+                break;
+            case Constants.details_cancel:
+                res = {success: true}
+                break;
+        }
+        if (!res.success) alert(res.error);
+        else {
+            this.setState({ 
+                data: newData,
+                detail_view_item: null,
+                detail_view_options: []
+            });
+            this.loadDataFromServer();
+            this.toggle(Constants.details_modal);
+        }
+    }
+
+    getButtons = () => {
+        return (
+        <div className = "ingbuttons"> 
+        </div>
+        );
+    }
 
 
     render(){
@@ -160,43 +277,50 @@ export default class FormulasPage extends React.Component {
             <div className="list-page">
                 <div>
                     <PageTable
-                        columns={this.state.table_columns}
-                        table_properties={this.state.table_properties}
+                        columns={this.state.table_columns} 
+                        table_properties={this.state.table_properties} 
                         list_items={this.state.data}
                         selected_items={this.state.selected_items}
-                        selected_indexes={this.state.selected_indexes}
+                        selected_indexes = {this.state.selected_indexes}
                         handleSort={this.onSort}
                         handleSelect={this.onSelect}
-                        handleDetailView={this.onDetailViewSubmit}
-                        showDetails={true}
-                        sortable={true}
-                        title={this.state.page_title}
-                        showHeader={true}
-                        simple={this.props.simple}
-                        filters={this.state.filters}
-                        table_options={this.state.table_options}
-                        onTableOptionSelection={this.onTableOptionSelection}
-                        onFilterValueSelection={this.onFilterValueSelection}
-                        onFilterValueChange={this.onFilterValueChange}
-                        onRemoveFilter={this.onRemoveFilter}
-                        //skus={this.state.skus}
+                        handleDetailViewSelect={this.onDetailViewSelect}
+                        showDetails = {this.props.simple !=undefined ? !this.props.simple : true}
+                        selectable = {this.props.simple !=undefined ? !this.props.simple : true}
+                        sortable = {this.props.simple != undefined ? !this.props.simple : true}
+                        title = {this.state.page_title}
+                        showHeader = {true}
+                        simple = {this.props.simple}
+                        filters = {this.state.filters}
+                        table_options = {this.state.table_options}
+                        onTableOptionSelection = {this.onTableOptionSelection}
+                        onFilterValueSelection = {this.onFilterValueSelection}
+                        onFilterValueChange = {this.onFilterValueChange}
+                        onRemoveFilter = {this.onRemoveFilter}
+                        ingredients = {this.state.ingredients}
                         onTableOptionSelection={this.onTableOptionSelection}
                     />
                 </div>
-                <Modal isOpen={this.state.modal} toggle={this.toggleModal} id="popup" className='item-detals'>
-                    <ModalHeader toggle={this.toggleModal}> Formula Details</ModalHeader>
-                    <FormulaDetails
-                        item={this.state.detail_view_item}
-                        detail_view_options={this.state.detail_view_options}
-                        handleDetailViewSubmit={this.onDetailViewSubmit} />
+                <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
+                    <SkuDetails
+                            item={this.state.detail_view_item}
+                            detail_view_options={this.state.detail_view_options}
+                            handleDetailViewSubmit={this.onDetailViewSubmit}
+                        />
                 </Modal>
+                <AddToManuGoal selected_skus={this.state.selected_items} isOpen={this.state.manu_goals_modal} toggle={(toggler) => this.toggle(toggler)} manu_goals_data={this.state.manu_goals_data}></AddToManuGoal> 
                 <TablePagination
-                    currentPage={this.state.currentPage}
-                    pagesCount={this.state.pagesCount}
-                    handlePageClick={this.handlePageClick}
-                    getButtons={this.getButtons}
-                ></TablePagination>
+                 currentPage = {this.state.currentPage}
+                 pagesCount = {this.state.pagesCount}
+                 handlePageClick = {this.handlePageClick}
+                 getButtons = {this.getButtons}
+                >
+                </TablePagination>
             </div>
         )
     }
+}
+
+ListPage.propTypes = {
+    default_ing_flter: PropTypes.object
 }
