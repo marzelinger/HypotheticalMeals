@@ -13,6 +13,7 @@ export const manu_line_title="Manufacturing Lines"
 export const IngTitle = "INGREDIENTS"
 export const SkuTitle = "SKUs"
 export const ManuGoalTitle = "MANUFACTURING GOALS"
+export const FormulaTitle = "FORMULAS"
 
 export const ingredients_page_name = 'ingredients';
 export const ing_filter_path = 'ingredients_filter';

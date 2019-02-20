@@ -40,7 +40,7 @@ class App extends React.Component{
     //this.determineUserInit();
     this.determineUser();
     this.state = {
-      navbar_items: [Constants.SkuTitle, Constants.IngTitle, Constants.ManuGoalTitle],
+      navbar_items: [Constants.SkuTitle, Constants.IngTitle, Constants.ManuGoalTitle, Constants.FormulaTitle],
     }
   }
 
