@@ -5,9 +5,11 @@ import { connect } from "react-redux";
 import { loginUser } from "../../actions/authActions";
 import classnames from "classnames";
 import { Button } from 'reactstrap';
-
+const querystring = require('querystring');
 
 const OAUTH_URL = "https://oauth.oit.duke.edu/oauth/authorize.php";
+//const OAUTH_URL = "https://oauth.oit.duke.edu/oauth/authorize.php";
+
 // const response_type = "token";
 // const redirect_uri = "http://localhost:3000";
 // const scope = "basic";
@@ -18,11 +20,14 @@ const OAUTH_URL = "https://oauth.oit.duke.edu/oauth/authorize.php";
 const params = {
   client_id: "meta-alligators",
   client_secret: "zHMB4Sl*o*Awu*mjZv$VEa+fX=QACLIWuRNWyNe@kNtTYLd*4E",
-  redirect_uri: "http://localhost:3000/skus",
+  redirect_uri: "http://localhost:3000",
   response_type: "token",
   state: 7777,
   scope: "basic"
 };
+
+var access_token = null;
+
 
 class DukeLogin extends Component {
   constructor() {
@@ -40,6 +45,7 @@ class DukeLogin extends Component {
       this.props.history.push("/skus");
     }
   }
+
 
 
 componentWillReceiveProps(nextProps) {
@@ -65,21 +71,53 @@ const userData = {
   this.props.loginUser(userData); // since we handle the redirect within our component, we don't need to pass in this.props.history as a parameter
   };
 
-//   var checkAccessToken = function() {
-//     access_token = getAccessToken();
-//     console.log(access_token);
-//     if (!access_token) {
-//         window.location.replace(OAUTH_URL + getQueryString());
-//     }
-//  };
-onRadioBtnClick() {
+ async getAccessToken () {
+    console.log("access_token: "+ access_token);
+   var url = window.location.href;
+   var regex = new RegExp("access_token" + "(=([^&#]*)|&|#|$)"),
+   results = regex.exec(url);
+   if (results == null) return 0;
+   return results[2];
+}
+
+ async checkAccessToken (authURI) {
+  access_token = await this.getAccessToken();
+  console.log(access_token);
+  if (!access_token) {
+      //window.location.replace(OAUTH_URL + this.getQueryString());
+      window.location.replace(authURI)
+  }
+}
+
+// getQueryString () {
+//    return "?" + $.param({
+//        response_type: 'token',
+//        redirect_uri: 'http://localhost:3000/login',
+//        client_id: 'meta-alligators',
+//        scope: 'basic events:event:update',
+//        state: 11291
+//    });
+// }
+
+async onRadioBtnClick() {
   //this.setState({  });
   let authURI = OAUTH_URL +'?'+this.encodeGetParams(params);
     console.log("this is the authURI: "+authURI);
+  await this.checkAccessToken(authURI);
 
-  window.location.href = authURI;
-  console.log("this is the hash: "+window.location.hash);
-  let hash = window.location.hash;
+  //decodeURIComponent
+  console.log("this is the parse "+querystring.parse(window.location.hash));
+
+  //window.location.href = authURI;
+  await console.log("this is the hash: "+window.location.hash);
+  //let hash = window.location.hash;
+  //access_token = this.getAccessToken();
+  console.log('this is access_token'+access_token);
+
+  //access_token = this.getAccessToken();
+  console.log('this is access_token2 '+access_token);
+
+
 
 }
 
