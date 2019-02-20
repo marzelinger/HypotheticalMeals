@@ -4,6 +4,26 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { loginUser } from "../../actions/authActions";
 import classnames from "classnames";
+import { Button } from 'reactstrap';
+
+
+const OAUTH_URL = "https://oauth.oit.duke.edu/oauth/authorize.php";
+// const response_type = "token";
+// const redirect_uri = "http://localhost:3000";
+// const scope = "basic";
+// const state = "7777";
+// const client_id = "meta-alligators";
+// const client_secret = "zHMB4Sl*o*Awu*mjZv$VEa+fX=QACLIWuRNWyNe@kNtTYLd*4E";
+
+const params = {
+  client_id: "meta-alligators",
+  client_secret: "zHMB4Sl*o*Awu*mjZv$VEa+fX=QACLIWuRNWyNe@kNtTYLd*4E",
+  redirect_uri: "http://localhost:3000/skus",
+  response_type: "token",
+  state: 7777,
+  scope: "basic"
+};
+
 class DukeLogin extends Component {
   constructor() {
     super();
@@ -45,13 +65,40 @@ const userData = {
   this.props.loginUser(userData); // since we handle the redirect within our component, we don't need to pass in this.props.history as a parameter
   };
 
+//   var checkAccessToken = function() {
+//     access_token = getAccessToken();
+//     console.log(access_token);
+//     if (!access_token) {
+//         window.location.replace(OAUTH_URL + getQueryString());
+//     }
+//  };
+onRadioBtnClick() {
+  //this.setState({  });
+  let authURI = OAUTH_URL +'?'+this.encodeGetParams(params);
+    console.log("this is the authURI: "+authURI);
+
+  window.location.href = authURI;
+  console.log("this is the hash: "+window.location.hash);
+  let hash = window.location.hash;
+
+}
+
+encodeGetParams = p => 
+  Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");
+
+
 render() {
     const { errors } = this.state;
 return (
       <div className="container">
         <div style={{ marginTop: "4rem" }} className="row">
           <div className="col s8 offset-s2">
-          <Redirect to="/skus" />
+          {/* <Redirect to="/skus" /> */}
+          {/* <Redirect to = {OAUTH_URL}/> */}
+          <Button color="primary" 
+          onClick={() => this.onRadioBtnClick()} 
+          >Continue to DukeLogin</Button>
+
           </div>
         </div>
       </div>

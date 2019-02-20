@@ -6,6 +6,7 @@ import Landing from "./layout/Landing";
 import Register from "./auth/Register";
 import AdminRegister from "./auth/AdminRegister";
 import Login from "./auth/Login";
+import DukeLogin from "./auth/DukeLogin";
 import PrivateRoute from "./private-route/PrivateRoute";
 import AdminPrivateRoute from "./private-route/AdminPrivateRoute";
 import Dashboard from "./dashboard/Dashboard";
@@ -84,7 +85,8 @@ class App extends React.Component{
                 }
                <Route exact path="/login" component={Login} />
                <Route exact path="/adminregister" component={AdminRegister} />  
-               <Route exact path= "/" component={Landing} />       
+               <Route exact path= "/" component={Landing} />
+               <Route exact path= "/loginDuke" component = {DukeLogin}/>     
               <Switch>
                 <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
                 <AdminPrivateRoute exact path="/register" component={Register} />

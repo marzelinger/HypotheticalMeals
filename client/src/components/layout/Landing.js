@@ -6,6 +6,8 @@ import { getAllUsers } from "../../actions/authActions";
 
 const adminHasInit = require("../auth/adminHasInit");
 
+const OAUTH_URL = "https://oauth.oit.duke.edu/oauth/authorize.php";
+
 class Landing extends Component {
 
   constructor(props) {
@@ -80,7 +82,7 @@ class Landing extends Component {
     return (
       <div className="col s6">
         <Link
-          to="/loginDuke"
+          to={"/loginDuke"}
           style={{
             width: "140px",
             borderRadius: "3px",
