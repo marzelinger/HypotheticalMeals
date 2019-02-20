@@ -13,8 +13,10 @@ import ExportSimple from '../export/ExportSimple';
 import './../../style/SkusPage.css';
 import {Modal, ModalHeader} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
-const jwt_decode = require('jwt-decode');
+import FormulaDetails from './FormulaDetails';
+import '../../style/SkusPage.css'
 
+const jwt_decode = require('jwt-decode');
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
 export default class FormulasPage extends React.Component {
@@ -88,7 +90,7 @@ export default class FormulasPage extends React.Component {
         }
     }
 
-    updateDateState = async() => {
+    updateDataState = async() => {
         var {data: ingredients} = await SubmitRequest.submitGetData(Constants.ingredients_page_name);
         this.setState({ingredients: ingredients});
     }
@@ -270,10 +272,7 @@ export default class FormulasPage extends React.Component {
     }
 
     getButtons = () => {
-        return (
-        <div className = "ingbuttons"> 
-        </div>
-        );
+        return;
     }
 
 
@@ -303,10 +302,15 @@ export default class FormulasPage extends React.Component {
                         onFilterValueChange = {this.onFilterValueChange}
                         onRemoveFilter = {this.onRemoveFilter}
                         ingredients = {this.state.ingredients}
-                        onTableOptionSelection={this.onTableOptionSelection}
                     />
                 </div>
-                
+                <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
+                    <FormulaDetails
+                            item={this.state.detail_view_item}
+                            detail_view_options={this.state.detail_view_options}
+                            handleDetailViewSubmit={this.onDetailViewSubmit}
+                        />
+                </Modal>
                 <TablePagination
                  currentPage = {this.state.currentPage}
                  pagesCount = {this.state.pagesCount}

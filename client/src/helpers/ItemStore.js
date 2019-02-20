@@ -92,6 +92,16 @@ export default class ItemStore{
         comment: '',
         skus: []
       }
+      case Constants.formulas_page_name:
+      var res = await SubmitRequest.submitGetData(page_name);
+      var new_id = await ItemStore.getUniqueNumber(res.data);
+      return {
+        name: '',
+        num: new_id,
+        ingredients: [],
+        ingredient_quantities: [],
+        comment: ''
+      }
     }
     
   }

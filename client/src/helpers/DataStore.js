@@ -28,6 +28,10 @@ export default class DataStore{
         table_columns: ['Name', 'Formula#'],
         table_properties: ['name', 'num'],
         table_options: [Constants.create_item, Constants.add_keyword_filter, Constants.add_ing_filter],
+        item_properties: ['name', 'num'],
+        item_property_labels: ['Name', 'SKU#'],
+        item_property_patterns: ['.+', '^[0-9]+$'], 
+        item_property_field_type: ['text', 'text'],
       }
     }
 
