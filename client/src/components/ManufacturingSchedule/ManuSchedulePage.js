@@ -76,14 +76,9 @@ export default class ManuSchedulePage extends Component {
                 }
             },
             selectable: true,
-            onMove: function (item, callback) {
-                console.log('yo')
-                if (item.group == 2) {
-                    callback(null)
-                } else {
-                    callback(item)
+            onMove: function(item, callback) {
+                  console.log(item.start)
                 }
-            }
         }
     }
 
