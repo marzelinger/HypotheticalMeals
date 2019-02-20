@@ -7,6 +7,8 @@ import {
   SET_CURRENT_USER,
   USER_LOADING
 } from "./types";
+import printFuncFront from "../printFuncFront";
+
 const currentUserIsAdmin = require("../components/auth/currentUserIsAdmin");
 const adminHasInit = require("../../src/components/auth/adminHasInit");
 
@@ -63,6 +65,8 @@ export const setCurrentUser = decoded => {
 
 // Login - get user token
 export const loginDukeUser = (userData, netIDToken, client_id) => dispatch => {
+  printFuncFront("this is the netIDtoken: "+netIDToken);
+  printFuncFront("this is the client_id: "+client_id);
 //   axios
 //     .post("/api/users/loginDukeNetID", userData)
 //     .then(res => {
@@ -103,13 +107,28 @@ export const loginDukeUser = (userData, netIDToken, client_id) => dispatch => {
     //   })
     // );
 
-    let res = axios.get('https://api.colab.duke.edu/meta/v1/apis/identity/v1', {
+    // let res = axios.get('https://api.colab.duke.edu/meta/v1/apis/identity/v1', {
+      let res = axios.get('https://api.colab.duke.edu/identity/v1/', {
       headers: {
-          'x-api-key': client_id,
-          'Authorization': `Bearer ${netIDToken}`
+          'x-api-key': "meta-alligators",
+          'Authorization': "Bearer "+netIDToken
       }
-    });
-    console.log("this is the res: "+res);
+    }).then( response => {
+      console.log("this is the res: "+JSON.stringify(response));
+      console.log("this is the netid: "+response.data.netid);
+
+
+
+
+
+    }
+
+
+
+
+
+    );
+    //console.log("this is the res: "+JSON.stringify(res));
 
 };
 
