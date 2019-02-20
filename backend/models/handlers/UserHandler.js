@@ -101,6 +101,55 @@ class UserHandler{
     });
     }
 
+    static loginUserDukeNetID (req,res){
+    //   // Form validation
+    //   // Check validation
+
+    //   //const email = req.body.email;
+    //   const username = req.body.username;
+    //   const password = req.body.password;
+    //   // Find user by username
+    //   User.findOne({ username }).then(user => {
+    //     // Check if user exists
+    //     if (!user) {
+    //       return res.status(404).json({ usernamenotfound: "Username not found" });
+    //     }
+    //   // Check password
+    //     bcrypt.compare(password, user.password).then(isMatch => {
+    //       if (isMatch) {
+    //         // User matched
+    //         // Create JWT Payload
+    //         const payload = {
+    //           id: user.id,
+    //           username: user.username,
+    //           admin: isAdmin(user).isValid
+    //         };
+    // // Sign token
+    //         jwt.sign(
+    //           payload,
+    //           keys.secretOrKey,
+    //           {
+    //             expiresIn: 31556926 // 1 year in seconds
+    //           },
+    //           (err, token) => {
+    //             res.json({
+    //               success: true,
+    //               token: "Bearer " + token
+    //             });
+    //           }
+    //         );
+    //         printFuncBack("this is the payload token. " +JSON.stringify(payload));
+    //       } else {
+    //         return res
+    //           .status(400)
+    //           .json({ passwordincorrect: "Password incorrect" });
+    //       }
+    //     });
+    //   });
+      }
+
+
+
   static async updateUserByID(req, res){
       try {
           printFuncBack("here in the update user by id");

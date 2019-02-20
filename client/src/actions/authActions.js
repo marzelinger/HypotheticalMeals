@@ -59,6 +59,61 @@ export const setCurrentUser = decoded => {
     payload: decoded
   };
 };
+
+
+// Login - get user token
+export const loginDukeUser = (userData, netIDToken, client_id) => dispatch => {
+//   axios
+//     .post("/api/users/loginDukeNetID", userData)
+//     .then(res => {
+//       // Save to localStorage
+// // Set token to localStorage
+//       const { token } = res.data;
+//       localStorage.setItem("jwtToken", token);
+//       // Set token to Auth header
+//       setAuthToken(token);
+//       const decoded = jwt_decode(token);
+
+//       if(decoded.admin==true){
+//         setAdminToken(token);
+//       }
+//       // Decode token to get user data
+//       // Set current user
+//       dispatch(setCurrentUser(decoded));
+//     })
+//     .catch(err =>
+//       dispatch({
+//         type: GET_ERRORS,
+//         payload: err.response.data
+//       })
+//     );
+
+    //   localStorage.setItem("jwtToken", netIDToken);
+    //   // Set token to Auth header
+    //   setAuthToken(netIDToken);
+
+    //   // Decode token to get user data
+    //   // Set current user
+    //   dispatch(setCurrentUser(decoded));
+    // })
+    // .catch(err =>
+    //   dispatch({
+    //     type: GET_ERRORS,
+    //     payload: err.response.data
+    //   })
+    // );
+
+    let res = axios.get('https://api.colab.duke.edu/meta/v1/apis/identity/v1', {
+      headers: {
+          'x-api-key': client_id,
+          'Authorization': `Bearer ${netIDToken}`
+      }
+    });
+    console.log("this is the res: "+res);
+
+};
+
+
 // User loading
 export const setUserLoading = () => {
   return {

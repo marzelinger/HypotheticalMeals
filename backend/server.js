@@ -142,6 +142,9 @@ router.post("/users/register", (req, res) => UserHandler.createUser(req, res));
 // @desc Login user and return JWT token
 // @access Public
 router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword(req,res));
+//router.post("/users/loginDukeNetID", (req, res) => UserHandler.loginUserDukeNetID(req,res));
+
+
 
 // @route GET api/users/getall
 // @desc Get all users in the mlab db and return them.
