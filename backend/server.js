@@ -90,6 +90,7 @@ router.get('/manulines_shortname/:short_name', (req, res) => Manu_LineHandler.ge
 // Manufacturing Activity database APIs
 router.post('/manuactivities', (req, res) => Manu_ActivityHandler.createManufacturingActivity(req, res));
 router.put('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.updateManufacturingActivityByID(req, res));
+router.put('/manuactivities_enable', (req, res) => Manu_ActivityHandler.updateManufacturingActivitiesEnable(req, res));
 router.get('/manuactivities', (req, res) => Manu_ActivityHandler.getAllManufacturingActivities(req, res));
 router.get('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.getManufacturingActivityByID(req, res));
 router.delete('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.deleteManufacturingActivityByID(req, res));

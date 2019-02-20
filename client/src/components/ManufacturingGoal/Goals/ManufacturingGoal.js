@@ -49,6 +49,7 @@ export default class ManufacturingGoal extends React.Component{
   onEnabled = () => {
     this.props.goal['enabled'] = !this.props.goal['enabled']
     this.props.handleUpdateGoal(this.props.id, this.state.name)
+    SubmitRequest.submitEnableUpdate(this.props.activities, this.props.goal['enabled']);
   }
 
   render() {
