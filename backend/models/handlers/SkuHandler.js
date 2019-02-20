@@ -18,6 +18,10 @@ class SkuHandler{
             var new_ingredients = req.body.ingredients;
             var new_ingredient_quantities = req.body.ingredient_quantities;
             var new_comment = req.body.comment;
+            var new_formula = req.body.formula
+            var new_scale_factor = req.body.scale_factor
+            var new_manu_lines = req.body.manu_lines
+            var new_manu_rate = req.body.manu_rate
 
             if(!new_name || !new_sku_num || !new_case_upc || !new_unit_upc || !new_unit_size || !new_cpc || !new_prod_line){
                 return res.json({
@@ -51,6 +55,10 @@ class SkuHandler{
             sku.ingredients = new_ingredients;
             sku.ingredient_quantities = new_ingredient_quantities;
             sku.comment = new_comment;
+            sku.formula = new_formula
+            sku.scale_factor = new_scale_factor
+            sku.manu_lines = new_manu_lines
+            sku.manu_rate = new_manu_rate
             let new_sku = await sku.save();
             console.log('Sku added to database');
             return res.json({ success: true, data: new_sku});
@@ -87,6 +95,10 @@ class SkuHandler{
             var new_ingredient_quantities = req.body.ingredient_quantities;
             var new_comment = req.body.comment;
             var new_ingredients = req.body.ingredients;
+            var new_formula = req.body.formula
+            var new_scale_factor = req.body.scale_factor
+            var new_manu_lines = req.body.manu_lines
+            var new_manu_rate = req.body.manu_rate
             SkuHandler.checkForZeroQtys(new_ingredients, new_ingredient_quantities);
 
             let conflict = await SKU.find({ num: Number(new_sku_num) });
@@ -99,7 +111,8 @@ class SkuHandler{
                 {$set: {name : new_name, num : new_sku_num, case_upc : new_case_upc, unit_upc : new_unit_upc,
                         unit_size : new_unit_size, cpc: new_cpc, prod_line: new_prod_line,
                         ingredients : new_ingredients, ingredient_quantities: new_ingredient_quantities, 
-                        comment : new_comment}}, {upsert : true, new : true});
+                        comment : new_comment, formula : new_formula, scale_factor : new_scale_factor, 
+                        manu_lines : new_manu_lines, manu_rate : new_manu_rate}}, {upsert : true, new : true});
             if(!updated_sku) {
                 return res.json({
                     success: true, error: 'This document does not exist'

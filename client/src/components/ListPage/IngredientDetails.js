@@ -12,6 +12,7 @@ import {
     Label } from 'reactstrap';
 import DataStore from './../../helpers/DataStore'
 import DetailsViewSkuTable from './DetailsViewSkuTable'
+import UnitConversion from '../../helpers/UnitConversion';
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
@@ -70,6 +71,11 @@ export default class IngredientDetails extends React.Component {
     async validateInputs() { 
         var inv_in = [];
         this.state.item_properties.map(prop => {
+            if (prop === 'pkg_size') {
+                console.log('.' + this.props.item[prop].toString() + '.')
+                console.log(this.getPropertyPattern(prop))
+                console.log(this.props.item[prop].toString().match(this.getPropertyPattern(prop)))
+            }
             if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) {
                 inv_in.push(prop);
             }

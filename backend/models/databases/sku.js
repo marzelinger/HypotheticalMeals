@@ -13,11 +13,25 @@ const SkusSchema = new Schema({
   unit_upc: String,
   unit_size: String,
   cpc: Number,
-  prod_line: 
+  prod_line: {
+    type: Schema.Types.ObjectId,
+    ref: 'Prod_Line'
+  },
+  formula: 
     {
       type: Schema.Types.ObjectId,
-      ref: 'Prod_Line'
+      ref: 'Formula'
     },
+  scale_factor: Number,
+  manu_lines: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Manu_Line'
+    }
+  ],
+  manu_rate: Number,
+
+  //to be deleted
   ingredients: [
     {
       type: Schema.Types.ObjectId,
@@ -25,6 +39,8 @@ const SkusSchema = new Schema({
     }
   ],
   ingredient_quantities:[Number],
+  //
+
   comment: String
 }, { timestamps: true });
 

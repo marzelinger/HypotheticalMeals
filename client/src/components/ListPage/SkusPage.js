@@ -1,8 +1,6 @@
-// ListPage.js
 // SkusPage.js
 // Riley
 // Larger page component to be shown in PageTemplate
-// THIS PAGE IS DEPRICATED
 
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -19,6 +17,7 @@ import TablePagination from './TablePagination'
 import SkuDetails from './SkuDetails';
 
 import '../../style/SkusPage.css'
+import BulkEditManuLines from './BulkEditManuLines';
 const jwt_decode = require('jwt-decode');
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
@@ -53,11 +52,13 @@ export default class ListPage extends React.Component {
             details_modal: false,
             manu_goals_modal: false,
             manu_goals_data: [],
+            manu_lines_modal: false,
+            manu_lines_data: [],
             simple: props.simple || false,
             user:'',
             currentPage: 0,
             previousPage: 0,
-            pageSize: 20,
+            pageSize: props.simple ? 4 : 20,
             pagesCount: 0,
             filters: {
                 'keyword': '',
@@ -70,7 +71,7 @@ export default class ListPage extends React.Component {
         };
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!= null){
-              this.state.user = jwt_decode(localStorage.getItem("jwtToken")).id;
+              this.state.user = jwt_decode(localStorage.getItem("jwtToken")).username;
             }
           }
         this.toggle = this.toggle.bind(this);
@@ -79,8 +80,9 @@ export default class ListPage extends React.Component {
         this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
+        this.onSelect = this.onSelect.bind(this)
+        this.onBulkManuLineSubmit = this.onBulkManuLineSubmit.bind(this);
         this.setInitPages();
-        console.log(props.default_ing_filter)
     }
 
     toggle = (modalType) => {
@@ -94,6 +96,13 @@ export default class ListPage extends React.Component {
                     return;
                 }
                 this.setState({manu_goals_modal: !this.state.manu_goals_modal})
+                break;
+            case Constants.manu_lines_modal:
+                if(this.state.selected_items.length == 0){
+                    alert("You must select at least one SKU to bulk edit manufacturing lines!");
+                    return;
+                }
+                this.setState({manu_lines_modal: !this.state.manu_lines_modal})
                 break;
         }
     }   
@@ -209,8 +218,10 @@ export default class ListPage extends React.Component {
 
     onFilterValueSelection (vals, e, type)  {
         var filters = this.state.filters;
-        filters[type] = vals.map((item) => {
-            return item.value._id
+        vals.map((item) => {
+            if (!filters[type].includes(item.value._id)){
+                filters[type].push(item.value._id);
+            }
         })
         
         this.setState({
@@ -247,6 +258,9 @@ export default class ListPage extends React.Component {
             case Constants.add_to_manu_goals:
                 await this.onAddManuGoals();
                 break;
+            case Constants.edit_manu_lines:
+                this.toggle(Constants.manu_lines_modal);
+                break;
         }
     }
 
@@ -256,17 +270,36 @@ export default class ListPage extends React.Component {
         this.setState({ manu_goals_data: res.data});
     }
 
+    async onBulkManuLineSubmit(event, opt, skus) {
+        var newSkus = Object.assign([], this.state.data);
+        console.log(opt)
+        switch (opt){
+            case Constants.details_save:
+                await skus.map(async (sku) => {
+                    newSkus[newSkus.findIndex(el => el._id === sku._id)] = sku;
+                    var res = await SubmitRequest.submitUpdateItem(Constants.skus_page_name, sku);
+                });
+                break;
+            case Constants.details_cancel:
+                break;
+        }
+        console.log(newSkus)
+        this.setState({ data: newSkus });
+        this.loadDataFromServer();
+        this.toggle(Constants.manu_lines_modal);
+    }
+
     async onSort(event, sortKey) {
         await this.setState({sort_field: sortKey})
         this.loadDataFromServer();
     };
 
-    onSelect = (rowIndexes) => {
+    onSelect = async (rowIndexes) => {
         var newState = [];
         rowIndexes.forEach( index => {
             newState.push(this.state.data[index]);
         });
-        this.setState({ selected_items: newState, selected_indexes: rowIndexes});
+        await this.setState({ selected_items: newState, selected_indexes: rowIndexes});
     };
 
     onDetailViewSelect = (event, item) => {
@@ -322,13 +355,16 @@ export default class ListPage extends React.Component {
     getButtons = () => {
         return (
         <div className = "ingbuttons"> 
-            {this.props.default_ing_filter !== undefined ? null : 
+            {this.props.default_ing_filter !== undefined || this.state.selected_items.length === 0 ? null : 
                             (<div className = "manugoalbutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}
                             primary={true}
-                            >
-                            Add To Manufacturing Goal
-                            </div>)}
+                            > {Constants.add_to_manu_goals} </div>)}
+            {this.props.default_ing_filter !== undefined || !currentUserIsAdmin().isValid || this.state.selected_items.length === 0 ? null : 
+                            (<div className = "manulinebutton hoverable"
+                            onClick={() => this.onTableOptionSelection(null, Constants.edit_manu_lines)}
+                            primary={true}
+                            > {Constants.edit_manu_lines} </div>)}
             {this.props.default_ing_filter !== undefined ? null : (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}   
         </div>
         );
@@ -372,12 +408,23 @@ export default class ListPage extends React.Component {
                             handleDetailViewSubmit={this.onDetailViewSubmit}
                         />
                 </Modal>
-                <AddToManuGoal selected_skus={this.state.selected_items} isOpen={this.state.manu_goals_modal} toggle={(toggler) => this.toggle(toggler)} manu_goals_data={this.state.manu_goals_data}></AddToManuGoal> 
+                <AddToManuGoal 
+                    selected_skus={this.state.selected_items} 
+                    isOpen={this.state.manu_goals_modal} 
+                    toggle={(toggler) => this.toggle(toggler)} 
+                    manu_goals_data={this.state.manu_goals_data}
+                /> 
+                <BulkEditManuLines
+                    selected_skus={this.state.selected_items} 
+                    isOpen={this.state.manu_lines_modal} 
+                    toggle={(toggler) => this.toggle(toggler)} 
+                    handleBulkManuLineSubmit={this.onBulkManuLineSubmit}
+                /> 
                 <TablePagination
-                 currentPage = {this.state.currentPage}
-                 pagesCount = {this.state.pagesCount}
-                 handlePageClick = {this.handlePageClick}
-                 getButtons = {this.getButtons}
+                    currentPage = {this.state.currentPage}
+                    pagesCount = {this.state.pagesCount}
+                    handlePageClick = {this.handlePageClick}
+                    getButtons = {this.getButtons}
                 >
                 </TablePagination>
             </div>
