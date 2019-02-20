@@ -1,0 +1,43 @@
+<html>
+<head>
+ <title>Co-Lab API test</title>
+ <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+</head>
+<body>
+ <h1>Co-Lab Events</h1>
+ <ul id="events"></ul>
+</body>
+<script>
+const EVENTS_URL = "https://api.colab.duke.edu/events/v1/events";
+var events;
+
+var getAllEvents = function() {
+ $.ajax({
+   type: "GET",
+   url: EVENTS_URL,
+   headers: {
+     "x-api-key": meta-alligators,
+     "Content-Type": "application/json"
+   },
+   dataType: "json",
+   contentType: 'application/json; charset=UTF-8'
+ }).done(function(response) {
+   events = response;
+   console.log(events);
+   displayEvents();
+ }).fail(function(response) {
+   console.error(response);
+ });
+};
+
+var displayEvents = function() {
+ events.map(function(item) {
+   var $event = $("<li>");
+   $event.text(item["title"] + " - " + item["description"]);
+   $("#events").append($event);
+ });
+};
+
+$(document).ready(getAllEvents);
+</script>
+</html>

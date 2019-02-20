@@ -83,7 +83,8 @@ class App extends React.Component{
                 {//<Route exact path="/" component={Landing} />
                 }
                <Route exact path="/login" component={Login} />
-               <Route exact path="/adminregister" component={AdminRegister} />         
+               <Route exact path="/adminregister" component={AdminRegister} />  
+               <Route exact path= "/" component={Landing} />       
               <Switch>
                 <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
                 <AdminPrivateRoute exact path="/register" component={Register} />
