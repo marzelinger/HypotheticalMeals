@@ -35,15 +35,18 @@ import { Link, withRouter } from "react-router-dom";
 // Check for token to keep user logged in
 const store = configureStore();
 
+
 class App extends React.Component{
   constructor() {
     super();
+    
     //localStorage.clear();
     //this.determineUserInit();
-    this.determineUser();
     this.state = {
       navbar_items: [Constants.SkuTitle, Constants.IngTitle, Constants.ManuGoalTitle],
+      user: false
     }
+    this.determineUser();
   }
 
   determineUser = () => {
@@ -57,6 +60,9 @@ class App extends React.Component{
         const decoded = jwt_decode(token);
         if(decoded.admin==true){
           setAdminToken(token);
+          this.state = {
+            user: true,
+          }
         }
         // Set user and isAuthenticated
         store.dispatch(setCurrentUser(decoded));
@@ -65,6 +71,9 @@ class App extends React.Component{
         if (decoded.exp < currentTime) {
           // Logout user
           store.dispatch(logoutUser());
+          this.state = {
+            user: false,
+          }
       
           // Redirect to login
           window.location.href = "./login";
@@ -80,14 +89,19 @@ class App extends React.Component{
         <Provider store={store}>
           <Router>
             <div className="App">
-                <PrivateRoute component={GeneralNavBar}/>
-                {//<Route exact path="/" component={Landing} />
-                }
+                {/* <div>
+                  {(this.state.user)? (
+                    <GeneralNavBar></GeneralNavBar>
+                    ) : (
+                    <div></div>
+                    )}
+                </div> */}
                <Route exact path="/login" component={Login} />
                <Route exact path="/adminregister" component={AdminRegister} />  
                <Route exact path= "/" component={Landing} />
-               <Route exact path= "/loginDuke" component = {DukeLogin}/>     
+               <Route path= "/loginDuke" component = {DukeLogin}/>     
               <Switch>
+                {/* <PrivateRoute component={GeneralNavBar}/> */}
                 <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
                 <AdminPrivateRoute exact path="/register" component={Register} />
                 <PrivateRoute exact path="/" component={Dashboard} />

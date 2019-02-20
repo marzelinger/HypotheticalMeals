@@ -8,26 +8,25 @@ import { Button } from 'reactstrap';
 const querystring = require('querystring');
 
 const OAUTH_URL = "https://oauth.oit.duke.edu/oauth/authorize.php";
-//const OAUTH_URL = "https://oauth.oit.duke.edu/oauth/authorize.php";
 
-// const response_type = "token";
-// const redirect_uri = "http://localhost:3000";
-// const scope = "basic";
-// const state = "7777";
-// const client_id = "meta-alligators";
-// const client_secret = "zHMB4Sl*o*Awu*mjZv$VEa+fX=QACLIWuRNWyNe@kNtTYLd*4E";
+var authURI;
 
 const params = {
   client_id: "meta-alligators",
   client_secret: "zHMB4Sl*o*Awu*mjZv$VEa+fX=QACLIWuRNWyNe@kNtTYLd*4E",
-  redirect_uri: "http://localhost:3000",
+  redirect_uri: "http://localhost/loginDuke",
   response_type: "token",
   state: 7777,
   scope: "basic"
 };
 
-var access_token = null;
 
+
+const EVENTS_URL = "https://api.colab.duke.edu/events/v1/events";
+var events;
+
+
+var access_token = null;
 
 class DukeLogin extends Component {
   constructor() {
@@ -86,24 +85,22 @@ const userData = {
   if (!access_token) {
       //window.location.replace(OAUTH_URL + this.getQueryString());
       window.location.replace(authURI)
+      access_token = await this.getAccessToken();
+      console.log(access_token);
   }
 }
 
-// getQueryString () {
-//    return "?" + $.param({
-//        response_type: 'token',
-//        redirect_uri: 'http://localhost:3000/login',
-//        client_id: 'meta-alligators',
-//        scope: 'basic events:event:update',
-//        state: 11291
-//    });
-// }
+
 
 async onRadioBtnClick() {
   //this.setState({  });
-  let authURI = OAUTH_URL +'?'+this.encodeGetParams(params);
+  var url = encodeURI('https://oauth.oit.duke.edu/oauth/authorize.php?client_id=meta-alligators&client_secret=zHMB4Sl*o*Awu*mjZv$VEa+fX=QACLIWuRNWyNe@kNtTYLd*4E&redirect_uri=http://localhost:3000/loginDuke&response_type=token&state=7777&scope=basic');
+
+  let authURI2 = OAUTH_URL +'?'+this.encodeGetParams(params);
     console.log("this is the authURI: "+authURI);
-  await this.checkAccessToken(authURI);
+  //await this.checkAccessToken(authURI);
+
+  window.location.replace(url);
 
   //decodeURIComponent
   console.log("this is the parse "+querystring.parse(window.location.hash));
@@ -116,8 +113,6 @@ async onRadioBtnClick() {
 
   //access_token = this.getAccessToken();
   console.log('this is access_token2 '+access_token);
-
-
 
 }
 

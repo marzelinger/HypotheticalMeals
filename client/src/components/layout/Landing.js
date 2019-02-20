@@ -4,9 +4,29 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { getAllUsers } from "../../actions/authActions";
 
+import { Button } from 'reactstrap';
+const querystring = require('querystring');
+
 const adminHasInit = require("../auth/adminHasInit");
 
-const OAUTH_URL = "https://oauth.oit.duke.edu/oauth/authorize.php";
+//const OAUTH_URL = "https://oauth.oit.duke.edu/oauth/authorize.php";
+
+// var authURI;
+// const params = {
+//   client_id: "meta-alligators",
+//   client_secret: "zHMB4Sl*o*Awu*mjZv$VEa+fX=QACLIWuRNWyNe@kNtTYLd*4E",
+//   redirect_uri: "http://localhost:3000",
+//   response_type: "token",
+//   state: 7777,
+//   scope: "basic"
+// // };
+
+// const EVENTS_URL = "https://api.colab.duke.edu/events/v1/events";
+// var events;
+
+
+// var access_token = null;
+
 
 class Landing extends Component {
 
@@ -22,12 +42,10 @@ class Landing extends Component {
 
   }
 
-  // change(){
-  //   var response = this.props.getAllUsers();
-  //   this.setState = {
-  //     user: 0
-  //   }
-  // }
+
+
+  // encodeGetParams = p => 
+  // Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");
 
 
   componentDidMount() {
@@ -35,6 +53,12 @@ class Landing extends Component {
     //var response = this.props.getAllUsers();
     //console.log("this is the response for the getAll Users: " +response);
     //this.setState(this.state.users);
+    // authURI = OAUTH_URL +'?'+this.encodeGetParams(params);
+    // console.log("this is the authURI: "+authURI);
+    // console.log("this is the hash: "+window.location.hash);
+
+    //this.checkAccessToken();
+    //this.getAccessToken();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -49,6 +73,27 @@ class Landing extends Component {
 
 
 
+// async onRadioBtnClick() {
+//   //this.setState({  });
+//   let authURI = OAUTH_URL +'?'+this.encodeGetParams(params);
+//     console.log("this is the authURI: "+authURI);
+//   await this.checkAccessToken(authURI);
+
+//   //decodeURIComponent
+//   console.log("this is the parse "+querystring.parse(window.location.hash));
+
+//   //window.location.href = authURI;
+//   await console.log("this is the hash: "+window.location.hash);
+//   //let hash = window.location.hash;
+//   //access_token = this.getAccessToken();
+//   console.log('this is access_token'+access_token);
+
+//   //access_token = this.getAccessToken();
+//   console.log('this is access_token2 '+access_token);
+
+// }
+
+
   onChange = () => {
     //console.log("something is changing on change");
     // var response = this.props.getAllUsers();
@@ -59,6 +104,30 @@ class Landing extends Component {
     // );
     //this.setState(this.state)
   }
+
+//   async getAccessToken () {
+//     console.log("access_token: "+ access_token);
+//    var url = window.location.href;
+//    var regex = new RegExp("access_token" + "(=([^&#]*)|&|#|$)"),
+//    results = regex.exec(url);
+//    if (results == null) return 0;
+//    return results[2];
+// }
+
+
+
+//  async checkAccessToken (authURI) {
+//   access_token = await this.getAccessToken();
+//   console.log(access_token);
+//   if (!access_token) {
+//       //window.location.replace(OAUTH_URL + this.getQueryString());
+//       window.location.replace(authURI)
+//       //access_token = await this.getAccessToken();
+//       console.log(access_token);
+//       console.log("this is the hash: "+window.location.hash);
+
+//   }
+// }
 
   loginLocalComp(){
       return (
@@ -150,6 +219,10 @@ class Landing extends Component {
             {/* {this.switchLanding(adminHasInit().isValid)}     */}
             {this.loginLocalComp()}
             {this.loginDukeComp()}
+            {/* <Button color="primary" 
+          onClick={() => this.onRadioBtnClick()} 
+          >Continue to DukeLogin</Button> */}
+
           </div>
         </div>
       </div>
