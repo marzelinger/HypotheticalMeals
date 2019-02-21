@@ -3,36 +3,72 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Timeline from 'react-visjs-timeline'
+import SubmitRequest from "../../helpers/SubmitRequest";
+import * as Constants from '../../resources/Constants';
+const jwt_decode = require('jwt-decode');
 
 export default class ManuSchedulePage extends Component {
     constructor(props) {
         super(props)
         
         this.state = {
+            user: '',
             groups : [],
             items: [],
-            options: {}
+            options: {},
+            loaded: false
         }
-        this.initiateData();
+        if(localStorage != null){
+            if(localStorage.getItem("jwtToken")!= null){
+                this.state.user = jwt_decode(localStorage.getItem("jwtToken")).username;
+            }
+        }
     }
 
-    initiateData() {
+    async componentDidMount() {
+        let activities = await SubmitRequest.submitGetData(Constants.manu_activity_page_name);
+        let goals = await SubmitRequest.submitGetManuGoalsData(this.state.user);
+        let lines = await SubmitRequest.submitGetData(Constants.manu_line_page_name);
+        console.log(activities.data)
+        console.log(goals.data)
+        console.log(lines.data)
+        let groups = lines.data.map(line => {
+            return { id: line._id, content: line.name }
+        })
+        let items = activities.data.map(act => {
+            let start = new Date(act.start)
+            let end = new Date(start.getTime() + (act.duration*60*60*1000));
+            return { 
+                start: start,
+                end: end, 
+                content: act.sku.name,
+                title: act.manu_line.name,
+                group: act.manu_line._id
+            }
+        })
+        console.log(items)
+        console.log(groups)
+        this.setState({
+            groups: groups,
+            items: items,
+            loaded: true
+        })
     }
 
     render() {
         return (
         <div>
-            <Timeline 
+            {this.state.loaded ? (<Timeline 
                 options={options}
-                items={items}
-                groups={groups}
-            />
+                items={this.state.items}
+                groups={this.state.groups}
+            />) : null}
         </div>
         );
     }
 }
 
-const items = [
+const def_items = [
     {
         start: new Date(2019, 2, 19, 8, 30),
         end: new Date(2019, 2, 19, 10, 45), 
@@ -55,7 +91,7 @@ const items = [
         group: 2
     }
 ]
-const groups = [
+const def_groups = [
     {
         id: 1,
         content: 'Group A',
@@ -76,7 +112,7 @@ const groups = [
 
 const options = {
     width: '100%',
-    maxHeight: 50 + 4*40 + 'px',
+    maxHeight: 50 + 10*40 + 'px',
     stack: false,
     showMajorLabels: true,
     showCurrentTime: true,

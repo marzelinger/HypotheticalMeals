@@ -66,8 +66,9 @@ class Manu_ActivityHandler{
     }
 
     static async getAllManufacturingActivities(req, res){
+        console.log('hey')
         try {
-            let all_manu_activities = await Manu_Activity.find().populate('sku').populate({
+            let all_manu_activities = await Manu_Activity.find().populate('sku').populate('manu_line').populate({
                 path: 'sku',
                 populate: { path: 'ingredients' }
               })
@@ -82,7 +83,7 @@ class Manu_ActivityHandler{
     static async getManufacturingActivityByID(req, res){
         try {
             var target_id = req.params.manu_activity_id;
-            let to_return = await Manu_Activity.find({ _id : target_id}).populate('sku').populate({
+            let to_return = await Manu_Activity.find({ _id : target_id}).populate('sku').populate('manu_line').populate({
                 path: 'sku',
                 populate: { path: 'ingredients' }
               });
