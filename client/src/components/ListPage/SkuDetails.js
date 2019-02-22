@@ -34,6 +34,7 @@ export default class SKUDetails extends React.Component {
 
         this.state = {
             item: Object.assign({}, props.item),
+            formula_item: Object.assign({}, props.formula_item),
             item_properties,
             item_property_labels,
             item_property_patterns,
@@ -66,8 +67,6 @@ export default class SKUDetails extends React.Component {
         return this.state.item_property_labels[this.state.item_properties.indexOf(prop)];
     }
 
-    
-
     getPropertyPattern = (prop) => {
         return this.state.item_property_patterns[this.state.item_properties.indexOf(prop)];
     }
@@ -97,16 +96,6 @@ export default class SKUDetails extends React.Component {
         }
     }
 
-    onModifyManuLines = (list) => {
-        if(currentUserIsAdmin().isValid){
-            var newItem = Object.assign({}, this.state.item);
-            newItem['formula'] = list;
-            this.setState({
-                item: newItem
-            })
-        }
-    }
-
     onPropChange = (value, item, prop) => {
         item[prop] = value
         this.setState({ item: item });
@@ -129,22 +118,22 @@ export default class SKUDetails extends React.Component {
         }
     }
 
-    onModifyFormulaList = (option, value, qty) => {
-        if(currentUserIsAdmin().isValid){
-            var item = Object.assign({}, this.state.item);
-            switch (option) {
-                case Constants.details_add:
-                    this.addIngredientToFormula(item, value, qty);
-                    break;
-                case Constants.details_remove:
-                    this.removeIngredientFromFormula(item, value, qty);
-                    break;
-            }
-            this.setState({ 
-                item: item
-            })
-        }
-    }
+    // onModifyFormulaList = (option, value, qty) => {
+    //     if(currentUserIsAdmin().isValid){
+    //         var item = Object.assign({}, this.state.item);
+    //         switch (option) {
+    //             case Constants.details_add:
+    //                 this.addIngredientToFormula(item, value, qty);
+    //                 break;
+    //             case Constants.details_remove:
+    //                 this.removeIngredientFromFormula(item, value, qty);
+    //                 break;
+    //         }
+    //         this.setState({ 
+    //             item: item
+    //         })
+    //     }
+    // }
 
     removeIngredient(item, value, qty) {
         
@@ -166,46 +155,46 @@ export default class SKUDetails extends React.Component {
         this.setState({ item: item })
     }
 
-    removeIngredientFromFormula(item, value, qty) {
+    // removeIngredientFromFormula(item, value, qty) {
         
-        let ind = -1;
-        qty = parseInt(qty);
-        item.formula.ingredients.map((ing, index) => {
-        // item.ingredients.map((ing, index) => {
-            if (ing._id === value._id)
-                ind = index;
-        });
-        if (ind > -1) {
-            let curr_qty = item.formula.ingredient_quantities[ind];
-            curr_qty = curr_qty - qty;
-            if (curr_qty > 0) item.formula.ingredient_quantities[ind] = curr_qty;
-            else {
-                item.formula.ingredients.splice(ind,1);
-                item.formula.ingredient_quantities.splice(ind,1);
-            }
-        }
-        this.setState({ item: item })
-    }
+    //     let ind = -1;
+    //     qty = parseInt(qty);
+    //     item.formula.ingredients.map((ing, index) => {
+    //     // item.ingredients.map((ing, index) => {
+    //         if (ing._id === value._id)
+    //             ind = index;
+    //     });
+    //     if (ind > -1) {
+    //         let curr_qty = item.formula.ingredient_quantities[ind];
+    //         curr_qty = curr_qty - qty;
+    //         if (curr_qty > 0) item.formula.ingredient_quantities[ind] = curr_qty;
+    //         else {
+    //             item.formula.ingredients.splice(ind,1);
+    //             item.formula.ingredient_quantities.splice(ind,1);
+    //         }
+    //     }
+    //     this.setState({ item: item })
+    // }
 
-    addIngredientToFormula(item, value, qty) {
-        let ind = -1;
-        qty = parseInt(qty);
-        item.formula.ingredients.map((ing, index) => {
-            if (ing._id === value._id)
-                ind = index;
-        });
-        console.log()
-        if (ind > -1){
-            let curr_qty = item.formula.ingredient_quantities[ind];
-            curr_qty = curr_qty + qty;
-            item.formula.ingredient_quantities[ind] = curr_qty;
-        }
-        else {
-            item.formula.ingredients.push(value);
-            item.formula.ingredient_quantities.push(qty);
-        }
-        this.setState({ item: item })
-    }
+    // addIngredientToFormula(item, value, qty) {
+    //     let ind = -1;
+    //     qty = parseInt(qty);
+    //     item.formula.ingredients.map((ing, index) => {
+    //         if (ing._id === value._id)
+    //             ind = index;
+    //     });
+    //     console.log()
+    //     if (ind > -1){
+    //         let curr_qty = item.formula.ingredient_quantities[ind];
+    //         curr_qty = curr_qty + qty;
+    //         item.formula.ingredient_quantities[ind] = curr_qty;
+    //     }
+    //     else {
+    //         item.formula.ingredients.push(value);
+    //         item.formula.ingredient_quantities.push(qty);
+    //     }
+    //     this.setState({ item: item })
+    // }
 
     addIngredient(item, value, qty) {
         let ind = -1;
@@ -298,6 +287,7 @@ export default class SKUDetails extends React.Component {
                 />
                 <SkuFormulaDetails
                     item = {this.state.item}
+                    formula_item = {this.state.formula_item}
                     //api_route={Constants.formulas_page_name}
                     //item_type={Constants.details_modify_formula}
                     //options={[Constants.details_add, Constants.details_remove]}
@@ -335,6 +325,7 @@ export default class SKUDetails extends React.Component {
 
 SKUDetails.propTypes = {
     item: PropTypes.object,
+    formula_item: PropTypes.object,
     detail_view_options: PropTypes.arrayOf(PropTypes.string),
     handleDetailViewSubmit: PropTypes.func
   };

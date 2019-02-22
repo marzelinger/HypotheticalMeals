@@ -45,6 +45,7 @@ export default class ListPage extends React.Component {
             selected_items: [],
             selected_indexes: [],
             detail_view_item: {},
+            detail_view_formula_item: {},
             detail_view_options: [],
             data: [],
             exportData: [],
@@ -234,6 +235,7 @@ export default class ListPage extends React.Component {
 
     async onCreateNewItem() {
         var item = await ItemStore.getEmptyItem(this.state.page_name);
+        var new_formula_item = await ItemStore.getEmptyItem(Constants.formulas_page_name);
         const newData = this.state.data.slice();
         newData.push(item);
 
@@ -245,6 +247,7 @@ export default class ListPage extends React.Component {
             data: newData,
             exportData: newExportData,
             detail_view_item: item,
+            detail_view_formula_item: new_formula_item,
             detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
         })
         this.toggle(Constants.details_modal);
@@ -304,16 +307,19 @@ export default class ListPage extends React.Component {
         await this.setState({ selected_items: newState, selected_indexes: rowIndexes});
     };
 
-    onDetailViewSelect = (event, item) => {
+     onDetailViewSelect = async (event, item) => {
+        let formula_item = await SubmitRequest.submitGetFormulaByID(item.formula);
         if(currentUserIsAdmin().isValid){
             this.setState({ 
-            detail_view_item: item ,
+            detail_view_item: item,
+            detail_view_formula_item: formula_item.data[0],
             detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
             });
         }
         else{
             this.setState({ 
-                detail_view_item: item ,
+                detail_view_item: item,
+                detail_view_formula_item: formula_item,
                 detail_view_options: [Constants.details_cancel]
                 });
         }
@@ -347,6 +353,7 @@ export default class ListPage extends React.Component {
             this.setState({ 
                 data: newData,
                 detail_view_item: null,
+                detail_view_formula_item: null,
                 detail_view_options: []
             });
             this.loadDataFromServer();
@@ -407,6 +414,7 @@ export default class ListPage extends React.Component {
                 <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
                     <SkuDetails
                             item={this.state.detail_view_item}
+                            formula_item={this.state.detail_view_formula_item}
                             detail_view_options={this.state.detail_view_options}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
                         />

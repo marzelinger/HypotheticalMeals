@@ -29,7 +29,7 @@ export default class DataStore{
         table_properties: ['name', 'num'],
         table_options: [Constants.create_item, Constants.add_keyword_filter, Constants.add_ing_filter],
         item_properties: ['name', 'num'],
-        item_property_labels: ['Name', 'SKU#'],
+        item_property_labels: ['Name', 'Formula#'],
         item_property_patterns: ['.+', '^[0-9]+$'], 
         item_property_field_type: ['text', 'text'],
       }
@@ -87,12 +87,18 @@ export default class DataStore{
         item_property_labels: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Comment', 'Manufactuing Rate'],
         item_property_patterns: ['.+', '^[0-9]+$', '^[016789][0-9]{11}$', '^[016789][0-9]{11}$', '.+', '^[0-9]+$', '.*', '^[+]?[0-9]*\.?[0-9]*$'], 
         item_property_field_type: ['text', 'text', 'text', 'text', 'text', 'text', 'textarea', 'text','text', 'text'],
-        formula_item_properties: ['name', 'num'],
-        formula_item_property_labels: ['Name', 'SKU#'],
-        formula_item_property_patterns: ['.+', '^[0-9]+$'], 
-        formula_item_property_field_type: ['text', 'text'],
+
 
       };
+  }
+
+  static getSkuFormulaDetailsData(){
+    return {
+      formula_item_properties: ['name', 'num'],
+      formula_item_property_labels: ['Name', 'Formula#'],
+      formula_item_property_patterns: ['.+', '^[0-9]+$'], 
+      formula_item_property_field_type: ['text', 'text'],
+    };
   }
 
 

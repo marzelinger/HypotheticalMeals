@@ -18,6 +18,8 @@ import IngredientsViewSimple from './IngredientsViewSimple'
 import ItemSearchInput from './ItemSearchInput';
 import ItemSearchModifyListQuantity from './ItemSearchModifyListQuantity';
 import printFuncFront from '../../printFuncFront';
+import DataStore from '../../helpers/DataStore'
+
 
 
 import Filter from './Filter'
@@ -28,6 +30,12 @@ const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 export default class SkuFormulaDetails extends React.Component {
     constructor(props) {
         super(props);
+
+        let {
+            formula_item_properties, 
+            formula_item_property_labels,
+            formula_item_property_patterns,
+            formula_item_property_field_type } = DataStore.getSkuFormulaDetailsData();
 
         this.toggleFocus = this.toggleFocus.bind(this);
         this.toggleBlur = this.toggleBlur.bind(this);
@@ -44,11 +52,12 @@ export default class SkuFormulaDetails extends React.Component {
             formula_item: null,
             // sku: {this.props.sku}
             item: Object.assign({}, this.props.item),
-            // item_properties,
-            // item_property_labels,
-            // item_property_patterns,
-            // item_property_field_type,
-            // invalid_inputs: [],
+            formula_item: Object.assign({}, props.formula_item),
+            formula_item_properties,
+            formula_item_property_labels,
+            formula_item_property_patterns,
+            formula_item_property_field_type,
+            invalid_inputs: [],
             // assisted_search_results: [],
             // prod_line_item: {},
             // to_undo: {}
@@ -111,6 +120,20 @@ export default class SkuFormulaDetails extends React.Component {
         this.setState({
             qty: e.target.value
         });
+    }
+
+    getFormulaPropertyLabel = (prop) => {
+        return this.state.formula_item_property_labels[this.state.formula_item_properties.indexOf(prop)];
+    }
+
+    
+
+    getFormulaPropertyPattern = (prop) => {
+        return this.state.formula_item_property_patterns[this.state.formula_item_properties.indexOf(prop)];
+    }
+
+    getFormulaPropertyFieldType = (prop) => {
+        return this.state.formula_item_property_field_type[this.state.formula_item_properties.indexOf(prop)];
     }
 
     async onFilterValueSelection (name, value, e) {
@@ -209,16 +232,20 @@ export default class SkuFormulaDetails extends React.Component {
         this.setState({ item: item })
     }
 
-  injectFormulaProperties = () => {
-    if (this.state.item){
+   injectFormulaProperties = () => {
+    if (this.state.formula_item){
+        printFuncFront('this is the item in the injecting formulaprops: '+JSON.stringify(this.state.formula_item));
+        //let formula = await SubmitRequest.submitGetFormulaByID(this.state.item.formula);
+        //printFuncFront('this is the formula: '+JSON.stringify(formula));
+
         return (this.state.formula_item_properties.map(prop => 
             <FormGroup key={prop}>
-                <Label>{this.getPropertyLabel(prop)}</Label>
+                <Label>{this.getFormulaPropertyLabel(prop)}</Label>
                 <Input 
-                    type={this.getPropertyFieldType(prop)}
-                    value={ this.state.item[prop] }
+                    type={this.getFormulaPropertyFieldType(prop)}
+                    value={ this.state.formula_item[prop] }
                     invalid={ this.state.invalid_inputs.includes(prop) }
-                    onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
+                    onChange={ (e) => this.onPropChange(e.target.value, this.state.formula_item, prop)}
                     disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
                />
             </FormGroup>));
@@ -230,10 +257,10 @@ export default class SkuFormulaDetails extends React.Component {
         return (
         <div className='item-properties'>
         <div>Formula</div>
-        {/* (<AddIcon id = "addnewitem"  onClick = {() => {this.props.onTableOptionSelection(null, Constants.create_item)}}></AddIcon>) */}
         <Button color="primary" onClick = {this.createNewFormula()}>Create New Formula</Button>{' '}
         <Button color="secondary" onClick = {this.addExistingFormula()}>Add Existing Formula</Button>{' '}
         {/* {this.switchFormula()} */}
+        { this.injectFormulaProperties() }
         <ItemSearchModifyListQuantity
                     api_route={Constants.ingredients_page_name}
                     item_type={Constants.details_modify_ingredient}
@@ -253,6 +280,7 @@ export default class SkuFormulaDetails extends React.Component {
 
 SkuFormulaDetails.propTypes = {
     item: PropTypes.object,
+    formula_item: PropTypes.object,
     //options: PropTypes.arrayOf(PropTypes.string),
     //handleModifyList: PropTypes.func,
     //qty_disable: PropTypes.bool,
