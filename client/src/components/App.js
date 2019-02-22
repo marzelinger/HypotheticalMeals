@@ -2,6 +2,7 @@ import React from 'react'
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import SkusPage from "./ListPage/SkusPage";
+import FormulasPage from "./ListPage/FormulasPage";
 import Landing from "./layout/Landing";
 import Register from "./auth/Register";
 import AdminRegister from "./auth/AdminRegister";
@@ -40,7 +41,7 @@ class App extends React.Component{
     //this.determineUserInit();
     this.determineUser();
     this.state = {
-      navbar_items: [Constants.SkuTitle, Constants.IngTitle, Constants.ManuGoalTitle],
+      navbar_items: [Constants.SkuTitle, Constants.IngTitle, Constants.ManuGoalTitle, Constants.FormulaTitle],
     }
   }
 
@@ -88,6 +89,7 @@ class App extends React.Component{
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingPage} />
                 <PrivateRoute exact path="/prod_lines" component={ProductLinePage} />
                 <PrivateRoute exact path="/import" component={ImportPage} />
+                <PrivateRoute exact path="/formulas" component={FormulasPage} />
               </Switch>
             </div>
           </Router>

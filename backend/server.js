@@ -13,6 +13,7 @@ import IngredientHandler from './models/handlers/IngredientHandler';
 import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
 import UserHandler from './models/handlers/UserHandler';
 import FilterHandler from './models/handlers/FilterHandler';
+import FormulaHandler from './models/handlers/FormulasHandler';
 import Manu_ActivityHandler from './models/handlers/Manu_ActivityHandler';
 import { getSecret } from './secrets';
 const passport = require("passport");
@@ -117,6 +118,8 @@ router.get('/manugoals_filter/:name_substr/:user_substr/:user', (req, res) => Ma
 // Multiple database APIs
 router.get('/ingredients_filter/:sort_field/:sku_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
 router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize/:prod_line_ids', (req, res) => FilterHandler.getSkusByFilter(req, res));
+router.get('/formulas_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getFormulasbyFilter(req, res));
+
 
 // CSV Parser database APIs
 router.post('/parseSkus', upload.single('file'), (req, res) => CSV_parser.parseSKUCSV(req, res));

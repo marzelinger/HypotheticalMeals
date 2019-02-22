@@ -138,10 +138,9 @@ export default class ImportPage extends React.Component {
                         })
                     }
                     // Setting state for the number of fields being off
-                    else if(typeof res.data.numFields != 'undefined'){
+                    else if(typeof res.data.incorrectNumHeaders != 'undefined'){
                         this.setState({
                             incorrectNumHeaders: true,
-                            numHeaders: res.data.numFields,
                             requiredHeaders: res.data.requiredFields
                         })
                     }
@@ -274,7 +273,6 @@ export default class ImportPage extends React.Component {
     onDismissHeaderCount = () => {
         this.setState({
             incorrectNumHeaders: false,
-            numHeaders: -1,
             requiredHeaders: -1,
         })
     }
@@ -403,7 +401,6 @@ export default class ImportPage extends React.Component {
 
             // Incorrect number of headers
             incorrectNumHeaders: false,
-            numHeaders: -1,
             requiredHeaders: -1,
 
             // Incorrect column headers
@@ -450,7 +447,12 @@ export default class ImportPage extends React.Component {
     render() {
         return (
             <div className = "Import">
-
+                <div className = "centerContainer">
+                    <h1> Please enter a CSV below to bulk import.</h1>
+                </div>
+                <div className = "centerContainer">
+                    <h3> Please upload one file at a time with the appropriate extension. </h3>
+                </div>
                 <div className="centerContainer">
                     <Input className="centerFile" type="file" onChange={this.handleSelectedFile} />
                 </div>
@@ -460,19 +462,19 @@ export default class ImportPage extends React.Component {
                 { this.state.waiting ? <Progress animated value={100}/> : null}
 
                 <Alert color="danger" isOpen={this.state.duplicate} toggle={this.onDismissDuplicate}>
-                    A duplicate occured on row {this.state.rowIssue+1}
+                    A duplicate occured on row {this.state.rowIssue}
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.collision} toggle={this.onDismissCollision}>
-                    An ambiguous collision occured on row {this.state.rowIssue+1}
+                    An ambiguous collision occured on row {this.state.rowIssue}
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.incorrectNumHeaders} toggle={this.onDismissHeaderCount}>
-                    {this.state.numHeaders} columns were specified when {this.state.requiredHeaders} were expected
+                    Please check the number of columns provided. {this.state.requiredHeaders} columns were expected
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.incorrectHeaders} toggle={this.onDismissHeaderName}>
-                    Column {this.state.incorrectColumnNum} had name {this.state.incorrectColumnName} when {this.state.correctColumnName} was expected
+                    Column {this.state.incorrectColumnNum} had name "{this.state.incorrectColumnName}" when "{this.state.correctColumnName}" was expected
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.empty} toggle={this.onDismissEmpty} >
@@ -480,7 +482,7 @@ export default class ImportPage extends React.Component {
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.prod_line_error} toggle={this.onDismissProdLine} >
-                    The product line {this.state.prod_line_name} from entry {this.state.rowIssue} does not exist
+                    The product line "{this.state.prod_line_name}" from row {this.state.rowIssue} does not exist
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.noFile} toggle={this.onDismissNoFile}>
@@ -508,11 +510,11 @@ export default class ImportPage extends React.Component {
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.incompleteEntry} toggle={this.onDismissBadData}>
-                    The entry specified in row {this.state.badDataRow+1} does not exist
+                    The entry specified in row {this.state.badDataRow} does not exist
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.badData} toggle={this.onDismissBadData}>
-                    The entry specified in row {this.state.badDataRow+1} has bad data
+                    The entry specified in row {this.state.badDataRow} has bad data
                 </Alert>
                 
 

@@ -101,6 +101,12 @@ class SkuHandler{
             var new_manu_rate = req.body.manu_rate
             SkuHandler.checkForZeroQtys(new_ingredients, new_ingredient_quantities);
 
+            let conflict = await SKU.find({ num: Number(new_sku_num) });
+            if(conflict.length > 0 && conflict[0]._id != target_id) return res.json({ success: false, error: 'CONFLICT'});
+            
+            let conflict2 = await SKU.find({ case_upc: Number(new_case_upc)});
+            if(conflict2.length > 0 && conflict2[0]._id != target_id) return res.json({ success: false, error: 'CONFLICT'});
+
             let updated_sku = await SKU.findOneAndUpdate({ _id : target_id},
                 {$set: {name : new_name, num : new_sku_num, case_upc : new_case_upc, unit_upc : new_unit_upc,
                         unit_size : new_unit_size, cpc: new_cpc, prod_line: new_prod_line,

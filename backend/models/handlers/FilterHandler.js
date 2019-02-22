@@ -3,6 +3,7 @@
 
 import Ingredient from '../databases/ingredient';
 import SKU from '../databases/sku';
+import Formula from '../databases/formulas';
 
 class FilterHandler{
 
@@ -51,7 +52,7 @@ class FilterHandler{
     }
 
     static async getSkusByFilter(req, res){
-        try{
+         try{
             var and_query = [];
             var ids = [];
             var sort_field = req.params.sort_field;
@@ -82,6 +83,42 @@ class FilterHandler{
                                                         .collation({locale: "en_US", numericOrdering: true}) : 
                                                      await SKU.find( {$and: and_query }).skip(currentPage*pageSize)
                                                         .limit(pageSize).populate('ingredients').populate('prod_line')
+                                                        .sort(sort_field).collation({locale: "en_US", numericOrdering: true});
+            if (results.length == 0) results = [];
+            return res.json({ success: true, data: results});
+        }
+        catch (err) {
+            return res.json({ success: false, error: err});
+        }
+    }
+
+    static async getFormulasbyFilter(req, res){
+        try{
+            var and_query = [];
+            var ids = [];
+            var sort_field = req.params.sort_field;
+            var ingredient_ids = req.params.ingredient_ids;
+            if (ingredient_ids !== undefined && ingredient_ids !== "_"){
+                ingredient_ids = ingredient_ids.replace(/\s/g, "").split(',');
+                console.log(ingredient_ids);
+                let formulas = await Formula.find({ ingredients : {$in : ingredient_ids } });
+                formulas.map(formula => ids.push(formula._id));
+                and_query.push( {_id: { $in: ids } } );
+            }
+            var keyword = req.params.keyword;
+            if (keyword !== undefined && keyword !== "_"){
+                and_query.push({$or: [{name: { $regex: keyword , $options: "$i"}}, 
+                {num: { $regex: keyword , $options: "$i"}}]}); 
+            }
+
+            var currentPage = Number(req.params.currentPage);
+            var pageSize = Number(req.params.pageSize);
+
+            let results = (and_query.length === 0) ? await Formula.find( ).skip(currentPage*pageSize).limit(pageSize)
+                                                        .populate('ingredients').sort(sort_field)
+                                                        .collation({locale: "en_US", numericOrdering: true}) : 
+                                                     await Formula.find( {$and: and_query }).skip(currentPage*pageSize)
+                                                        .limit(pageSize).populate('ingredients')
                                                         .sort(sort_field).collation({locale: "en_US", numericOrdering: true});
             if (results.length == 0) results = [];
             return res.json({ success: true, data: results});
