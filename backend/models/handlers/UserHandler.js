@@ -10,9 +10,13 @@ import printFuncBack from "../../printFuncBack";
 
 
 
+
 // Load input validation
 const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
+
+var client_id = "meta-alligators";
+
 
 class UserHandler{
     // Creates a User in the Database
@@ -34,7 +38,10 @@ class UserHandler{
           password: req.body.password,
           privileges : req.body.privileges,
           admin_creator: req.body.admin_creator,
-          comment: req.body.comment
+          isAdmin: req.body.isAdmin,
+          isNetIDLogin: req.body.isNetIDLogin,
+          comment: req.body.comment,
+
         });
   // Hash password before saving in database
         bcrypt.genSalt(10, (err, salt) => {
@@ -66,6 +73,7 @@ class UserHandler{
       // Check if user exists
       if (!user) {
         return res.status(404).json({ usernamenotfound: "Username not found" });
+        
       }
     // Check password
       bcrypt.compare(password, user.password).then(isMatch => {
@@ -102,53 +110,68 @@ class UserHandler{
     }
 
     static loginUserDukeNetID (req,res){
-    //   // Form validation
-    //   // Check validation
+      const username = req.body.username;
+      const isNetIDLogin = req.body.isNetIDLogin;
+      // Find user by username
+      User.findOne({ username }).then(user => {
+        // Check if user exists
+        if (!user) {
+          //user doesn't exist, so create a new one.
+          const newUser = new User({
+            username: req.body.username,
+            isNetIDLogin: req.body.isNetIDLogin,
+            });
+          newUser.save().then(user => {
+            //res.json(user)
 
-    //   //const email = req.body.email;
-    //   const username = req.body.username;
-    //   const password = req.body.password;
-    //   // Find user by username
-    //   User.findOne({ username }).then(user => {
-    //     // Check if user exists
-    //     if (!user) {
-    //       return res.status(404).json({ usernamenotfound: "Username not found" });
-    //     }
-    //   // Check password
-    //     bcrypt.compare(password, user.password).then(isMatch => {
-    //       if (isMatch) {
-    //         // User matched
-    //         // Create JWT Payload
-    //         const payload = {
-    //           id: user.id,
-    //           username: user.username,
-    //           admin: isAdmin(user).isValid
-    //         };
-    // // Sign token
-    //         jwt.sign(
-    //           payload,
-    //           keys.secretOrKey,
-    //           {
-    //             expiresIn: 31556926 // 1 year in seconds
-    //           },
-    //           (err, token) => {
-    //             res.json({
-    //               success: true,
-    //               token: "Bearer " + token
-    //             });
-    //           }
-    //         );
-    //         printFuncBack("this is the payload token. " +JSON.stringify(payload));
-    //       } else {
-    //         return res
-    //           .status(400)
-    //           .json({ passwordincorrect: "Password incorrect" });
-    //       }
-    //     });
-    //   });
-      }
-
-
+            const payload = {
+              id: user.id,
+              username: user.username,
+              admin: isAdmin(user).isValid
+            };
+  
+            jwt.sign(
+              payload,
+              keys.secretOrKey,
+              {
+                expiresIn: 31556926 // 1 year in seconds
+              },
+              (err, token) => {
+                res.json({
+                  success: true,
+                  token: "Bearer " + token
+                });
+              }
+            );
+          }
+            
+            
+            
+            ).catch(err => console.log(err));
+        }
+        else if (user && isNetIDLogin){
+          //for sure is the netid stuff and going to make payload and login.
+          const payload = {
+            id: user.id,
+            username: user.username,
+            admin: isAdmin(user).isValid
+          };
+          jwt.sign(
+            payload,
+            keys.secretOrKey,
+            {
+              expiresIn: 31556926 // 1 year in seconds
+            },
+            (err, token) => {
+              res.json({
+                success: true,
+                token: "Bearer " + token
+              });
+            }
+          );
+        }
+      });
+    }
 
   static async updateUserByID(req, res){
       try {

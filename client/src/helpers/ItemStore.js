@@ -66,7 +66,8 @@ export default class ItemStore{
             privileges: [],
             admin_creator: '',
             comment: '',
-            isAdmin: false
+            isAdmin: false,
+            isNetIDLogin: false
           };
       case Constants.skus_page_name: 
         var res = await SubmitRequest.submitGetData(page_name);

@@ -17,6 +17,7 @@ import DataStore from '../../helpers/DataStore'
 import TablePagination from './TablePagination'
 import ExportSimple from '../export/ExportSimple';
 import printFuncFront from '../../printFuncFront';
+import GeneralNavBar from '../GeneralNavBar';
 const jwt_decode = require('jwt-decode');
 
 
@@ -345,6 +346,8 @@ export default class UsersPage extends React.Component {
     render() {
         return (
             <div className="list-page">
+                        <GeneralNavBar></GeneralNavBar>
+
                 <div>
                     <PageTable 
                         columns={this.state.table_columns} 

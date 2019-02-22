@@ -2,9 +2,10 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { loginDukeUser } from "../../actions/authActions";
+import { loginDukeUser, getDukeInfo } from "../../actions/authActions";
 import classnames from "classnames";
 import { Button } from 'reactstrap';
+import printFuncFront from '../../printFuncFront';
 const querystring = require('querystring');
 
 const OAUTH_URL = "https://oauth.oit.duke.edu/oauth/authorize.php";
@@ -25,39 +26,54 @@ class DukeLogin extends Component {
   constructor() {
     super();
     this.state = {
-      username: "",
-      password: "",
+      client_id: "meta-alligators",
+      //username: "",
+      //password: "",
       errors: {},
-      netIDAuth: false
+      netIDAuth: false,
+      netIDToken: "",
+      username:"",
+      isNetIDLogin: true
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     // If logged in and user navigates to dukelogin page, should redirect them to skus
     if (this.props.auth.isAuthenticated) {
       this.props.history.push("/skus");
     }
-    this.getNetIDToken();
-
+    await this.getNetIDToken();
   }
 
-getNetIDToken(){
+async getNetIDToken(){
   if(window.location.hash.length>0){
     netidtoken = querystring.parse(window.location.hash.substring(1)).access_token;
     console.log("this is the netidtoken2: "+netidtoken);
     if(netidtoken){
-      this.setState({ netIDAuth: true});
-      this.getNetIDIdentity();
+      await this.setState({ netIDAuth: true, netIDToken: netidtoken});
+      await this.getNetIDIdentity();
     }
   }
 }
 
-getNetIDIdentity(){
+async getNetIDIdentity(){
   const userData = {
-    username: this.state.username,
-    password: this.state.password
+    netIDToken: this.state.netIDToken
   };
-  this.props.loginDukeUser(this.state.userData, netidtoken, client_id);
+  var response = await this.props.getDukeInfo(userData);
+  printFuncFront("this is the response object from login: "+response);
+  printFuncFront("this is the response object from loginSTRING: "+JSON.stringify(response));
+
+
+  if(response != undefined){
+    await this.setState({ username: response.netid});
+
+    const userData = {
+      username: this.state.username,
+      isNetIDLogin: true
+    };
+    await this.props.loginDukeUser(userData);
+  }
 }
 
 
@@ -81,6 +97,8 @@ const userData = {
       username: this.state.username,
       password: this.state.password
     };
+
+  // var netIDresponse = 
   this.props.loginUser(userData); // since we handle the redirect within our component, we don't need to pass in this.props.history as a parameter
   };
 
@@ -119,6 +137,7 @@ return (
 }
 DukeLogin.propTypes = {
   loginDukeUser: PropTypes.func.isRequired,
+  getDukeInfo: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
@@ -128,5 +147,5 @@ const mapStateToProps = state => ({
 });
 export default connect(
   mapStateToProps,
-  { loginDukeUser }
+  { loginDukeUser, getDukeInfo }
 )(DukeLogin);

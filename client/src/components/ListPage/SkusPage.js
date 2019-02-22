@@ -15,6 +15,7 @@ import ExportSimple from '../export/ExportSimple';
 import DataStore from '../../helpers/DataStore'
 import TablePagination from './TablePagination'
 import SkuDetails from './SkuDetails';
+import GeneralNavBar from '../GeneralNavBar';
 
 import '../../style/SkusPage.css'
 import BulkEditManuLines from './BulkEditManuLines';
@@ -374,6 +375,7 @@ export default class ListPage extends React.Component {
 
         return (
             <div className="list-page">
+            <GeneralNavBar></GeneralNavBar>
                 <div>
                     <PageTable 
                         columns={this.state.table_columns} 

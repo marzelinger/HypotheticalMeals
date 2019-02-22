@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
 import { CustomInput, Form, FormGroup, Label } from 'reactstrap';
+import GeneralNavBar from '../GeneralNavBar';
 
 const currentUserIsAdmin = require("./currentUserIsAdmin");
 const currentUserUsername = require("./currentUserUsername");
@@ -24,7 +25,8 @@ class Register extends Component {
       password2: "",
       privileges: [],
       admin_creator: currentUserUsername(),
-      admin: false,
+      isNetIDLogin: false,
+      isAdmin: false,
       errors: {}
     };
   }
@@ -59,7 +61,8 @@ onSubmit(e){
       password: this.state.password,
       password2: this.state.password2,
       admin_creator: this.state.admin_creator,
-      admin: this.state.admin,
+      isNetIDLogin: this.state.isNetIDLogin,
+      isAdmin: this.state.isAdmin,
       privileges: [this.state.privileges]
     };
 
@@ -78,6 +81,7 @@ render() {
     const { errors } = this.state;
 return (
       <div className="container">
+      <GeneralNavBar></GeneralNavBar>
         <div className="row">
           <div className="col s8 offset-s2">
             <div className="col s12" style={{ paddingLeft: "11.250px" }}>

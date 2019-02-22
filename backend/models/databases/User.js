@@ -11,7 +11,8 @@ const UserSchema = new Schema({
     privileges : [String],
     admin_creator : String,
     comment : String,
-    isAdmin : Boolean
+    isAdmin : Boolean,
+    isNetIDLogin: Boolean
   });
 // export our module to use in server.js
 export default mongoose.model('User', UserSchema);

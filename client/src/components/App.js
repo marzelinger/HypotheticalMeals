@@ -97,7 +97,7 @@ class App extends React.Component{
                     )}
                 </div> */}
                <Route exact path="/login" component={Login} />
-               <Route exact path="/adminregister" component={AdminRegister} />  
+               {/* <Route exact path="/adminregister" component={AdminRegister} />   */}
                <Route exact path= "/" component={Landing} />
                <Route path= "/loginDuke" component = {DukeLogin}/>     
               <Switch>

@@ -32,8 +32,6 @@ export const loginUser = userData => dispatch => {
   axios
     .post("/api/users/login", userData)
     .then(res => {
-      // Save to localStorage
-// Set token to localStorage
       const { token } = res.data;
       localStorage.setItem("jwtToken", token);
       // Set token to Auth header
@@ -62,73 +60,70 @@ export const setCurrentUser = decoded => {
   };
 };
 
-
-// Login - get user token
-export const loginDukeUser = (userData, netIDToken, client_id) => dispatch => {
-  printFuncFront("this is the netIDtoken: "+netIDToken);
-  printFuncFront("this is the client_id: "+client_id);
-//   axios
-//     .post("/api/users/loginDukeNetID", userData)
-//     .then(res => {
-//       // Save to localStorage
-// // Set token to localStorage
-//       const { token } = res.data;
-//       localStorage.setItem("jwtToken", token);
-//       // Set token to Auth header
-//       setAuthToken(token);
-//       const decoded = jwt_decode(token);
-
-//       if(decoded.admin==true){
-//         setAdminToken(token);
-//       }
-//       // Decode token to get user data
-//       // Set current user
-//       dispatch(setCurrentUser(decoded));
-//     })
-//     .catch(err =>
-//       dispatch({
-//         type: GET_ERRORS,
-//         payload: err.response.data
-//       })
-//     );
-
-    //   localStorage.setItem("jwtToken", netIDToken);
-    //   // Set token to Auth header
-    //   setAuthToken(netIDToken);
-
-    //   // Decode token to get user data
-    //   // Set current user
-    //   dispatch(setCurrentUser(decoded));
-    // })
-    // .catch(err =>
-    //   dispatch({
-    //     type: GET_ERRORS,
-    //     payload: err.response.data
-    //   })
-    // );
-
-    // let res = axios.get('https://api.colab.duke.edu/meta/v1/apis/identity/v1', {
-      let res = axios.get('https://api.colab.duke.edu/identity/v1/', {
-      headers: {
-          'x-api-key': "meta-alligators",
-          'Authorization': "Bearer "+netIDToken
-      }
-    }).then( response => {
-      console.log("this is the res: "+JSON.stringify(response));
-      console.log("this is the netid: "+response.data.netid);
+// // Set logged in user
+// export const setCurrentUser = decoded => {
+//   return {
+//     type: SET_CURRENT_USER,
+//     payload: decoded
+//   };
+// };
 
 
+export const loginDukeUser = (userData) => dispatch => {
+  axios
+  .post("/api/users/loginDukeNetID", userData)
+  .then(res => {
 
 
+      ///NEED TO FIX THE STUFF BELOW
 
+    const { token } = res.data;
+    localStorage.setItem("jwtToken", token);
+    // Set token to Auth header
+    setAuthToken(token);
+    const decoded = jwt_decode(token);
+    printFuncFront("this is the token : "+ JSON.stringify(token));
+
+
+    printFuncFront("this is the token in loginDukeUser: "+ decoded);
+
+    if(decoded.admin==true){
+      setAdminToken(token);
     }
+    // Decode token to get user data
+    // Set current user
+    dispatch(setCurrentUser(decoded));
+  })
+  .catch(err =>
+    dispatch({
+      type: GET_ERRORS,
+      payload: err.response.data
+    })
+  );
+}
 
 
+// // Get all Users
+export const getDukeInfo = (userData) => dispatch => {
+  return axios.get('https://api.colab.duke.edu/identity/v1/', {
+    headers: {
+        'x-api-key': "meta-alligators",
+        'Authorization': "Bearer "+userData.netIDToken
+    }
+    })
+    .then( response => {
 
-
-
-    );
-    //console.log("this is the res: "+JSON.stringify(res));
+    console.log("this is the res: "+JSON.stringify(response));
+    console.log("this is the netid: "+response.data.netid);
+    var netidVal = response.data.netid;
+    return response.data;
+    }
+    )
+  .catch(err => dispatch({
+    type: GET_ERRORS,
+    payload: err.response.data
+  })
+);
 
 };
 

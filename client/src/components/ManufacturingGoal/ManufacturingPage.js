@@ -10,6 +10,7 @@ export default class ManufacturingPage extends React.Component {
   render() {
     return (
       <div>
+        <GeneralNavBar></GeneralNavBar>
         <ManufacturingGoalsBox></ManufacturingGoalsBox>
         <ManufacturingLineBox></ManufacturingLineBox>
       </div>
