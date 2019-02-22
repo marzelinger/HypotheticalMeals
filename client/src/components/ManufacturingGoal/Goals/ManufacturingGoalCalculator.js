@@ -59,11 +59,11 @@ export default class ManufacturingGoalCalculator extends React.Component{
   // broken rn bc using old structure of skus
   getIngredientInfo = async () => {
       console.log(this.props.activities);
-      // let index = 0;
+      let index = 0;
       await this.props.activities.forEach( async (activity) => {
-        var {data} = await SubmitRequest.submitGetPopulatedSkuIngredients(activity.sku._id);
-        console.log(data);
-        // var quantity = this.calculateSkuUnitQuantity(this.props.quantities[index], skuData);
+        // var {data} = await SubmitRequest.submitGetPopulatedSkuIngredients(activity.sku._id);
+        console.log(activity);
+        // var quantity = this.calculateSkuUnitQuantity(activity.quantity, activity.sku);
         // await data.forEach( async(ingredient) => {
         //     await this.addIngredientInfo(ingredient, quantity);
         // })

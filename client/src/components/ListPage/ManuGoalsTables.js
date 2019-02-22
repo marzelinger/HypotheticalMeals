@@ -12,42 +12,20 @@ import SubmitRequest from './../../helpers/SubmitRequest';
 
 export default class ManuGoalsTables extends React.Component {
     constructor(props) {
-        console.log(props.query)
+        console.log(props.skus)
         super(props);
         this.state = {
-            query: props.query,
             page_title: 'SKUs',
             table_columns: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line', 'Quantity'],
             table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', 'quantity'],
-            data: [],
+            data: this.props.activities,
             error: null,
             onDeleteSku: props.onDeleteSku
         };
-
-        this.loadDataFromServer = this.loadDataFromServer.bind(this);
-    }
-
-    componentDidMount = () => {
-        this.loadDataFromServer();
-        if (!this.pollInterval) {
-            this.pollInterval = setInterval(this.loadDataFromServer, 1000);
-        }
-        
-    }
-
-    async loadDataFromServer() {
-
-        let res = await SubmitRequest.submitQueryString(this.state.query);
-        if (!res.success) {
-            this.setState({ error: res.error });
-        }
-        else {
-            this.setState({ data: res.data[0].activities });
-        }
     }
 
     onSort = (event, sortKey) => {
-        const data = this.state.data;
+        const data = this.state.skus;
         data.sort((a,b) => {
             if (/^\d+$/.test(a[sortKey]) && /^\d+$/.test(b[sortKey])) {
                 return parseInt(a[sortKey])-parseInt(b[sortKey]);

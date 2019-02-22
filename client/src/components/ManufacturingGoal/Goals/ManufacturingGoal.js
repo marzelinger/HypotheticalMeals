@@ -29,12 +29,16 @@ export default class ManufacturingGoal extends React.Component{
   }
 
   onQuantityChange = async (event, activity_index) => {
+      console.log(this.props.activities)
+
       var {_id, sku, scheduled, start, end, duration, error} = this.props.activities[activity_index]
+      console.log({_id, sku, scheduled, start, end, duration, error, quantity: Number(event.target.value) })
       await SubmitRequest.submitUpdateItem('manuactivities', {_id, sku, scheduled, start, end, duration, error, quantity: Number(event.target.value) })
       // this.props.handleUpdateGoal(this.props.id);
   }
 
   handleDeleteActivities = async(selectedActivitiesIndexes) => {
+    console.log("deleting")
     if(selectedActivitiesIndexes == undefined){
       return;
     }
@@ -63,14 +67,14 @@ export default class ManufacturingGoal extends React.Component{
           <UncontrolledCollapse toggler={'#goal' + this.props.id}>
                 <Card>
                     <CardBody>
-                        <ManuGoalsTables handleDeleteActivities = {this.handleDeleteActivities} onQuantityChange = {this.onQuantityChange} query = {`api/manugoals/${this.props.user}/${this.props.id}`}></ManuGoalsTables>
+                        <ManuGoalsTables handleDeleteActivities = {this.handleDeleteActivities} onQuantityChange = {this.onQuantityChange} activities = {this.props.activities}></ManuGoalsTables>
                     </CardBody>
                 </Card>
             </UncontrolledCollapse>
         </div>
           <div className="singleGoalButtons">
             <img className = "hoverable" id ="deleteButton" onClick={() => {this.props.handleDeleteGoal(this.props.id); }} src= {deleteButton}></img>
-            <ManufacturingGoalCalculator name = {this.props.name} activities = {this.props.activities} ></ManufacturingGoalCalculator>
+            <ManufacturingGoalCalculator name = {this.props.name} activities = {this.props.activities}></ManufacturingGoalCalculator>
           </div>
       </div>
     )

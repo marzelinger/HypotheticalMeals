@@ -73,7 +73,7 @@ class Manu_ActivityHandler{
             var new_scheduled = req.body.scheduled || false
             var new_start = req.body.start
             var new_end = req.body.end
-            var new_duration = new_sku * new_quantity;
+            var new_duration = new_sku.manu_rate * new_quantity;
             var new_error = req.body.error;
             var new_manu_line = req.body.manu_line;
             let updated_manu_activity = await Manu_Activity.findOneAndUpdate({_id : target_id},
