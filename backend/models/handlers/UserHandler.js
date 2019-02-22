@@ -83,7 +83,7 @@ class UserHandler{
           const payload = {
             id: user.id,
             username: user.username,
-            admin: isAdmin(user).isValid
+            admin: user.isAdmin
           };
   // Sign token
           jwt.sign(
@@ -113,21 +113,29 @@ class UserHandler{
       const username = req.body.username;
       const isNetIDLogin = req.body.isNetIDLogin;
       // Find user by username
+      printFuncBack("this is in the loginUserDukeNetID");
+      printFuncBack("this is the request string: "+JSON.stringify(req.body));
       User.findOne({ username }).then(user => {
         // Check if user exists
+        printFuncBack("user: "+user);
+
         if (!user) {
+          printFuncBack("user was not true");
+
           //user doesn't exist, so create a new one.
           const newUser = new User({
             username: req.body.username,
             isNetIDLogin: req.body.isNetIDLogin,
             });
-          newUser.save().then(user => {
+          newUser.save().then(newuser => {
             //res.json(user)
+            printFuncBack("newuser is: "+JSON.stringify(newuser));
 
             const payload = {
-              id: user.id,
-              username: user.username,
-              admin: isAdmin(user).isValid
+              id: newuser.id,
+              username: newuser.username,
+              //admin: isAdmin(newuser).isValid
+              admin: newuser.isAdmin
             };
   
             jwt.sign(
@@ -143,19 +151,19 @@ class UserHandler{
                 });
               }
             );
-          }
-            
-            
-            
-            ).catch(err => console.log(err));
+          }).catch(err => console.log(err));
         }
         else if (user && isNetIDLogin){
+          printFuncBack("user existed is: "+JSON.stringify(user));
+
           //for sure is the netid stuff and going to make payload and login.
           const payload = {
             id: user.id,
             username: user.username,
-            admin: isAdmin(user).isValid
+            admin: user.isAdmin
           };
+          printFuncBack("this is the payload token in logging in user.. " +JSON.stringify(payload));
+
           jwt.sign(
             payload,
             keys.secretOrKey,
