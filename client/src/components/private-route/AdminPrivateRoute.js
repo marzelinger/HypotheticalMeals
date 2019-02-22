@@ -7,16 +7,13 @@ const AdminPrivateRoute = ({ component: Component, auth, ...rest }) => (
   <Route
     {...rest}
     render={props =>
-      <div>
-        {/* <GeneralNavBar></GeneralNavBar> */}
-        {
+        
       auth.isAdmin === true ? (
         <Component {...props} />
       ) : (
         <Redirect to="/skus" />
       )
-        }
-      </div>
+        
     }
   />
 );
