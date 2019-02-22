@@ -25,8 +25,18 @@ export default class ManuGoalsTables extends React.Component {
     }
 
     onSort = (event, sortKey) => {
-        const data = this.state.skus;
-        data.sort((a,b) => {
+        console.log("sorting")
+        const data = this.state.data;
+        data.sort((activitya,activityb) => {
+            let a, b;
+            if(sortKey == 'quantity'){
+                a = activitya;
+                b = activityb;
+            }
+            else{
+                a = activitya.sku
+                b = activityb.sku
+            }
             if (/^\d+$/.test(a[sortKey]) && /^\d+$/.test(b[sortKey])) {
                 return parseInt(a[sortKey])-parseInt(b[sortKey]);
             }
@@ -37,6 +47,7 @@ export default class ManuGoalsTables extends React.Component {
                 return a[sortKey].toString().localeCompare(b[sortKey]);
             }
         })
+        console.log(data);
         this.setState({data})
     };
 
