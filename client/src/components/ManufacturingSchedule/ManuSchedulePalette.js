@@ -17,7 +17,6 @@ import ManuSchedulePaletteGoal from "./ManuSchedulePaletteGoal";
 export default class ManuSchedulePalette extends Component {
     constructor (props) {
         super(props)
-
     }
 
     render() {
