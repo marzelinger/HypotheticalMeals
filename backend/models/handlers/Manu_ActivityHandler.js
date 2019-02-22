@@ -15,6 +15,7 @@ class Manu_ActivityHandler{
             var new_end = req.body.end
             var new_duration = req.body.duration
             var new_error = req.body.error;
+            var new_manu_line = req.body.manu_line;
             console.log(req.body);
             if(!new_sku || !new_quantity){
                 return res.json({
@@ -28,6 +29,7 @@ class Manu_ActivityHandler{
             manu_activity.end = new_end;
             manu_activity.duration = new_duration;
             manu_activity.error = new_error;
+            manu_activity.manu_line = new_manu_line;
             let new_manu_activity = await manu_activity.save();
             return res.json({ success: true, data: new_manu_activity});
         }
@@ -49,8 +51,11 @@ class Manu_ActivityHandler{
             var new_end = req.body.end
             var new_duration = req.body.duration
             var new_error = req.body.error;
+            var new_manu_line = req.body.manu_line;
             let updated_manu_activity = await Manu_Activity.findOneAndUpdate({_id : target_id},
-                {$set: {sku: new_sku, quantity: new_quantity, scheduled: new_scheduled, start: new_start, end: new_end, duration: new_duration, error: new_error}}, {upsert: true, new: true});
+                {$set: {sku: new_sku, quantity: new_quantity, scheduled: new_scheduled, start: new_start, 
+                    end: new_end, duration: new_duration, error: new_error, manu_line: new_manu_line}}, 
+                    {upsert: true, new: true});
             if(!updated_manu_activity){
                 return res.json({
                     success: true, error: 'This document does not exist'
@@ -67,7 +72,7 @@ class Manu_ActivityHandler{
 
     static async getAllManufacturingActivities(req, res){
         try {
-            let all_manu_activities = await Manu_Activity.find().populate('sku').populate({
+            let all_manu_activities = await Manu_Activity.find().populate('sku').populate('manu_line').populate({
                 path: 'sku',
                 populate: { path: 'ingredients' }
               })
@@ -82,7 +87,7 @@ class Manu_ActivityHandler{
     static async getManufacturingActivityByID(req, res){
         try {
             var target_id = req.params.manu_activity_id;
-            let to_return = await Manu_Activity.find({ _id : target_id}).populate('sku').populate({
+            let to_return = await Manu_Activity.find({ _id : target_id}).populate('sku').populate('manu_line').populate({
                 path: 'sku',
                 populate: { path: 'ingredients' }
               });
