@@ -71,9 +71,9 @@ export default class ListPage extends React.Component {
         };
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!= null){
-              this.state.user = jwt_decode(localStorage.getItem("jwtToken")).username;
+                this.state.user = jwt_decode(localStorage.getItem("jwtToken")).username;
             }
-          }
+        }
         this.toggle = this.toggle.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onFilterValueChange = this.onFilterValueChange.bind(this);
@@ -192,6 +192,7 @@ export default class ListPage extends React.Component {
 
     async setInitPages(){
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
+        console.log(allData)
         var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
         this.setState({
             currentPage: 0,

@@ -8,7 +8,6 @@ const Manu_ActivitySchema = new Schema({
     quantity: Number,
     scheduled: Boolean,
     start: String, 
-    end: String,
     manu_line: { type: Schema.Types.ObjectId, ref: 'Manu_Line'},
     duration: Number,
     orphaned: Boolean
