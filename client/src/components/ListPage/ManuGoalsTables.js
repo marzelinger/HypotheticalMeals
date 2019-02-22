@@ -20,13 +20,21 @@ export default class ManuGoalsTables extends React.Component {
             table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', 'quantity'],
             data: this.props.activities,
             error: null,
-            onDeleteSku: props.onDeleteSku
+            onDeleteSku: props.onDeleteSku,
+            sortKey:''
         };
     }
 
     onSort = (event, sortKey) => {
+        console.log("on sort")
+        this.setState({sortKey})
+    }
+
+    sortData = (data) => {
         console.log("sorting")
-        const data = this.state.data;
+        var newdata = [...data];
+        var sortKey = this.state.sortKey
+        console.log(sortKey);
         data.sort((activitya,activityb) => {
             let a, b;
             if(sortKey == 'quantity'){
@@ -48,8 +56,10 @@ export default class ManuGoalsTables extends React.Component {
             }
         })
         console.log(data);
-        this.setState({data})
+        return data
     };
+
+
 
     render() {
         return (
@@ -59,7 +69,7 @@ export default class ManuGoalsTables extends React.Component {
                         onQuantityChange = {this.props.onQuantityChange}
                         columns={this.state.table_columns} 
                         table_properties={this.state.table_properties} 
-                        list_items={this.state.data}
+                        list_items={this.sortData(this.props.activities)}
                         selected_items={this.state.selected_items}
                         handleSort={this.onSort}
                         handleSelect={this.onSelect}

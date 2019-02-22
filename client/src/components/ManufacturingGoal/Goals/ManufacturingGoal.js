@@ -27,6 +27,7 @@ export default class ManufacturingGoal extends React.Component{
       this.props.handleUpdateGoal(this.props.id, this.state.name);
     }
   }
+  
 
   onQuantityChange = async (event, activity_index) => {
       console.log(this.props.activities)
