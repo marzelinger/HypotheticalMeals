@@ -15,6 +15,7 @@ import {Modal, ModalHeader} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import FormulaDetails from './FormulaDetails';
 import '../../style/SkusPage.css'
+import GeneralNavBar from '../GeneralNavBar';
 
 const jwt_decode = require('jwt-decode');
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
@@ -279,6 +280,7 @@ export default class FormulasPage extends React.Component {
     render(){
         return(
             <div className="list-page">
+            <GeneralNavBar></GeneralNavBar>
                 <div>
                     <PageTable
                         columns={this.state.table_columns} 

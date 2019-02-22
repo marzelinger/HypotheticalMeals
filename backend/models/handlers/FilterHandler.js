@@ -94,7 +94,6 @@ class FilterHandler{
         }
     }
 
-<<<<<<< HEAD
     static async getUsersByFilter(req, res){
         try{
             printFuncBack('in the getUsersByFilter');
@@ -127,7 +126,14 @@ class FilterHandler{
                                                         .sort(sort_field).collation({locale: "en_US", numericOrdering: true});
             if (results.length == 0) results = [];
             printFuncBack('this is the results: '+results);
-=======
+            return res.json({ success: true, data: results});
+        }
+        catch (err) {
+            return res.json({ success: false, error: err});
+        }
+
+        
+    }
     static async getFormulasbyFilter(req, res){
         try{
             var and_query = [];
@@ -157,25 +163,11 @@ class FilterHandler{
                                                         .limit(pageSize).populate('ingredients')
                                                         .sort(sort_field).collation({locale: "en_US", numericOrdering: true});
             if (results.length == 0) results = [];
->>>>>>> 3b7e5fe103a5e22ba44e604ae7d0e9fcf75dab67
             return res.json({ success: true, data: results});
         }
         catch (err) {
             return res.json({ success: false, error: err});
-<<<<<<< HEAD
-        }    
-    }
-
-
-
-
-
-
-
-
-=======
         }
     }
->>>>>>> 3b7e5fe103a5e22ba44e604ae7d0e9fcf75dab67
 }
 export default FilterHandler;

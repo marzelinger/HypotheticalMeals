@@ -17,6 +17,7 @@ import ItemSearchInput from './ItemSearchInput';
 import ItemSearchModifyListQuantity from './ItemSearchModifyListQuantity';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import ModifyManuLines from './ModifyManuLines';
+import SkuFormulaDetails from './SkuFormulaDetails';
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
 
@@ -65,6 +66,8 @@ export default class SKUDetails extends React.Component {
         return this.state.item_property_labels[this.state.item_properties.indexOf(prop)];
     }
 
+    
+
     getPropertyPattern = (prop) => {
         return this.state.item_property_patterns[this.state.item_properties.indexOf(prop)];
     }
@@ -94,6 +97,16 @@ export default class SKUDetails extends React.Component {
         }
     }
 
+    onModifyManuLines = (list) => {
+        if(currentUserIsAdmin().isValid){
+            var newItem = Object.assign({}, this.state.item);
+            newItem['formula'] = list;
+            this.setState({
+                item: newItem
+            })
+        }
+    }
+
     onPropChange = (value, item, prop) => {
         item[prop] = value
         this.setState({ item: item });
@@ -108,6 +121,23 @@ export default class SKUDetails extends React.Component {
                     break;
                 case Constants.details_remove:
                     this.removeIngredient(item, value, qty);
+                    break;
+            }
+            this.setState({ 
+                item: item
+            })
+        }
+    }
+
+    onModifyFormulaList = (option, value, qty) => {
+        if(currentUserIsAdmin().isValid){
+            var item = Object.assign({}, this.state.item);
+            switch (option) {
+                case Constants.details_add:
+                    this.addIngredientToFormula(item, value, qty);
+                    break;
+                case Constants.details_remove:
+                    this.removeIngredientFromFormula(item, value, qty);
                     break;
             }
             this.setState({ 
@@ -132,6 +162,47 @@ export default class SKUDetails extends React.Component {
                 item.ingredients.splice(ind,1);
                 item.ingredient_quantities.splice(ind,1);
             }
+        }
+        this.setState({ item: item })
+    }
+
+    removeIngredientFromFormula(item, value, qty) {
+        
+        let ind = -1;
+        qty = parseInt(qty);
+        item.formula.ingredients.map((ing, index) => {
+        // item.ingredients.map((ing, index) => {
+            if (ing._id === value._id)
+                ind = index;
+        });
+        if (ind > -1) {
+            let curr_qty = item.formula.ingredient_quantities[ind];
+            curr_qty = curr_qty - qty;
+            if (curr_qty > 0) item.formula.ingredient_quantities[ind] = curr_qty;
+            else {
+                item.formula.ingredients.splice(ind,1);
+                item.formula.ingredient_quantities.splice(ind,1);
+            }
+        }
+        this.setState({ item: item })
+    }
+
+    addIngredientToFormula(item, value, qty) {
+        let ind = -1;
+        qty = parseInt(qty);
+        item.formula.ingredients.map((ing, index) => {
+            if (ing._id === value._id)
+                ind = index;
+        });
+        console.log()
+        if (ind > -1){
+            let curr_qty = item.formula.ingredient_quantities[ind];
+            curr_qty = curr_qty + qty;
+            item.formula.ingredient_quantities[ind] = curr_qty;
+        }
+        else {
+            item.formula.ingredients.push(value);
+            item.formula.ingredient_quantities.push(qty);
         }
         this.setState({ item: item })
     }
@@ -202,6 +273,8 @@ export default class SKUDetails extends React.Component {
         return;
     }
 
+
+
     render() {
         return (
         <div className='item-details'>
@@ -223,7 +296,15 @@ export default class SKUDetails extends React.Component {
                     handleSelectItem={this.onSelectProductLine}
                     disabled = {currentUserIsAdmin().isValid ? false : true}
                 />
-                <ItemSearchModifyListQuantity
+                <SkuFormulaDetails
+                    item = {this.state.item}
+                    //api_route={Constants.formulas_page_name}
+                    //item_type={Constants.details_modify_formula}
+                    //options={[Constants.details_add, Constants.details_remove]}
+                    //handleModifyFormulaList={this.onModifyFormulaList}
+                    //disabled = {currentUserIsAdmin().isValid ? false : true}
+                />
+                {/* <ItemSearchModifyListQuantity
                     api_route={Constants.ingredients_page_name}
                     item_type={Constants.details_modify_ingredient}
                     options={[Constants.details_add, Constants.details_remove]}
@@ -234,8 +315,10 @@ export default class SKUDetails extends React.Component {
                     sku={this.state.item} 
                     handlePropChange={this.onPropChange}
                     disabled={currentUserIsAdmin().isValid ? false : true}
-                />
+                /> */}
+
             </div>
+            <div/>
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
                     <Button 

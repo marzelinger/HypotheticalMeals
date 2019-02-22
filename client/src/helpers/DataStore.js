@@ -83,10 +83,15 @@ export default class DataStore{
         table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line'],
         table_options: [Constants.create_item, Constants.add_to_manu_goals, Constants.add_keyword_filter, 
           Constants.add_ing_filter, Constants.add_prod_filter],
-        item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'comment', 'formula', 'scale_factor', 'manu_rate'],
-        item_property_labels: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Comment', 'Formula#','Formula Scale Factor', 'Manufactuing Rate'],
-        item_property_patterns: ['.+', '^[0-9]+$', '^[016789][0-9]{11}$', '^[016789][0-9]{11}$', '.+', '^[0-9]+$', '.*','^[0-9]+$', '^[+]?[0-9]*\.?[0-9]*$', '^[+]?[0-9]*\.?[0-9]*$'], 
+        item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'comment', 'manu_rate'],
+        item_property_labels: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Comment', 'Manufactuing Rate'],
+        item_property_patterns: ['.+', '^[0-9]+$', '^[016789][0-9]{11}$', '^[016789][0-9]{11}$', '.+', '^[0-9]+$', '.*', '^[+]?[0-9]*\.?[0-9]*$'], 
         item_property_field_type: ['text', 'text', 'text', 'text', 'text', 'text', 'textarea', 'text','text', 'text'],
+        formula_item_properties: ['name', 'num'],
+        formula_item_property_labels: ['Name', 'SKU#'],
+        formula_item_property_patterns: ['.+', '^[0-9]+$'], 
+        formula_item_property_field_type: ['text', 'text'],
+
       };
   }
 

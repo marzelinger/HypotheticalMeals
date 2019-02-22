@@ -153,6 +153,23 @@ export default class SubmitRequest{
     }
   }
 
+  static async submitGetFormulaByID(id) {
+    try {
+      return fetch('/api/formulas/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
   static async submitGetManufacturingLineByShortName(shortname) {
     try {
       console.log('/api/manulines_shortname/' + shortname);

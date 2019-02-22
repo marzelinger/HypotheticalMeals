@@ -52,6 +52,8 @@ export const details_modify_ingredient ="Modify Ingredient"
 export const details_modify_ingredient_quantities ="Modify Quantity"
 export const details_add_sku ="Add Ingredient"
 export const details_modify_sku_quantities ="Modify Quantity"
+export const details_modify_formula ="Modify Formula"
+
 
 export const add_keyword_filter = 'Add Keyword Filter'
 export const add_sku_filter = 'Add SKU Filter'
@@ -69,3 +71,4 @@ export const edit_manu_lines = 'Bulk Edit Manufacturing Lines'
 export const manu_lines_modal = 'manu_lines'
 export const details_modal = 'details'
 export const modify_manu_lines_label = 'Modify Manufacturing Lines'
+export const modify_formula_label = 'Modify Formula'
