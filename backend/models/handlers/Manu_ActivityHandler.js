@@ -13,7 +13,7 @@ class Manu_ActivityHandler{
             var new_scheduled = req.body.scheduled || false
             var new_start = req.body.start
             var new_end = req.body.end
-            var new_duration = req.body.duration
+            var new_duration = new_sku.manu_rate * new_quantity;
             var new_error = req.body.error;
             console.log(req.body);
             if(!new_sku || !new_quantity){
@@ -71,7 +71,7 @@ class Manu_ActivityHandler{
             var new_scheduled = req.body.scheduled || false
             var new_start = req.body.start
             var new_end = req.body.end
-            var new_duration = req.body.duration
+            var new_duration = new_sku * new_quantity;
             var new_error = req.body.error;
             let updated_manu_activity = await Manu_Activity.findOneAndUpdate({_id : target_id},
                 {$set: {sku: new_sku, quantity: new_quantity, scheduled: new_scheduled, start: new_start, end: new_end, duration: new_duration, error: new_error}}, {upsert: true, new: true});
@@ -133,4 +133,4 @@ class Manu_ActivityHandler{
 
 }
 
-export default Manu_ActivityHandler;
+export default Manu_ActivityHandler; 

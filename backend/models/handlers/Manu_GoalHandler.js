@@ -11,6 +11,8 @@ class Manu_GoalHandler{
             var new_name = req.body.name;
             var new_activities = req.body.activities;
             var new_user = req.body.user || "default_user";
+            var new_deadline = req.body.deadline;
+            console.log(new_deadline);
             if(!new_name || !new_user){
                 return res.json({
                     success: false, error: 'You must provide a name'
@@ -26,6 +28,7 @@ class Manu_GoalHandler{
             manu_goal.user = new_user;
             manu_goal.activities = new_activities;
             manu_goal.enabled = false;
+            manu_goal.deadline = new_deadline;
             let new_manu_goal = await manu_goal.save();
             return res.json({ success: true, data: new_manu_goal});
         }
@@ -43,8 +46,9 @@ class Manu_GoalHandler{
             var new_activities = req.body.activities;
             var new_name = req.body.name;
             var new_enabled = req.body.enabled;
+            var new_deadline = req.body.deadline;
             let updated_manu_goal = await Manu_Goal.findOneAndUpdate({_id : target_id},
-                {$set: {activities: new_activities, name: new_name, enabled: new_enabled}}, {upsert: true, new: true});
+                {$set: {deadline: new_deadline,activities: new_activities, name: new_name, enabled: new_enabled}}, {upsert: true, new: true});
             if(!updated_manu_goal){
                 return res.json({
                     success: true, error: 'This document does not exist'

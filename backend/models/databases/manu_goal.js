@@ -15,7 +15,8 @@ const Manu_GoalSchema = new Schema({
             ref: 'Manu_Activity'
         }
     ],
-    enabled: Boolean
+    enabled: Boolean,
+    deadline: Date
 }, { timestamps: true });
 
 // export our module to use in server.js
