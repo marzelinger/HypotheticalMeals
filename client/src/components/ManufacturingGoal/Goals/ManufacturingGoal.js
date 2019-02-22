@@ -43,9 +43,11 @@ export default class ManufacturingGoal extends React.Component{
     if(selectedActivitiesIndexes == undefined){
       return;
     }
-    for(var i = 0; i < selectedActivitiesIndexes.length; i ++){
-      await SubmitRequest.submitDeleteItem('manuactivities', this.props.activities[i]);
-      this.props.activities.splice(i, 1);
+    else if(window.confirm("Are you sure you want to delete these activities? It will remove them from the schedule")){
+      for(var i = 0; i < selectedActivitiesIndexes.length; i ++){
+        await SubmitRequest.submitDeleteItem('manuactivities', this.props.activities[i]);
+        this.props.activities.splice(i, 1);
+      }
     }
     //submit request to delete 
     // this.props.handleUpdateGoal(this.props.id);
