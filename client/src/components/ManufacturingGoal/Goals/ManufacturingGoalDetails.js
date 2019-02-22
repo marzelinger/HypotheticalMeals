@@ -14,7 +14,8 @@ import ItemStore from '../../../helpers/ItemStore';
 import addButton from '../../../resources/add.png';
 import ItemSearchModifyListQuantity from '../../ListPage/ItemSearchModifyListQuantity';
 import SimpleGoalTable from '../SimpleGoalTable';
-import DatePicker from 'material-ui/DatePicker';
+import { withStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 
 
 export default class ManufacturingGoalDetails extends React.Component {
@@ -161,10 +162,21 @@ export default class ManufacturingGoalDetails extends React.Component {
             return (
                 <div>
                     {inputs}
-                    <FormGroup>
+                    <TextField
+                        id="datetime-local"
+                        label="Deadline"
+                        type="datetime-local"
+                        defaultValue="2017-05-24T10:30"
+                        className={'text'}
+                        onChange = {(event) => this.onPropChange(event.target.value, this.state.item, 'deadline')}
+                        InputLabelProps={{
+                        shrink: true,
+                        }}
+                    />
+                    {/* <FormGroup>
                         <Label>Deadline</Label>
                         <DatePicker value={ this.state.item['deadline']} onChange={ (e, date) => this.onPropChange(date, this.state.item, 'deadline')} hintText="Select deadline" />
-                    </FormGroup>
+                    </FormGroup> */}
                 </div>
                 )
         }

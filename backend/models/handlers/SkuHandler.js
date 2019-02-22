@@ -169,18 +169,12 @@ class SkuHandler{
     static async getIngredientsBySkuID(req, res){
         try{
             var target_id = req.params.sku_id;
-            let response = await SKU.find({ _id : target_id }).populate('ingredients');
+            let response = await SKU.find({ _id : target_id }).populate('formula').populate({
+                path: 'formula',
+                populate: { path: 'ingredients' }
+              });
             let sku = response[0];
-            var { ingredients, ingredient_quantities } = sku;
-            let adj_ingredients = [];
-            for(var i = 0; i < ingredients.length; i ++){
-                var new_ing = {
-                    ...ingredients[i]._doc,
-                    quantity: ingredient_quantities[i]
-                }
-                adj_ingredients.push(new_ing);
-            }
-            return res.json({ success: true, data: adj_ingredients, skuData: sku});
+            return res.json({ success: true, data: sku});
         }
         catch (err) {
             console.log(err);
