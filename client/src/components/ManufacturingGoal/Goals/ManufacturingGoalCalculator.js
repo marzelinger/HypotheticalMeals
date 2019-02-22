@@ -31,44 +31,45 @@ export default class ManufacturingGoalCalculator extends React.Component{
     await this.getIngredientInfo();
   }
 
-  calculateSkuUnitQuantity = (quantity, sku) => {
-      console.log(quantity);
-      return quantity * Number(sku.cpc);
-  }
+  // calculateSkuUnitQuantity = (quantity, sku) => {
+  //     console.log(quantity);
+  //     return quantity * Number(sku.scale_factor);
+  // }
 
-  addIngredientInfo = async (ingredient, quantity) => {
-    if(this.state.current_ingredient_ids.includes(ingredient.quantity)){
-       var index =  this.state.current_ingredient_ids.indexOf(ingredient.id);
-       var currentData = this.state.ingredients_info;
-       currentData[index].quantity = currentData[index].quantity + (quantity * ingredient.quantity);
-       await this.setState({ingredients_info: currentData});
-    }   
-    else{
-        console.log('setting state');
-        console.log(ingredient.quantity);
-        var newIngredient = {
-            ...ingredient, 
-            goalQuantity: quantity * ingredient.quantity
-        }
-        let info = this.state.ingredients_info;
-        info.push(newIngredient);
-        await this.setState({ingredients_info: info, current_ingredient_ids: [...this.state.current_ingredient_ids, ingredient.id]})
-    }
-  }
+  // addIngredientInfo = async (ingredient, quantity) => {
+  //   if(this.state.current_ingredient_ids.includes(ingredient.quantity)){
+  //      var index =  this.state.current_ingredient_ids.indexOf(ingredient.id);
+  //      var currentData = this.state.ingredients_info;
+  //      currentData[index].quantity = currentData[index].quantity + (quantity * ingredient.quantity);
+  //      await this.setState({ingredients_info: currentData});
+  //   }   
+  //   else{
+  //       console.log('setting state');
+  //       console.log(ingredient.quantity);
+  //       var newIngredient = {
+  //           ...ingredient, 
+  //           goalQuantity: quantity * ingredient.quantity
+  //       }
+  //       let info = this.state.ingredients_info;
+  //       info.push(newIngredient);
+  //       await this.setState({ingredients_info: info, current_ingredient_ids: [...this.state.current_ingredient_ids, ingredient.id]})
+  //   }
+  // }
 
   // broken rn bc using old structure of skus
   getIngredientInfo = async () => {
-      console.log(this.props.skus);
-      let index = 0;
-      await this.props.skus.forEach( async (sku) => {
-        var {data, skuData} = await SubmitRequest.submitGetPopulatedSkuIngredients(sku);
-        var quantity = this.calculateSkuUnitQuantity(this.props.quantities[index], skuData);
-        await data.forEach( async(ingredient) => {
-            await this.addIngredientInfo(ingredient, quantity);
-        })
-        index++;
+      console.log(this.props.activities);
+      // let index = 0;
+      await this.props.activities.forEach( async (activity) => {
+        var {data} = await SubmitRequest.submitGetPopulatedSkuIngredients(activity.sku._id);
+        console.log(data);
+        // var quantity = this.calculateSkuUnitQuantity(this.props.quantities[index], skuData);
+        // await data.forEach( async(ingredient) => {
+        //     await this.addIngredientInfo(ingredient, quantity);
+        // })
+        // index++;
       })
-      return this.state.ingredients_info
+      // return this.state.ingredients_info
   }
 
   render(){
@@ -88,7 +89,6 @@ export default class ManufacturingGoalCalculator extends React.Component{
 }
 
 ManufacturingGoalCalculator.propTypes = {
-    skus: PropTypes.array,
+    activities: PropTypes.array,
     name: PropTypes.string,
-    quantities: PropTypes.array
 };
