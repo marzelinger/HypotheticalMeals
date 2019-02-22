@@ -10,7 +10,7 @@ const Manu_ActivitySchema = new Schema({
     start: String, 
     manu_line: { type: Schema.Types.ObjectId, ref: 'Manu_Line'},
     duration: Number,
-    error: [String]
+    orphaned: Boolean
 }, { timestamps: true });
 
 // export our module to use in server.js
