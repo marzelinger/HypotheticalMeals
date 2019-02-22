@@ -116,6 +116,9 @@ export default class FormulasPage extends React.Component {
             exportData: resALL.data,
             filterChange: false
         })
+        console.log("this is the data that we got from the submitGetFilterData in formulas:");
+        console.log(JSON.stringify(this.state.data));
+        console.log("first value: "+JSON.stringify(this.state.data[0]));
         this.updateDataState();
     }
 

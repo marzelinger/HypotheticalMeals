@@ -18,7 +18,7 @@ export default class IngredientsViewSimple extends React.Component {
             table_properties } = DataStore.getIngredientDataSimple();
 
         this.state = {
-            sku_id: props.sku._id,
+            formula_id: props.formula._id,
             table_columns: [...table_columns, 'Quantity'],
             table_properties: [...table_properties, 'quantity'],
             selected_items: [],
@@ -32,6 +32,7 @@ export default class IngredientsViewSimple extends React.Component {
         this.onQuantityChange = this.onQuantityChange.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
         this.setNumberPages();
+        console.log("this is the ingredients view simple props: "+JSON.stringify(this.props));
     }
 
     async componentDidMount() {
@@ -39,7 +40,7 @@ export default class IngredientsViewSimple extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
-        if (this.props.sku.ingredients.length != this.state.itemCount){
+        if (this.props.formula.ingredients.length != this.state.itemCount){
             this.setNumberPages();
         }
     }
@@ -53,13 +54,13 @@ export default class IngredientsViewSimple extends React.Component {
     }
 
     async setNumberPages(){
-        var curCount = Math.ceil(this.props.sku.ingredients.length/Number(this.state.pageSize));
+        var curCount = Math.ceil(this.props.formula.ingredients.length/Number(this.state.pageSize));
 
         let starting_index = this.state.pageSize * this.state.currentPage;
-        let cItems = this.props.sku.ingredients.slice(starting_index, starting_index+2);
-        let cQtys = this.props.sku.ingredient_quantities.slice(starting_index, starting_index+2);
+        let cItems = this.props.formula.ingredients.slice(starting_index, starting_index+2);
+        let cQtys = this.props.formula.ingredient_quantities.slice(starting_index, starting_index+2);
         await this.setState({
-            itemCount: this.props.sku.ingredients.length,
+            itemCount: this.props.formula.ingredients.length,
             currentPage: this.state.currentPage <= curCount ? this.state.currentPage : this.state.currentPage-1,
             pagesCount: curCount,
             currItems: cItems,
@@ -80,9 +81,9 @@ export default class IngredientsViewSimple extends React.Component {
         this.setState({ currQtys: cQtys })
 
         let ind_actual = this.state.currentPage * this.state.pageSize + index;
-        var ing_quant = this.props.sku.ingredient_quantities.slice();
+        var ing_quant = this.props.formula.ingredient_quantities.slice();
         ing_quant[ind_actual] = e.target.value;
-        this.props.handlePropChange(ing_quant, this.props.sku, 'ingredient_quantities');
+        this.props.handlePropChange(ing_quant, this.props.formula, 'ingredient_quantities');
     }
 
     render() {
@@ -136,7 +137,7 @@ export default class IngredientsViewSimple extends React.Component {
 }
 
 IngredientsViewSimple.propTypes = {
-    sku: PropTypes.object,
+    formula: PropTypes.object,
     handlePropChange: PropTypes.func,
     disabled: PropTypes.bool
 }

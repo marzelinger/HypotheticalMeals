@@ -90,7 +90,7 @@ class FormulaHandler{
     static async getFormulaByID(req, res){
         try {
             var target_id = req.params.formula_id;
-            let to_return = await Formula.find({ _id : target_id});
+            let to_return = await Formula.find({ _id : target_id}).populate('ingredients');
             if(to_return.length == 0) return res.json({ success: false, error: '404'});
             return res.json({ success: true, data: to_return});
         } catch (err) {
