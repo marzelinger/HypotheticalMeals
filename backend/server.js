@@ -13,7 +13,7 @@ import IngredientHandler from './models/handlers/IngredientHandler';
 import Manu_GoalHandler from './models/handlers/Manu_GoalHandler';
 import UserHandler from './models/handlers/UserHandler';
 import FilterHandler from './models/handlers/FilterHandler';
-import FormulaHandler from './models/handlers/FormulasHandler';
+import FormulaHandler from './models/handlers/FormulaHandler';
 import Manu_ActivityHandler from './models/handlers/Manu_ActivityHandler';
 import { getSecret } from './secrets';
 const passport = require("passport");
