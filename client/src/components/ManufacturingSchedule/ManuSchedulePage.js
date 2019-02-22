@@ -5,6 +5,13 @@ import PropTypes from "prop-types";
 import Timeline from 'react-visjs-timeline'
 import SubmitRequest from "../../helpers/SubmitRequest";
 import * as Constants from '../../resources/Constants';
+import {
+    Accordion,
+    AccordionItem,
+    AccordionItemTitle,
+    AccordionItemBody,
+} from 'react-accessible-accordion';
+import 'react-accessible-accordion/dist/fancy-example.css';
 const jwt_decode = require('jwt-decode');
 
 export default class ManuSchedulePage extends Component {
@@ -61,17 +68,8 @@ export default class ManuSchedulePage extends Component {
         }
     }
 
-    componentDidUpdate(prevState, prevProps) {
-        console.log('updated!')
-    }
-
     clickHandler(e) {
         console.log(items)
-    }
-
-    outHandler(e) {
-        console.log(e)
-        console.log('yo')
     }
 
     render() {
@@ -85,6 +83,25 @@ export default class ManuSchedulePage extends Component {
                 // changedHandler={this.clickHandler.bind(this)}
                 // itemoutHandler={this.outHandler.bind(this)}
             />) : null}
+            {/* <Accordion>
+                <AccordionItem>
+                    <AccordionItemTitle>
+                        <h3>Simple title</h3>
+                    </AccordionItemTitle>
+                    <AccordionItemBody>
+                        <p>Body content</p>
+                    </AccordionItemBody>
+                </AccordionItem>
+                <AccordionItem>
+                    <AccordionItemTitle>
+                        <h3>Complex title</h3>
+                        <div>With a bit of description</div>
+                    </AccordionItemTitle>
+                    <AccordionItemBody>
+                        <p>Body content</p>
+                    </AccordionItemBody>
+                </AccordionItem>
+            </Accordion> */}
         </div>
         );
     }
