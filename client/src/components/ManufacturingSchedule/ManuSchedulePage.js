@@ -6,7 +6,6 @@ import SubmitRequest from "../../helpers/SubmitRequest";
 import * as Constants from '../../resources/Constants';
 import ManuSchedulePalette from './ManuSchedulePalette'
 import './../../style/ManuSchedulePage.css';
-var moment = require('moment');
 const jwt_decode = require('jwt-decode');
 
 export default class ManuSchedulePage extends Component {
@@ -120,15 +119,12 @@ const options = {
         let act = await SubmitRequest.submitGetManufacturingActivityByID(item._id)
         let end = new Date(item.end)
         let start = new Date(item.start)
-        console.log(end)
-        console.log(start)
         if ((end.getTime()-start.getTime())/(60*60*1000) !== act.data[0].duration) {
             alert('You cannot change activity duration on the schedule directly!')
             return callback(null)
         }
         act.data[0].start = item.start;//moment(act.data[0].start).toDate()
         act.data[0].manu_line = { _id: item.group };
-        console.log(act.data[0])
         let ok = await SubmitRequest.submitUpdateItem(Constants.manu_activity_page_name, act.data[0])
         console.log(ok)
         callback(item)
