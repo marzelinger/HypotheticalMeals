@@ -213,6 +213,6 @@ PageTable.propTypes = {
   handleSelect: PropTypes.func,
   handleDetailViewSelect: PropTypes.func,
   handleQuantityChange: PropTypes.func,
-  showHeader: PropTypes.bool.isRequired,
+  showHeader: PropTypes.bool,
   disable_inputs: PropTypes.bool
 };
