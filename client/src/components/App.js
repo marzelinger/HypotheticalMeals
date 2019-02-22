@@ -21,6 +21,7 @@ import UserPage from "./ListPage/UsersPage";
 import ProductLinePage from "./ProductLine/ProductLinePage";
 import * as Constants from '../resources/Constants';
 import Logout from '../components/auth/Logout';
+import ManuSchedulePage from './ManufacturingSchedule/ManuSchedulePage'
 
 import { setCurrentUser, logoutUser, getAllUsers } from "../actions/authActions";
 import { Provider } from "react-redux";
@@ -105,6 +106,7 @@ class App extends React.Component{
                 <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
                 <AdminPrivateRoute exact path="/register" component={Register} />
                 <PrivateRoute exact path="/" component={Dashboard} />
+                <PrivateRoute exact path="/manu_schedule" component={ManuSchedulePage} />
                 <PrivateRoute exact path="/skus" component={SkusPage} />
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingPage} />
                 <PrivateRoute exact path="/prod_lines" component={ProductLinePage} />

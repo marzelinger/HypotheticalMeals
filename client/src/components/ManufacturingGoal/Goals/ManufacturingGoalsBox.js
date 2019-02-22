@@ -22,6 +22,8 @@ class ManufacturingGoalsBox extends Component {
       error: null,
       name: '',
       user: '',
+      enabled: false,
+      date: '',
       isAdmin: currentUserIsAdmin(),
       filters: {
         'username':'_',
@@ -58,6 +60,8 @@ class ManufacturingGoalsBox extends Component {
         name: new_name || oldGoal.name,
         activities: oldGoal.activities,
         updateId: id,
+        enabled: oldGoal.enabled,
+        deadline: oldGoal.deadline
     });
     console.log(this.state.name);
     this.submitUpdatedGoal();
@@ -108,10 +112,11 @@ class ManufacturingGoalsBox extends Component {
 
   async submitNewGoal() {
     console.log('submitting new goal')
-    const { name, activities, user } = this.state;
+    const { name, activities, user, deadline } = this.state;
+    console.log(deadline);
     console.log(activities);
     let created_activities = await this.submitNewActivity(activities);
-    let res = await SubmitRequest.submitCreateItem(Constants.manugoals_page_name, { name, activities: created_activities, user });
+    let res = await SubmitRequest.submitCreateItem(Constants.manugoals_page_name, { name, activities: created_activities, user, deadline });
     if (!res.success) {
       console.log('not a success')
       this.setState({ error: res.error });
@@ -121,15 +126,18 @@ class ManufacturingGoalsBox extends Component {
     }
   }
 
+
+
   async submitUpdatedGoal() {
-    const { name, activities, user, updateId } = this.state;
-    let item = { name, activities, user };
+    const { name, activities, user, updateId, enabled, deadline} = this.state;
+    let item = { name, activities, user, enabled, deadline };
     let res = await SubmitRequest.submitUpdateGoal(user, updateId, item);
     if (!res.success) {
+      console.log(res.error);
       this.setState({ error: res.error});
     }
     else {
-      this.setState({ name: '', activities: '', error: null })
+      this.setState({ name: '', activities: '', enabled: false, error: null })
       this.loadGoalsFromServer();
     }
   }
@@ -160,6 +168,7 @@ class ManufacturingGoalsBox extends Component {
 
   async onDetailViewSubmit(event, item, option) {
     var newData = this.state.data;
+    console.log(item)
     console.log(item);
     switch (option) {
         case Constants.details_create:
@@ -171,9 +180,9 @@ class ManufacturingGoalsBox extends Component {
             await this.setState({
               name: item.name,
               activities,
+              deadline: item.deadline
             })
-            console.log(this.state.name);
-            console.log(this.state.activities)
+            console.log(this.state.deadline);
             this.submitNewGoal();
             break;
         case Constants.details_cancel:

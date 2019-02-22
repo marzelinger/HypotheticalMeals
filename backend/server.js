@@ -63,6 +63,7 @@ router.delete('/skus/:sku_id', (req, res) => SkuHandler.deleteSkuByID(req, res))
 router.get('/ingredients_by_sku/:sku_id', (req, res) => SkuHandler.getIngredientsBySkuID(req, res));
 router.get('/skus_name/:search_substr', (req, res) => SkuHandler.getSkusByNameSubstring(req, res));
 
+// Formula database APIs
 router.post('/formulas', (req, res) => FormulaHandler.createFormula(req, res));
 router.put('/formulas/:formula_id', (req, res) => FormulaHandler.updateFormulaByID(req, res));
 router.get('/formulas', (req, res) => FormulaHandler.getAllFormulas(req, res));
@@ -90,6 +91,7 @@ router.get('/manulines_shortname/:short_name', (req, res) => Manu_LineHandler.ge
 // Manufacturing Activity database APIs
 router.post('/manuactivities', (req, res) => Manu_ActivityHandler.createManufacturingActivity(req, res));
 router.put('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.updateManufacturingActivityByID(req, res));
+router.put('/manuactivities_enable', (req, res) => Manu_ActivityHandler.updateManufacturingActivitiesEnable(req, res));
 router.get('/manuactivities', (req, res) => Manu_ActivityHandler.getAllManufacturingActivities(req, res));
 router.get('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.getManufacturingActivityByID(req, res));
 router.delete('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.deleteManufacturingActivityByID(req, res));
@@ -111,12 +113,14 @@ router.get('/manugoals/:user_id/:manu_goal_id', (req, res) => Manu_GoalHandler.g
 router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteManufacturingGoalByID(req, res));
 router.get('/manugoals/:user_id/:manu_goal_id/skus', (req, res) => Manu_GoalHandler.getManufacturingGoalByIDSkus(req, res));
 router.get('/manugoals_filter/:name_substr/:user_substr/:user', (req, res) => Manu_GoalHandler.getManufacturingGoalByFilter(req, res));
+
 // Multiple database APIs
 router.get('/ingredients_filter/:sort_field/:sku_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
 router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize/:prod_line_ids', (req, res) => FilterHandler.getSkusByFilter(req, res));
 router.get('/users_filter/:sort_field/:user_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getUsersByFilter(req, res));
 
 
+// CSV Parser database APIs
 router.post('/parseSkus', upload.single('file'), (req, res) => CSV_parser.parseSKUCSV(req, res));
 router.post('/parseProdLines', upload.single('file'), (req, res) => CSV_parser.parseProdLineCSV(req,res));
 router.post('/parseIngredients', upload.single('file'), (req,res) => CSV_parser.parseIngredientsCSV(req, res));
@@ -153,8 +157,6 @@ router.get('/users', (req, res) => UserHandler.getAllUsers(req, res));
 
 
 
-
-//pagination router api calls
 
 // Gives constant name to long directory home page.
 // const appPage = path.join(__dirname, '../client/build/index.html');

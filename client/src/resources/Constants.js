@@ -23,6 +23,7 @@ export const skus_page_name = 'skus';
 export const manugoals_page_name = 'manugoals';
 export const manu_line_page_name = 'manulines';
 export const prod_line_page_name = 'products';
+export const manu_activity_page_name = 'manuactivities';
 
 export const options = 'Options'
 export const keyword_label = "Keyword"

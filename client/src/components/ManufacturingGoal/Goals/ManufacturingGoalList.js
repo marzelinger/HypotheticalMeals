@@ -12,6 +12,7 @@ const ManufacturingGoalList = (props) => {
       id={goal._id}
       name={goal.name}
       activities={goal.activities}
+      goal = {goal}
       handleUpdateGoal={props.handleUpdateGoal}
       handleDeleteGoal={props.handleDeleteGoal}
     >

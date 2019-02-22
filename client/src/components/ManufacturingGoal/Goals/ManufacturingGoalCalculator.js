@@ -87,7 +87,7 @@ export default class ManufacturingGoalCalculator extends React.Component{
   }
 }
 
-ManufacturingGoalCalculator.PropTypes = {
+ManufacturingGoalCalculator.propTypes = {
     skus: PropTypes.array,
     name: PropTypes.string,
     quantities: PropTypes.array

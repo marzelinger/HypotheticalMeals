@@ -7,6 +7,27 @@ import printFuncFront from '../printFuncFront';
 
 export default class SubmitRequest{
 
+  static submitEnableUpdate(activities, enable) {
+    console.log("submit enabled");
+    var ids = activities.map((activity => activity._id));
+    console.log(ids);
+    var body = {ids, enable};
+    try {
+      return fetch('/api/manuactivities_enable', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      }).then(res => res.json()).then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { success: res.success, data: res.data};
+      });
+    }
+    catch (err){
+      console.log('here');
+      return { success: false, error: err };
+    }
+  }
+
   static submitQueryString(query) {
     return fetch(query, { method: 'GET' })
           .then(data => data.json())
@@ -289,6 +310,23 @@ export default class SubmitRequest{
   static async submitGetManufacturingLineByID(id) {
     try {
       return fetch('/api/manulines/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
+  static async submitGetManufacturingActivityByID(id) {
+    try {
+      return fetch('/api/manuactivities/' + id)
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error };
