@@ -13,9 +13,9 @@ export default class ManuSchedulePage extends Component {
         
         this.state = {
             user: '',
-            groups : [],
-            items: [],
             options: {},
+            lines: [],
+            activities: [],
             loaded: false
         }
         if(localStorage != null){
@@ -29,30 +29,49 @@ export default class ManuSchedulePage extends Component {
         let activities = await SubmitRequest.submitGetData(Constants.manu_activity_page_name);
         let goals = await SubmitRequest.submitGetManuGoalsData(this.state.user);
         let lines = await SubmitRequest.submitGetData(Constants.manu_line_page_name);
-        console.log(activities.data)
-        console.log(goals.data)
-        console.log(lines.data)
-        let groups = lines.data.map(line => {
-            return { id: line._id, content: line.name }
+        lines.data.map(line => {
+            groups.push({ id: line._id, content: line.name })
         })
-        let items = activities.data.map(act => {
-            let start = new Date(act.start)
-            let end = new Date(start.getTime() + (act.duration*60*60*1000));
-            return { 
-                start: start,
-                end: end, 
-                content: act.sku.name,
-                title: act.manu_line.name,
-                group: act.manu_line._id
-            }
+        activities.data.map(act => {
+            this.scheduleOrPalette(act);
         })
-        console.log(items)
-        console.log(groups)
         this.setState({
-            groups: groups,
-            items: items,
+            activities: activities.data,
+            lines: lines.data,
             loaded: true
         })
+    }
+
+    scheduleOrPalette(act) {
+        if (act.scheduled) {
+            let start = new Date(act.start);
+            let end = new Date(start.getTime() + (act.duration * 60 * 60 * 1000));
+            console.log(act);
+            items.push({
+                start: start,
+                end: end,
+                content: 'SKU: ' + act.sku.name,
+                title: 'SKU: ' + act.sku.name,
+                group: act.manu_line._id,
+                _id: act._id
+            });
+        }
+        else {
+
+        }
+    }
+
+    componentDidUpdate(prevState, prevProps) {
+        console.log('updated!')
+    }
+
+    clickHandler(e) {
+        console.log(items)
+    }
+
+    outHandler(e) {
+        console.log(e)
+        console.log('yo')
     }
 
     render() {
@@ -60,55 +79,19 @@ export default class ManuSchedulePage extends Component {
         <div>
             {this.state.loaded ? (<Timeline 
                 options={options}
-                items={this.state.items}
-                groups={this.state.groups}
+                items={items}
+                groups={groups}
+                clickHandler={this.clickHandler.bind(this)}
+                // changedHandler={this.clickHandler.bind(this)}
+                // itemoutHandler={this.outHandler.bind(this)}
             />) : null}
         </div>
         );
     }
 }
 
-const def_items = [
-    {
-        start: new Date(2019, 2, 19, 8, 30),
-        end: new Date(2019, 2, 19, 10, 45), 
-        content: 'Biology',
-        title: '202L',
-        group: 1
-    },
-    {
-        start: new Date(2019, 2, 19, 10, 30),
-        end: new Date(2019, 2, 19, 11, 45),  
-        content: 'Maths',
-        title: '216D',
-        group: 2
-    },
-    {
-        start: new Date(2019, 2, 19, 13, 30),
-        end: new Date(2019, 2, 19, 15, 45), 
-        content: 'EGR',
-        title: '201L',
-        group: 2
-    }
-]
-const def_groups = [
-    {
-        id: 1,
-        content: 'Group A',
-    },
-    {
-        id: 2,
-        content: 'Group B',
-    },
-    {
-        id: 3,
-        content: 'Group C',
-    },
-    {
-        id: 4,
-        content: 'Group D',
-    }
-]
+var items = [];
+var groups = [];
 
 const options = {
     width: '100%',
@@ -125,10 +108,35 @@ const options = {
         }
     },
     selectable: true,
-    editable: true,
-    groupEditable: true, 
-    onMove: function(item, callback) {
-          console.log(item.start)
+    editable: {
+        add: false,
+        remove: true,
+        updateGroup: true,
+        updateTime: true,
+    },
+    groupEditable: {
+        order: true
+    }, 
+    onMove: async function(item, callback) {
+        let act = await SubmitRequest.submitGetManufacturingActivityByID(item._id)
+        let end = new Date(item.end)
+        let start = new Date(item.start)
+        if ((end.getTime()-start.getTime())/(60*60*1000) !== act.data[0].duration) {
+            alert('You cannot change activity duration on the schedule directly!')
+            return callback(null)
         }
+        act.data[0].start = item.start;
+        act.data[0].manu_line = { _id: item.group };
+        let ok = await SubmitRequest.submitUpdateItem(Constants.manu_activity_page_name, act.data[0])
+        callback(item)
+    },
+    onRemove: async function(item, callback) {
+        let act = await SubmitRequest.submitGetManufacturingActivityByID(item._id)
+        act.data[0].start = null;
+        act.data[0].scheduled = false;
+        act.data[0].manu_line = null;
+        let ok = await SubmitRequest.submitUpdateItem(Constants.manu_activity_page_name, act.data[0])
+        callback(item)
+    }
 }
 

@@ -289,4 +289,21 @@ export default class SubmitRequest{
       return { success: false, error: err };
     }
   }
+
+  static async submitGetManufacturingActivityByID(id) {
+    try {
+      return fetch('/api/manuactivities/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
 }
