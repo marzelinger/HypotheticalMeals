@@ -81,7 +81,7 @@ render() {
     const { errors } = this.state;
 return (
       <div className="container">
-      <GeneralNavBar></GeneralNavBar>
+      {/* <GeneralNavBar></GeneralNavBar> */}
         <div className="row">
           <div className="col s8 offset-s2">
             <div className="col s12" style={{ paddingLeft: "11.250px" }}>
