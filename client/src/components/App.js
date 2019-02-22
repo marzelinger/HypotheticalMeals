@@ -2,6 +2,7 @@ import React from 'react'
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import SkusPage from "./ListPage/SkusPage";
+import FormulasPage from "./ListPage/FormulasPage";
 import Landing from "./layout/Landing";
 import Register from "./auth/Register";
 import AdminRegister from "./auth/AdminRegister";
@@ -44,8 +45,7 @@ class App extends React.Component{
     //localStorage.clear();
     //this.determineUserInit();
     this.state = {
-      navbar_items: [Constants.SkuTitle, Constants.IngTitle, Constants.ManuGoalTitle],
-      user: false
+      navbar_items: [Constants.SkuTitle, Constants.IngTitle, Constants.ManuGoalTitle, Constants.FormulaTitle],
     }
     this.determineUser();
   }
@@ -112,6 +112,7 @@ class App extends React.Component{
                 <PrivateRoute exact path="/prod_lines" component={ProductLinePage} />
                 <AdminPrivateRoute exact path="/import" component={ImportPage} />
                 <AdminPrivateRoute exact path="/users" component={UserPage}/>
+                <PrivateRoute exact path="/formulas" component={FormulasPage} />
               </Switch>
             </div>
           </Router>
