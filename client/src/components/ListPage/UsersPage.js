@@ -371,6 +371,7 @@ export default class UsersPage extends React.Component {
                         onRemoveFilter = {this.onRemoveFilter}
                         skus = {this.state.skus}
                         onTableOptionSelection = {this.onTableOptionSelection}
+                        page_name= {this.state.page_name}
                     />
                 </div>
                 <Modal isOpen={this.state.modal} toggle={this.toggleModal} id="popup" className='item-details'>
