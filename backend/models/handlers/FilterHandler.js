@@ -3,7 +3,7 @@
 
 import Ingredient from '../databases/ingredient';
 import SKU from '../databases/sku';
-import Formula from '../databases/formulas';
+import Formula from '../databases/formula';
 
 class FilterHandler{
 

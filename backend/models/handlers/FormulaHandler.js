@@ -1,7 +1,7 @@
 // /models/handlers/FormulaHandler.js
 // Riley
 
-import Formula from '../databases/formulas';
+import Formula from '../databases/formula';
 
 class FormulaHandler{
 

@@ -70,7 +70,7 @@ export default class ManufacturingGoal extends React.Component{
         </div>
           <div className="singleGoalButtons">
             <img className = "hoverable" id ="deleteButton" onClick={() => {this.props.handleDeleteGoal(this.props.id); }} src= {deleteButton}></img>
-            <ManufacturingGoalCalculator name = {this.props.name} skus = {this.props.activities.map(activity => activity.sku)} quantities = {this.props.activities.map(activity => activity.quantity)}></ManufacturingGoalCalculator>
+            <ManufacturingGoalCalculator name = {this.props.name} activities = {this.props.activities} ></ManufacturingGoalCalculator>
           </div>
       </div>
     )
