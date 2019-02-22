@@ -8,7 +8,7 @@ class FormulaHandler{
     // Creates an ingredient in the Database
     // If the Ingredient exists, return error if it exists
     static async createFormula(req, res){
-        try {
+      //  try {
             var formula = new Formula();
             var new_formula_name = req.body.name;
             var new_formula_num = req.body.num;
@@ -26,18 +26,18 @@ class FormulaHandler{
                 return res.json({ success: false, error: 'CONFLICT'});
             }
             
-            formula.name = new_ingredient_name;
-            formula.num = new_ingredient_num;
+            formula.name = new_formula_name;
+            formula.num = new_formula_num;
             formula.ingredients = new_formula_ingredients;
             formula.ingredient_quantities = new_ingredient_quantities;
             formula.comment = new_comment;
 
             let new_formula = await formula.save();
             return res.json({ success: true, data: new_formula});
-        }
-        catch (err) {
-            return res.json({ success: false, error: err});
-        }
+   //     }
+    //    catch (err) {
+   //         return res.json({ success: false, error: err});
+     //   }
     }
 
     static async updateFormulaByID(req, res){

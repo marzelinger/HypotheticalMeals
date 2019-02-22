@@ -90,7 +90,7 @@ export class ImportReport extends React.Component{
                                     <td
                                         key={prop}
                                     >
-                                        {prop === 'prod_line' ? item[prop] : item[prop]}
+                                        {prop === 'prod_line' ? item["prod_line_to_show"] : item[prop]}
                                     </td>
                                 )}
                                 </tr>
@@ -118,7 +118,7 @@ export class ImportReport extends React.Component{
                                     <td
                                         key={prop}
                                     >
-                                         {prop === "prod_line" ? item[prop] : item[prop]}
+                                         {prop === "prod_line" ? item["prod_line_to_show"] : item[prop]}
                                     </td>
                                 )}
                                 </tr>
@@ -146,7 +146,7 @@ export class ImportReport extends React.Component{
                                     <td
                                         key={prop}
                                     >
-                                         {prop === "prod_line" ? item[prop] : item[prop]}
+                                         {prop === "prod_line" ? item["prod_line_to_show"] : item[prop]}
                                     </td>
                                 )}
                                 </tr>

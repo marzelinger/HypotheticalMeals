@@ -13,15 +13,18 @@ export const manu_line_title="Manufacturing Lines"
 export const IngTitle = "INGREDIENTS"
 export const SkuTitle = "SKUs"
 export const ManuGoalTitle = "MANUFACTURING GOALS"
+export const FormulaTitle = "FORMULAS"
 
 export const ingredients_page_name = 'ingredients';
 export const ing_filter_path = 'ingredients_filter';
 export const sku_filter_path = 'skus_filter';
+export const formula_filter_path = 'formulas_filter';
 export const skus_page_name = 'skus';
 export const manugoals_page_name = 'manugoals';
 export const manu_line_page_name = 'manulines';
 export const prod_line_page_name = 'products';
 export const manu_activity_page_name = 'manuactivities';
+export const formulas_page_name = 'formulas';
 
 export const options = 'Options'
 export const keyword_label = "Keyword"
