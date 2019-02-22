@@ -14,6 +14,7 @@ import ItemStore from '../../../helpers/ItemStore';
 import addButton from '../../../resources/add.png';
 import ItemSearchModifyListQuantity from '../../ListPage/ItemSearchModifyListQuantity';
 import SimpleGoalTable from '../SimpleGoalTable';
+import DatePicker from 'material-ui/DatePicker';
 
 
 export default class ManufacturingGoalDetails extends React.Component {
@@ -58,6 +59,7 @@ export default class ManufacturingGoalDetails extends React.Component {
     }
 
     onPropChange = (value, item, prop) => {
+        console.log(value)
         item[prop] = value
         this.setState({ item: item });
     };
@@ -146,7 +148,7 @@ export default class ManufacturingGoalDetails extends React.Component {
 
     injectProperties = () => {
         if (this.state.item!=undefined){
-            return (this.state.item_properties.map(prop => 
+            var inputs =  (this.state.item_properties.map(prop => 
                 <FormGroup key={prop}>
                     <Label>{this.getPropertyLabel(prop)}</Label>
                     <Input 
@@ -156,8 +158,17 @@ export default class ManufacturingGoalDetails extends React.Component {
                         onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
                     />
                 </FormGroup>));
+            return (
+                <div>
+                    {inputs}
+                    <FormGroup>
+                        <Label>Deadline</Label>
+                        <DatePicker value={ this.state.item['deadline']} onChange={ (e, date) => this.onPropChange(date, this.state.item, 'deadline')} hintText="Select deadline" />
+                    </FormGroup>
+                </div>
+                )
         }
-        return;
+
     }
 
     toggle = async () => {

@@ -13,7 +13,7 @@ class Manu_ActivityHandler{
             var new_scheduled = req.body.scheduled || false
             var new_start = req.body.start
             var new_end = req.body.end
-            var new_duration = req.body.duration
+            var new_duration = new_sku.manu_rate * new_quantity;
             var new_error = req.body.error;
             var new_manu_line = req.body.manu_line;
             console.log(req.body);
@@ -38,6 +38,30 @@ class Manu_ActivityHandler{
         }
     }
 
+    static async updateManufacturingActivitiesEnable(req, res) {
+        try {
+            var target_ids = req.body.ids;
+            if(!target_ids){
+                return res.json({ success: false, error: 'No manufacturing actvity named provided'});
+            }
+            var new_enable = !req.body.enable;
+            let updated_manu_activity = await Manu_Activity.updateMany({_id: { $in: target_ids }}, {$set: {orphaned: new_enable}})
+            if(!updated_manu_activity){
+                return res.json({
+                    success: true, error: 'This document does not exist'
+                });
+            }
+            return res.json({
+                success: true, data: updated_manu_activity
+            })
+        }
+        catch (err) {
+            console.log(err);
+            return res.json({ success: false, error: err});
+        }
+
+    }
+
     static async updateManufacturingActivityByID(req, res){
         try {
             var target_id = req.params.manu_activity_id;
@@ -49,7 +73,7 @@ class Manu_ActivityHandler{
             var new_scheduled = req.body.scheduled || false
             var new_start = req.body.start
             var new_end = req.body.end
-            var new_duration = req.body.duration
+            var new_duration = new_sku * new_quantity;
             var new_error = req.body.error;
             var new_manu_line = req.body.manu_line;
             let updated_manu_activity = await Manu_Activity.findOneAndUpdate({_id : target_id},
@@ -114,4 +138,4 @@ class Manu_ActivityHandler{
 
 }
 
-export default Manu_ActivityHandler;
+export default Manu_ActivityHandler; 
