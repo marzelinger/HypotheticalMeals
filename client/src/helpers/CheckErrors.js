@@ -1,11 +1,14 @@
-import SubmitReques from './SubmitRequest'
+import SubmitRequest from './SubmitRequest'
 
 export default class CheckErrors{
     static async updateActivityErrors(activity){
-        var { data } = await SubmitRequest.submitQueryString(`/api/manugoals_activities/${activity._id}`);
-        var orphaned = checkOrphaned(data, activity)
-        var unscheduled_enabled = checkUnscheduledEnabled(goal,activity);
-        var over_deadline = checkOverDeadline(goal, activity);
+        console.log("checking activity errors")
+        console.log(activity);
+        var { data } = await SubmitRequest.submitQueryString(`/api/manugoals_activity/${activity._id}`);
+        console.log(data);
+        var orphaned = CheckErrors.checkOrphaned(data, activity)
+        var unscheduled_enabled = CheckErrors.checkUnscheduledEnabled(data,activity);
+        var over_deadline = CheckErrors.checkOverDeadline(data, activity);
         var new_activity = {
             ...activity, 
             orphaned, 
@@ -14,7 +17,6 @@ export default class CheckErrors{
         }
         console.log(new_activity);
         await SubmitRequest.submitUpdateItem('manuactivities', new_activity);
-        return []
     }
 
     static checkOrphaned(goal, activity){
@@ -27,7 +29,12 @@ export default class CheckErrors{
 
     static checkOverDeadline(goal, activity){
         var {start, duration} = activity;
-        var end = start.setHours(start.getHours() + duration);
+        var start_date = new Date(start);
+        var end = start_date.setHours(start_date.getHours() + duration);
         return (end > goal.deadline);
+    }
+
+    static getErrorMessages(activity){
+
     }
 }
