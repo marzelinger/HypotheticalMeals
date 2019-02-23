@@ -119,7 +119,7 @@ export default class SKUDetails extends React.Component {
             await this.setState({
                 item: newItem,
                 formula_line_item: formula,
-                formula_item: new_formula_item.data,
+                formula_item: new_formula_item.data[0],
                 existingFormulaSelected: true
             })
             console.log("the formula is existingFormula.: "+this.state.existingFormulaSelected);
