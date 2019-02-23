@@ -96,6 +96,13 @@ export default class ManuSchedulePage extends Component {
         alert('Double click to place on the schedule!')
     }
 
+    getContainerStyle() {
+        if (this.state.activity_to_schedule){
+            return { "cursor" : "copy" }
+        }
+        return {}
+    }
+
     async onMove(item, callback) {
         let act = await SubmitRequest.submitGetManufacturingActivityByID(item._id)
         let end = new Date(item.end)
@@ -119,12 +126,17 @@ export default class ManuSchedulePage extends Component {
                 start: item.start,
                 manu_line: { _id: item.group }
             })
-            let ok = await SubmitRequest.submitUpdateItem(Constants.manu_activity_page_name, activity)
-            console.log(ok)
-
             let start = new Date(activity.start)
             let end = new Date()
             end.setTime(start.getTime() + activity.duration*60*60*1000)
+            if (start.getHours() < 8 || (end.getHours() === 18 && end.getMinutes() > 0) || (end.getHours() > 18)) {
+                alert("Activities can't be scheduled outside working hours!")
+                callback(null)
+                return;
+            }
+            let ok = await SubmitRequest.submitUpdateItem(Constants.manu_activity_page_name, activity)
+            console.log(ok)
+
             item = {
                 end: end.toString(),
                 content: 'SKU: ' + activity.sku.name,
@@ -166,6 +178,11 @@ export default class ManuSchedulePage extends Component {
                 hour: 'ha'
             }
         },
+        hiddenDates: {
+            start: '2018-02-01 18:00:00', 
+            end: '2018-02-02 08:00:00', 
+            repeat:'daily'
+        },
         selectable: true,
         editable: {
             add: true,
@@ -184,7 +201,7 @@ export default class ManuSchedulePage extends Component {
     render() {
         return (
         <div>
-            <div className={'scheduler-container'}>
+            <div className={'scheduler-container'} style={this.getContainerStyle()}>
                 {this.state.loaded ? console.log('loaded') : console.log('not loaded')}
                 {this.state.loaded ? (<Timeline 
                     options={this.getOptions()}
