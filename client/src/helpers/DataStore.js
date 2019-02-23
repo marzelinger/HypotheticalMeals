@@ -40,7 +40,7 @@ export default class DataStore{
         item_properties: ['name', 'short_name', 'comment'],
         item_property_labels: ['Name', 'Short Name', 'Comment'],
         item_property_patterns: ['.+', '.+', '.*'],
-        item_property_field_type: ['text', 'text', 'textara']  
+        item_property_field_type: ['text', 'text', 'textarea']  
       };
     }
 
@@ -81,5 +81,12 @@ export default class DataStore{
       results.table_columns = ['Ingredient Name', 'Ingr#'];
       results.table_properties = ['name', 'num'];
       return results;
+    }
+
+    static getActivityData() {
+      return {
+        item_properties: ['sku', 'duration', 'add_to_schedule'],
+        item_property_labels: ['Unscheduled Activity', 'Duration', 'Add to Schedule']
+      };
     }
   }
