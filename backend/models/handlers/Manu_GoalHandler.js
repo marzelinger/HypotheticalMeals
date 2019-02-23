@@ -87,6 +87,17 @@ class Manu_GoalHandler{
         }
     }
 
+    static async getManufacturingGoalByActivity(req, res){
+        try{
+            var activity_id = req.params.activity_id;
+            let to_return = await Manu_Goal.find({ activities: activity_id});
+            if(to_return.length == 0) return res.json({success: false, error: '404'}).populate('activities').populate({path: 'activities', populate: { path: 'sku' }});
+            return res.json({ success: true, data: to_return});
+        } catch (err){
+            return res.json({ success: false, error: err});
+        }
+    }
+
     static async getManufacturingGoalByFilter(req, res){
         try {
             var name_substr = req.params.name_substr;
@@ -121,6 +132,8 @@ class Manu_GoalHandler{
             return res.json({ success: false, error: err});
         }
     }
+
+
 
     static async getManufacturingGoalByID(req, res){
         try {
