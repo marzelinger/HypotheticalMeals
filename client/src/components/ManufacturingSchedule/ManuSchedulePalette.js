@@ -47,7 +47,6 @@ export default class ManuSchedulePalette extends Component {
     }
     
     injectActivityData(act) {
-        console.log(act)
         return (
             <tr>
                 {this.state.item_properties.map(prop => {

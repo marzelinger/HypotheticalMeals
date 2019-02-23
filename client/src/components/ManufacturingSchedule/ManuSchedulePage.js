@@ -56,12 +56,13 @@ export default class ManuSchedulePage extends Component {
         lines.data.map(line => {
             groups.push({ id: line._id, content: line.name });
         });
-        this.setState({
+        await this.setState({
             activities: activities.data,
             lines: lines.data,
             unscheduled_goals: unscheduled_goals,
             loaded: true
         });
+        console.log(items)
     }
 
     scheduleOrPalette(act, goals) {
@@ -79,7 +80,7 @@ export default class ManuSchedulePage extends Component {
                 if (act.orphaned) cName = 'orphaned';
                 else {
                     if (act.over_deadline) cName += 'over_deadline';
-                    if (act.overridden) cName += 'overridden';
+                    if (act.overwritten) cName += ' ' + 'overwritten';
                 }
                 items.push({
                     start: start,
@@ -237,7 +238,12 @@ export default class ManuSchedulePage extends Component {
                 <div className='timeline-container'>
                     {this.state.loaded ? (<Timeline 
                         options={this.getOptions()}
-                        items={items}
+                        items={items.length ? items : [
+                            {
+                                start: new Date(),
+                                group: groups[0]._id,
+                            }
+                        ]}
                         groups={groups}
                         clickHandler={this.clickHandler.bind(this)}
                     />) : null}
