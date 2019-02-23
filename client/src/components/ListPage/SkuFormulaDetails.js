@@ -49,17 +49,13 @@ export default class SkuFormulaDetails extends React.Component {
             assisted_search_results: [],
             newFormula: false,
             existingFormula: false,
-            // sku: {this.props.sku}
+            changeFormula: false,
             item: Object.assign({}, this.props.item),
-            // formula_item: Object.assign({}, props.formula_item),
             formula_item_properties,
             formula_item_property_labels,
             formula_item_property_patterns,
             formula_item_property_field_type,
-            invalid_inputs: [],
-            // assisted_search_results: [],
-            // prod_line_item: {},
-            // to_undo: {}
+            invalid_inputs: []
         };
     }
 
@@ -77,9 +73,6 @@ export default class SkuFormulaDetails extends React.Component {
         if (this.props.item_type === Constants.modify_manu_lines_label && this.state.substr.length > 0) {
             var res = await SubmitRequest.submitGetManufacturingLinesByNameSubstring(this.state.substr);
         }
-        // if (this.props.item_type === Constants.details_modify_formula && this.state.substr.length > 0) {
-        //     var res = await SubmitRequest.submitGetIngrByNameSubstring(this.state.substr);
-        // }
 
         else {
             var res = {};
@@ -149,21 +142,28 @@ export default class SkuFormulaDetails extends React.Component {
         }
     }
 
-    handleNewFormula = (value) => {
+    handleNewFormula = () => {
         this.setState({
-            newFormula: true
+            newFormula: true,
+            existingFormula: false,
+            changeFormula: false
         });
-
-        //want to show the formula details module.
-
-
     }
 
     handleExistingFormula = () => {
         this.setState({
-            existingFormula: true
+            existingFormula: true,
+            newFormula: false,
+            changeFormula: false,
         });
+    }
 
+    handleChangeToExistingFormula = () => {
+        this.setState({
+            changeFormula: true,
+            newFormula: false,
+            existingFormula: false
+        })
     }
 
     switchFormulaInitial = () =>{
@@ -191,24 +191,119 @@ export default class SkuFormulaDetails extends React.Component {
 
     }
 
+    formulaButtonsCreate = () => {
+        return (
+            <div>
+                <Button color="primary" onClick = {() => this.handleNewFormula()} >Create New Formula</Button>{' '}
+                <Button color="secondary" onClick = {() => this.handleExistingFormula()} >Add Existing Formula</Button>{' '}
+            </div>
+        );
+    }
+
+    formulaButtonsEdit = () => {
+        return (
+            <div>
+                <Button color="secondary" onClick = {() => this.handleChangeToExistingFormula()}>Change To Different Formula</Button>{' '}
+            </div>
+        );
+    }
 
     switchFormulaViewMaster = () =>{
 
         switch(this.props.detail_view_action){
             case Constants.details_edit:
-
-            //want to show the regular stuff here.
-            //want to either edit existing, switch to a new one, or choose a different one.
-            //
             return (
-                <div/>
+                <div>
+                    {this.formulaButtonsEdit()}
+                    {this.switchFormulaEditDisplay()}
+                </div>
             );
             case Constants.details_create:
             //want to show the initial create buttons and then either the drop down for existing
             //and then the other stuff below.
+            return (
+                <div>
+                    {this.formulaButtonsCreate()}
+                    {this.switchFormulaCreateDisplay()}
+                </div>
+            );
+            case Constants.details_view:
+            //no buttons just see the current formula.
+            return (
+                <div>
+                    {this.formulaPropItemIng()}
+                </div>
+            );
         }
 
     }
+
+
+
+    switchFormulaCreateDisplay = () => {
+            switch(this.state.newFormula){
+                //creating a newFormula
+            case true:
+                return (
+                <div>
+                    {this.formulaPropItemIng()}
+                </div>
+                );
+        }
+        switch(this.state.existingFormula){
+            //using existing Formula
+        case true:
+            return (
+            <div>
+                <ItemSearchInput
+                    curr_item={this.props.formula_item}
+                    item_type={Constants.formula_label}
+                    invalid_inputs={this.state.invalid_inputs}
+                    handleSelectItem={this.props.handleSelectFormulaItem}
+                    disabled = {currentUserIsAdmin().isValid ? false : true}
+                />
+                {this.props.existingFormulaSelected
+                ?
+                <div>{this.formulaPropItemIng()}</div>
+                :
+                <div>no existingformulaselected</div>
+                }
+            </div>
+            );
+        }
+    };
+
+    switchFormulaEditDisplay = () => {
+        switch(this.state.changeFormula){
+            //creating a newFormula
+        case false:
+        return (
+            <div>
+                {this.formulaPropItemIng()}
+            </div>
+            );
+
+        case true:
+        return (
+        <div>
+            <ItemSearchInput
+                curr_item={this.props.formula_item}
+                item_type={Constants.formula_label}
+                invalid_inputs={this.state.invalid_inputs}
+                handleSelectItem={this.props.handleSelectFormulaItem}
+                disabled = {currentUserIsAdmin().isValid ? false : true}
+            />
+            {this.props.existingFormulaSelected
+            ?
+            <div>{this.formulaPropItemIng()}</div>
+            :
+            <div>no existingformulaselected</div>
+            }
+        </div>
+        );
+    }
+};
+
 
     formulaPropItemIng = () => {
         return  (
@@ -232,116 +327,8 @@ export default class SkuFormulaDetails extends React.Component {
           );
     }
 
-    switchFormulaCreateDisplay = () => {
-        console.log("this is the param:");
-        //either want to show the existing formula situation
-        //or we want to show the buttons for the choosing between new and old.
-            switch(this.state.newFormula){
-                //creating a newFormula
-            case true:
-                return (
-                <div>
-                    {this.formulaPropItemIng()}
-                </div>
-                );
-            // case false:
-            //     return  (
-            //     <div> 
-            //         {/* {this.formulaSelectButtons()} */}
-            //     </div>
-            //     );
-        }
-        switch(this.state.existingFormula){
-            //using existing Formula
-        case true:
-            return (
-            <div>
-                <ItemSearchInput
-                    curr_item={this.props.formula_item}
-                    item_type={Constants.formula_label}
-                    invalid_inputs={this.state.invalid_inputs}
-                    handleSelectItem={this.props.handleSelectFormulaItem}
-                    disabled = {currentUserIsAdmin().isValid ? false : true}
-                />
-                {this.props.existingFormulaSelected}
-                        {this.props.existingFormulaSelected?
-            <div>
-            {this.formulaPropItemIng()}
-            </div>
-            :
-            <div>no existingformulaselected</div>
-        }
-            </div>
-            );
-        // case false:
-        //     return  (
-        //     <div> 
-        //     </div>
-        //     );
-    }
-        
-      };
-
-
-
-
-    formulaSelectNewButtons = () => {
-        return (
-            <div>
-                        <Button color="primary" onClick = {(e) => this.handleNewFormula(e.target.value)} disabled = {this.state.existingFormula}>Create New Formula</Button>{' '}
-                        <Button color="secondary" onClick = {() => this.handleExistingFormula()} disabled = {this.state.newFormula}>Add Existing Formula</Button>{' '}
-            </div>
-        );
-    }
-
-
-    removeIngredient(item, value, qty) {
-        
-        let ind = -1;
-        qty = parseInt(qty);
-        item.ingredients.map((ing, index) => {
-            if (ing._id === value._id)
-                ind = index;
-        });
-        if (ind > -1) {
-            let curr_qty = item.ingredient_quantities[ind];
-            curr_qty = curr_qty - qty;
-            if (curr_qty > 0) item.ingredient_quantities[ind] = curr_qty;
-            else {
-                item.ingredients.splice(ind,1);
-                item.ingredient_quantities.splice(ind,1);
-            }
-        }
-        this.setState({ item: item })
-    }
-
-    addIngredient(item, value, qty) {
-        let ind = -1;
-        qty = parseInt(qty);
-        printFuncFront("this is the current item trying to add to: "+JSON.stringify(item));
-        item.ingredients.map((ing, index) => {
-            if (ing._id === value._id)
-                ind = index;
-        });
-        console.log()
-        if (ind > -1){
-            let curr_qty = item.ingredient_quantities[ind];
-            curr_qty = curr_qty + qty;
-            item.ingredient_quantities[ind] = curr_qty;
-        }
-        else {
-            item.ingredients.push(value);
-            item.ingredient_quantities.push(qty);
-        }
-        this.setState({ item: item })
-    }
-
    injectFormulaProperties = () => {
     if (this.props.formula_item){
-        //printFuncFront('this is the item in the injecting formulaprops: '+JSON.stringify(this.state.formula_item));
-        //let formula = await SubmitRequest.submitGetFormulaByID(this.state.item.formula);
-        //printFuncFront('this is the formula: '+JSON.stringify(formula));
-        // console.log()
         return (this.state.formula_item_properties.map(prop => 
             <FormGroup key={prop}>
                 <Label>{this.getFormulaPropertyLabel(prop)}</Label>
@@ -361,15 +348,17 @@ export default class SkuFormulaDetails extends React.Component {
         return (
         <div className='item-properties'>
         <div>Formula</div>
-        {this.switchFormulaInitial()}
-        {this.props.detail_view_action===Constants.details_create ?
-            <div>
-            {this.formulaSelectNewButtons()}
-            {this.switchFormulaCreateDisplay()}
-            </div>
-            :
-            <div/>
-        }
+        {/* {this.switchFormulaInitial()} */}
+        {/* {this.props.detail_view_action===Constants.details_create ? */}
+            {/* <div> */}
+            {/* {this.formulaSelectNewButtons()} */}
+            {/* {this.switchFormulaCreateDisplay()} */}
+            {/* </div> */}
+            {/* : */}
+            {/* <div/> */}
+        {/* } */}
+        <div>ACTUAL STUFF BELOW</div>
+        {this.switchFormulaViewMaster()}
         </div>
         );
     }
@@ -382,12 +371,5 @@ SkuFormulaDetails.propTypes = {
     handleModifyList: PropTypes.func,
     detail_view_action: PropTypes.string,
     handleSelectFormulaItem: PropTypes.func,
-    // formula_line_item: PropTypes.object,
     existingFormulaSelected: PropTypes.bool
-    //handleNewFormula: PropTypes.func,
-    //handleExistingFormula: PropTypes.func
-    //options: PropTypes.arrayOf(PropTypes.string),
-    //handleModifyList: PropTypes.func,
-    //qty_disable: PropTypes.bool,
-    //disabled: PropTypes.bool
   };

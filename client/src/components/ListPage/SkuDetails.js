@@ -42,7 +42,6 @@ export default class SKUDetails extends React.Component {
             invalid_inputs: [],
             assisted_search_results: [],
             prod_line_item: {},
-            // formula_line_item: {},
             to_undo: {},
             newFormula: false,
             existingFormula: false,
@@ -81,7 +80,6 @@ export default class SKUDetails extends React.Component {
         }
         this.setState({ formula_item: res.data[0] });
         console.log("this is the current state item: "+JSON.stringify(this.state.item));
-        // console.log("This is the fill formula line: "+JSON.stringify(this.state.formula_line_item));
     }
 
     getPropertyLabel = (prop) => {
@@ -120,12 +118,10 @@ export default class SKUDetails extends React.Component {
             newItem['formula'] = formula._id;
             await this.setState({
                 item: newItem,
-                //formula_line_item: formula,
                 formula_item: new_formula_item.data[0],
                 existingFormulaSelected: true
             })
             console.log("the formula is existingFormula.: "+this.state.existingFormulaSelected);
-            //console.log("the formulaafter the state: "+ JSON.stringify(this.state.formula_line));
             console.log("the state of item the state: "+ JSON.stringify(this.state.item));
 
 
@@ -312,7 +308,6 @@ export default class SKUDetails extends React.Component {
                     handleModifyList={this.onModifyList}
                     detail_view_action = {this.props.detail_view_action}
                     handleSelectFormulaItem = {this.onSelectFormula}
-                    // formula_line_item= {this.state.formula_line_item}
                     existingFormulaSelected = {this.state.existingFormulaSelected}
                     invalid_inputs={this.state.invalid_inputs}
                 />
