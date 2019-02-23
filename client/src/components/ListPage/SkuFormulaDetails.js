@@ -49,10 +49,9 @@ export default class SkuFormulaDetails extends React.Component {
             assisted_search_results: [],
             newFormula: false,
             existingFormula: false,
-            formula_item: null,
             // sku: {this.props.sku}
             item: Object.assign({}, this.props.item),
-            formula_item: Object.assign({}, props.formula_item),
+            // formula_item: Object.assign({}, props.formula_item),
             formula_item_properties,
             formula_item_property_labels,
             formula_item_property_patterns,
@@ -202,7 +201,7 @@ export default class SkuFormulaDetails extends React.Component {
                   disabled = {currentUserIsAdmin().isValid ? false : true}
               />
               <IngredientsViewSimple 
-                  formula={this.state.formula_item} 
+                  formula={this.props.formula_item} 
                   handlePropChange={this.props.handleFormulaPropChange}
                   //handleFormulaPropChange={this.props.handleFormulaPropChange}
                   disabled={currentUserIsAdmin().isValid ? false : true}
@@ -243,7 +242,14 @@ export default class SkuFormulaDetails extends React.Component {
                     handleSelectItem={this.props.handleSelectFormulaItem}
                     disabled = {currentUserIsAdmin().isValid ? false : true}
                 />
-                {this.formulaPropItemIng()}
+                {this.props.existingFormulaSelected}
+                        {this.props.existingFormulaSelected?
+            <div>
+            {this.formulaPropItemIng()}
+            </div>
+            :
+            <div>no existingformulaselected</div>
+        }
             </div>
             );
         // case false:
@@ -269,13 +275,13 @@ export default class SkuFormulaDetails extends React.Component {
 
 
 
-    onPropChange = (value, formula_item, prop) => {
-        formula_item[prop] = value
-        this.setState({ formula_item: formula_item });
-        //need to have a handle of the formula_item prop change.
-        console.log("this is the prop change in skuformulaDetails");
-        console.log("item: "+JSON.stringify(formula_item))
-    };
+    // onPropChange = (value, formula_item, prop) => {
+    //     formula_item[prop] = value
+    //     this.setState({ formula_item: formula_item });
+    //     //need to have a handle of the formula_item prop change.
+    //     console.log("this is the prop change in skuformulaDetails");
+    //     console.log("item: "+JSON.stringify(formula_item))
+    // };
 
 
     removeIngredient(item, value, qty) {
@@ -320,7 +326,7 @@ export default class SkuFormulaDetails extends React.Component {
     }
 
    injectFormulaProperties = () => {
-    if (this.state.formula_item){
+    if (this.props.formula_item){
         //printFuncFront('this is the item in the injecting formulaprops: '+JSON.stringify(this.state.formula_item));
         //let formula = await SubmitRequest.submitGetFormulaByID(this.state.item.formula);
         //printFuncFront('this is the formula: '+JSON.stringify(formula));
@@ -330,7 +336,7 @@ export default class SkuFormulaDetails extends React.Component {
                 <Label>{this.getFormulaPropertyLabel(prop)}</Label>
                 <Input 
                     type={this.getFormulaPropertyFieldType(prop)}
-                    value={ this.state.formula_item[prop] }
+                    value={ this.props.formula_item[prop] }
                     invalid={ this.state.invalid_inputs.includes(prop) }
                     onChange={ (e) => this.props.handleFormulaPropChange(e.target.value, this.state.formula_item, prop)}
                     disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
@@ -380,7 +386,8 @@ SkuFormulaDetails.propTypes = {
     handleModifyList: PropTypes.func,
     detail_view_action: PropTypes.string,
     handleSelectFormulaItem: PropTypes.func,
-    formula_line_item: PropTypes.object
+    formula_line_item: PropTypes.object,
+    existingFormulaSelected: PropTypes.bool
     //handleNewFormula: PropTypes.func,
     //handleExistingFormula: PropTypes.func
     //options: PropTypes.arrayOf(PropTypes.string),

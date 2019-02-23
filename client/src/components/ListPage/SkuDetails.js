@@ -46,6 +46,7 @@ export default class SKUDetails extends React.Component {
             to_undo: {},
             newFormula: false,
             existingFormula: false,
+            existingFormulaSelected: false
         }
     }
 
@@ -105,14 +106,26 @@ export default class SKUDetails extends React.Component {
         }
     }
 
-    onSelectFormula = (formula) => {
+    onSelectFormula = async (formula) => {
+        console.log("the formula is selected.");
+        console.log("the formula: "+ JSON.stringify(formula));
+        var new_formula_item = await SubmitRequest.submitGetFormulaByID(formula._id);
+
+        console.log("the formula from the call: "+ JSON.stringify(new_formula_item));
+        if(new_formula_item.success){
         if(currentUserIsAdmin().isValid){
             var newItem = Object.assign({}, this.state.item);
             newItem['formula'] = formula._id;
-            this.setState({
+            await this.setState({
                 item: newItem,
-                formula_line_item: formula
+                formula_line_item: formula,
+                formula_item: new_formula_item.data,
+                existingFormulaSelected: true
             })
+            console.log("the formula is existingFormula.: "+this.state.existingFormulaSelected);
+            console.log("the formulaafter the state: "+ JSON.stringify(this.state.formula_line));
+
+        }
         }
     }
 
@@ -131,16 +144,6 @@ export default class SKUDetails extends React.Component {
         this.setState({ item: item });
     };
 
-    // onNewFormula = (value, formula_item) => {
-        
-    //     this.setState({ newFormula: value });
-    //     console.log("the newFormulaSituation is: "+this.state.newFormula);
-    // };
-
-    // onExistingFormula = () => {
-    //     //this.setState({ existingFormula: true });
-
-    // };
 
     onFormulaPropChange = (value, formula_item, prop) => {
         console.log("PROPS BEING CHANGED IN FORMULA SKUDETAILS");
@@ -150,7 +153,7 @@ export default class SKUDetails extends React.Component {
         var curItem = this.state.item;
         curItem['formula']=formula_item;
         this.setState({ item: curItem });
-
+        //TODO CHECK THAT HERE WE DON'T NEED TO BE SENDING THE FORMULA ITEM UP
         console.log("this is the new formula"+ JSON.stringify(formula_item));
         console.log("this is the new formula state."+ JSON.stringify(this.state.formula_item));
 
@@ -174,10 +177,12 @@ export default class SKUDetails extends React.Component {
                     this.removeIngredient(formula_item, value, qty);
                     break;
             }
-            console.log("this is the current formula after"+ JSON.stringify(formula_item));
+            console.log("this is the current formula after"+ JSON.stringify(this.state.formula_item));
             this.setState({ 
                 formula_item: formula_item
             })
+            console.log("this is formula in onmodifylist after"+ JSON.stringify(this.state.formula_item));
+
         }
     }
 
@@ -301,7 +306,8 @@ export default class SKUDetails extends React.Component {
                     // handleExistingFormula= {this.onExistingFormula}
                     detail_view_action = {this.props.detail_view_action}
                     handleSelectFormulaItem = {this.onSelectFormula}
-                    formula_line_item= {this.formula_line_item}
+                    formula_line_item= {this.state.formula_line_item}
+                    existingFormulaSelected = {this.state.existingFormulaSelected}
                     //api_route={Constants.formulas_page_name}
                     //item_type={Constants.details_modify_formula}
                     //options={[Constants.details_add, Constants.details_remove]}
