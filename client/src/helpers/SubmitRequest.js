@@ -205,6 +205,23 @@ export default class SubmitRequest{
     }
   }
 
+  static async submitGetFormulasByNameSubstring(substr) {
+    try {
+      return fetch('/api/formulas_name/' + substr)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return {
+          success: res.success,
+          data: res.data
+        }
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
   static async submitGetSkusByNameSubstring(substr) {
     try {
       return fetch('/api/skus_name/' + substr)

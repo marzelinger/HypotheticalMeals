@@ -47,6 +47,7 @@ export default class ListPage extends React.Component {
             detail_view_item: {},
             detail_view_formula_item: {},
             detail_view_options: [],
+            detail_view_action:'',
             data: [],
             exportData: [],
             sort_field: '_',
@@ -248,7 +249,8 @@ export default class ListPage extends React.Component {
             exportData: newExportData,
             detail_view_item: item,
             detail_view_formula_item: new_formula_item,
-            detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
+            detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel],
+            detail_view_action: Constants.details_create
         })
         this.toggle(Constants.details_modal);
         this.loadDataFromServer();
@@ -314,14 +316,17 @@ export default class ListPage extends React.Component {
             this.setState({ 
             detail_view_item: item,
             detail_view_formula_item: formula_item.data[0],
-            detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
-            });
+            detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel],
+            detail_view_action: Constants.details_edit
+        });
         }
         else{
             this.setState({ 
                 detail_view_item: item,
                 detail_view_formula_item: formula_item,
-                detail_view_options: [Constants.details_cancel]
+                detail_view_options: [Constants.details_cancel],
+                detail_view_action: Constants.details_view
+
                 });
         }
         this.toggle(Constants.details_modal);
@@ -373,7 +378,8 @@ export default class ListPage extends React.Component {
                 data: newData,
                 detail_view_item: null,
                 detail_view_formula_item: null,
-                detail_view_options: []
+                detail_view_options: [],
+                detail_view_action: ''
             });
             this.loadDataFromServer();
             this.toggle(Constants.details_modal);
@@ -435,6 +441,7 @@ export default class ListPage extends React.Component {
                             item={this.state.detail_view_item}
                             formula_item={this.state.detail_view_formula_item}
                             detail_view_options={this.state.detail_view_options}
+                            detail_view_action = {this.state.detail_view_action}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
                         />
                 </Modal>

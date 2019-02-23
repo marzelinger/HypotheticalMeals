@@ -34,6 +34,8 @@ export const sku_label = "SKU"
 export const ingredient_label = "Ingredient"
 export const user_label = "User"
 export const prod_line_label = 'Product Line'
+export const formula_label = 'Formula'
+
 export const undefined = 'Undefined'
 
 export const unselected_row_color = 'White'
@@ -46,6 +48,8 @@ export const details_delete = 'Delete'
 export const details_cancel = 'Cancel'
 export const details_exit = 'Exit'
 export const details_create = 'Create'
+export const details_edit = 'Edit'
+export const details_view = 'View'
 export const details_add = 'Add'
 export const details_remove = 'Remove'
 export const details_modify_ingredient ="Modify Ingredient"
