@@ -12,9 +12,7 @@ class Manu_ActivityHandler{
             var new_quantity = req.body.quantity;
             var new_scheduled = req.body.scheduled || false
             var new_start = req.body.start
-            var new_end = req.body.end
             var new_duration = new_sku.manu_rate * new_quantity;
-            var new_error = req.body.error;
             var new_manu_line = req.body.manu_line;
             console.log(req.body);
             if(!new_sku || !new_quantity){
@@ -26,9 +24,7 @@ class Manu_ActivityHandler{
             manu_activity.sku = new_sku;
             manu_activity.scheduled = new_scheduled;
             manu_activity.start = new_start;
-            manu_activity.end = new_end;
             manu_activity.duration = new_duration;
-            manu_activity.error = new_error;
             manu_activity.manu_line = new_manu_line;
             let new_manu_activity = await manu_activity.save();
             return res.json({ success: true, data: new_manu_activity});
@@ -72,13 +68,11 @@ class Manu_ActivityHandler{
             var new_quantity = req.body.quantity;
             var new_scheduled = req.body.scheduled || false
             var new_start = req.body.start
-            var new_end = req.body.end
             var new_duration = new_sku.manu_rate * new_quantity;
-            var new_error = req.body.error;
             var new_manu_line = req.body.manu_line;
             let updated_manu_activity = await Manu_Activity.findOneAndUpdate({_id : target_id},
                 {$set: {sku: new_sku, quantity: new_quantity, scheduled: new_scheduled, start: new_start, 
-                    end: new_end, duration: new_duration, error: new_error, manu_line: new_manu_line}}, 
+                    duration: new_duration, manu_line: new_manu_line}}, 
                     {upsert: true, new: true});
             if(!updated_manu_activity){
                 return res.json({
@@ -90,6 +84,7 @@ class Manu_ActivityHandler{
             })
         }
         catch (err) {
+            console.log(err)
             return res.json({ success: false, error: err});
         }
     }
