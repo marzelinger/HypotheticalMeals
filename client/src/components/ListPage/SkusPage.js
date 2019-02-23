@@ -332,11 +332,17 @@ export default class ListPage extends React.Component {
         this.toggle(Constants.details_modal);
     };
 
+    formatNewSKUFormula (item, resFormula){
+        
+        //this is to verify the item to be created and its schema
+        console.log("this is the item to be created in db: \n");
+        console.log("item: "+JSON.stringify(item));
+    }
     //NEED TO EDIT THIS HERE SO THAT THE CORRECT FORMULA ITEM IS LINKED TO THE ITEM BEFORE IT IS SAVED.
     //look at the response here.
     //
     async onDetailViewSubmit(event, item, formula_item, option) {
-        var res = {};
+        // var res = {};
         var resItem = {};
         var resFormula = {};
         var newData = this.state.data.splice();
@@ -345,20 +351,28 @@ export default class ListPage extends React.Component {
         switch (option) {
             case Constants.details_create:
                 newData.push(item);
-                //NEED TO SAVE THE NEW FORMULA
-                //TODO
-                //resFormula = await SubmitRequest.submitCreateOrUpdateFormula()
-                resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
+                //need to create the new formula and get the id of the newly created formula and then put that in the 
+                //item equal to the formula section of item.
+                resFormula = await SubmitRequest.submitCreateItem(Constants.formulas_page_name, formula_item, this);
+                // var newSKUitem = this.formatNewSKUFormula(item, resFormula);
+                if(resFormula.success){
+                    item['formula']= resFormula.data._id;
+                }
                 console.log("this is the create res."+ JSON.stringify(resItem));
+
+                resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
+
+                console.log("this is the create res."+ JSON.stringify(resItem));
+                console.log("this is the create res formula."+ JSON.stringify(resFormula));
 
                 break;
             case Constants.details_save:
                 let toSave = newData.findIndex(obj => {return obj._id === item._id});
                 newData[toSave] = item;
                 resFormula = await SubmitRequest.submitUpdateItem(Constants.formulas_page_name, formula_item, this);
-                res = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
+                resItem = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
                 
-                console.log("this is the save res."+ JSON.stringify(res));
+                console.log("this is the save res."+ JSON.stringify(resItem));
                 console.log("this is the save res."+ JSON.stringify(resFormula));
 
 
@@ -366,13 +380,15 @@ export default class ListPage extends React.Component {
             case Constants.details_delete:
                 let toDelete = newData.findIndex(obj => {return obj._id === item._id});
                 newData.splice(toDelete, 1);
-                res = await SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
+                resItem = await SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
                 break;
             case Constants.details_cancel:
-                res = {success: true}
+                resItem = {success: true}
                 break;
         }
-        if (!res.success) alert(res.error);
+        console.log("resItem was: "+resItem.success);
+        console.log("resFormula")
+        if (!resItem.success) alert(resItem.error);
         else {
             this.setState({ 
                 data: newData,

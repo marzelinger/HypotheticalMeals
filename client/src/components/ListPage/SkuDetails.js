@@ -80,6 +80,7 @@ export default class SKUDetails extends React.Component {
             res.data[0] = {}
         }
         this.setState({ formula_line_item: res.data[0] });
+        console.log("this is the current state item: "+JSON.stringify(this.state.item));
         console.log("This is the fill formula line: "+JSON.stringify(this.state.formula_line_item));
     }
 
@@ -124,6 +125,8 @@ export default class SKUDetails extends React.Component {
             })
             console.log("the formula is existingFormula.: "+this.state.existingFormulaSelected);
             console.log("the formulaafter the state: "+ JSON.stringify(this.state.formula_line));
+            console.log("the state of item the state: "+ JSON.stringify(this.state.item));
+
 
         }
         }
@@ -146,13 +149,17 @@ export default class SKUDetails extends React.Component {
 
 
     onFormulaPropChange = (value, formula_item, prop) => {
+        console.log("this is the value: "+value);
+        console.log("this is the formula_item: "+JSON.stringify(formula_item));
+        console.log("this is the prop: "+prop);
         console.log("PROPS BEING CHANGED IN FORMULA SKUDETAILS");
         formula_item[prop] = value
         this.setState({ formula_item: formula_item });
 
         var curItem = this.state.item;
-        curItem['formula']=formula_item;
-        this.setState({ item: curItem });
+        //TODO DO WE REALLY WANT THIS EHRE?
+        //curItem['formula']=formula_item; //MIGHT BE ISSUE HERE.
+        //this.setState({ item: curItem });
         //TODO CHECK THAT HERE WE DON'T NEED TO BE SENDING THE FORMULA ITEM UP
         console.log("this is the new formula"+ JSON.stringify(formula_item));
         console.log("this is the new formula state."+ JSON.stringify(this.state.formula_item));

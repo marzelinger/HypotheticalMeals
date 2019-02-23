@@ -274,16 +274,6 @@ export default class SkuFormulaDetails extends React.Component {
     }
 
 
-
-    // onPropChange = (value, formula_item, prop) => {
-    //     formula_item[prop] = value
-    //     this.setState({ formula_item: formula_item });
-    //     //need to have a handle of the formula_item prop change.
-    //     console.log("this is the prop change in skuformulaDetails");
-    //     console.log("item: "+JSON.stringify(formula_item))
-    // };
-
-
     removeIngredient(item, value, qty) {
         
         let ind = -1;
@@ -330,7 +320,7 @@ export default class SkuFormulaDetails extends React.Component {
         //printFuncFront('this is the item in the injecting formulaprops: '+JSON.stringify(this.state.formula_item));
         //let formula = await SubmitRequest.submitGetFormulaByID(this.state.item.formula);
         //printFuncFront('this is the formula: '+JSON.stringify(formula));
-
+        // console.log()
         return (this.state.formula_item_properties.map(prop => 
             <FormGroup key={prop}>
                 <Label>{this.getFormulaPropertyLabel(prop)}</Label>
@@ -338,7 +328,7 @@ export default class SkuFormulaDetails extends React.Component {
                     type={this.getFormulaPropertyFieldType(prop)}
                     value={ this.props.formula_item[prop] }
                     invalid={ this.state.invalid_inputs.includes(prop) }
-                    onChange={ (e) => this.props.handleFormulaPropChange(e.target.value, this.state.formula_item, prop)}
+                    onChange={ (e) => this.props.handleFormulaPropChange(e.target.value, this.props.formula_item, prop)}
                     disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
                />
             </FormGroup>));
