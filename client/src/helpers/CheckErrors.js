@@ -1,11 +1,12 @@
-import SubmitReques from './SubmitRequest'
+import SubmitRequest from './SubmitRequest'
 
 export default class CheckErrors{
     static async updateActivityErrors(activity){
         var { data } = await SubmitRequest.submitQueryString(`/api/manugoals_activities/${activity._id}`);
-        var orphaned = checkOrphaned(data, activity)
-        var unscheduled_enabled = checkUnscheduledEnabled(goal,activity);
-        var over_deadline = checkOverDeadline(goal, activity);
+        var goal;
+        var orphaned = CheckErrors.checkOrphaned(data, activity)
+        var unscheduled_enabled = CheckErrors.checkUnscheduledEnabled(goal,activity);
+        var over_deadline = CheckErrors.checkOverDeadline(goal, activity);
         var new_activity = {
             ...activity, 
             orphaned, 

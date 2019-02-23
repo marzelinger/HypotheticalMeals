@@ -3,6 +3,7 @@
 import React, { Component } from "react";
 import Timeline from 'react-visjs-timeline'
 import SubmitRequest from "../../helpers/SubmitRequest";
+import CheckErrors from '../../helpers/CheckErrors'
 import * as Constants from '../../resources/Constants';
 import ManuSchedulePalette from './ManuSchedulePalette'
 import './../../style/ManuSchedulePageStyle.css';
@@ -74,12 +75,19 @@ export default class ManuSchedulePage extends Component {
                         assoc_goal = goal.name
                     }
                 })
+                let cName = '';
+                if (act.orphaned) cName = 'orphaned';
+                else {
+                    if (act.over_deadline) cName += 'over_deadline';
+                    if (act.overridden) cName += 'overridden';
+                }
                 items.push({
                     start: start,
                     end: end,
                     content: 'SKU: ' + act.sku.name,
                     title: 'Goal: ' + assoc_goal,
                     group: act.manu_line._id,
+                    className: cName,
                     _id: act._id
                 });
             }
@@ -137,7 +145,6 @@ export default class ManuSchedulePage extends Component {
         }
         act.data[0].start = item.start;
         act.data[0].manu_line = { _id: item.group };
-        // await CheckErrors.updateActivityErrors()
         let ok = await SubmitRequest.submitUpdateItem(Constants.manu_activity_page_name, act.data[0])
         console.log(ok)
         callback(item)

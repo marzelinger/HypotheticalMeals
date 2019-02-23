@@ -16,6 +16,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+}
+
+.add_to_schedule:hover {
+    background-color: #ddd;
 }
 
 .goal-button {
