@@ -14,7 +14,11 @@ class Manu_ActivityHandler{
             var new_start = req.body.start
             var new_duration = new_sku.manu_rate * new_quantity;
             var new_manu_line = req.body.manu_line;
-            console.log(req.body);
+            var new_overwritten = false;
+            var new_orphaned= false;
+            var new_over_deadline = false;
+            //for now.. check assumption on piazza
+            var new_unscheduled_enabled = false;
             if(!new_sku || !new_quantity){
                 return res.json({
                     success: false, error: 'You must provide a sku and quantity'
@@ -26,6 +30,10 @@ class Manu_ActivityHandler{
             manu_activity.start = new_start;
             manu_activity.duration = new_duration;
             manu_activity.manu_line = new_manu_line;
+            manu_activity.over_deadline = new_over_deadline;
+            manu_activity.orphaned = new_orphaned;
+            manu_activity.overwritten = new_overwritten;
+            manu_activity.unscheduled_enabled = new_unscheduled_enabled;
             let new_manu_activity = await manu_activity.save();
             return res.json({ success: true, data: new_manu_activity});
         }
@@ -34,29 +42,29 @@ class Manu_ActivityHandler{
         }
     }
 
-    static async updateManufacturingActivitiesEnable(req, res) {
-        try {
-            var target_ids = req.body.ids;
-            if(!target_ids){
-                return res.json({ success: false, error: 'No manufacturing actvity named provided'});
-            }
-            var new_enable = !req.body.enable;
-            let updated_manu_activity = await Manu_Activity.updateMany({_id: { $in: target_ids }}, {$set: {orphaned: new_enable}})
-            if(!updated_manu_activity){
-                return res.json({
-                    success: true, error: 'This document does not exist'
-                });
-            }
-            return res.json({
-                success: true, data: updated_manu_activity
-            })
-        }
-        catch (err) {
-            console.log(err);
-            return res.json({ success: false, error: err});
-        }
+    // static async updateManufacturingActivitiesEnable(req, res) {
+    //     try {
+    //         var target_ids = req.body.ids;
+    //         if(!target_ids){
+    //             return res.json({ success: false, error: 'No manufacturing actvity named provided'});
+    //         }
+    //         var new_enable = !req.body.enable;
+    //         let updated_manu_activity = await Manu_Activity.updateMany({_id: { $in: target_ids }}, {$set: {orphaned: new_enable}})
+    //         if(!updated_manu_activity){
+    //             return res.json({
+    //                 success: true, error: 'This document does not exist'
+    //             });
+    //         }
+    //         return res.json({
+    //             success: true, data: updated_manu_activity
+    //         })
+    //     }
+    //     catch (err) {
+    //         console.log(err);
+    //         return res.json({ success: false, error: err});
+    //     }
 
-    }
+    // }
 
     static async updateManufacturingActivityByID(req, res){
         try {
@@ -70,9 +78,14 @@ class Manu_ActivityHandler{
             var new_start = req.body.start
             var new_duration = new_sku.manu_rate * new_quantity;
             var new_manu_line = req.body.manu_line;
+            var new_overwritten = req.body.overwritten;
+            var new_orphaned= req.body.orphaned;
+            var new_over_deadline = req.body.over_deadline;
+            var new_unscheduled_enabled = req.body.unscheduled_enabled;
             let updated_manu_activity = await Manu_Activity.findOneAndUpdate({_id : target_id},
                 {$set: {sku: new_sku, quantity: new_quantity, scheduled: new_scheduled, start: new_start, 
-                    duration: new_duration, manu_line: new_manu_line}}, 
+                    duration: new_duration, manu_line: new_manu_line, overwritten: new_overwritten, orphaned: new_orpahned,
+                orphaned: new_orphaned, over_deadline: new_over_deadline, unscheduled_enabled: new_unscheduled_enabled}}, 
                     {upsert: true, new: true});
             if(!updated_manu_activity){
                 return res.json({

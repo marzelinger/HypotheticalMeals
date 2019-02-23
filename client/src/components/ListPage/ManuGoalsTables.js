@@ -12,43 +12,36 @@ import SubmitRequest from './../../helpers/SubmitRequest';
 
 export default class ManuGoalsTables extends React.Component {
     constructor(props) {
-        console.log(props.query)
+        console.log(props.skus)
         super(props);
         this.state = {
-            query: props.query,
             page_title: 'SKUs',
             table_columns: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line', 'Quantity'],
             table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', 'quantity'],
-            data: [],
+            data: this.props.activities,
             error: null,
-            onDeleteSku: props.onDeleteSku
+            onDeleteSku: props.onDeleteSku,
+            sortKey:''
         };
-
-        this.loadDataFromServer = this.loadDataFromServer.bind(this);
-    }
-
-    componentDidMount = () => {
-        this.loadDataFromServer();
-        if (!this.pollInterval) {
-            this.pollInterval = setInterval(this.loadDataFromServer, 1000);
-        }
-        
-    }
-
-    async loadDataFromServer() {
-
-        let res = await SubmitRequest.submitQueryString(this.state.query);
-        if (!res.success) {
-            this.setState({ error: res.error });
-        }
-        else {
-            this.setState({ data: res.data[0].activities });
-        }
     }
 
     onSort = (event, sortKey) => {
-        const data = this.state.data;
-        data.sort((a,b) => {
+        this.setState({sortKey})
+    }
+
+    sortData = (data) => {
+        var newdata = [...data];
+        var sortKey = this.state.sortKey
+        data.sort((activitya,activityb) => {
+            let a, b;
+            if(sortKey == 'quantity'){
+                a = activitya;
+                b = activityb;
+            }
+            else{
+                a = activitya.sku
+                b = activityb.sku
+            }
             if (/^\d+$/.test(a[sortKey]) && /^\d+$/.test(b[sortKey])) {
                 return parseInt(a[sortKey])-parseInt(b[sortKey]);
             }
@@ -59,8 +52,10 @@ export default class ManuGoalsTables extends React.Component {
                 return a[sortKey].toString().localeCompare(b[sortKey]);
             }
         })
-        this.setState({data})
+        return data
     };
+
+
 
     render() {
         return (
@@ -70,7 +65,7 @@ export default class ManuGoalsTables extends React.Component {
                         onQuantityChange = {this.props.onQuantityChange}
                         columns={this.state.table_columns} 
                         table_properties={this.state.table_properties} 
-                        list_items={this.state.data}
+                        list_items={this.sortData(this.props.activities)}
                         selected_items={this.state.selected_items}
                         handleSort={this.onSort}
                         handleSelect={this.onSelect}
