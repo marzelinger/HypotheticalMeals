@@ -42,7 +42,7 @@ export default class SKUDetails extends React.Component {
             invalid_inputs: [],
             assisted_search_results: [],
             prod_line_item: {},
-            formula_line_item: {},
+            // formula_line_item: {},
             to_undo: {},
             newFormula: false,
             existingFormula: false,
@@ -52,7 +52,7 @@ export default class SKUDetails extends React.Component {
 
     async componentDidMount() {
         await this.fillProductLine();
-        //await this.fillFormulaLine();
+        //await this.fillFormulaLine(); //TODO CHECK THIS
     }
 
     async fillProductLine() {
@@ -79,9 +79,9 @@ export default class SKUDetails extends React.Component {
             res.data = {}
             res.data[0] = {}
         }
-        this.setState({ formula_line_item: res.data[0] });
+        this.setState({ formula_item: res.data[0] });
         console.log("this is the current state item: "+JSON.stringify(this.state.item));
-        console.log("This is the fill formula line: "+JSON.stringify(this.state.formula_line_item));
+        // console.log("This is the fill formula line: "+JSON.stringify(this.state.formula_line_item));
     }
 
     getPropertyLabel = (prop) => {
@@ -105,13 +105,14 @@ export default class SKUDetails extends React.Component {
                 prod_line_item: pl
             })
         }
+        console.log('this is the prod_line_item: '+JSON.stringify(this.state.prod_line_item));
     }
 
     onSelectFormula = async (formula) => {
         console.log("the formula is selected.");
         console.log("the formula: "+ JSON.stringify(formula));
-        var new_formula_item = await SubmitRequest.submitGetFormulaByID(formula._id);
 
+        var new_formula_item = await SubmitRequest.submitGetFormulaByID(formula._id);
         console.log("the formula from the call: "+ JSON.stringify(new_formula_item));
         if(new_formula_item.success){
         if(currentUserIsAdmin().isValid){
@@ -119,12 +120,12 @@ export default class SKUDetails extends React.Component {
             newItem['formula'] = formula._id;
             await this.setState({
                 item: newItem,
-                formula_line_item: formula,
+                //formula_line_item: formula,
                 formula_item: new_formula_item.data[0],
                 existingFormulaSelected: true
             })
             console.log("the formula is existingFormula.: "+this.state.existingFormulaSelected);
-            console.log("the formulaafter the state: "+ JSON.stringify(this.state.formula_line));
+            //console.log("the formulaafter the state: "+ JSON.stringify(this.state.formula_line));
             console.log("the state of item the state: "+ JSON.stringify(this.state.item));
 
 
@@ -158,8 +159,8 @@ export default class SKUDetails extends React.Component {
 
         var curItem = this.state.item;
         //TODO DO WE REALLY WANT THIS EHRE?
-        //curItem['formula']=formula_item; //MIGHT BE ISSUE HERE.
-        //this.setState({ item: curItem });
+        curItem['formula']=formula_item; //MIGHT BE ISSUE HERE.
+        this.setState({ item: curItem });
         //TODO CHECK THAT HERE WE DON'T NEED TO BE SENDING THE FORMULA ITEM UP
         console.log("this is the new formula"+ JSON.stringify(formula_item));
         console.log("this is the new formula state."+ JSON.stringify(this.state.formula_item));
@@ -309,30 +310,12 @@ export default class SKUDetails extends React.Component {
                     formula_item = {this.state.formula_item}
                     handleFormulaPropChange={this.onFormulaPropChange}
                     handleModifyList={this.onModifyList}
-                    // handleNewFormula= {this.onNewFormula}
-                    // handleExistingFormula= {this.onExistingFormula}
                     detail_view_action = {this.props.detail_view_action}
                     handleSelectFormulaItem = {this.onSelectFormula}
-                    formula_line_item= {this.state.formula_line_item}
+                    // formula_line_item= {this.state.formula_line_item}
                     existingFormulaSelected = {this.state.existingFormulaSelected}
-                    //api_route={Constants.formulas_page_name}
-                    //item_type={Constants.details_modify_formula}
-                    //options={[Constants.details_add, Constants.details_remove]}
-                    //handleModifyFormulaList={this.onModifyFormulaList}
-                    //disabled = {currentUserIsAdmin().isValid ? false : true}
+                    invalid_inputs={this.state.invalid_inputs}
                 />
-                {/* <ItemSearchModifyListQuantity
-                    api_route={Constants.ingredients_page_name}
-                    item_type={Constants.details_modify_ingredient}
-                    options={[Constants.details_add, Constants.details_remove]}
-                    handleModifyList={this.onModifyList}
-                    disabled = {currentUserIsAdmin().isValid ? false : true}
-                />
-                <IngredientsViewSimple 
-                    sku={this.state.item} 
-                    handlePropChange={this.onPropChange}
-                    disabled={currentUserIsAdmin().isValid ? false : true}
-                /> */}
 
             </div>
             <div/>

@@ -235,19 +235,19 @@ export default class ListPage extends React.Component {
     }
 
     async onCreateNewItem() {
-        var item = await ItemStore.getEmptyItem(this.state.page_name);
+        var new_item = await ItemStore.getEmptyItem(this.state.page_name);
         var new_formula_item = await ItemStore.getEmptyItem(Constants.formulas_page_name);
         const newData = this.state.data.slice();
-        newData.push(item);
+        newData.push(new_item);
 
         //for the pagination stuff
         const newExportData = this.state.exportData.slice();
-        newExportData.push(item);
+        newExportData.push(new_item);
 
         this.setState({ 
             data: newData,
             exportData: newExportData,
-            detail_view_item: item,
+            detail_view_item: new_item,
             detail_view_formula_item: new_formula_item,
             detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel],
             detail_view_action: Constants.details_create
@@ -311,22 +311,20 @@ export default class ListPage extends React.Component {
 
      onDetailViewSelect = async (event, item) => {
         let formula_item = await SubmitRequest.submitGetFormulaByID(item.formula);
-        //console.log('this is the formula item from skus page: '+ JSON.stringify(formula_item.data[0]));
+        this.setState({
+            detail_view_item: item,
+            detail_view_formula_item: formula_item.data[0]
+        });
         if(currentUserIsAdmin().isValid){
             this.setState({ 
-            detail_view_item: item,
-            detail_view_formula_item: formula_item.data[0],
             detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel],
             detail_view_action: Constants.details_edit
-        });
+            });
         }
         else{
             this.setState({ 
-                detail_view_item: item,
-                detail_view_formula_item: formula_item,
                 detail_view_options: [Constants.details_cancel],
                 detail_view_action: Constants.details_view
-
                 });
         }
         this.toggle(Constants.details_modal);

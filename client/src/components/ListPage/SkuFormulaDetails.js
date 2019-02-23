@@ -178,6 +178,8 @@ export default class SkuFormulaDetails extends React.Component {
             //         </div>);
           case Constants.details_edit:
             //want to show the regular stuff here.
+            //want to either edit existing, switch to a new one, or choose a different one.
+
             return  (
                 <div>
               {this.formulaPropItemIng()}
@@ -186,6 +188,25 @@ export default class SkuFormulaDetails extends React.Component {
         }
 
 
+
+    }
+
+
+    switchFormulaViewMaster = () =>{
+
+        switch(this.props.detail_view_action){
+            case Constants.details_edit:
+
+            //want to show the regular stuff here.
+            //want to either edit existing, switch to a new one, or choose a different one.
+            //
+            return (
+                <div/>
+            );
+            case Constants.details_create:
+            //want to show the initial create buttons and then either the drop down for existing
+            //and then the other stuff below.
+        }
 
     }
 
@@ -264,7 +285,7 @@ export default class SkuFormulaDetails extends React.Component {
 
 
 
-    formulaSelectButtons = () => {
+    formulaSelectNewButtons = () => {
         return (
             <div>
                         <Button color="primary" onClick = {(e) => this.handleNewFormula(e.target.value)} disabled = {this.state.existingFormula}>Create New Formula</Button>{' '}
@@ -343,27 +364,12 @@ export default class SkuFormulaDetails extends React.Component {
         {this.switchFormulaInitial()}
         {this.props.detail_view_action===Constants.details_create ?
             <div>
-            {this.formulaSelectButtons()}
+            {this.formulaSelectNewButtons()}
             {this.switchFormulaCreateDisplay()}
             </div>
             :
             <div/>
         }
-        {/* {this.switchFormulaCreateDisplay()} */}
-
-        {/* <ItemSearchModifyListQuantity
-                    api_route={Constants.ingredients_page_name}
-                    item_type={Constants.details_modify_ingredient}
-                    options={[Constants.details_add, Constants.details_remove]}
-                    handleModifyList={this.props.handleModifyList}
-                    disabled = {currentUserIsAdmin().isValid ? false : true}
-                />
-        <IngredientsViewSimple 
-                    formula={this.state.formula_item} 
-                    handlePropChange={this.props.handleFormulaPropChange}
-                    //handleFormulaPropChange={this.props.handleFormulaPropChange}
-                    disabled={currentUserIsAdmin().isValid ? false : true}
-                /> */}
         </div>
         );
     }
@@ -376,7 +382,7 @@ SkuFormulaDetails.propTypes = {
     handleModifyList: PropTypes.func,
     detail_view_action: PropTypes.string,
     handleSelectFormulaItem: PropTypes.func,
-    formula_line_item: PropTypes.object,
+    // formula_line_item: PropTypes.object,
     existingFormulaSelected: PropTypes.bool
     //handleNewFormula: PropTypes.func,
     //handleExistingFormula: PropTypes.func
