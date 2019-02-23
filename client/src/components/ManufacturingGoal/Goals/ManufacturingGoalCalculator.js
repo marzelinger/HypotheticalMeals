@@ -31,45 +31,46 @@ export default class ManufacturingGoalCalculator extends React.Component{
     await this.getIngredientInfo();
   }
 
-  // calculateSkuUnitQuantity = (quantity, sku) => {
-  //     console.log(quantity);
-  //     return quantity * Number(sku.scale_factor);
-  // }
-
-  // addIngredientInfo = async (ingredient, quantity) => {
-  //   if(this.state.current_ingredient_ids.includes(ingredient.quantity)){
-  //      var index =  this.state.current_ingredient_ids.indexOf(ingredient.id);
-  //      var currentData = this.state.ingredients_info;
-  //      currentData[index].quantity = currentData[index].quantity + (quantity * ingredient.quantity);
-  //      await this.setState({ingredients_info: currentData});
-  //   }   
-  //   else{
-  //       console.log('setting state');
-  //       console.log(ingredient.quantity);
-  //       var newIngredient = {
-  //           ...ingredient, 
-  //           goalQuantity: quantity * ingredient.quantity
-  //       }
-  //       let info = this.state.ingredients_info;
-  //       info.push(newIngredient);
-  //       await this.setState({ingredients_info: info, current_ingredient_ids: [...this.state.current_ingredient_ids, ingredient.id]})
-  //   }
-  // }
+  addIngredientInfo = async (ingredient, quantity) => {
+    if(this.state.current_ingredient_ids.includes(ingredient._id)){
+       var index =  this.state.current_ingredient_ids.indexOf(ingredient._id);
+       var currentData = this.state.ingredients_info;
+       currentData[index].unitQuantity = currentData[index].unitQuantity + (quantity * ingredient.quantity);
+       await this.setState({ingredients_info: currentData});
+    }   
+    else{
+      // also need package quantity which is quantity * ingredient quantity (total amount of ingredients in formula units / total number of ingredient in a package in package units)
+        console.log('setting state');
+        console.log(ingredient.quantity);
+        var newIngredient = {
+            ...ingredient, 
+            unitQuantity: quantity * ingredient.quantity
+        }
+        let info = this.state.ingredients_info;
+        info.push(newIngredient);
+        await this.setState({ingredients_info: info, current_ingredient_ids: [...this.state.current_ingredient_ids, ingredient._id]})
+    }
+  }
 
   // broken rn bc using old structure of skus
   getIngredientInfo = async () => {
       console.log(this.props.activities);
-      // let index = 0;
+      let index = 0;
       await this.props.activities.forEach( async (activity) => {
-        var {data} = await SubmitRequest.submitGetPopulatedSkuIngredients(activity.sku._id);
-        console.log(data);
-        // var quantity = this.calculateSkuUnitQuantity(this.props.quantities[index], skuData);
-        // await data.forEach( async(ingredient) => {
-        //     await this.addIngredientInfo(ingredient, quantity);
-        // })
-        // index++;
+        var quantity = activity.quantity * activity.sku.scale_factor;
+        var ingredients = activity.sku.formula.ingredients;
+        var ingr_quantities = activity.sku.formula.ingredient_quantities;
+        for(var i = 0; i < ingredients.length; i ++){
+          var ingr_with_quantity = {
+            ...ingredients[i],
+            quantity: ingr_quantities[i]
+          }
+          console.log(ingr_with_quantity)
+          await this.addIngredientInfo(ingr_with_quantity, quantity);
+        }
+        index++;
       })
-      // return this.state.ingredients_info
+      return this.state.ingredients_info
   }
 
   render(){

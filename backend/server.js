@@ -114,7 +114,7 @@ router.get('/manugoals/:user_id/:manu_goal_id', (req, res) => Manu_GoalHandler.g
 router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteManufacturingGoalByID(req, res));
 router.get('/manugoals/:user_id/:manu_goal_id/skus', (req, res) => Manu_GoalHandler.getManufacturingGoalByIDSkus(req, res));
 router.get('/manugoals_filter/:name_substr/:user_substr/:user', (req, res) => Manu_GoalHandler.getManufacturingGoalByFilter(req, res));
-
+router.get('/manugoals_activity/:activity_id', (req, res) => Manu_GoalHandler.getManufacturingGoalByActivity(req, res));
 // Multiple database APIs
 router.get('/ingredients_filter/:sort_field/:sku_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
 router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize/:prod_line_ids', (req, res) => FilterHandler.getSkusByFilter(req, res));

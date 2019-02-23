@@ -20,6 +20,7 @@ import '../../style/TableStyle.css'
 export class GoalSkuTable extends React.Component{
     constructor(props) {
       super(props);
+      console.log(props)
       this.state = {
         showCheckboxes:true,
         selected: '',
@@ -56,6 +57,7 @@ export class GoalSkuTable extends React.Component{
     
     render() {
         let tablebody = (
+
             this.state.list_items.map((item, index) => 
             <TableRow
               key={item.num + index}

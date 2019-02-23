@@ -174,6 +174,7 @@ class SkuHandler{
                 populate: { path: 'ingredients' }
               });
             let sku = response[0];
+            console.log(response);
             return res.json({ success: true, data: sku});
         }
         catch (err) {
