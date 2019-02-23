@@ -84,8 +84,13 @@ class Manu_ActivityHandler{
             var new_unscheduled_enabled = req.body.unscheduled_enabled;
             let updated_manu_activity = await Manu_Activity.findOneAndUpdate({_id : target_id},
                 {$set: {sku: new_sku, quantity: new_quantity, scheduled: new_scheduled, start: new_start, 
+<<<<<<< HEAD
                     duration: new_duration, manu_line: new_manu_line, overwritten: new_overwritten, orphaned: new_orphaned,
                 orphaned: new_orphaned, over_deadline: new_over_deadline, unscheduled_enabled: new_unscheduled_enabled}}, 
+=======
+                    duration: new_duration, manu_line: new_manu_line, overwritten: new_overwritten,
+                    orphaned: new_orphaned, over_deadline: new_over_deadline, unscheduled_enabled: new_unscheduled_enabled}}, 
+>>>>>>> master
                     {upsert: true, new: true});
             if(!updated_manu_activity){
                 return res.json({

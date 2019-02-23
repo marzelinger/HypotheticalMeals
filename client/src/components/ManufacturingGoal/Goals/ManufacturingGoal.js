@@ -8,6 +8,7 @@ import deleteButton from'../../../resources/delete.png';
 import ManufacturingGoalCalculator from'./ManufacturingGoalCalculator';
 import ManuGoalsTables from '../../ListPage/ManuGoalsTables';
 import SubmitRequest from '../../../helpers/SubmitRequest';
+import CheckErrors from '../../../helpers/CheckErrors';
 export default class ManufacturingGoal extends React.Component{
   constructor(props){
     super(props);
@@ -53,10 +54,13 @@ export default class ManufacturingGoal extends React.Component{
     // this.props.handleUpdateGoal(this.props.id);
   }
 
-  onEnabled = () => {
+  onEnabled = async() => {
     this.props.goal['enabled'] = !this.props.goal['enabled']
-    this.props.handleUpdateGoal(this.props.id, this.state.name)
-    SubmitRequest.submitEnableUpdate(this.props.activities, this.props.goal['enabled']);
+    await this.props.handleUpdateGoal(this.props.id, this.state.name)
+    await this.props.activities.forEach(async(activity) => {
+      await CheckErrors.updateActivityErrors(activity);
+    })
+    console.log("done updating");
   }
 
   render() {
