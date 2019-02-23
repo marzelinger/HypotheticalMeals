@@ -60,7 +60,12 @@ export default class ManuSchedulePalette extends Component {
                 if (prop === 'add_to_schedule'){
                     return (
                         <td>
-                            <Button onClick={(e) => this.props.prepareAddActivity(act)}>{'+'}</Button>
+                            <Button 
+                                onClick={(e) => this.props.prepareAddActivity(act)}
+                                color={this.props.activity_to_schedule ? (this.props.activity_to_schedule._id === act._id ? 'primary' : 'secondary') : 'secondary'}
+                                className='noFocus'
+                                size="sm"
+                            >{'+'}</Button>
                         </td>
                     )
                 }
@@ -106,5 +111,6 @@ ManuSchedulePalette.propTypes = {
     goals: PropTypes.arrayOf(PropTypes.object),
     activities: PropTypes.arrayOf(PropTypes.object),
     lines: PropTypes.arrayOf(PropTypes.object),
+    activity_to_schedule: PropTypes.object,
     prepareAddActivity: PropTypes.func
 }

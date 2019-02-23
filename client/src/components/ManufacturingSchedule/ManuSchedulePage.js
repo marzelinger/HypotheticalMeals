@@ -41,14 +41,14 @@ export default class ManuSchedulePage extends Component {
         groups.length = 0;
         console.log(items)
         let activities = await SubmitRequest.submitGetData(Constants.manu_activity_page_name);
+        let goals = await SubmitRequest.submitGetManuGoalsData(this.state.user);
         activities.data.map(act => {
-            this.scheduleOrPalette(act);
+            this.scheduleOrPalette(act, goals);
         });
         let lines = await SubmitRequest.submitGetData(Constants.manu_line_page_name);
         lines.data.map(line => {
             groups.push({ id: line._id, content: line.name });
         });
-        let goals = await SubmitRequest.submitGetManuGoalsData(this.state.user);
         this.setState({
             activities: activities.data,
             lines: lines.data,
@@ -57,16 +57,22 @@ export default class ManuSchedulePage extends Component {
         });
     }
 
-    scheduleOrPalette(act) {
+    scheduleOrPalette(act, goals) {
         if (act.scheduled) {
             if (items.find(i => i._id === act._id) === undefined) {
                 let start = new Date(act.start);
-                let end = new Date(start.getTime() + (act.duration * 60 * 60 * 1000));
+                let end = new Date(start.getTime() + Math.floor(act.duration/10)*24*60*60*1000 + (act.duration%10 * 60 * 60 * 1000));
+                let assoc_goal = ''
+                goals.data.map(goal => {
+                    if(goal.activities.find(a => a._id === act._id)){
+                        assoc_goal = goal.name
+                    }
+                })
                 items.push({
                     start: start,
                     end: end,
                     content: 'SKU: ' + act.sku.name,
-                    title: 'SKU: ' + act.sku.name,
+                    title: 'Goal: ' + assoc_goal,
                     group: act.manu_line._id,
                     _id: act._id
                 });
@@ -90,19 +96,38 @@ export default class ManuSchedulePage extends Component {
     }
 
     prepareAddActivity(activity) {
+        let new_act = null
+        if (this.state.activity_to_schedule === null) {
+            new_act = activity
+            alert('Double click to place on the schedule!')
+        }
         this.setState({
-            activity_to_schedule: activity
+            activity_to_schedule: new_act
         })
-        alert('Double click to place on the schedule!')
+        
+    }
+
+    getContainerStyle() {
+        if (this.state.activity_to_schedule){
+            return { "cursor" : "copy" }
+        }
+        return {}
     }
 
     async onMove(item, callback) {
         let act = await SubmitRequest.submitGetManufacturingActivityByID(item._id)
         let end = new Date(item.end)
         let start = new Date(item.start)
-        if ((end.getTime()-start.getTime())/(60*60*1000) !== act.data[0].duration) {
+        let duration = parseInt(act.data[0].duration);
+        if ((end.getTime()-start.getTime())/(60*60*1000) !== duration &&
+            (end.getTime()-start.getTime())/(60*60*1000) !== Math.floor(duration/10)*24 + (duration%10)) {
             alert('You cannot change activity duration on the schedule directly!')
             return callback(null)
+        }
+        if (start.getHours() < 8 || (end.getHours() === 18 && end.getMinutes() > 0) || (end.getHours() > 18)) {
+            alert("Activities can't be scheduled outside working hours!")
+            callback(null)
+            return;
         }
         act.data[0].start = item.start;
         act.data[0].manu_line = { _id: item.group };
@@ -119,12 +144,17 @@ export default class ManuSchedulePage extends Component {
                 start: item.start,
                 manu_line: { _id: item.group }
             })
-            let ok = await SubmitRequest.submitUpdateItem(Constants.manu_activity_page_name, activity)
-            console.log(ok)
-
             let start = new Date(activity.start)
             let end = new Date()
             end.setTime(start.getTime() + activity.duration*60*60*1000)
+            if (start.getHours() < 8 || (end.getHours() === 18 && end.getMinutes() > 0) || (end.getHours() > 18)) {
+                alert("Activities can't be scheduled outside working hours!")
+                callback(null)
+                return;
+            }
+            let ok = await SubmitRequest.submitUpdateItem(Constants.manu_activity_page_name, activity)
+            console.log(ok)
+
             item = {
                 end: end.toString(),
                 content: 'SKU: ' + activity.sku.name,
@@ -166,6 +196,11 @@ export default class ManuSchedulePage extends Component {
                 hour: 'ha'
             }
         },
+        hiddenDates: {
+            start: '2018-02-01 18:00:00', 
+            end: '2018-02-02 08:00:00', 
+            repeat:'daily'
+        },
         selectable: true,
         editable: {
             add: true,
@@ -184,21 +219,24 @@ export default class ManuSchedulePage extends Component {
     render() {
         return (
         <div>
-            <div className={'scheduler-container'}>
-                {this.state.loaded ? console.log('loaded') : console.log('not loaded')}
-                {this.state.loaded ? (<Timeline 
-                    options={this.getOptions()}
-                    items={items}
-                    groups={groups}
-                    clickHandler={this.clickHandler.bind(this)}
-                />) : null}
-                <ManuSchedulePalette
-                    goals={this.state.goals}
-                    activities={this.state.activities}
-                    lines={this.state.lines}
-                    activity_to_schedule={this.state.activity_to_schedule}
-                    prepareAddActivity={this.prepareAddActivity}
-                />
+            <div className={'scheduler-container'} style={this.getContainerStyle()}>
+                <div className='timeline-container'>
+                    {this.state.loaded ? (<Timeline 
+                        options={this.getOptions()}
+                        items={items}
+                        groups={groups}
+                        clickHandler={this.clickHandler.bind(this)}
+                    />) : null}
+                </div>
+                <div className='palette-container'>
+                    <ManuSchedulePalette
+                        goals={this.state.goals}
+                        activities={this.state.activities}
+                        lines={this.state.lines}
+                        activity_to_schedule={this.state.activity_to_schedule}
+                        prepareAddActivity={this.prepareAddActivity}
+                    />
+                </div>
             </div>
         </div>
         );
