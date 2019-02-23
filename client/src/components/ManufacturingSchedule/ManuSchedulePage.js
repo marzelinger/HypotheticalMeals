@@ -5,7 +5,7 @@ import Timeline from 'react-visjs-timeline'
 import SubmitRequest from "../../helpers/SubmitRequest";
 import * as Constants from '../../resources/Constants';
 import ManuSchedulePalette from './ManuSchedulePalette'
-import './../../style/ManuSchedulePage.css';
+import './../../style/ManuSchedulePageStyle.css';
 const jwt_decode = require('jwt-decode');
 
 export default class ManuSchedulePage extends Component {
@@ -17,7 +17,7 @@ export default class ManuSchedulePage extends Component {
             options: {},
             lines: [],
             activities: [],
-            goals: [],
+            unscheduled_goals: [],
             activity_to_schedule: null,
             loaded: false
         }
@@ -39,12 +39,18 @@ export default class ManuSchedulePage extends Component {
     async loadScheduleData() {
         items.length = 0;
         groups.length = 0;
-        console.log(items)
         let activities = await SubmitRequest.submitGetData(Constants.manu_activity_page_name);
         let goals = await SubmitRequest.submitGetManuGoalsData(this.state.user);
         activities.data.map(act => {
             this.scheduleOrPalette(act, goals);
         });
+        let unscheduled_goals = goals.data.filter(goal => {
+            let not_all_scheduled = false
+            goal.activities.map(act => {
+                if (!act.scheduled) not_all_scheduled = true
+            })
+            return not_all_scheduled
+        })
         let lines = await SubmitRequest.submitGetData(Constants.manu_line_page_name);
         lines.data.map(line => {
             groups.push({ id: line._id, content: line.name });
@@ -52,7 +58,7 @@ export default class ManuSchedulePage extends Component {
         this.setState({
             activities: activities.data,
             lines: lines.data,
-            goals: goals.data,
+            unscheduled_goals: unscheduled_goals,
             loaded: true
         });
     }
@@ -109,7 +115,7 @@ export default class ManuSchedulePage extends Component {
 
     getContainerStyle() {
         if (this.state.activity_to_schedule){
-            return { "cursor" : "copy" }
+            return { "cursor" : "copy" } //!important doesn't work...
         }
         return {}
     }
@@ -131,6 +137,7 @@ export default class ManuSchedulePage extends Component {
         }
         act.data[0].start = item.start;
         act.data[0].manu_line = { _id: item.group };
+        // await CheckErrors.updateActivityErrors()
         let ok = await SubmitRequest.submitUpdateItem(Constants.manu_activity_page_name, act.data[0])
         console.log(ok)
         callback(item)
@@ -230,7 +237,7 @@ export default class ManuSchedulePage extends Component {
                 </div>
                 <div className='palette-container'>
                     <ManuSchedulePalette
-                        goals={this.state.goals}
+                        goals={this.state.unscheduled_goals}
                         activities={this.state.activities}
                         lines={this.state.lines}
                         activity_to_schedule={this.state.activity_to_schedule}

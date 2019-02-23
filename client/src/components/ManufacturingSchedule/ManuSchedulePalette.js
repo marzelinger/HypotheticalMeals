@@ -2,9 +2,7 @@
 
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import SubmitRequest from "../../helpers/SubmitRequest";
 import DataStore from "../../helpers/DataStore"
-import * as Constants from '../../resources/Constants';
 import {
     Button,
     Table,
@@ -16,10 +14,9 @@ import {
     AccordionItemTitle,
     AccordionItemBody,
 } from 'react-accessible-accordion';
-import 'react-accessible-accordion/dist/fancy-example.css';
 // import 'react-accessible-accordion/dist/minimal-example.css';
+import '../../style/accordianStyle.css';
 import ManuSchedulePaletteGoal from "./ManuSchedulePaletteGoal";
-import ManuSchedulePaletteActivity from './ManuSchedulePaletteActivity'
 
 
 export default class ManuSchedulePalette extends Component {
@@ -60,12 +57,12 @@ export default class ManuSchedulePalette extends Component {
                 if (prop === 'add_to_schedule'){
                     return (
                         <td>
-                            <Button 
+                            <div 
                                 onClick={(e) => this.props.prepareAddActivity(act)}
-                                color={this.props.activity_to_schedule ? (this.props.activity_to_schedule._id === act._id ? 'primary' : 'secondary') : 'secondary'}
-                                className='noFocus'
-                                size="sm"
-                            >{'+'}</Button>
+                                style = {{backgroundColor: this.props.activity_to_schedule ? (this.props.activity_to_schedule._id === act._id ? 'blue' : 'gray') : 'gray'}}
+                                className='add_to_schedule'
+                                disabled={this.props.activity_to_schedule ? (this.props.activity_to_schedule._id === act._id ? false : true) : false}
+                            >{this.props.activity_to_schedule ? (this.props.activity_to_schedule._id === act._id ? 'x' : '+') : '+'}</div>
                         </td>
                     )
                 }
@@ -77,7 +74,7 @@ export default class ManuSchedulePalette extends Component {
     render() {
         return (
             <div>
-                <Accordion>
+                <Accordion accordian={false}>
                     {this.props.goals.map(goal => 
                         <AccordionItem key={goal.name}>
                             <AccordionItemTitle>
@@ -109,8 +106,6 @@ export default class ManuSchedulePalette extends Component {
 
 ManuSchedulePalette.propTypes = {
     goals: PropTypes.arrayOf(PropTypes.object),
-    activities: PropTypes.arrayOf(PropTypes.object),
-    lines: PropTypes.arrayOf(PropTypes.object),
     activity_to_schedule: PropTypes.object,
     prepareAddActivity: PropTypes.func
 }
