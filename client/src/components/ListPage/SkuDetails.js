@@ -101,6 +101,24 @@ export default class SKUDetails extends React.Component {
         this.setState({ item: item });
     };
 
+    onFormulaPropChange = (value, formula_item, prop) => {
+        console.log("PROPS BEING CHANGED IN FORMULA SKUDETAILS");
+        formula_item[prop] = value
+        this.setState({ formula_item: formula_item });
+
+        var curItem = this.state.item;
+        curItem['formula']=formula_item;
+        this.setState({ item: curItem });
+
+        console.log("this is the new formula"+ JSON.stringify(formula_item));
+        console.log("this is the new formula state."+ JSON.stringify(this.state.formula_item));
+
+        console.log("this is the new item"+ JSON.stringify(curItem));
+        console.log("this is the new formula state."+ JSON.stringify(this.state.item));
+
+
+    };
+
     onModifyList = (option, value, qty) => {
         if(currentUserIsAdmin().isValid){
             var item = Object.assign({}, this.state.item);
@@ -218,13 +236,13 @@ export default class SKUDetails extends React.Component {
 
     async handleSubmit(e, opt) {
         if (![Constants.details_save, Constants.details_create].includes(opt)) {
-            this.props.handleDetailViewSubmit(e, this.state.item, opt);
+            this.props.handleDetailViewSubmit(e, this.state.item, this.state.formula_item, opt);
             return;
         }
         await this.validateInputs();
         let alert_string = 'Invalid Fields';
         let inv = this.state.invalid_inputs;
-        if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.state.item, opt)
+        if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.state.item, this.state.formula_item, opt)
         else {
             if (inv.includes('case_upc') && this.state.item['case_upc'].length > 11)
                 alert_string += '\nTry Case UPC: ' + CheckDigit.apply(this.state.item['case_upc'].slice(0,11));
@@ -288,6 +306,7 @@ export default class SKUDetails extends React.Component {
                 <SkuFormulaDetails
                     item = {this.state.item}
                     formula_item = {this.state.formula_item}
+                    handleFormulaPropChange={this.onFormulaPropChange}
                     //api_route={Constants.formulas_page_name}
                     //item_type={Constants.details_modify_formula}
                     //options={[Constants.details_add, Constants.details_remove]}

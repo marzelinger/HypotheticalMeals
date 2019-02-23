@@ -167,9 +167,12 @@ export default class SkuFormulaDetails extends React.Component {
 
     }
 
-    onPropChange = (value, item, prop) => {
-        item[prop] = value
-        this.setState({ item: item });
+    onFormulaPropChange = (value, formula_item, prop) => {
+        formula_item[prop] = value
+        this.setState({ formula_item: formula_item });
+        //need to have a handle of the formula_item prop change.
+        console.log("this is the prop change in skuformulaDetails");
+        console.log("item: "+JSON.stringify(formula_item))
     };
 
 
@@ -234,7 +237,7 @@ export default class SkuFormulaDetails extends React.Component {
 
    injectFormulaProperties = () => {
     if (this.state.formula_item){
-        printFuncFront('this is the item in the injecting formulaprops: '+JSON.stringify(this.state.formula_item));
+        //printFuncFront('this is the item in the injecting formulaprops: '+JSON.stringify(this.state.formula_item));
         //let formula = await SubmitRequest.submitGetFormulaByID(this.state.item.formula);
         //printFuncFront('this is the formula: '+JSON.stringify(formula));
 
@@ -245,7 +248,7 @@ export default class SkuFormulaDetails extends React.Component {
                     type={this.getFormulaPropertyFieldType(prop)}
                     value={ this.state.formula_item[prop] }
                     invalid={ this.state.invalid_inputs.includes(prop) }
-                    onChange={ (e) => this.onPropChange(e.target.value, this.state.formula_item, prop)}
+                    onChange={ (e) => this.onFormulaPropChange(e.target.value, this.state.formula_item, prop)}
                     disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
                />
             </FormGroup>));
@@ -270,7 +273,8 @@ export default class SkuFormulaDetails extends React.Component {
                 />
         <IngredientsViewSimple 
                     formula={this.state.formula_item} 
-                    handlePropChange={this.onPropChange}
+                    handlePropChange={this.props.handleFormulaPropChange}
+                    //handleFormulaPropChange={this.props.handleFormulaPropChange}
                     disabled={currentUserIsAdmin().isValid ? false : true}
                 />
         </div>
@@ -281,6 +285,7 @@ export default class SkuFormulaDetails extends React.Component {
 SkuFormulaDetails.propTypes = {
     item: PropTypes.object,
     formula_item: PropTypes.object,
+    handleFormulaPropChange: PropTypes.func
     //options: PropTypes.arrayOf(PropTypes.string),
     //handleModifyList: PropTypes.func,
     //qty_disable: PropTypes.bool,

@@ -327,18 +327,35 @@ export default class ListPage extends React.Component {
         this.toggle(Constants.details_modal);
     };
 
-    async onDetailViewSubmit(event, item, option) {
+    //NEED TO EDIT THIS HERE SO THAT THE CORRECT FORMULA ITEM IS LINKED TO THE ITEM BEFORE IT IS SAVED.
+    //look at the response here.
+    //
+    async onDetailViewSubmit(event, item, formula_item, option) {
         var res = {};
+        var resItem = {};
+        var resFormula = {};
         var newData = this.state.data.splice();
+        console.log("this is the item  state."+ JSON.stringify(item));
+
         switch (option) {
             case Constants.details_create:
                 newData.push(item);
-                res = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
+                //NEED TO SAVE THE NEW FORMULA
+                //resFormula = await SubmitRequest.submitCreateOrUpdateFormula()
+                resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
+                console.log("this is the create res."+ JSON.stringify(resItem));
+
                 break;
             case Constants.details_save:
                 let toSave = newData.findIndex(obj => {return obj._id === item._id});
                 newData[toSave] = item;
+                resFormula = await SubmitRequest.submitUpdateItem(Constants.formulas_page_name, formula_item, this);
                 res = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
+                
+                console.log("this is the save res."+ JSON.stringify(res));
+                console.log("this is the save res."+ JSON.stringify(resFormula));
+
+
                 break;
             case Constants.details_delete:
                 let toDelete = newData.findIndex(obj => {return obj._id === item._id});

@@ -76,14 +76,18 @@ export default class IngredientsViewSimple extends React.Component {
     onDetailViewSelect = () => {}
 
     onQuantityChange (e, index) {
+        console.log("in on quantitychange first ");
+
         let cQtys = this.state.currQtys.slice();
         cQtys[index] = e.target.value;
         this.setState({ currQtys: cQtys })
-
         let ind_actual = this.state.currentPage * this.state.pageSize + index;
         var ing_quant = this.props.formula.ingredient_quantities.slice();
         ing_quant[ind_actual] = e.target.value;
+        console.log("in on quantitychange: "+JSON.stringify(ing_quant));
+        console.log("in on quantitychange2: "+ind_actual);
         this.props.handlePropChange(ing_quant, this.props.formula, 'ingredient_quantities');
+        //this.props.handlePropChange(ing_quant, this.props.formula, 'ingredient_quantities');
     }
 
     render() {
@@ -140,4 +144,6 @@ IngredientsViewSimple.propTypes = {
     formula: PropTypes.object,
     handlePropChange: PropTypes.func,
     disabled: PropTypes.bool
+    //handleFormulaPropChange: PropTypes.func
+
 }
