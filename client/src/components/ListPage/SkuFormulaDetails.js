@@ -167,7 +167,7 @@ export default class SkuFormulaDetails extends React.Component {
 
     }
 
-    onFormulaPropChange = (value, formula_item, prop) => {
+    onPropChange = (value, formula_item, prop) => {
         formula_item[prop] = value
         this.setState({ formula_item: formula_item });
         //need to have a handle of the formula_item prop change.
@@ -176,22 +176,22 @@ export default class SkuFormulaDetails extends React.Component {
     };
 
 
-    onModifyList = (option, value, qty) => {
-        if(currentUserIsAdmin().isValid){
-            var item = Object.assign({}, this.state.item);
-            switch (option) {
-                case Constants.details_add:
-                    this.addIngredient(item, value, qty);
-                    break;
-                case Constants.details_remove:
-                    this.removeIngredient(item, value, qty);
-                    break;
-            }
-            this.setState({ 
-                item: item
-            })
-        }
-    }
+    // onModifyList = (option, value, qty) => {
+    //     if(currentUserIsAdmin().isValid){
+    //         var item = Object.assign({}, this.state.item);
+    //         switch (option) {
+    //             case Constants.details_add:
+    //                 this.addIngredient(item, value, qty);
+    //                 break;
+    //             case Constants.details_remove:
+    //                 this.removeIngredient(item, value, qty);
+    //                 break;
+    //         }
+    //         this.setState({ 
+    //             item: item
+    //         })
+    //     }
+    // }
 
 
     removeIngredient(item, value, qty) {
@@ -248,7 +248,7 @@ export default class SkuFormulaDetails extends React.Component {
                     type={this.getFormulaPropertyFieldType(prop)}
                     value={ this.state.formula_item[prop] }
                     invalid={ this.state.invalid_inputs.includes(prop) }
-                    onChange={ (e) => this.onFormulaPropChange(e.target.value, this.state.formula_item, prop)}
+                    onChange={ (e) => this.props.handleFormulaPropChange(e.target.value, this.state.formula_item, prop)}
                     disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
                />
             </FormGroup>));
@@ -268,7 +268,7 @@ export default class SkuFormulaDetails extends React.Component {
                     api_route={Constants.ingredients_page_name}
                     item_type={Constants.details_modify_ingredient}
                     options={[Constants.details_add, Constants.details_remove]}
-                    handleModifyList={this.onModifyList}
+                    handleModifyList={this.props.handleModifyList}
                     disabled = {currentUserIsAdmin().isValid ? false : true}
                 />
         <IngredientsViewSimple 
@@ -285,7 +285,8 @@ export default class SkuFormulaDetails extends React.Component {
 SkuFormulaDetails.propTypes = {
     item: PropTypes.object,
     formula_item: PropTypes.object,
-    handleFormulaPropChange: PropTypes.func
+    handleFormulaPropChange: PropTypes.func,
+    handleModifyList: PropTypes.func
     //options: PropTypes.arrayOf(PropTypes.string),
     //handleModifyList: PropTypes.func,
     //qty_disable: PropTypes.bool,

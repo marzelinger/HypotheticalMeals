@@ -121,117 +121,65 @@ export default class SKUDetails extends React.Component {
 
     onModifyList = (option, value, qty) => {
         if(currentUserIsAdmin().isValid){
-            var item = Object.assign({}, this.state.item);
+            var formula_item = Object.assign({}, this.state.formula_item);
+            console.log("this is the current formula"+ JSON.stringify(formula_item));
+            console.log("this is the option"+ JSON.stringify(option));
+
             switch (option) {
                 case Constants.details_add:
-                    this.addIngredient(item, value, qty);
+                    this.addIngredient(formula_item, value, qty);
                     break;
                 case Constants.details_remove:
-                    this.removeIngredient(item, value, qty);
+                    this.removeIngredient(formula_item, value, qty);
                     break;
             }
+            console.log("this is the current formula after"+ JSON.stringify(formula_item));
             this.setState({ 
-                item: item
+                formula_item: formula_item
             })
         }
     }
 
-    // onModifyFormulaList = (option, value, qty) => {
-    //     if(currentUserIsAdmin().isValid){
-    //         var item = Object.assign({}, this.state.item);
-    //         switch (option) {
-    //             case Constants.details_add:
-    //                 this.addIngredientToFormula(item, value, qty);
-    //                 break;
-    //             case Constants.details_remove:
-    //                 this.removeIngredientFromFormula(item, value, qty);
-    //                 break;
-    //         }
-    //         this.setState({ 
-    //             item: item
-    //         })
-    //     }
-    // }
 
-    removeIngredient(item, value, qty) {
+    removeIngredient(formula_item, value, qty) {
         
         let ind = -1;
         qty = parseInt(qty);
-        item.ingredients.map((ing, index) => {
+        formula_item.ingredients.map((ing, index) => {
             if (ing._id === value._id)
                 ind = index;
         });
         if (ind > -1) {
-            let curr_qty = item.ingredient_quantities[ind];
+            let curr_qty = formula_item.ingredient_quantities[ind];
             curr_qty = curr_qty - qty;
-            if (curr_qty > 0) item.ingredient_quantities[ind] = curr_qty;
+            if (curr_qty > 0) formula_item.ingredient_quantities[ind] = curr_qty;
             else {
-                item.ingredients.splice(ind,1);
-                item.ingredient_quantities.splice(ind,1);
+                formula_item.ingredients.splice(ind,1);
+                formula_item.ingredient_quantities.splice(ind,1);
             }
         }
-        this.setState({ item: item })
+        this.setState({ formula_item: formula_item})
     }
 
-    // removeIngredientFromFormula(item, value, qty) {
-        
-    //     let ind = -1;
-    //     qty = parseInt(qty);
-    //     item.formula.ingredients.map((ing, index) => {
-    //     // item.ingredients.map((ing, index) => {
-    //         if (ing._id === value._id)
-    //             ind = index;
-    //     });
-    //     if (ind > -1) {
-    //         let curr_qty = item.formula.ingredient_quantities[ind];
-    //         curr_qty = curr_qty - qty;
-    //         if (curr_qty > 0) item.formula.ingredient_quantities[ind] = curr_qty;
-    //         else {
-    //             item.formula.ingredients.splice(ind,1);
-    //             item.formula.ingredient_quantities.splice(ind,1);
-    //         }
-    //     }
-    //     this.setState({ item: item })
-    // }
 
-    // addIngredientToFormula(item, value, qty) {
-    //     let ind = -1;
-    //     qty = parseInt(qty);
-    //     item.formula.ingredients.map((ing, index) => {
-    //         if (ing._id === value._id)
-    //             ind = index;
-    //     });
-    //     console.log()
-    //     if (ind > -1){
-    //         let curr_qty = item.formula.ingredient_quantities[ind];
-    //         curr_qty = curr_qty + qty;
-    //         item.formula.ingredient_quantities[ind] = curr_qty;
-    //     }
-    //     else {
-    //         item.formula.ingredients.push(value);
-    //         item.formula.ingredient_quantities.push(qty);
-    //     }
-    //     this.setState({ item: item })
-    // }
-
-    addIngredient(item, value, qty) {
+    addIngredient(formula_item, value, qty) {
         let ind = -1;
         qty = parseInt(qty);
-        item.ingredients.map((ing, index) => {
+        formula_item.ingredients.map((ing, index) => {
             if (ing._id === value._id)
                 ind = index;
         });
-        console.log()
+        console.log("this is after the mapping");
         if (ind > -1){
-            let curr_qty = item.ingredient_quantities[ind];
+            let curr_qty = formula_item.ingredient_quantities[ind];
             curr_qty = curr_qty + qty;
-            item.ingredient_quantities[ind] = curr_qty;
+            formula_item.ingredient_quantities[ind] = curr_qty;
         }
         else {
-            item.ingredients.push(value);
-            item.ingredient_quantities.push(qty);
+            formula_item.ingredients.push(value);
+            formula_item.ingredient_quantities.push(qty);
         }
-        this.setState({ item: item })
+        this.setState({ formula_item: formula_item })
     }
 
     async handleSubmit(e, opt) {
@@ -307,6 +255,8 @@ export default class SKUDetails extends React.Component {
                     item = {this.state.item}
                     formula_item = {this.state.formula_item}
                     handleFormulaPropChange={this.onFormulaPropChange}
+                    handleModifyList={this.onModifyList}
+
                     //api_route={Constants.formulas_page_name}
                     //item_type={Constants.details_modify_formula}
                     //options={[Constants.details_add, Constants.details_remove]}

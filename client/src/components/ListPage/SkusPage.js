@@ -341,6 +341,7 @@ export default class ListPage extends React.Component {
             case Constants.details_create:
                 newData.push(item);
                 //NEED TO SAVE THE NEW FORMULA
+                //TODO
                 //resFormula = await SubmitRequest.submitCreateOrUpdateFormula()
                 resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
                 console.log("this is the create res."+ JSON.stringify(resItem));
