@@ -16,8 +16,10 @@ export const ManuGoalTitle = "MANUFACTURING GOALS"
 export const FormulaTitle = "FORMULAS"
 
 export const ingredients_page_name = 'ingredients';
+export const users_page_name = 'users';
 export const ing_filter_path = 'ingredients_filter';
 export const sku_filter_path = 'skus_filter';
+export const users_filter_path = 'users_filter';
 export const formula_filter_path = 'formulas_filter';
 export const skus_page_name = 'skus';
 export const manugoals_page_name = 'manugoals';
@@ -30,28 +32,39 @@ export const options = 'Options'
 export const keyword_label = "Keyword"
 export const sku_label = "SKU"
 export const ingredient_label = "Ingredient"
+export const user_label = "User"
 export const prod_line_label = 'Product Line'
+export const formula_label = 'Formula'
+
 export const undefined = 'Undefined'
 
 export const unselected_row_color = 'White'
 export const selected_row_color = 'PaleTurquoise'
 
 export const create_item = 'Create Item'
+export const create_user = 'Create User'
 export const details_save = 'Save'
 export const details_delete = 'Delete'
 export const details_cancel = 'Cancel'
 export const details_exit = 'Exit'
 export const details_create = 'Create'
+export const details_export = 'Export'
+
+export const details_edit = 'Edit'
+export const details_view = 'View'
 export const details_add = 'Add'
 export const details_remove = 'Remove'
 export const details_modify_ingredient ="Modify Ingredient"
 export const details_modify_ingredient_quantities ="Modify Quantity"
 export const details_add_sku ="Add Ingredient"
 export const details_modify_sku_quantities ="Modify Quantity"
+export const details_modify_formula ="Modify Formula"
+
 
 export const add_keyword_filter = 'Add Keyword Filter'
 export const add_sku_filter = 'Add SKU Filter'
 export const add_ing_filter = 'Add Ingredient Filter'
+export const add_user_filter = 'Add User Filter'
 export const add_prod_filter = 'Add Product Line Filter'
 export const remove_filter_label = 'X'
 export const filter_removed = 'removed'
@@ -63,4 +76,6 @@ export const manu_goals_modal = 'manu_goal'
 export const edit_manu_lines = 'Bulk Edit Manufacturing Lines'
 export const manu_lines_modal = 'manu_lines'
 export const details_modal = 'details'
+export const manu_report_modal = 'manu_report_modal'
 export const modify_manu_lines_label = 'Modify Manufacturing Lines'
+export const modify_formula_label = 'Modify Formula'

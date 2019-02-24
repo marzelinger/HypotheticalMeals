@@ -17,6 +17,7 @@ import ItemSearchInput from './ItemSearchInput';
 import ItemSearchModifyListQuantity from './ItemSearchModifyListQuantity';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import ModifyManuLines from './ModifyManuLines';
+import SkuFormulaDetails from './SkuFormulaDetails';
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
 
@@ -33,6 +34,7 @@ export default class SKUDetails extends React.Component {
 
         this.state = {
             item: Object.assign({}, props.item),
+            formula_item: Object.assign({}, props.formula_item),
             item_properties,
             item_property_labels,
             item_property_patterns,
@@ -40,12 +42,16 @@ export default class SKUDetails extends React.Component {
             invalid_inputs: [],
             assisted_search_results: [],
             prod_line_item: {},
-            to_undo: {}
+            to_undo: {},
+            newFormula: false,
+            existingFormula: false,
+            existingFormulaSelected: false
         }
     }
 
     async componentDidMount() {
         await this.fillProductLine();
+        //await this.fillFormulaLine(); //TODO CHECK THIS
     }
 
     async fillProductLine() {
@@ -59,6 +65,21 @@ export default class SKUDetails extends React.Component {
             res.data[0] = {}
         }
         this.setState({ prod_line_item: res.data[0] });
+    }
+
+    async fillFormulaLine() {
+        var res = {};
+        console.log("This is the fill FormulaLine: "+JSON.stringify(this.state.item));
+        if (this.state.item.formula !== null && this.state.item.formula !== '') {
+            res = await SubmitRequest.submitGetFormulaByID(this.state.item.formula._id);
+            if (res === undefined || !res.success) res.data[0] = {};
+        }
+        else {
+            res.data = {}
+            res.data[0] = {}
+        }
+        this.setState({ formula_item: res.data[0] });
+        console.log("this is the current state item: "+JSON.stringify(this.state.item));
     }
 
     getPropertyLabel = (prop) => {
@@ -82,6 +103,30 @@ export default class SKUDetails extends React.Component {
                 prod_line_item: pl
             })
         }
+        console.log('this is the prod_line_item: '+JSON.stringify(this.state.prod_line_item));
+    }
+
+    onSelectFormula = async (formula) => {
+        console.log("the formula is selected.");
+        console.log("the formula: "+ JSON.stringify(formula));
+
+        var new_formula_item = await SubmitRequest.submitGetFormulaByID(formula._id);
+        console.log("the formula from the call: "+ JSON.stringify(new_formula_item));
+        if(new_formula_item.success){
+        if(currentUserIsAdmin().isValid){
+            var newItem = Object.assign({}, this.state.item);
+            newItem['formula'] = formula._id;
+            await this.setState({
+                item: newItem,
+                formula_item: new_formula_item.data[0],
+                existingFormulaSelected: true
+            })
+            console.log("the formula is existingFormula.: "+this.state.existingFormulaSelected);
+            console.log("the state of item the state: "+ JSON.stringify(this.state.item));
+
+
+        }
+        }
     }
 
     onModifyManuLines = (list) => {
@@ -99,72 +144,103 @@ export default class SKUDetails extends React.Component {
         this.setState({ item: item });
     };
 
+
+    onFormulaPropChange = (value, formula_item, prop) => {
+        console.log("this is the value: "+value);
+        console.log("this is the formula_item: "+JSON.stringify(formula_item));
+        console.log("this is the prop: "+prop);
+        console.log("PROPS BEING CHANGED IN FORMULA SKUDETAILS");
+        formula_item[prop] = value
+        this.setState({ formula_item: formula_item });
+
+        var curItem = this.state.item;
+        //TODO DO WE REALLY WANT THIS EHRE?
+        curItem['formula']=formula_item; //MIGHT BE ISSUE HERE.
+        this.setState({ item: curItem });
+        //TODO CHECK THAT HERE WE DON'T NEED TO BE SENDING THE FORMULA ITEM UP
+        console.log("this is the new formula"+ JSON.stringify(formula_item));
+        console.log("this is the new formula state."+ JSON.stringify(this.state.formula_item));
+
+        console.log("this is the new item"+ JSON.stringify(curItem));
+        console.log("this is the new formula state."+ JSON.stringify(this.state.item));
+
+
+    };
+
     onModifyList = (option, value, qty) => {
         if(currentUserIsAdmin().isValid){
-            var item = Object.assign({}, this.state.item);
+            var formula_item = Object.assign({}, this.state.formula_item);
+            console.log("this is the current formula"+ JSON.stringify(formula_item));
+            console.log("this is the option"+ JSON.stringify(option));
+
             switch (option) {
                 case Constants.details_add:
-                    this.addIngredient(item, value, qty);
+                    this.addIngredient(formula_item, value, qty);
                     break;
                 case Constants.details_remove:
-                    this.removeIngredient(item, value, qty);
+                    this.removeIngredient(formula_item, value, qty);
                     break;
             }
+            console.log("this is the current formula after"+ JSON.stringify(this.state.formula_item));
             this.setState({ 
-                item: item
+                formula_item: formula_item
             })
+            console.log("this is formula in onmodifylist after"+ JSON.stringify(this.state.formula_item));
+
         }
     }
 
-    removeIngredient(item, value, qty) {
+
+    removeIngredient(formula_item, value, qty) {
         
         let ind = -1;
         qty = parseInt(qty);
-        item.ingredients.map((ing, index) => {
+        formula_item.ingredients.map((ing, index) => {
             if (ing._id === value._id)
                 ind = index;
         });
         if (ind > -1) {
-            let curr_qty = item.ingredient_quantities[ind];
+            let curr_qty = formula_item.ingredient_quantities[ind];
             curr_qty = curr_qty - qty;
-            if (curr_qty > 0) item.ingredient_quantities[ind] = curr_qty;
+            if (curr_qty > 0) formula_item.ingredient_quantities[ind] = curr_qty;
             else {
-                item.ingredients.splice(ind,1);
-                item.ingredient_quantities.splice(ind,1);
+                formula_item.ingredients.splice(ind,1);
+                formula_item.ingredient_quantities.splice(ind,1);
             }
         }
-        this.setState({ item: item })
+        this.setState({ formula_item: formula_item})
     }
 
-    addIngredient(item, value, qty) {
+
+    addIngredient(formula_item, value, qty) {
         let ind = -1;
         qty = parseInt(qty);
-        item.ingredients.map((ing, index) => {
+        formula_item.ingredients.map((ing, index) => {
             if (ing._id === value._id)
                 ind = index;
         });
-        console.log()
+        console.log("this is after the mapping");
         if (ind > -1){
-            let curr_qty = item.ingredient_quantities[ind];
+            let curr_qty = formula_item.ingredient_quantities[ind];
             curr_qty = curr_qty + qty;
-            item.ingredient_quantities[ind] = curr_qty;
+            formula_item.ingredient_quantities[ind] = curr_qty;
         }
         else {
-            item.ingredients.push(value);
-            item.ingredient_quantities.push(qty);
+            formula_item.ingredients.push(value);
+            formula_item.ingredient_quantities.push(qty);
         }
-        this.setState({ item: item })
+        this.setState({ formula_item: formula_item })
     }
 
     async handleSubmit(e, opt) {
         if (![Constants.details_save, Constants.details_create].includes(opt)) {
-            this.props.handleDetailViewSubmit(e, this.state.item, opt);
+            this.props.handleDetailViewSubmit(e, this.state.item, this.state.formula_item, opt);
             return;
         }
         await this.validateInputs();
         let alert_string = 'Invalid Fields';
         let inv = this.state.invalid_inputs;
-        if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.state.item, opt)
+        if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.state.item, this.state.formula_item, opt)
         else {
             if (inv.includes('case_upc') && this.state.item['case_upc'].length > 11)
                 alert_string += '\nTry Case UPC: ' + CheckDigit.apply(this.state.item['case_upc'].slice(0,11));
@@ -202,6 +278,8 @@ export default class SKUDetails extends React.Component {
         return;
     }
 
+
+
     render() {
         return (
         <div className='item-details'>
@@ -223,19 +301,19 @@ export default class SKUDetails extends React.Component {
                     handleSelectItem={this.onSelectProductLine}
                     disabled = {currentUserIsAdmin().isValid ? false : true}
                 />
-                <ItemSearchModifyListQuantity
-                    api_route={Constants.ingredients_page_name}
-                    item_type={Constants.details_modify_ingredient}
-                    options={[Constants.details_add, Constants.details_remove]}
+                <SkuFormulaDetails
+                    item = {this.state.item}
+                    formula_item = {this.state.formula_item}
+                    handleFormulaPropChange={this.onFormulaPropChange}
                     handleModifyList={this.onModifyList}
-                    disabled = {currentUserIsAdmin().isValid ? false : true}
+                    detail_view_action = {this.props.detail_view_action}
+                    handleSelectFormulaItem = {this.onSelectFormula}
+                    existingFormulaSelected = {this.state.existingFormulaSelected}
+                    invalid_inputs={this.state.invalid_inputs}
                 />
-                <IngredientsViewSimple 
-                    sku={this.state.item} 
-                    handlePropChange={this.onPropChange}
-                    disabled={currentUserIsAdmin().isValid ? false : true}
-                />
+
             </div>
+            <div/>
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
                     <Button 
@@ -252,6 +330,8 @@ export default class SKUDetails extends React.Component {
 
 SKUDetails.propTypes = {
     item: PropTypes.object,
+    formula_item: PropTypes.object,
     detail_view_options: PropTypes.arrayOf(PropTypes.string),
+    detail_view_action: PropTypes.string,
     handleDetailViewSubmit: PropTypes.func
   };

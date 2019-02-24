@@ -1,21 +1,20 @@
 import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
+import setAdminToken from "../utils/setAdminToken";
 import jwt_decode from "jwt-decode";
 import {
   GET_ERRORS,
   SET_CURRENT_USER,
   USER_LOADING
 } from "./types";
+import printFuncFront from "../printFuncFront";
+
 const currentUserIsAdmin = require("../components/auth/currentUserIsAdmin");
 const adminHasInit = require("../../src/components/auth/adminHasInit");
 
 // Register New User
 export const registerUser = (userData, history) => dispatch => {
-  console.log(history);
-  console.log("THIS IS THE USER DATA: "+JSON.stringify(userData));
-  console.log(localStorage);
       if(currentUserIsAdmin().isValid){
-        console.log("curUserIsAdmin has been confirmed to be true");
         axios
         .post("/api/users/register", userData)
         .then(res => history.push("/skus")) //re-direct to skus on successful register.
@@ -33,15 +32,16 @@ export const loginUser = userData => dispatch => {
   axios
     .post("/api/users/login", userData)
     .then(res => {
-      // Save to localStorage
-// Set token to localStorage
       const { token } = res.data;
       localStorage.setItem("jwtToken", token);
       // Set token to Auth header
       setAuthToken(token);
-      // Decode token to get user data
       const decoded = jwt_decode(token);
-      console.log("logging in user and setting if admin in authActions: "+decoded.admin);
+
+      if(decoded.admin==true){
+        setAdminToken(token);
+      }
+      // Decode token to get user data
       // Set current user
       dispatch(setCurrentUser(decoded));
     })
@@ -59,6 +59,75 @@ export const setCurrentUser = decoded => {
     payload: decoded
   };
 };
+
+// // Set logged in user
+// export const setCurrentUser = decoded => {
+//   return {
+//     type: SET_CURRENT_USER,
+//     payload: decoded
+//   };
+// };
+
+
+export const loginDukeUser = (userData) => dispatch => {
+  axios
+  .post("/api/users/loginDukeNetID", userData)
+  .then(res => {
+
+
+      ///NEED TO FIX THE STUFF BELOW
+
+    const { token } = res.data;
+    localStorage.setItem("jwtToken", token);
+    // Set token to Auth header
+    setAuthToken(token);
+    const decoded = jwt_decode(token);
+    printFuncFront("this is the token : "+ JSON.stringify(token));
+
+
+    printFuncFront("this is the token in loginDukeUser: "+ decoded);
+
+    if(decoded.admin==true){
+      setAdminToken(token);
+    }
+    // Decode token to get user data
+    // Set current user
+    dispatch(setCurrentUser(decoded));
+  })
+  .catch(err =>
+    dispatch({
+      type: GET_ERRORS,
+      payload: err.response.data
+    })
+  );
+}
+
+
+// // Get all Users
+export const getDukeInfo = (userData) => dispatch => {
+  return axios.get('https://api.colab.duke.edu/identity/v1/', {
+    headers: {
+        'x-api-key': "meta-alligators",
+        'Authorization': "Bearer "+userData.netIDToken
+    }
+    })
+    .then( response => {
+
+    console.log("this is the res: "+JSON.stringify(response));
+    console.log("this is the netid: "+response.data.netid);
+    var netidVal = response.data.netid;
+    return response.data;
+    }
+    )
+  .catch(err => dispatch({
+    type: GET_ERRORS,
+    payload: err.response.data
+  })
+);
+
+};
+
+
 // User loading
 export const setUserLoading = () => {
   return {
@@ -67,28 +136,20 @@ export const setUserLoading = () => {
 };
 // Log user out
 export const logoutUser = () => dispatch => {
-  console.log("this is logging out the user");
   // Remove token from local storage
   localStorage.removeItem("jwtToken");
   // Remove auth header for future requests
   setAuthToken(false);
+  setAdminToken(false);
   // Set current user to empty object {} which will set isAuthenticated to false
   dispatch(setCurrentUser({}));
-  console.log(SET_CURRENT_USER);
-  console.log("localStorage: "+localStorage.getItem("jwtToken"));
 };
 
 
 
 // // Register First Admin
 export const registerFirstAdmin = (userData, history) => dispatch => {
-  console.log(history);
-  console.log(userData);
 
-  //console.log("this is the regfirstAdmin flag: "+ sessionStorage.getItem("firstAdminCreated"));
-  console.log("this is the regfirstAdmin flag: "+ localStorage.getItem("firstAdminCreated"));
-
-  console.log("this is the adminHasinit value: "+ adminHasInit().isValid);
   //if(!adminHasInit().isValid){
   axios
     .post("/api/users/register", userData)
@@ -100,7 +161,6 @@ export const registerFirstAdmin = (userData, history) => dispatch => {
       })
     );
     localStorage.setItem("firstAdminCreated", true);
-    console.log("this is the regfirstAdminLATER flag: "+ localStorage.getItem("firstAdminCreated"));
   //}
 };
 
@@ -110,11 +170,8 @@ export const registerFirstAdmin = (userData, history) => dispatch => {
 export const getAllUsers = () => dispatch => {
   var count = 0;
   axios
-    .get("/api/users/getall")
+    .get("/api/users")
     .then(res => {
-      console.log("this is the response in authActions: "+ res);
-      console.log("this is the length: "+ res.data.data.length);
-
       if(res.data.data.length>0){
         //sessionStorage.setItem("firstAdminCreated", true);
         localStorage.setItem("firstAdminCreated", true);
@@ -123,9 +180,6 @@ export const getAllUsers = () => dispatch => {
      else{
       //sessionStorage.setItem("firstAdminCreated", false);
       }
-      //console.log("this is the firstAdminCreated flag: "+ sessionStorage.getItem("firstAdminCreated"));
-      console.log("this is the firstAdminCreated flag: "+ localStorage.getItem("firstAdminCreated"));
-
           }) // re-direct to login on successful register
     .catch(err =>
       dispatch({

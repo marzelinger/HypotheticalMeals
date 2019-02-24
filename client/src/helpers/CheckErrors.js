@@ -12,8 +12,7 @@ export default class CheckErrors{
             unscheduled_enabled, 
             over_deadline
         }
-        let ok = await SubmitRequest.submitUpdateItem('manuactivities', new_activity);
-        console.log(ok)
+        let response =  await SubmitRequest.submitUpdateItem('manuactivities', new_activity);
     }
 
     static checkOrphaned(goal, activity){
@@ -25,6 +24,9 @@ export default class CheckErrors{
     }
 
     static checkOverDeadline(goal, activity){
+        if(!activity.scheduled){
+            return false;
+        }
         var {start, duration} = activity;
         var start_date = new Date(start);
         var end = start_date.setHours(start_date.getHours() + duration);

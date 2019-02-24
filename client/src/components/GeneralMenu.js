@@ -9,7 +9,7 @@ import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
 
-const currentUserIsAdmin = require("../components/auth/currentUserIsAdmin");
+const currentUserIsAdmin = require("./auth/currentUserIsAdmin");
 
 
 export default class GeneralMenu extends React.Component {
@@ -36,6 +36,9 @@ export default class GeneralMenu extends React.Component {
         <Link to="/manu_goals" >
           <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Manufacturing Goals'}></MenuItem>
         </Link>
+        <Link to="/manu_lines" >
+          <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Manufacturing Lines'}></MenuItem>
+        </Link>
         <Link to="/manu_schedule" >
           <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Manufacturing Schedule'}></MenuItem>
         </Link>
@@ -57,21 +60,25 @@ export default class GeneralMenu extends React.Component {
             (
               <Link to="/import" >
               <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Import'}></MenuItem>
-            </Link>
-            )
+            </Link>)
             :
             (<div></div>)
-          }
-          {
-            currentUserIsAdmin().isValid ? 
-            (
+        }
+        {currentUserIsAdmin().isValid ? 
+            (<Link to="/users" >
+              <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'User Settings'}></MenuItem>
+            </Link>)
+            :
+            (<div></div>)
+        }
+        {currentUserIsAdmin().isValid ? 
+              (
               <Link to="/register" >
                 <MenuItem style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Register New Users'}></MenuItem>
-              </Link>
-            )
+              </Link>)
             :
             (<div></div>)
-          }
+        }
         </Drawer>
       </div>
     );

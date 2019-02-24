@@ -6,9 +6,10 @@ import SubmitRequest from '../../../helpers/SubmitRequest';
 import '../../../style/ManufacturingGoalsBox.css'
 import ExportSimple from '../../export/ExportSimple';
 import ManufacturingLineDetails from './ManufacturingLineDetails';
+import PropTypes from "prop-types";
 const jwt_decode = require('jwt-decode');
 
-class ManufacturingLinesBox extends Component {
+export default class ManufacturingLinesBox extends Component {
   constructor() {
     super();
     this.state = {
@@ -175,6 +176,7 @@ class ManufacturingLinesBox extends Component {
             data={this.state.data}
             handleDeleteManuLine={this.onDeleteManuLine}
             handleUpdateManuLine={this.onUpdateManuLine}
+            handleReportSelect={this.props.handleManuScheduleReportSelect}
           />
         </div>
         <div className="form">
@@ -187,4 +189,6 @@ class ManufacturingLinesBox extends Component {
   }
 }
 
-export default ManufacturingLinesBox;
+ManufacturingLinesBox.propTypes = {
+  handleManuScheduleReportSelect: PropTypes.func
+};

@@ -7,6 +7,7 @@ import CheckErrors from '../../helpers/CheckErrors'
 import * as Constants from '../../resources/Constants';
 import ManuSchedulePalette from './ManuSchedulePalette'
 import './../../style/ManuSchedulePageStyle.css';
+import GeneralNavBar from '../GeneralNavBar';
 const jwt_decode = require('jwt-decode');
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 var moment = require('moment');
@@ -271,6 +272,7 @@ export default class ManuSchedulePage extends Component {
     render() {
         return (
         <div>
+            <GeneralNavBar></GeneralNavBar>
             <div className={'scheduler-container'} style={this.getContainerStyle()}>
                 <div className='timeline-container'>
                     {this.state.loaded ? (<Timeline 

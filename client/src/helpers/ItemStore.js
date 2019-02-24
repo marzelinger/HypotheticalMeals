@@ -58,6 +58,17 @@ export default class ItemStore{
           sku_count: 0,
           comment: ''
         };
+      case Constants.users_page_name:
+          return {
+            _id: 'unassigned',
+            username: '',
+            password: '',
+            privileges: [],
+            admin_creator: '',
+            comment: '',
+            isAdmin: false,
+            isNetIDLogin: false
+          };
       case Constants.skus_page_name: 
         var res = await SubmitRequest.submitGetData(page_name);
         var new_id = await ItemStore.getUniqueNumber(res.data);
@@ -82,8 +93,9 @@ export default class ItemStore{
       case Constants.manugoals_page_name:
         return {
           name: '',
-          skus: [],
-          quantities: []
+          deadline: " ",
+          activities: [],
+          enabled: false
         }
       case Constants.manu_line_page_name:
       return {
