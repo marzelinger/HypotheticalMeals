@@ -276,6 +276,7 @@ export default class ManuSchedulePage extends Component {
         // this.setState({start: event.start})
         this.range['start'] = event.start
         this.range.end = event.end;
+        console.log("updating");
     }
 
     render() {
@@ -295,19 +296,22 @@ export default class ManuSchedulePage extends Component {
                         ]}
                         groups={groups}
                         clickHandler={this.clickHandler.bind(this)}
+                        rangechangeHandler = {this.updateRange}
                         // selectHandler={this.selectHandler.bind(this)}
                     />) : null}
                 </div>
-                <div className='palette-container'>
-                    <ManuSchedulePalette
-                        goals={this.state.unscheduled_goals}
-                        activities={this.state.activities}
-                        lines={this.state.lines}
-                        activity_to_schedule={this.state.activity_to_schedule}
-                        prepareAddActivity={this.prepareAddActivity}
-                    />
+                <div className = "belowTimeline">
+                    <div className='palette-container'>
+                        <ManuSchedulePalette
+                            goals={this.state.unscheduled_goals}
+                            activities={this.state.activities}
+                            lines={this.state.lines}
+                            activity_to_schedule={this.state.activity_to_schedule}
+                            prepareAddActivity={this.prepareAddActivity}
+                        />
+                    </div>
+                    <ManuActivityErrors className = "errors" range = {this.range} activities = {this.state.activities.filter((activity) => activity.scheduled)}></ManuActivityErrors>
                 </div>
-                <ManuActivityErrors className = "errors" range = {this.range} activities = {this.state.activities.filter((activity) => activity.scheduled)}></ManuActivityErrors>
             </div>
         </div>
         );
