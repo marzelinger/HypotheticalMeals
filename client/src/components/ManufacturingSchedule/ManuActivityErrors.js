@@ -23,7 +23,7 @@ export default class ManuSchedulePalette extends Component {
     }
 
     shouldComponentUpdate(nextProps){
-
+        console.log("here");
         var Datenext =  Date.parse(this.state.range.start);
         var Dateprev =  Date.parse(this.state.prevRange.start);
         if(!Datenext && !Dateprev){
