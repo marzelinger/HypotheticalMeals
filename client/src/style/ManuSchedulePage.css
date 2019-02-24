@@ -1,8 +1,0 @@
-.palette-container{
-    display: inline-block;
-    width: 40%;
-}
-
-.noFocus:focus {
-    outline: none;
-}
