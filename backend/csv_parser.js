@@ -780,6 +780,22 @@ export default class CSV_parser{
             if(collisionObj.success == false){
                 indicateFormulaCollisionFailure(res, collisionObj, i+2);
             }
+
+            added = 0;
+            ignored = 0;
+            updated = 0;
+            var formulas_added = [];
+            var intermediate_formulas_added = [];
+            var formulas_to_update_new = [];
+            var formulas_to_update_old = [];
+            var formulas_to_ignor_arr = [];
+            for(var i = 0; i < jsonArray.length; i++){
+                var obj = jsonArray[i];
+                if(formulas_to_update.has(obj[Constants.csv_formula_num])){
+                    updated = updated + 1;
+                    
+                }
+            }
         }
     }
 

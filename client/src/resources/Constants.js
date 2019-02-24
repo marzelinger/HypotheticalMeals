@@ -87,7 +87,7 @@ export const csv_ingr_comment = "Comment";
 
 export const csv_prod_lines = "Name";
 
-export const csv_formulas_num = "Formula#";
+export const csv_formula_num = "Formula#";
 export const csv_formula_name = "Name";
 export const csv_formula_ingr = "Ingr#";
 export const csv_formula_quantity = "Quantity";
