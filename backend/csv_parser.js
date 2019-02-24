@@ -1,7 +1,9 @@
 import Prod_Line from './models/databases/prod_line';
 import SKU from './models/databases/sku';
+import Formula from './models/databases/formula';
 import Ingredient from './models/databases/ingredient';
 import ItemStore from './../client/src/helpers/ItemStore';
+import FormulaDetails from '../client/src/components/ListPage/FormulaDetails';
 
 const csv = require('csvtojson');
 const fs = require('fs');
@@ -140,6 +142,12 @@ export default class CSV_parser{
                 db_prod_lines.add(prod_line.name);
             });
 
+            var db_formulas = new Set();
+            var all_formulas = await Formula.find();
+            all_formulas.forEach(function (formula){
+                db_formulas.add(formula.num);
+            });
+
             // Imports CSV, converts to JSON and makes sure it isn't empty
             const jsonArray = await csv().fromFile(req.file.path);
             fs.unlinkSync(req.file.path);
@@ -147,8 +155,9 @@ export default class CSV_parser{
                 return res.json({ success: false, empty: true});
             }
 
-            var requiredNumFields = 8;
-            var columnsObj = await this.checkColumns(jsonArray[0], ["SKU#", "Name", "Case UPC", "Unit UPC", "Unit size", "Count per case", "Product Line Name", "Comment"], requiredNumFields);
+            var requiredNumFields = 13;
+            var columnsObj = await this.checkColumns(jsonArray[0], 
+                ["SKU#","Name","Case UPC","Unit UPC","Unit size","Count per case" , "PL Name","Comment","Formula#","Formula factor","ML Shortnames","Rate","Comment"], requiredNumFields);
             if(columnsObj.success == false){
                 return this.indicateColumnFailure(res, columnsObj, requiredNumFields);
             }
@@ -168,7 +177,7 @@ export default class CSV_parser{
                     return await this.indicateSKUDataFailure(res, dataValidationObj, i+2);
                 }
                 
-                var collisionObj = await this.searchForSKUCollision(obj, db_prod_lines, skus_to_add_num, skus_to_add_caseUPC, db_skus, db_caseUPCs, skus_to_update, skus_to_ignore)
+                var collisionObj = await this.searchForSKUCollision(obj, db_prod_lines, skus_to_add_num, skus_to_add_caseUPC, db_skus, db_caseUPCs, skus_to_update, skus_to_ignore, db_formulas)
                 if(collisionObj.success == false){
                     return await this.indicateSKUCollisionFailure(res, collisionObj, i+2);
                 }
@@ -197,10 +206,10 @@ export default class CSV_parser{
                     old_sku_to_show.unit_upc = old_sku[0].unit_upc;
                     old_sku_to_show.cpc = old_sku[0].cpc;
                     old_sku_to_show.prod_line = old_sku[0].prod_line;
-                    old_sku_to_show.prod_line_to_show = obj["Product Line Name"];
+                    old_sku_to_show.prod_line_to_show = obj["PL Name"];
                     old_sku_to_show.comment = old_sku[0].comment;
                     console.log(old_sku_to_show);
-                    var prod_line = await Prod_Line.find({ name : obj["Product Line Name"]});
+                    var prod_line = await Prod_Line.find({ name : obj["PL Name"]});
                     console.log(prod_line[0].name);
                     old_sku[0].newField = prod_line[0].name;
                     var newObj = {};
@@ -339,19 +348,27 @@ export default class CSV_parser{
             toReturn.cpcIssue = true;
             return toReturn;
         }
+
         toReturn.success = true;
         return toReturn;
     }
 
-    static async searchForSKUCollision(obj, db_prod_lines, skus_to_add_num, skus_to_add_caseUPC, db_skus, db_caseUPCs, skus_to_update, skus_to_ignore) {
+    static async searchForSKUCollision(obj, db_prod_lines, skus_to_add_num, skus_to_add_caseUPC, db_skus, db_caseUPCs, skus_to_update, skus_to_ignore, db_formulas) {
         var toReturn = {};
         // If the specified product line doesn't exist, indicate to the user
-        if(!db_prod_lines.has(obj["Product Line Name"])) {
+        if(!db_prod_lines.has(obj["PL Name"])) {
             toReturn.success = false;
             toReturn.prod_line_error = true;
-            toReturn.prod_line_name = obj["Product Line Name"];
+            toReturn.prod_line_name = obj["PL Name"];
             return toReturn;
         } 
+        if(!db_formulas.has(obj["Formula #"])) {
+            toReturn.success = aflse;
+            toReturn.formula_error = true;
+            toReturn.formula_num = obj["Formula #"];
+            return toReturn;
+        }
+        
         // Check for a duplicate in the same CSV file
         if(skus_to_add_num.has(obj["SKU#"]) || skus_to_add_caseUPC.has(obj["Case UPC"])){
             toReturn.success = false;
@@ -403,7 +420,8 @@ export default class CSV_parser{
     }
 
     static async indicateSKUCollisionFailure(res, collisionObj, row){
-        if(collisionObj.prod_line_error == true) return res.json({ success: false, row: row+1, prod_line_name: collisionObj.prod_line_name,});
+        if(collisionObj.prod_line_error == true) return res.json({ success: false, row: row+1, prod_line_name: collisionObj.prod_line_name});
+        else if(collisionObj.formula_error == true) return res.json({ success: false, row: row+1, formula_num: collisionObj.formula_num});
         else if(collisionObj.duplicate == true) return res.json({ success: false, duplicate: row})
         else if(collisionObj.ambiguousCollision == true) return res.json({ success: false, collision: row})
     }
