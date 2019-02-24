@@ -56,7 +56,7 @@ export default class CheckErrors{
             }
         }
         if(activity.over_deadline){
-            var message = `Activity is currently scheduled to finish after goal deadline at ${data.deadline}.`
+            var message = `Activity is currently scheduled to finish after goal deadline at ${new Date(data[0].deadline)}.`
             error_messages.push({key: 'over_deadline',message});
         }
         if(activity.unschedled_enabled){
