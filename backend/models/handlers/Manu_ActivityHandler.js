@@ -136,9 +136,15 @@ class Manu_ActivityHandler{
             console.log("here in the submitrequest for back report");
 
             var target_manu_line_id = req.params.manu_line_id;
+            console.log("here in the getManuREport. id is: "+(target_manu_line_id));
+            // var manu_target = {
+            //     _id: 
+            // }
             var target_start_date = req.params.start_date;
             var target_end_date = req.params.end_date;
-            let to_return = await Manu_Activity.find({ manu_line :{ _id : target_manu_line_id}}).populate('sku').populate('manu_line').populate({
+            //let conflict = await Manu_Goal.find({ name : new_name, user: new_user, activities: new_activities});
+
+            let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id}).populate('sku').populate('manu_line').populate({
                 path: 'sku',
                 populate: { path: 'ingredients' }
               });

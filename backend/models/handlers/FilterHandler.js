@@ -142,7 +142,7 @@ class FilterHandler{
             var ingredient_ids = req.params.ingredient_ids;
             if (ingredient_ids !== undefined && ingredient_ids !== "_"){
                 ingredient_ids = ingredient_ids.replace(/\s/g, "").split(',');
-                console.log(ingredient_ids);
+                //console.log(ingredient_ids);
                 let formulas = await Formula.find({ ingredients : {$in : ingredient_ids } });
                 formulas.map(formula => ids.push(formula._id));
                 and_query.push( {_id: { $in: ids } } );

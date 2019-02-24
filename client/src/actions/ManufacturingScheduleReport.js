@@ -8,6 +8,7 @@ export const exportManuScheduleReport = async (reportData) => {
     var manu_line_id = reportData.manu_line._id;
     var duration = reportData.duration;
     var start_date = reportData.start_date;
+    console.log("this is the manuline")
 
     var end_date = 0; //TODO
 
@@ -17,8 +18,7 @@ export const exportManuScheduleReport = async (reportData) => {
 //     and date, and duration in hours).
 //need to get all manu activities for this line, that have been schedule and that are within the duration
 //and start date.
-    //let res = await SubmitRequest.submitGetManufacturingActivitiesForReport(manu_line_id,start_date,end_date);
-
-    //console.log("this is the manu_activities: "+JSON.stringify(res));
+    let res = await SubmitRequest.submitGetManufacturingActivitiesForReport(manu_line_id,start_date,end_date);
+    console.log("this is the manu_activities: "+JSON.stringify(res));
 
 }
