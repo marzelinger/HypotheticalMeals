@@ -348,16 +348,6 @@ export default class SkuFormulaDetails extends React.Component {
         return (
         <div className='item-properties'>
         <div>Formula</div>
-        {/* {this.switchFormulaInitial()} */}
-        {/* {this.props.detail_view_action===Constants.details_create ? */}
-            {/* <div> */}
-            {/* {this.formulaSelectNewButtons()} */}
-            {/* {this.switchFormulaCreateDisplay()} */}
-            {/* </div> */}
-            {/* : */}
-            {/* <div/> */}
-        {/* } */}
-        <div>ACTUAL STUFF BELOW</div>
         {this.switchFormulaViewMaster()}
         </div>
         );
