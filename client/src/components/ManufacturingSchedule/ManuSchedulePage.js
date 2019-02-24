@@ -6,13 +6,9 @@ import SubmitRequest from "../../helpers/SubmitRequest";
 import CheckErrors from '../../helpers/CheckErrors'
 import * as Constants from '../../resources/Constants';
 import ManuSchedulePalette from './ManuSchedulePalette'
-<<<<<<< HEAD
-import ManuActivityErrors from './ManuActivityErrors';
-import './../../style/ManuSchedulePage.css';
-=======
 import './../../style/ManuSchedulePageStyle.css';
 import GeneralNavBar from '../GeneralNavBar';
->>>>>>> 7b669c10137660dd368c8d558d9f7cf122164ca6
+import ManuActivityErrors from './ManuActivityErrors';
 const jwt_decode = require('jwt-decode');
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 var moment = require('moment');
@@ -299,21 +295,19 @@ export default class ManuSchedulePage extends Component {
                         ]}
                         groups={groups}
                         clickHandler={this.clickHandler.bind(this)}
-                        rangechangeHandler = {this.updateRange}
+                        // selectHandler={this.selectHandler.bind(this)}
                     />) : null}
                 </div>
-                <div className = "belowTimeline">
-                    <div className='palette-container'>
-                        <ManuSchedulePalette
-                            goals={this.state.goals}
-                            activities={this.state.activities}
-                            lines={this.state.lines}
-                            activity_to_schedule={this.state.activity_to_schedule}
-                            prepareAddActivity={this.prepareAddActivity}
-                        />
-                    </div>
-                    <ManuActivityErrors className = "errors" range = {this.range} activities = {this.state.activities.filter((activity) => activity.scheduled)}></ManuActivityErrors>
+                <div className='palette-container'>
+                    <ManuSchedulePalette
+                        goals={this.state.unscheduled_goals}
+                        activities={this.state.activities}
+                        lines={this.state.lines}
+                        activity_to_schedule={this.state.activity_to_schedule}
+                        prepareAddActivity={this.prepareAddActivity}
+                    />
                 </div>
+                <ManuActivityErrors className = "errors" range = {this.range} activities = {this.state.activities.filter((activity) => activity.scheduled)}></ManuActivityErrors>
             </div>
         </div>
         );

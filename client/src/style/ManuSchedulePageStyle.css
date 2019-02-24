@@ -46,3 +46,13 @@ td, tr {
 .vis-time-axis .vis-grid.vis-odd {
     background: #f5f5f5;
 }
+
+.scheduler-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.belowTimeline {
+    display: grid;
+    grid-template-columns: 6fr 5fr;
+}
