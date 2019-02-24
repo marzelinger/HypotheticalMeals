@@ -173,12 +173,15 @@ export default class FormulasPage extends React.Component {
         this.loadDataFromServer();
     }
 
-    onFilterValueSelection(vals, e, type){
-        var filters = this.state.filters;
-        filters[type] = vals.map((item) => {
-            return item.value_id
-        })
 
+    onFilterValueSelection (vals, e, type)  {
+        var filters = this.state.filters;
+        vals.map((item) => {
+            if (!filters[type].includes(item.value._id)){
+                filters[type].push(item.value._id);
+            }
+        })
+        
         this.setState({
             filters: filters,
             filterChange: true
@@ -302,6 +305,7 @@ export default class FormulasPage extends React.Component {
                         onFilterValueChange = {this.onFilterValueChange}
                         onRemoveFilter = {this.onRemoveFilter}
                         ingredients = {this.state.ingredients}
+                        onTableOptionSelection = {this.onTableOptionSelection}
                     />
                 </div>
                 <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
@@ -323,6 +327,6 @@ export default class FormulasPage extends React.Component {
     }
 }
 
-ListPage.propTypes = {
-    default_ing_flter: PropTypes.object
+FormulasPage.propTypes = {
+    default_ing_filter: PropTypes.object
 }
