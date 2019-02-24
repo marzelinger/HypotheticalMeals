@@ -18,7 +18,8 @@ export default class ManufacturingGoal extends React.Component{
     super(props);
     this.state = {
       disabled: false,
-      name: this.props.name
+      name: this.props.name,
+      original_enable: this.props.goal.enabled
     }
   }
 
@@ -36,7 +37,6 @@ export default class ManufacturingGoal extends React.Component{
 
   onQuantityChange = async (event, activity_index) => {
       console.log(this.props.activities)
-
       var {_id, sku, scheduled, start, end, duration, error} = this.props.activities[activity_index]
       console.log({_id, sku, scheduled, start, end, duration, error, quantity: Number(event.target.value) })
       await SubmitRequest.submitUpdateItem('manuactivities', {_id, sku, scheduled, start, end, duration, error, quantity: Number(event.target.value) })
@@ -93,6 +93,7 @@ export default class ManufacturingGoal extends React.Component{
   }
 
   onEnabled = async() => {
+    console.log("updating");
     this.props.goal['enabled'] = !this.props.goal['enabled']
     await this.props.handleUpdateGoal(this.props.id, this.state.name)
     await this.props.activities.forEach(async(activity) => {
@@ -104,8 +105,7 @@ export default class ManufacturingGoal extends React.Component{
   render() {
     return (
       <div id="singleGoal">
-        <div className = {`hoverable enablebutton ${this.props.goal.enabled ? 'enabled' : 'disabled'}`} onClick = {() => this.onEnabled()}></div>
-        <div className="textContent">
+        <div className={`textContent ${this.props.goal.enabled ? 'enabled' :'disabled'}`}>
           <div className="singleGoalContent hoverable" id={'goal' + this.props.id}>
             <input onKeyPress = {(event) => this.onNameSubmit(event)} type = "text" value = {this.props.goal.name} onChange = {(event) => this.onNameChange(event)}></input>
           </div>
@@ -119,8 +119,10 @@ export default class ManufacturingGoal extends React.Component{
         </div>
           <div className="singleGoalButtons">
             {/* <img className = "hoverable" id ="deleteButton" onClick={() => {this.handleDeleteGoal()}} src= {deleteButton}></img> */}
-            <div className="form">
+            <div id = "editform" className="form">
               <ManufacturingGoalDetails
+              onEnabled = {this.onEnabled}
+              enabled = {this.props.goal.enabled}
               item = {this.props.goal}
               buttonImage = {editButton}
               handleDetailViewSubmit = {this.handleDetailViewSubmit}

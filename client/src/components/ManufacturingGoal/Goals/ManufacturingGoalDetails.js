@@ -16,6 +16,7 @@ import SimpleGoalTable from '../SimpleGoalTable';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import SubmitRequest from '../../../helpers/SubmitRequest';
+import Switch from "react-switch";
 
 
 export default class ManufacturingGoalDetails extends React.Component {
@@ -159,6 +160,17 @@ export default class ManufacturingGoalDetails extends React.Component {
         await this.setState({ invalid_inputs: inv_in });
     }
 
+    onEnable = () => {
+        var action = !this.state.item.enabled ? 'enable' : 'disable';
+        var result = !this.state.item.enabled ? 'a need to schedule all currently scheduled activities' : 'all currently scheduled activities becoming orphaned.';
+
+        if(window.confirm(`Are you sure you want to ${action} this goal? Doing so will result in ${result}`)){
+            var item = this.state.item
+            this.setState({
+                item: {...item, enabled: !this.state.item.enabled}
+            })
+        }
+    }
     injectProperties = () => {
         if (this.state.item!=undefined){
             var inputs =  (this.state.item_properties.map(prop => 
@@ -171,9 +183,18 @@ export default class ManufacturingGoalDetails extends React.Component {
                         onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
                     />
                 </FormGroup>));
+
+            var enable = this.state.detail_view_options.includes(Constants.details_save) ? 
+            <FormGroup>
+                <Label>Enabled</Label>
+                <br></br>
+                <Switch onChange={this.onEnable} checked={this.state.item.enabled} />
+            </FormGroup> : 
+            <div></div>
             return (
                 <div>
                     {inputs}
+                    {enable}
                     <TextField
                         id="datetime-local"
                         label="Deadline"
@@ -232,7 +253,7 @@ export default class ManufacturingGoalDetails extends React.Component {
     render() {
         return (
         <div>
-        <img className = "hoverable" id = "button" src={this.props.buttonImage} onClick={this.toggle}></img>
+        <img id = "button" src={this.props.buttonImage} onClick={this.toggle}></img>
             <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup" className='item-details'>
             <div className='item-details'>
                 <div className='item-title'>
