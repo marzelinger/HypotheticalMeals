@@ -297,7 +297,7 @@ export default class SkuFormulaDetails extends React.Component {
             ?
             <div>{this.formulaPropItemIng()}</div>
             :
-            <div>no existingformulaselected</div>
+            <div></div>
             }
         </div>
         );
