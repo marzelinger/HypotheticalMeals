@@ -32,7 +32,7 @@ export default class ManuSchedulePage extends Component {
             }
         }
         this.prepareAddActivity = this.prepareAddActivity.bind(this);
-        this.clickHandler = this.clickHandler.bind(this);
+        this.doubleClickHandler = this.doubleClickHandler.bind(this);
         this.selectHandler = this.selectHandler.bind(this);
         this.onMove = this.onMove.bind(this);
         this.onRemove = this.onRemove.bind(this);
@@ -103,8 +103,17 @@ export default class ManuSchedulePage extends Component {
         }
     }
 
-    async clickHandler(e) {
-        console.log(e)
+    async doubleClickHandler(e) {
+        if (e.item !== null) {
+            let clicked_item = items.filter(i => {return i.id === e.item})
+            console.log(clicked_item[0])
+            console.log(this.state.activities)
+            let clicked_activity = this.state.activities.filter(a => {return a._id === clicked_item[0]._id})
+            console.log(clicked_activity[0])
+            clicked_activity[0].overwritten = false
+            await CheckErrors.updateActivityErrors(clicked_activity[0]);
+            await this.loadScheduleData();
+        }
     }
 
     async selectHandler(items, event) {
@@ -263,6 +272,7 @@ export default class ManuSchedulePage extends Component {
         groupEditable: {
             order: true
         }, 
+        verticalScroll: true,
         onMove: this.onMove,
         onRemove: this.onRemove,
         onAdd: this.onAdd,
@@ -284,7 +294,7 @@ export default class ManuSchedulePage extends Component {
                             }
                         ]}
                         groups={groups}
-                        clickHandler={this.clickHandler.bind(this)}
+                        doubleClickHandler={this.doubleClickHandler.bind(this)}
                         // selectHandler={this.selectHandler.bind(this)}
                     />) : null}
                 </div>
