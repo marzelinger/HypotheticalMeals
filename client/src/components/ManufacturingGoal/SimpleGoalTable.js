@@ -24,15 +24,15 @@ export class SimpleGoalTable extends React.Component{
     
     render() {
         let tablebody = (
-            this.props.skus.map((item, index) => 
+            this.props.activities.map((activity, index) => 
             <TableRow
-              key={item.num + index}
+              key={activity.sku.num + index}
             >
-                <TableRowColumn key={index}>
-                    {this.props.skus[index].name}
+                <TableRowColumn key={index + activity._id}>
+                    {activity.sku.name}
                 </TableRowColumn>
-                <TableRowColumn key={index}>
-                    {this.props.quantities[index]}
+                <TableRowColumn key={index + activity._id}>
+                    {activity.quantity}
                 </TableRowColumn>
 
             </TableRow>

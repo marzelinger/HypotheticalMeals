@@ -13,6 +13,7 @@ import jwt_decode from "jwt-decode";
 import setAuthToken from "../utils/setAuthToken";
 import GeneralNavBar from "./GeneralNavBar";
 import ManufacturingPage from "./ManufacturingGoal/ManufacturingPage";
+import ManufacturingLinePage from "./ManufacturingGoal/ManufacturingLinePage";
 import ImportPage from "./ImportPage";
 import IngredientsPage from "./ListPage/IngredientsPage";
 import ProductLinePage from "./ProductLine/ProductLinePage";
@@ -87,6 +88,7 @@ class App extends React.Component{
                 <PrivateRoute exact path="/manu_schedule" component={ManuSchedulePage} />
                 <PrivateRoute exact path="/skus" component={SkusPage} />
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingPage} />
+                <PrivateRoute exact path="/manu_lines" component={ManufacturingLinePage} />
                 <PrivateRoute exact path="/prod_lines" component={ProductLinePage} />
                 <PrivateRoute exact path="/import" component={ImportPage} />
                 <PrivateRoute exact path="/formulas" component={FormulasPage} />
