@@ -5,6 +5,7 @@ import {
   const isEmpty = require("is-empty");
   const initialState = {
     isAuthenticated: false,
+    isAdmin: false,
     user: {},
     loading: false
   };
@@ -14,6 +15,7 @@ import {
         return {
           ...state,
           isAuthenticated: !isEmpty(action.payload),
+          isAdmin: action.payload.admin,
           user: action.payload
         };
       case USER_LOADING:

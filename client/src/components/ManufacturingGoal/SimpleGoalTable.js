@@ -24,29 +24,35 @@ export class SimpleGoalTable extends React.Component{
     
     render() {
         let tablebody = (
-            this.props.skus.map((item, index) => 
+            this.props.activities.map((activity, index) => 
             <TableRow
-              key={item.num + index}
+              key={activity.sku.num + index}
+              style = {{overflow: 'visible', textAlign: 'center', display:'grid', gridTemplateColumns: '6fr 3fr 3fr'}}
             >
-                <TableRowColumn key={index}>
-                    {this.props.skus[index].name}
+                <TableRowColumn key={index + activity._id} style = {{overflow: 'visible'}}>
+                    {`${activity.sku.name}:${activity.sku.unit_size}*${activity.sku.cpc}`}
                 </TableRowColumn>
-                <TableRowColumn key={index}>
-                    {this.props.quantities[index]}
+                <TableRowColumn key={index + activity._id}>
+                    {activity.quantity}
                 </TableRowColumn>
-
+                <TableRowColumn>
+                  {activity.quantity * activity.sku.manu_rate}
+                </TableRowColumn>
             </TableRow>
           ))
       return (
         <div>
           <Table>
-            <TableHeader>
-              <TableRow selectable = {false} class = "cols">
+            <TableHeader displaySelectAll = {false} adjustForCheckbox = {false}>
+              <TableRow style = {{overflow: 'visible', textAlign: 'center', display:'grid', gridTemplateColumns: '6fr 3fr 3fr'}} selectable = {false} class = "cols">
                   <TableHeaderColumn>
                     SKUs
                   </TableHeaderColumn>
                   <TableHeaderColumn>
                     Quantities
+                  </TableHeaderColumn>
+                  <TableHeaderColumn>
+                    Durations
                   </TableHeaderColumn>
               </TableRow>
             </TableHeader>

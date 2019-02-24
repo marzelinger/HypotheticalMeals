@@ -95,6 +95,8 @@ router.put('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandl
 router.get('/manuactivities', (req, res) => Manu_ActivityHandler.getAllManufacturingActivities(req, res));
 router.get('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.getManufacturingActivityByID(req, res));
 router.delete('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.deleteManufacturingActivityByID(req, res));
+router.get('/manuactivities/:manu_line_id/:start_date/:end_date', (req, res) => Manu_ActivityHandler.getManufacturingActivitiesForReport(req, res));
+
 
 // Ingredient database APIs
 router.post('/ingredients', (req, res) => IngredientHandler.createIngredient(req, res));
@@ -117,6 +119,7 @@ router.get('/manugoals_activity/:activity_id', (req, res) => Manu_GoalHandler.ge
 // Multiple database APIs
 router.get('/ingredients_filter/:sort_field/:sku_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
 router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize/:prod_line_ids', (req, res) => FilterHandler.getSkusByFilter(req, res));
+router.get('/users_filter/:sort_field/:user_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getUsersByFilter(req, res));
 router.get('/formulas_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getFormulasbyFilter(req, res));
 
 
@@ -127,6 +130,8 @@ router.post('/parseIngredients', upload.single('file'), (req,res) => CSV_parser.
 router.post('/parseFormulas', upload.single('file'), (req, res) => CSV_parser.parseFormulasCSV(req, res));
 router.post('/parseUpdateSkus', (req, res) => CSV_parser.parseUpdateSKU(req, res));
 router.post('/parseUpdateIngredients', (req, res) => CSV_parser.parseUpdateIngredients(req, res));
+
+router.put('/users/:user_id', (req, res) => UserHandler.updateUserByID(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);
@@ -144,11 +149,15 @@ router.post("/users/register", (req, res) => UserHandler.createUser(req, res));
 // @desc Login user and return JWT token
 // @access Public
 router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword(req,res));
+router.post("/users/loginDukeNetID", (req, res) => UserHandler.loginUserDukeNetID(req,res));
+
+
 
 // @route GET api/users/getall
 // @desc Get all users in the mlab db and return them.
 // @access Public
-router.get('/users/getall', (req, res) => UserHandler.getAllUsers(req, res));
+router.get('/users', (req, res) => UserHandler.getAllUsers(req, res));
+
 
 
 

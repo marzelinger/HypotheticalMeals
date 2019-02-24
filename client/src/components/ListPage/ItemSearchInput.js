@@ -27,6 +27,7 @@ export default class ItemSearchInput extends React.Component {
         };
     }
 
+    //TODO MAKE SURE THAT THE CURITEM SENDING FROM FORMULADETAILS IS THE POPULATED ONE.
     async componentDidUpdate (prevProps, prevState) {
         if (prevState.substr !== this.state.substr) {
             await this.updateResults();
@@ -41,11 +42,15 @@ export default class ItemSearchInput extends React.Component {
     }
 
     async updateResults() {
+        console.log("this is the item type: "+this.props.item_type);
         if (this.props.item_type === Constants.ingredient_label && this.state.substr.length > 0) {
             var res = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.substr);
         }
         else if (this.props.item_type === Constants.prod_line_label && this.state.substr.length > 0) {
             var res = await SubmitRequest.submitGetProductLinesByNameSubstring(this.state.substr);
+        }
+        else if (this.props.item_type === Constants.formula_label && this.state.substr.length > 0) {
+            var res = await SubmitRequest.submitGetFormulasByNameSubstring(this.state.substr);
         }
         else {
             var res = {};
@@ -70,6 +75,14 @@ export default class ItemSearchInput extends React.Component {
         return this.state.substr;
     }
 
+    getType = () => {
+        if(this.props.item_type ===Constants.prod_line_label){
+            return Constants.prod_line_page_name;
+        }
+        if(this.props.item_type ===Constants.formula_label){
+            return Constants.formulas_page_name;
+        }
+    }
     onFilterValueSelection (label, value) {
         this.setState({
             substr: label,
@@ -94,7 +107,7 @@ export default class ItemSearchInput extends React.Component {
                 <Label>{this.props.item_type}</Label>
                 <Filter
                     handleFilterValueSelection = {(opt, e) => this.onFilterValueSelection(opt.label, opt.value._id)}
-                    type = {'products'}
+                    type = {this.getType()}
                     multi = {false}
                     place_holder = {this.props.curr_item}
                     disabled = {this.props.disabled}

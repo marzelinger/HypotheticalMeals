@@ -15,6 +15,7 @@ import {Modal, ModalHeader} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import FormulaDetails from './FormulaDetails';
 import '../../style/SkusPage.css'
+import GeneralNavBar from '../GeneralNavBar';
 
 const jwt_decode = require('jwt-decode');
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
@@ -115,6 +116,9 @@ export default class FormulasPage extends React.Component {
             exportData: resALL.data,
             filterChange: false
         })
+        console.log("this is the data that we got from the submitGetFilterData in formulas:");
+        console.log(JSON.stringify(this.state.data));
+        console.log("first value: "+JSON.stringify(this.state.data[0]));
         this.updateDataState();
     }
 
@@ -282,6 +286,7 @@ export default class FormulasPage extends React.Component {
     render(){
         return(
             <div className="list-page">
+            <GeneralNavBar></GeneralNavBar>
                 <div>
                     <PageTable
                         columns={this.state.table_columns} 

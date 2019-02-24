@@ -48,6 +48,7 @@ export default class Filter extends React.Component {
     }
 
     getNewOptions = (input) => {
+        console.log("getting new options here.");
         if(input == ""){
             this.setState({options: []})
             return;
@@ -70,6 +71,11 @@ export default class Filter extends React.Component {
                     break;
                 case Constants.manu_line_page_name:
                     SubmitRequest.submitGetManufacturingLinesByNameSubstring(input).then((response) => {
+                        this.handleResponse(response)
+                    });
+                    break;
+                case Constants.formulas_page_name:
+                    SubmitRequest.submitGetFormulasByNameSubstring(input).then((response) => {
                         this.handleResponse(response)
                     });
                     break;
