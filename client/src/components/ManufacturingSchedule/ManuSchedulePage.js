@@ -6,9 +6,9 @@ import SubmitRequest from "../../helpers/SubmitRequest";
 import CheckErrors from '../../helpers/CheckErrors'
 import * as Constants from '../../resources/Constants';
 import ManuSchedulePalette from './ManuSchedulePalette'
-import ManuActivityErrors from './ManuActivityErrors';
 import './../../style/ManuSchedulePageStyle.css';
 import GeneralNavBar from '../GeneralNavBar';
+import ManuActivityErrors from './ManuActivityErrors';
 const jwt_decode = require('jwt-decode');
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 var moment = require('moment');
@@ -286,6 +286,7 @@ export default class ManuSchedulePage extends Component {
         // this.setState({start: event.start})
         this.range['start'] = event.start
         this.range.end = event.end;
+        console.log("updating");
     }
 
     render() {
@@ -306,12 +307,13 @@ export default class ManuSchedulePage extends Component {
                         groups={groups}
                         doubleClickHandler={this.doubleClickHandler.bind(this)}
                         rangechangeHandler = {this.updateRange}
+                        // selectHandler={this.selectHandler.bind(this)}
                     />) : null}
                 </div>
                 <div className = "belowTimeline">
                     <div className='palette-container'>
                         <ManuSchedulePalette
-                            goals={this.state.goals}
+                            goals={this.state.unscheduled_goals}
                             activities={this.state.activities}
                             lines={this.state.lines}
                             activity_to_schedule={this.state.activity_to_schedule}
