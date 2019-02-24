@@ -51,11 +51,12 @@ export default class ManuSchedulePalette extends Component {
             return ((activityEnd >= timelineStart) &&  (activityStart <= timelineEnd))
         })
         var error_info = [];
+        console.log(current_activities);
         for(var i = 0; i < current_activities.length; i ++){
             await CheckErrors.updateActivityErrors(current_activities[i])
             let info = await CheckErrors.getErrorMessages(current_activities[i])
             if(info)error_info.push(info);
-            console.log(info);
+            // console.log(info);
         }
         this.setState({error_info, updated_messages: true})
     }
@@ -63,18 +64,14 @@ export default class ManuSchedulePalette extends Component {
     render(){
         console.log("re rendered");
         let errors;
-        if(this.state.error_info.error_messages){
-            errors = this.state.error_info.error_messages.map((info) => {
-            return (<p>{info}</p>)
-        })
-        }
+        console.log(this.state.error_info)
         var messages = this.state.error_info.map((info) => {
             console.log(info.error_messages)
             return (
                 <div key = {info.name}>
                     <h3>{info.name}</h3>
                     <div>
-                        {errors}
+                        {info.error_messages.map((message) => <p className = {message.key}>{message.message}</p>)}
                     </div>
                 </div>
             )

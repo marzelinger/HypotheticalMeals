@@ -29,8 +29,8 @@ export default class CheckErrors{
             return false;
         }
         var end = this.getEndTime(activity);
-        console.log(end);
-        return (end > goal.deadline);
+        var deadline = new Date(goal.deadline);
+        return (end > deadline);
     }
 
     static getEndTime(activity){
@@ -43,26 +43,25 @@ export default class CheckErrors{
     static async getErrorMessages(activity){
         var error_messages = [];
         var { data } = await SubmitRequest.submitQueryString(`/api/manugoals_activity/${activity._id}`);
-        console.log(data);
         var name = `Activity [Manufacturing Goal:${data[0].name}, SKU: ${activity.sku.name}:${activity.sku.unit_size}*${activity.sku.cpc}]`
         if(activity.over_written){
             var message = 'Activity duration has been overridden by an admin.'
-            error_messages.push({over_ridden: message});
+            error_messages.push({key:'over_ridden', message});
         }
         if(activity.orphaned){
             var message = 'Activity goal has been disabled, activity is orphaned.'
-            error_messages.push({orphaned: message});
+            error_messages.push({key: 'orphaned', message});
             return {
                 name, error_messages
             }
         }
         if(activity.over_deadline){
             var message = `Activity is currently scheduled to finish after goal deadline at ${data.deadline}.`
-            error_messages.push({over_deadline: message});
+            error_messages.push({key: 'over_deadline',message});
         }
         if(activity.unschedled_enabled){
             var message = `Activity still needs to be scheduled and is associated with an enabled goal.`
-            error_messages.push({unscheduled_enabled: message});
+            error_messages.push({key: 'unscheduled_enabled', message});
         }
         if(error_messages.length > 0){
             return {name, error_messages}
