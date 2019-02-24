@@ -74,25 +74,23 @@ class Manu_GoalHandler{
         }
     }
 
-    static async getManufacturingGoalByID(req, res){
-        try {
-            var target_id = req.params.manu_goal_id;
-            var user_id = req.params.user_id;
-            let to_return = await Manu_Goal.find({ _id : target_id, user:user_id}).populate('activities').populate({path: 'activities', populate: { path: 'sku' }});
-
-            if(to_return.length == 0) return res.json({success: false, error: '404'});
-            return res.json({ success: true, data: to_return});
-        } catch (err){
-            return res.json({ success: false, error: err});
-        }
-    }
-
     static async getManufacturingGoalByUser(req, res){
         try {
             var target_id = req.params.manu_goal_id;
             var user_id = req.params.user_id;
             let to_return = await Manu_Goal.find({ _id : target_id, user:user_id});
 
+            if(to_return.length == 0) return res.json({success: false, error: '404'}).populate('activities').populate({path: 'activities', populate: { path: 'sku' }});
+            return res.json({ success: true, data: to_return});
+        } catch (err){
+            return res.json({ success: false, error: err});
+        }
+    }
+
+    static async getManufacturingGoalByActivity(req, res){
+        try{
+            var activity_id = req.params.activity_id;
+            let to_return = await Manu_Goal.find({ activities: activity_id});
             if(to_return.length == 0) return res.json({success: false, error: '404'}).populate('activities').populate({path: 'activities', populate: { path: 'sku' }});
             return res.json({ success: true, data: to_return});
         } catch (err){
@@ -115,18 +113,36 @@ class Manu_GoalHandler{
             if(user != '_'){
                 and_query.push({user: user});
             }
-            let to_return = and_query.length == 0 ? await Manu_Goal.find().populate('activities').populate({path: 'activities', populate: { path: 'sku' }}) : await Manu_Goal.find({$and: and_query}).populate('activities').populate({path: 'activities', populate: { path: 'sku' }});;
+            let to_return;
+            if(and_query.length == 0){
+                to_return = await Manu_Goal.find()
+                                    .populate('activities')
+                                    .populate({path: 'activities', populate: { path: 'sku' }})
+                                    .populate({path: 'activities', populate: { path: 'sku', populate: {path: 'formula'} }})
+                                    .populate({path: 'activities', populate: { path: 'sku', populate: {path: 'formula', populate: {path: 'ingredients'}} }});
+            } else{
+                to_return = await Manu_Goal.find({$and: and_query})
+                                        .populate('activities')
+                                        .populate({path: 'activities', populate: { path: 'sku' }})
+                                        .populate({path: 'activities', populate: { path: 'sku', populate: {path: 'formula'} }})
+                                        .populate({path: 'activities', populate: { path: 'sku', populate: {path: 'formula', populate: {path: 'ingredients'}} }});
+            }
             return res.json({ success: true, data: to_return});
         } catch (err){
             return res.json({ success: false, error: err});
         }
     }
 
-    static async getManufacturingGoalByIDActivities(req, res){
+
+
+    static async getManufacturingGoalByID(req, res){
         try {
             var target_id = req.params.manu_goal_id;
-            var user_id = req.params.user_id
-            let to_return = await Manu_Goal.find({ _id : target_id, user: user_id}).populate('activities').populate('sku').populate({path: 'activities', populate: { path: 'sku' }});
+            let to_return = await Manu_Goal.find({ _id : target_id})
+                                    .populate('activities')
+                                    .populate({path: 'activities', populate: { path: 'sku' }})
+                                    .populate({path: 'activities', populate: { path: 'sku', populate: {path: 'formula'} }})
+                                    .populate({path: 'activities', populate: { path: 'sku', populate: {path: 'formula', populate: {path: 'ingredients'}} }});
             if(to_return.length == 0) return res.json({success: false, error: '404'});
             return res.json({ success: true, data: to_return[0]});
         } catch (err){

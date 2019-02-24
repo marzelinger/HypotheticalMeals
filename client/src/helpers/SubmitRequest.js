@@ -7,27 +7,6 @@ import printFuncFront from '../printFuncFront';
 
 export default class SubmitRequest{
 
-  static submitEnableUpdate(activities, enable) {
-    console.log("submit enabled");
-    var ids = activities.map((activity => activity._id));
-    console.log(ids);
-    var body = {ids, enable};
-    try {
-      return fetch('/api/manuactivities_enable', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      }).then(res => res.json()).then((res) => {
-        if (!res.success) return { success: res.success, error: res.error };
-        else return { success: res.success, data: res.data};
-      });
-    }
-    catch (err){
-      console.log('here');
-      return { success: false, error: err };
-    }
-  }
-
   static submitQueryString(query) {
     return fetch(query, { method: 'GET' })
           .then(data => data.json())
@@ -62,7 +41,7 @@ export default class SubmitRequest{
 
   static submitCreateItem = (route, item) => {
     try {
-      console.log(item);
+      //console.log(item);
       return fetch(`/api/${route}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -79,9 +58,9 @@ export default class SubmitRequest{
 
   static submitUpdateItem = (route, item) => {
     try {
-      printFuncFront("this is the route: "+'/api/'+route+item._id);
-      printFuncFront("this is item "+item);
-      printFuncFront("this is string item "+JSON.stringify(item));
+      // printFuncFront("this is the route: "+'/api/'+route+item._id);
+      // printFuncFront("this is item "+item);
+      // printFuncFront("this is string item "+JSON.stringify(item));
 
 
       return fetch(`/api/${route}/${item._id}`, {
@@ -89,9 +68,9 @@ export default class SubmitRequest{
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(item),
       }).then(res => res.json()).then((res) => {
-        printFuncFront("this is the route2: "+'/api/'+route+item._id);
-        printFuncFront("this is the response: "+res);
-        printFuncFront("this is the response: "+JSON.stringify(res));
+        // printFuncFront("this is the route2: "+'/api/'+route+item._id);
+        // printFuncFront("this is the response: "+res);
+        // printFuncFront("this is the response: "+JSON.stringify(res));
 
 
         if (!res.success) return { success: res.success, error: res.error };
@@ -172,7 +151,7 @@ export default class SubmitRequest{
 
   static async submitGetManufacturingLineByShortName(shortname) {
     try {
-      console.log('/api/manulines_shortname/' + shortname);
+      //console.log('/api/manulines_shortname/' + shortname);
       return fetch('/api/manulines_shortname/' + shortname)
       .then(data => data.json())
       .then((res) => {
@@ -273,7 +252,7 @@ export default class SubmitRequest{
   static submitGetFilterData = (route, sort_field, filter_value, keyword, currentPage, pageSize, prod_line) => {
     var path = '/api/' + route + '/' + sort_field + '/' + filter_value + '/' + keyword + '/' + currentPage +'/' + pageSize;
     path += (prod_line === undefined) ? '' : ('/' + prod_line);
-    printFuncFront("this is path in submitGetFilterData"+path);
+    //printFuncFront("this is path in submitGetFilterData"+path);
     return fetch(path, { method: 'GET' })
       .then(data => data.json())
       .then((res) => {

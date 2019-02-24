@@ -12,7 +12,6 @@ export default class ManufacturingPage extends React.Component {
       <div>
         <GeneralNavBar></GeneralNavBar>
         <ManufacturingGoalsBox></ManufacturingGoalsBox>
-        <ManufacturingLineBox></ManufacturingLineBox>
       </div>
     );
   }

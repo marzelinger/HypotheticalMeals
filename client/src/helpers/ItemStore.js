@@ -93,8 +93,9 @@ export default class ItemStore{
       case Constants.manugoals_page_name:
         return {
           name: '',
-          skus: [],
-          quantities: []
+          deadline: " ",
+          activities: [],
+          enabled: false
         }
       case Constants.manu_line_page_name:
       return {

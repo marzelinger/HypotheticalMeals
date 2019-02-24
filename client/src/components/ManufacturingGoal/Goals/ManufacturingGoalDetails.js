@@ -11,11 +11,12 @@ import {
     Modal } from 'reactstrap';
 import DataStore from '../../../helpers/DataStore'
 import ItemStore from '../../../helpers/ItemStore';
-import addButton from '../../../resources/add.png';
 import ItemSearchModifyListQuantity from '../../ListPage/ItemSearchModifyListQuantity';
 import SimpleGoalTable from '../SimpleGoalTable';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
+import SubmitRequest from '../../../helpers/SubmitRequest';
+import Switch from "react-switch";
 
 
 export default class ManufacturingGoalDetails extends React.Component {
@@ -35,7 +36,7 @@ export default class ManufacturingGoalDetails extends React.Component {
             item_property_field_type,
             invalid_inputs: [],
             modal: false,
-            detail_view_options: [Constants.details_create, Constants.details_cancel],
+            detail_view_options: this.props.options,
             item: {},
             page_title: 'SKUs',
             data: [],
@@ -60,6 +61,7 @@ export default class ManufacturingGoalDetails extends React.Component {
     }
 
     onPropChange = (value, item, prop) => {
+        console.log("props changing");
         console.log(value)
         item[prop] = value
         this.setState({ item: item });
@@ -81,40 +83,47 @@ export default class ManufacturingGoalDetails extends React.Component {
         })
     }
 
-    removeSku(item, value, qty) {
+    removeSku = async (item, value, qty) => {
         let ind = -1;
         qty = parseInt(qty);
-        item.skus.map((sku, index) => {
-            if (sku._id === value._id)
+        item.activities.map((activity, index) => {
+            if (activity.sku._id === value._id)
                 ind = index;
         });
         if (ind > -1) {
-            let curr_qty = item.quantities[ind];
+            if(item.activities[ind].scheduled){
+                alert("You cannot edit activities that have already been scheduled");
+                return;
+            }
+            let curr_qty = item.activities[ind].quantity
             curr_qty = curr_qty - qty;
-            if (curr_qty > 0) item.quantities[ind] = curr_qty;
+            if (curr_qty > 0){
+                item.activities[ind].quantity = item.activities[ind].quantity - qty;
+            } 
             else {
-                item.skus.splice(ind,1);
-                item.quantities.splice(ind,1);
+                item.activities.splice(ind,1);
             }
         }
         this.setState({ item: item })
     }
 
-    addSku(item, value, qty) {
+    addSku = async(item, value, qty) => {
         let ind = -1;
         qty = parseInt(qty);
-        item.skus.map((sku, index) => {
-            if (sku._id === value._id)
+        item.activities.map((activity, index) => {
+            if (activity.sku._id === value._id)
                 ind = index;
         });
         if (ind > -1){
-            let curr_qty = item.quantities[ind];
-            curr_qty = curr_qty + qty;
-            item.quantities[ind] = curr_qty;
+            if(item.activities[ind].scheduled){
+                alert("You cannot edit activities that have already been scheduled");
+                return;
+            }
+            item.activities[ind].quantity  = item.activities[ind].quantity + qty;
         }
         else {
-            item.skus.push(value);
-            item.quantities.push(qty);
+            var new_activity = {sku: value, quantity: qty}
+            item.activities.push(new_activity);
         }
         this.setState({ item: item })
     }
@@ -130,7 +139,11 @@ export default class ManufacturingGoalDetails extends React.Component {
         let alert_string = 'Invalid Fields';
         let inv = this.state.invalid_inputs;
         if (inv.length === 0) {
-            if(this.props.handleDetailViewSubmit(e, this.state.item, opt)){
+            var item = this.state.item;
+            item.deadline = new Date(item.deadline)
+            console.log(item.deadline);
+            var return_val = await this.props.handleDetailViewSubmit(e, item, opt)
+            if(return_val){
                 this.setState({modal: false})
             }
         }
@@ -147,6 +160,17 @@ export default class ManufacturingGoalDetails extends React.Component {
         await this.setState({ invalid_inputs: inv_in });
     }
 
+    onEnable = () => {
+        var action = !this.state.item.enabled ? 'enable' : 'disable';
+        var result = !this.state.item.enabled ? 'a need to schedule all currently scheduled activities' : 'all currently scheduled activities becoming orphaned.';
+
+        if(window.confirm(`Are you sure you want to ${action} this goal? Doing so will result in ${result}`)){
+            var item = this.state.item
+            this.setState({
+                item: {...item, enabled: !this.state.item.enabled}
+            })
+        }
+    }
     injectProperties = () => {
         if (this.state.item!=undefined){
             var inputs =  (this.state.item_properties.map(prop => 
@@ -159,50 +183,77 @@ export default class ManufacturingGoalDetails extends React.Component {
                         onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
                     />
                 </FormGroup>));
+
+            var enable = this.state.detail_view_options.includes(Constants.details_save) ? 
+            <FormGroup>
+                <Label>Enabled</Label>
+                <br></br>
+                <Switch onChange={this.onEnable} checked={this.state.item.enabled} />
+            </FormGroup> : 
+            <div></div>
             return (
                 <div>
                     {inputs}
+                    {enable}
                     <TextField
                         id="datetime-local"
                         label="Deadline"
                         type="datetime-local"
-                        defaultValue="2017-05-24T10:30"
+                        value = {this.state.item['deadline']}
                         className={'text'}
-                        onChange = {(event) => this.onPropChange(event.target.value, this.state.item, 'deadline')}
+                        onClick = {(event) => this.onPropChange(event.target.value, this.state.item, 'deadline')}
+                        onKeyPress = {(event) => this.onPropChange(event.target.value, this.state.item, 'deadline')}
+                        onChange = {(event) => this.onPropChange((event.target.value), this.state.item, 'deadline')}
                         InputLabelProps={{
                         shrink: true,
                         }}
                     />
-                    {/* <FormGroup>
-                        <Label>Deadline</Label>
-                        <DatePicker value={ this.state.item['deadline']} onChange={ (e, date) => this.onPropChange(date, this.state.item, 'deadline')} hintText="Select deadline" />
-                    </FormGroup> */}
                 </div>
                 )
         }
 
     }
 
+    pad(n, length) {
+        console.log(n);
+        let s = '' + n;
+        while(s.length < length){
+            console.log(s);
+            s = '0' + s;
+        }
+        return s;
+    }
+
     toggle = async () => {
-        console.log('toggling');
         try{
-            var item = await ItemStore.getEmptyItem(Constants.manugoals_page_name);
-            console.log(item);
+            var item = this.props.item || await ItemStore.getEmptyItem(Constants.manugoals_page_name);
+            if(item.deadline != " "){
+                var deadline = new Date(item.deadline)
+                var localDate = deadline
+                var day = localDate.getDate();
+                var month = localDate.getMonth(); 
+                var year = localDate.getFullYear();
+                var yyyymmdd = this.pad(year, 4) +  "-" + this.pad(month + 1, 2) + "-" + this.pad(day, 2);
+                var hours = this.pad(''+localDate.getHours(), 2);
+                var minutes = this.pad(''+localDate.getMinutes(), 2);
+                var dateString = `${yyyymmdd}T${hours}:${minutes}`
+                item.deadline = dateString;
+                console.log(item.deadline)
+            }
             await this.setState({ 
                 modal: !this.state.modal,
                 item: item,
-                detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
+                detail_view_options: this.props.options
             })
         } catch (e){
             console.log(e);
         }
-        
-      }
+    }
 
     render() {
         return (
         <div>
-        <img className = "hoverable" id = "button" src={addButton} onClick={this.toggle}></img>
+        <img id = "button" src={this.props.buttonImage} onClick={this.toggle}></img>
             <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup" className='item-details'>
             <div className='item-details'>
                 <div className='item-title'>
@@ -217,8 +268,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                         handleModifyList={this.onModifyList}
                     />
                     <SimpleGoalTable
-                    skus = {this.state.item.skus}
-                    quantities = {this.state.item.quantities}
+                    activities = {this.state.item.activities}
                     ></SimpleGoalTable>
                 </div>
                 <div className='item-options'>

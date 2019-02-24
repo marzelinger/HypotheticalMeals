@@ -330,15 +330,6 @@ export default class ListPage extends React.Component {
         this.toggle(Constants.details_modal);
     };
 
-    formatNewSKUFormula (item, resFormula){
-        
-        //this is to verify the item to be created and its schema
-        console.log("this is the item to be created in db: \n");
-        console.log("item: "+JSON.stringify(item));
-    }
-    //NEED TO EDIT THIS HERE SO THAT THE CORRECT FORMULA ITEM IS LINKED TO THE ITEM BEFORE IT IS SAVED.
-    //look at the response here.
-    //
     async onDetailViewSubmit(event, item, formula_item, option) {
         // var res = {};
         var resItem = {};
