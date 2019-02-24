@@ -37,7 +37,6 @@ export default class ManufacturingGoal extends React.Component{
 
   onQuantityChange = async (event, activity_index) => {
       console.log(this.props.activities)
-
       var {_id, sku, scheduled, start, end, duration, error} = this.props.activities[activity_index]
       console.log({_id, sku, scheduled, start, end, duration, error, quantity: Number(event.target.value) })
       await SubmitRequest.submitUpdateItem('manuactivities', {_id, sku, scheduled, start, end, duration, error, quantity: Number(event.target.value) })
