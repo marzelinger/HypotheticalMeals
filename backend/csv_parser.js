@@ -780,23 +780,52 @@ export default class CSV_parser{
             if(collisionObj.success == false){
                 indicateFormulaCollisionFailure(res, collisionObj, i+2);
             }
+        }
 
-            added = 0;
-            ignored = 0;
-            updated = 0;
-            var formulas_added = [];
-            var intermediate_formulas_added = [];
-            var formulas_to_update_new = [];
-            var formulas_to_update_old = [];
-            var formulas_to_ignor_arr = [];
-            for(var i = 0; i < jsonArray.length; i++){
-                var obj = jsonArray[i];
-                if(formulas_to_update.has(obj[Constants.csv_formula_num])){
-                    updated = updated + 1;
-                    
-                }
+        added = 0;
+        ignored = 0;
+        updated = 0;
+        var formulas_added = [];
+        var intermediate_formulas_added = [];
+        var formulas_dealt_with = new Set();
+        var formulas_to_update_new = [];
+        var formulas_to_update_old = [];
+        var formulas_to_ignore = [];
+        for(var i = 0; i < jsonArray.length; i++){
+            var obj = jsonArray[i];
+            if(formulas_dealt_with.has(obj[Constants.csv_formula_num])) continue;
+            if(formulas_to_update.has(obj[Constants.csv_formula_num])){
+                updated = updated + 1;
+                var newObj ={};
+                var reformattedFormulas = await this.reformatFormula(newObj, obj, formulas_to_update, formulas_to_comments);
+                formulas_to_update_new.push(reformattedFormulas[0]);
+                formulas_dealt_with.add(obj[Constants.csv_formula_num]);
+            }
+            else if(formulas_to_add.has(obj[Constants.csv_formula_num])){
+                added = added + 1;
+                var newObj = {};
+                var reformattedFormulas = await this.reformatFormula(newObj, obj, formulas_to_add, formulas_to_comments);
+                formulas_added.push(reformattedFormulas[0]);
+                formulas_dealt_with.add(obj[Constants.csv_formula_num]);
             }
         }
+
+        for (var i = 0; i < formulas_added; i++){
+            var formula = new Formula();
+            formula.name = formulas_added[i].name;
+            formula.num = formulas_added[i].num;
+            formula.ingredients = formulas_added[i].ingredients;
+            formula.ingredient_quantities = formulas_added[i].ingredient_quantities;
+            formula.comment = formulas_added[i].comment;
+            let new_formula = await formula.save();
+        }
+        for (var i = 0; i < formulas_to_update_new; i++){
+            let updated_formula = await Formula.findOneAndUpdate({ num : formulas_to_update_new[i].num },
+                {$set: {name: formulas_to_update_new[i].name, num: formulas_to_update_new[i].num, 
+                        ingredients: formulas_to_update_new[i].ingredients, ingredient_quantities: formulas_to_update_new[i].ingredient_quantities,
+                        comment: formulas_to_update_new[i].comment}}, {upsert: true, new: true});
+        }
+        return res.json({ success: true, showImport: true, adds: formulas_added, updates: formulas_to_update_new, ignores: formulas_to_ignore});
     }
 
     static async validateDataFormulas(obj, all_formulas, db_ingredients_num){

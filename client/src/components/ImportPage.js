@@ -239,9 +239,9 @@ export default class ImportPage extends React.Component {
                     } else if(typeof res.data.showImport != 'undefined' && endpoint == '/api/parseFormulas'){
                         this.setState({
                             showImportReport: true,
-                            update_list_items_new: res.data.sku_data,
-                            update_list_no_collisions: [],
-                            update_list_ignores: [],
+                            update_list_items_new: res.data.updates,
+                            update_list_no_collisions: res.data.adds,
+                            update_list_ignores: res.data.ignores,
                             import_report_type: "Formulas",
                         })
                     }
