@@ -131,6 +131,25 @@ class Manu_ActivityHandler{
         }
     }
 
+    static async getManufacturingActivitiesForReport(req, res){
+        try {
+            console.log("here in the submitrequest for back report");
+
+            var target_manu_line_id = req.params.manu_line_id;
+            var target_start_date = req.params.start_date;
+            var target_end_date = req.params.end_date;
+            let to_return = await Manu_Activity.find({ manu_line :{ _id : target_manu_line_id}}).populate('sku').populate('manu_line').populate({
+                path: 'sku',
+                populate: { path: 'ingredients' }
+              });
+
+            if(to_return.length == 0) return res.json({success: false, error: '404'});
+            return res.json({ success: true, data: to_return});
+        } catch (err){
+            return res.json({ success: false, error: err});
+        }
+    }
+
     static async deleteManufacturingActivityByID(req, res){
         try {
             var target_id = req.params.manu_activity_id;

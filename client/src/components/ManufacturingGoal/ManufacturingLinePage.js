@@ -7,6 +7,7 @@ import '../../style/ManufacturingGoalsStyle.css';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import { Modal } from 'reactstrap';
 import ManufacturingScheduleReportDetails from './ManufacturingScheduleReportDetails';
+import { exportManuScheduleReport} from "../../actions/ManufacturingScheduleReport";
 const jwt_decode = require('jwt-decode');
 
 
@@ -76,7 +77,7 @@ export default class ManufacturingLinePage extends React.Component {
 
     await this.setState({
       selected_manu_line: new_manu_line.data[0],
-      detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel],
+      detail_view_options: [Constants.details_export, Constants.details_cancel],
       detail_view_action: Constants.details_edit
 
     })
@@ -84,19 +85,13 @@ export default class ManufacturingLinePage extends React.Component {
     this.toggle(Constants.manu_report_modal);
   }
 
-  async onDetailViewSubmit(event, item, option) {
-    var resItem = {};
-    var resFormula = {};
-    var newData = this.state.data.splice();
-    console.log("this is the item  state."+ JSON.stringify(item));
+  async onDetailViewSubmit(event, reportData, option) {
+    console.log("this is the item  state."+ JSON.stringify(reportData));
 
     switch (option) {
-        case Constants.details_create:
+        case Constants.details_export:
+            exportManuScheduleReport(reportData);
             break;
-        case Constants.details_save:
-            break;
-        case Constants.details_delete:
-                      break;
         case Constants.details_cancel:
             break;
     }

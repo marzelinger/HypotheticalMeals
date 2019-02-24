@@ -477,3 +477,4 @@ export const exportImportReport = (added_items, updated_items, ignored_items, fi
          }); 
         fileDownload(csvContent, fileTitle+'.csv');
 }
+

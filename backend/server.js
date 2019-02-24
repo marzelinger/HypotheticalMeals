@@ -95,6 +95,8 @@ router.put('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandl
 router.get('/manuactivities', (req, res) => Manu_ActivityHandler.getAllManufacturingActivities(req, res));
 router.get('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.getManufacturingActivityByID(req, res));
 router.delete('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.deleteManufacturingActivityByID(req, res));
+router.get('/manuactivities/:manu_line_id/:start_date/:end_date', (req, res) => Manu_ActivityHandler.getManufacturingActivitiesForReport(req, res));
+
 
 // Ingredient database APIs
 router.post('/ingredients', (req, res) => IngredientHandler.createIngredient(req, res));

@@ -11,6 +11,8 @@ import {
     Input,
     FormGroup,
     Label } from 'reactstrap';
+import {Form, FormText } from 'reactstrap';
+
 import SubmitRequest from '../../helpers/SubmitRequest';
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
@@ -34,7 +36,11 @@ export default class ManufacturingScheduleReportDetails extends React.Component 
             // item_property_field_type,
             invalid_inputs: [],
             assisted_search_results: [],
-            to_undo: {}
+            to_undo: {},
+            start_date:'',
+            duration: '',
+            errors: {}
+
         }
     }
 
@@ -68,57 +74,10 @@ export default class ManufacturingScheduleReportDetails extends React.Component 
         return this.state.item_property_field_type[this.state.item_properties.indexOf(prop)];
     }
 
-    // onSelectProductLine = (pl) => {
-    //     if(currentUserIsAdmin().isValid){
-    //         var newItem = Object.assign({}, this.state.item);
-    //         newItem['prod_line'] = pl._id;
-    //         this.setState({
-    //             item: newItem,
-    //             prod_line_item: pl
-    //         })
-    //     }
-    //     console.log('this is the prod_line_item: '+JSON.stringify(this.state.prod_line_item));
-    // }
-
-    // onModifyManuLines = (list) => {
-    //     if(currentUserIsAdmin().isValid){
-    //         var newItem = Object.assign({}, this.state.item);
-    //         newItem['manu_lines'] = list;
-    //         this.setState({
-    //             item: newItem
-    //         })
-    //     }
-    // }
-
     onPropChange = (value, item, prop) => {
         item[prop] = value
         this.setState({ item: item });
     };
-
-
-    // onModifyList = (option, value, qty) => {
-    //     if(currentUserIsAdmin().isValid){
-    //         var formula_item = Object.assign({}, this.state.formula_item);
-    //         console.log("this is the current formula"+ JSON.stringify(formula_item));
-    //         console.log("this is the option"+ JSON.stringify(option));
-
-    //         switch (option) {
-    //             case Constants.details_add:
-    //                 this.addIngredient(formula_item, value, qty);
-    //                 break;
-    //             case Constants.details_remove:
-    //                 this.removeIngredient(formula_item, value, qty);
-    //                 break;
-    //         }
-    //         console.log("this is the current formula after"+ JSON.stringify(this.state.formula_item));
-    //         this.setState({ 
-    //             formula_item: formula_item
-    //         })
-    //         console.log("this is formula in onmodifylist after"+ JSON.stringify(this.state.formula_item));
-
-    //     }
-    // }
-
 
     removeIngredient(formula_item, value, qty) {
         
@@ -162,41 +121,44 @@ export default class ManufacturingScheduleReportDetails extends React.Component 
     }
 
     async handleSubmit(e, opt) {
-        if (![Constants.details_save, Constants.details_create].includes(opt)) {
-            this.props.handleDetailViewSubmit(e, this.state.manu_line, opt);
+        let reportData = {
+            manu_line: this.state.manu_line,
+            duration: this.state.duration,
+            start_date: this.state.start_date
+        }
+        
+        
+        if (![Constants.details_save, Constants.details_export, Constants.details_create].includes(opt)) {
+            this.props.handleDetailViewSubmit(e, reportData, opt);
             return;
         }
-        //await this.validateInputs();
-        let alert_string = 'Invalid Fields';
+        await this.validateInputs();
+        let alert_string = 'Invalid Field for duration or start date';
         let inv = this.state.invalid_inputs;
-        // if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.state.manu_line, this.state.formula_item, opt)
-        // else {
-        //     if (inv.includes('case_upc') && this.state.manu_line['case_upc'].length > 11)
-        //         alert_string += '\nTry Case UPC: ' + CheckDigit.apply(this.state.manu_line['case_upc'].slice(0,11));
-        //     if (inv.includes('unit_upc') && this.state.manu_line['unit_upc'].length > 11)
-        //         alert_string += '\nTry Unit UPC: ' + CheckDigit.apply(this.state.manu_line['unit_upc'].slice(0,11));
-        //     alert(alert_string);
-        // } 
+        console.log("this is the reportData in handle_submit: "+JSON.stringify(reportData));
+        if (inv.length === 0) this.props.handleDetailViewSubmit(e, reportData, opt)
+        else {
+            alert(alert_string);
+        } 
     }
 
-
-    injectProperties = () => {
-        if (this.state.item){
-            return (this.state.item_properties.map(prop => 
-                <FormGroup key={prop}>
-                    <Label>{this.getPropertyLabel(prop)}</Label>
-                    <Input 
-                        type={this.getPropertyFieldType(prop)}
-                        value={ this.state.item[prop] }
-                        invalid={ this.state.invalid_inputs.includes(prop) }
-                        onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
-                        disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
-                   />
-                </FormGroup>));
-        }
-        return;
+    async validateInputs() { 
+        var inv_in = [];
+        if (this.state.start_date === undefined) inv_in.push('start_date');
+        if((this.state.duration === undefined) || this.state.duration < 1 ) inv_in.push('duration');
+        await this.setState({ invalid_inputs: inv_in });
     }
+    onStartChange = async (value) => {
+        await this.setState({ start_date: value });
+        console.log("this is the state of the date; "+this.state.start_date);
 
+    };
+
+    onDurChange = async (value) => {
+        await this.setState({ duration: value });
+        console.log("this is the state of the duration; "+this.state.duration);
+
+    };
 
 
     render() {
@@ -205,24 +167,33 @@ export default class ManufacturingScheduleReportDetails extends React.Component 
             <div className='item-title'>
                 <h1>{ this.state.manu_line  ? this.state.manu_line.name : Constants.undefined }</h1>
             </div>
-            {/* <div className='item-properties'>
-                { this.injectProperties() }
-                <ModifyManuLines
-                    item={this.state.item}
-                    label={Constants.modify_manu_lines_label}
-                    handleModifyManuLines={this.onModifyManuLines}
-                    disabled = {currentUserIsAdmin().isValid ? false : true}
-                />
-                <ItemSearchInput
-                    curr_item={this.state.prod_line_item}
-                    item_type={Constants.prod_line_label}
-                    invalid_inputs={this.state.invalid_inputs}
-                    handleSelectItem={this.onSelectProductLine}
-                    disabled = {currentUserIsAdmin().isValid ? false : true}
-                />
+            <div>Manufacturing Report Schedule Start Date</div> 
+            <FormGroup>
+                <Label for="startDate">Start Date</Label>
+                    <Input
+                    type="date"
+                    name="date"
+                    id="start_date"
+                    placeholder="date placeholder"
+                    onChange={this.onChange}
+                    onChange={ (e) => this.onStartChange(e.target.value)}
 
-            </div>
-            <div/> */}
+                    value={this.state.start_date}
+                    error={this.state.errors.start_date}
+                />
+            </FormGroup>
+            <FormGroup>
+          <Label for="numberDuration">Report Duration in Days</Label>
+          <Input
+            type="number"
+            name="number"
+            id="duration"
+            placeholder="enter number of days"
+            onChange={ (e) => this.onDurChange(e.target.value)}
+            value={this.state.duration}
+            error={this.state.errors.duration}
+          />
+        </FormGroup>
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
                     <Button 
