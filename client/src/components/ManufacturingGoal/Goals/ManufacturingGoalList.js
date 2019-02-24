@@ -4,8 +4,13 @@ import PropTypes from 'prop-types';
 import ManufacturingGoal from './ManufacturingGoal';
 import GoalForm from './ManufacturingGoalForm';
 
-const ManufacturingGoalList = (props) => {
-  const goalNodes = props.data.map(goal => (
+export default class ManufacturingGoalList extends React.Component{
+  constructor(props) {
+    super(props);
+  }
+  
+  render() {
+  var goalNodes = this.props.data.map(goal => (
     <ManufacturingGoal
       user={goal.user}
       key={goal._id}
@@ -13,8 +18,9 @@ const ManufacturingGoalList = (props) => {
       name={goal.name}
       activities={goal.activities}
       goal = {goal}
-      handleUpdateGoal={props.handleUpdateGoal}
-      handleDeleteGoal={props.handleDeleteGoal}
+      handleDetailViewSubmit = {this.props.handleDetailViewSubmit}
+      handleUpdateGoal={this.props.handleUpdateGoal}
+      handleDeleteGoal={this.props.handleDeleteGoal}
     >
       { goal.name}
     </ManufacturingGoal>
@@ -24,7 +30,8 @@ const ManufacturingGoalList = (props) => {
       { goalNodes }
     </div>
   );
-};
+  }
+}
 
 ManufacturingGoalList.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({
@@ -40,5 +47,3 @@ ManufacturingGoalList.propTypes = {
 ManufacturingGoalList.defaultProps = {
   data: [],
 };
-
-export default ManufacturingGoalList;

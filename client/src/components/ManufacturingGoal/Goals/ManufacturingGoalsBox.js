@@ -10,6 +10,7 @@ import ItemStore from '../../../helpers/ItemStore';
 import TextField from 'material-ui/TextField';
 import SearchIcon from 'material-ui/svg-icons/action/search'
 import currentUserIsAdmin from '../../auth/currentUserIsAdmin'
+import addButton from '../../../resources/add.png';
 const jwt_decode = require('jwt-decode');
 
 class ManufacturingGoalsBox extends Component {
@@ -63,7 +64,7 @@ class ManufacturingGoalsBox extends Component {
         enabled: oldGoal.enabled,
         deadline: oldGoal.deadline
     });
-    console.log(this.state.name);
+    
     this.submitUpdatedGoal();
   }
 
@@ -94,9 +95,28 @@ class ManufacturingGoalsBox extends Component {
     }
   }
 
+  submitUpdateActivity = async(activities) => {
+    let created_activities = [];
+    for(const activity of activities) {
+      try{
+        let new_activity;
+        if(!activity._id){
+          let new_activity = await SubmitRequest.submitCreateItem('manuactivities', activity);
+          created_activities.push(new_activity.data)
+        }
+        else {
+          console.log("caught existing");
+          let updated_activity = await SubmitRequest.submitUpdateItem('manuactivities', activity);
+          created_activities.push(updated_activity.data)
+        }
+      } catch (e){
+        console.log(e);
+      }
+    }
+    return created_activities;
+  }
+
   submitNewActivity = async(activities) => {
-    console.log('submit new activity');
-    console.log('submit')
     let created_activities = [];
     for(const activity of activities) {
       try{
@@ -106,17 +126,14 @@ class ManufacturingGoalsBox extends Component {
         console.log(e);
       }
     }
-    console.log('all done')
     return created_activities;
   }
 
   async submitNewGoal() {
     console.log('submitting new goal')
     const { name, activities, user, deadline } = this.state;
-    console.log(deadline);
-    console.log(activities);
     let created_activities = await this.submitNewActivity(activities);
-    let res = await SubmitRequest.submitCreateItem(Constants.manugoals_page_name, { name, activities: created_activities, user, deadline });
+    let res = await SubmitRequest.submitCreateItem(Constants.manugoals_page_name, { name, activities:created_activities, user, deadline });
     if (!res.success) {
       console.log('not a success')
       this.setState({ error: res.error });
@@ -129,14 +146,19 @@ class ManufacturingGoalsBox extends Component {
 
 
   async submitUpdatedGoal() {
+    console.log("submiting updated goal")
     const { name, activities, user, updateId, enabled, deadline} = this.state;
-    let item = { name, activities, user, enabled, deadline };
+    console.log(activities);
+    let created_activities = await this.submitUpdateActivity(activities);
+    console.log(created_activities);
+    let item = { name, activities: created_activities, user, enabled, deadline };
     let res = await SubmitRequest.submitUpdateGoal(user, updateId, item);
     if (!res.success) {
       console.log(res.error);
       this.setState({ error: res.error});
     }
     else {
+      console.log("load goals from server")
       this.setState({ name: '', activities: '', enabled: false, error: null })
       this.loadGoalsFromServer();
     }
@@ -172,18 +194,24 @@ class ManufacturingGoalsBox extends Component {
     console.log(item);
     switch (option) {
         case Constants.details_create:
-            let activities = [];
-            newData.push({name: item.name, activities: activities});
-            item.skus.forEach((sku, index) => {
-              activities.push({sku: sku, quantity: item.quantities[index]});
-            })
+          await this.setState({
+            name: item.name,
+            activities: item.activities,
+            deadline: item.deadline
+          })
+          console.log(this.state.deadline);
+          this.submitNewGoal();
+          break;
+        case Constants.details_save:
+            // let activities = [];
             await this.setState({
               name: item.name,
-              activities,
+              activities: item.activities,
+              updateId: item._id,
+              enabled: item.enabled,
               deadline: item.deadline
-            })
-            console.log(this.state.deadline);
-            this.submitNewGoal();
+          });
+            this.submitUpdatedGoal();
             break;
         case Constants.details_cancel:
             break;
@@ -228,11 +256,14 @@ class ManufacturingGoalsBox extends Component {
             data={this.state.data}
             handleDeleteGoal={this.onDeleteGoal}
             handleUpdateGoal={this.onUpdateGoal}
+            handleDetailViewSubmit = {this.onDetailViewSubmit}
           />
         </div>
         <div className="form">
           <ManufacturingGoalDetails
+          buttonImage = {addButton}
           handleDetailViewSubmit = {this.onDetailViewSubmit}
+          options = {[Constants.details_create, Constants.details_cancel]}
           ></ManufacturingGoalDetails>
         </div>
         {this.state.error && <p>{this.state.error}</p>}
