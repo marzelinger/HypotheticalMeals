@@ -8,7 +8,7 @@
 }
 
 .add_to_schedule {
-    border-radius: 100%;
+    border-radius: 20%;
     width: 30px;
     height: 30px;
     margin-left: auto;
@@ -20,12 +20,22 @@
 }
 
 .add_to_schedule:hover {
-    background-color: #ddd;
+    background-color: #00bcd4;
 }
 
 .goal-button {
     float: center;
     margin-left: 10px;
+}
+
+.vis-item.orphaned {
+    background-color: 'gray';
+}
+.over_deadline {
+    border-color: 'red';
+}
+.overwritten {
+    background-color: 'orange';
 }
 
 td, tr {

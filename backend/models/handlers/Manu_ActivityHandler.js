@@ -76,21 +76,17 @@ class Manu_ActivityHandler{
             var new_quantity = req.body.quantity;
             var new_scheduled = req.body.scheduled || false
             var new_start = req.body.start
-            var new_duration = new_sku.manu_rate * new_quantity;
+            var new_overwritten = req.body.overwritten
+            if (new_overwritten) var new_duration = req.body.duration;
+            else var new_duration = new_sku.manu_rate * new_quantity;
             var new_manu_line = req.body.manu_line;
-            var new_overwritten = req.body.overwritten;
             var new_orphaned= req.body.orphaned;
             var new_over_deadline = req.body.over_deadline;
             var new_unscheduled_enabled = req.body.unscheduled_enabled;
             let updated_manu_activity = await Manu_Activity.findOneAndUpdate({_id : target_id},
                 {$set: {sku: new_sku, quantity: new_quantity, scheduled: new_scheduled, start: new_start, 
-<<<<<<< HEAD
-                    duration: new_duration, manu_line: new_manu_line, overwritten: new_overwritten, orphaned: new_orphaned,
-                orphaned: new_orphaned, over_deadline: new_over_deadline, unscheduled_enabled: new_unscheduled_enabled}}, 
-=======
                     duration: new_duration, manu_line: new_manu_line, overwritten: new_overwritten,
                     orphaned: new_orphaned, over_deadline: new_over_deadline, unscheduled_enabled: new_unscheduled_enabled}}, 
->>>>>>> master
                     {upsert: true, new: true});
             if(!updated_manu_activity){
                 return res.json({

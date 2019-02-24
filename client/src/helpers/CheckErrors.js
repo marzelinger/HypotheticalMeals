@@ -2,10 +2,7 @@ import SubmitRequest from './SubmitRequest'
 
 export default class CheckErrors{
     static async updateActivityErrors(activity){
-        console.log("checking activity errors")
-        console.log(activity);
         var { data } = await SubmitRequest.submitQueryString(`/api/manugoals_activity/${activity._id}`);
-        console.log(data);
         var orphaned = CheckErrors.checkOrphaned(data, activity)
         var unscheduled_enabled = CheckErrors.checkUnscheduledEnabled(data,activity);
         var over_deadline = CheckErrors.checkOverDeadline(data, activity);
@@ -15,8 +12,8 @@ export default class CheckErrors{
             unscheduled_enabled, 
             over_deadline
         }
-        console.log(new_activity);
-        await SubmitRequest.submitUpdateItem('manuactivities', new_activity);
+        let ok = await SubmitRequest.submitUpdateItem('manuactivities', new_activity);
+        console.log(ok)
     }
 
     static checkOrphaned(goal, activity){

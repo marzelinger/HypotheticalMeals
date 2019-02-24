@@ -58,7 +58,7 @@ export default class ManuSchedulePalette extends Component {
                         <td>
                             <div 
                                 onClick={(e) => this.props.prepareAddActivity(act)}
-                                style = {{backgroundColor: this.props.activity_to_schedule ? (this.props.activity_to_schedule._id === act._id ? '#00bcd4' : 'gray') : 'gray'}}
+                                style = {{backgroundColor: this.props.activity_to_schedule ? (this.props.activity_to_schedule._id === act._id ? '#97b0f8' : '#d5ddf6') : '#d5ddf6'}}
                                 className='add_to_schedule'
                                 disabled={this.props.activity_to_schedule ? (this.props.activity_to_schedule._id === act._id ? false : true) : false}
                             >{this.props.activity_to_schedule ? (this.props.activity_to_schedule._id === act._id ? 'x' : '+') : '+'}</div>
