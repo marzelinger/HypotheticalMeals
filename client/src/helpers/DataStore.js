@@ -29,7 +29,7 @@ export default class DataStore{
         table_properties: ['name', 'num'],
         table_options: [Constants.create_item, Constants.add_keyword_filter, Constants.add_ing_filter],
         item_properties: ['name', 'num'],
-        item_property_labels: ['Name', 'SKU#'],
+        item_property_labels: ['Name', 'Formula#'],
         item_property_patterns: ['.+', '^[0-9]+$'], 
         item_property_field_type: ['text', 'text'],
       }
@@ -53,21 +53,54 @@ export default class DataStore{
       };
     }
 
-    static getSkuData() {
+    static getUserData() {
         return {
-          page_name: Constants.skus_page_name,
-          page_title: 'SKUs',
-          filter_options: [Constants.keyword_label, Constants.ingredient_label, Constants.prod_line_label],
-          table_columns: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Product Line'],
-          table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line'],
-          table_options: [Constants.create_item, Constants.add_to_manu_goals, Constants.add_keyword_filter, 
-            Constants.add_ing_filter, Constants.add_prod_filter],
-          item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'comment', 'scale_factor', 'manu_rate'],
-          item_property_labels: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Comment', 'Formula Scale Factor', 'Manufactuing Rate'],
-          item_property_patterns: ['.+', '^[0-9]+$', '^[016789][0-9]{11}$', '^[016789][0-9]{11}$', '.+', '^[0-9]+$', '.*', '^[+]?[0-9]*\.?[0-9]*$', '^[+]?[0-9]*\.?[0-9]*$'], 
-          item_property_field_type: ['text', 'text', 'text', 'text', 'text', 'text', 'textarea', 'text', 'text'],
+          page_name: Constants.users_page_name,
+          page_title: 'Users',
+          filter_options: [Constants.keyword_label],
+          table_columns: ['Username', 'Admin', 'Created By', 'Comment'],
+          table_properties: ['username', 'isAdmin', 'admin_creator', 'comment'],
+          table_options: [Constants.add_keyword_filter],
+          //table_options: [Constants.create_user, Constants.add_keyword_filter],
+
+          item_properties: ['username'],
+          item_property_labels: ['Username'],
+          // item_properties: ['username', 'password', 'isAdmin', 'admin_creator', 'comment'],
+          // item_property_labels: ['Username', 'Passowrd', 'Admin', 'Created By', 'Comment'],
+
+          item_property_patterns: ['.*', '.*', '.*', '.*'],
+          item_property_field_type: ['text', 'text', 'text', 'text'],
         };
     }
+
+
+    static getSkuData() {
+      return {
+        page_name: Constants.skus_page_name,
+        page_title: 'SKUs',
+        filter_options: [Constants.keyword_label, Constants.ingredient_label, Constants.prod_line_label],
+        table_columns: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Product Line'],
+        table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line'],
+        table_options: [Constants.create_item, Constants.add_to_manu_goals, Constants.add_keyword_filter, 
+          Constants.add_ing_filter, Constants.add_prod_filter],
+        item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'comment', 'manu_rate'],
+        item_property_labels: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Comment', 'Manufactuing Rate'],
+        item_property_patterns: ['.+', '^[0-9]+$', '^[016789][0-9]{11}$', '^[016789][0-9]{11}$', '.+', '^[0-9]+$', '.*', '^[+]?[0-9]*\.?[0-9]*$'], 
+        item_property_field_type: ['text', 'text', 'text', 'text', 'text', 'text', 'textarea', 'text','text', 'text'],
+
+
+      };
+  }
+
+  static getSkuFormulaDetailsData(){
+    return {
+      formula_item_properties: ['name', 'num'],
+      formula_item_property_labels: ['Name', 'Formula#'],
+      formula_item_property_patterns: ['.+', '^[0-9]+$'], 
+      formula_item_property_field_type: ['text', 'text'],
+    };
+  }
+
 
     static getSkuDataSimple() {
       var results = DataStore.getSkuData();

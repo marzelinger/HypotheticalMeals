@@ -3,6 +3,7 @@
 // Simple functions for submitting HTTP requests from the front end
 
 import * as Constants from './../resources/Constants';
+import printFuncFront from '../printFuncFront';
 
 export default class SubmitRequest{
 
@@ -25,9 +26,7 @@ export default class SubmitRequest{
         .then(data => data.json())
         .then((res) => {
           if (!res.success) return { success: res.success, error: res.error };
-
-          else 
-          return ({ 
+          else return ({ 
               success: res.success,
               data: res.data
           });
@@ -40,7 +39,7 @@ export default class SubmitRequest{
 
   static submitCreateItem = (route, item) => {
     try {
-      console.log(item);
+      //console.log(item);
       return fetch(`/api/${route}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -57,17 +56,27 @@ export default class SubmitRequest{
 
   static submitUpdateItem = (route, item) => {
     try {
-      console.log('update item')
+      // printFuncFront("this is the route: "+'/api/'+route+item._id);
+      // printFuncFront("this is item "+item);
+      // printFuncFront("this is string item "+JSON.stringify(item));
+
+
       return fetch(`/api/${route}/${item._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(item),
       }).then(res => res.json()).then((res) => {
+        // printFuncFront("this is the route2: "+'/api/'+route+item._id);
+        // printFuncFront("this is the response: "+res);
+        // printFuncFront("this is the response: "+JSON.stringify(res));
+
+
         if (!res.success) return { success: res.success, error: res.error };
         else return { success: res.success, data: res.data};
       });
     }
     catch (err){
+      
       return { success: false, error: err };
     }
   }
@@ -121,9 +130,26 @@ export default class SubmitRequest{
     }
   }
 
+  static async submitGetFormulaByID(id) {
+    try {
+      return fetch('/api/formulas/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
   static async submitGetManufacturingLineByShortName(shortname) {
     try {
-      console.log('/api/manulines_shortname/' + shortname);
+      //console.log('/api/manulines_shortname/' + shortname);
       return fetch('/api/manulines_shortname/' + shortname)
       .then(data => data.json())
       .then((res) => {
@@ -142,6 +168,23 @@ export default class SubmitRequest{
   static async submitGetProductLinesByNameSubstring(substr) {
     try {
       return fetch('/api/products_name/' + substr)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return {
+          success: res.success,
+          data: res.data
+        }
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
+  static async submitGetFormulasByNameSubstring(substr) {
+    try {
+      return fetch('/api/formulas_name/' + substr)
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error };
@@ -207,6 +250,7 @@ export default class SubmitRequest{
   static submitGetFilterData = (route, sort_field, filter_value, keyword, currentPage, pageSize, prod_line) => {
     var path = '/api/' + route + '/' + sort_field + '/' + filter_value + '/' + keyword + '/' + currentPage +'/' + pageSize;
     path += (prod_line === undefined) ? '' : ('/' + prod_line);
+    //printFuncFront("this is path in submitGetFilterData"+path);
     return fetch(path, { method: 'GET' })
       .then(data => data.json())
       .then((res) => {
@@ -307,4 +351,24 @@ export default class SubmitRequest{
       return { success: false, error: err };
     }
   }
+
+
+  static async submitGetManufacturingActivitiesForReport(manu_line_id,start_date,end_date) {
+    try {
+      console.log("here in the submitrequest for report");
+      return fetch(`/api/manuactivities/${manu_line_id}/${start_date}/${end_date}`)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
 }
+

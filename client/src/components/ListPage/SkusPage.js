@@ -15,6 +15,7 @@ import ExportSimple from '../export/ExportSimple';
 import DataStore from '../../helpers/DataStore'
 import TablePagination from './TablePagination'
 import SkuDetails from './SkuDetails';
+import GeneralNavBar from '../GeneralNavBar';
 
 import '../../style/SkusPage.css'
 import BulkEditManuLines from './BulkEditManuLines';
@@ -44,7 +45,9 @@ export default class ListPage extends React.Component {
             selected_items: [],
             selected_indexes: [],
             detail_view_item: {},
+            detail_view_formula_item: {},
             detail_view_options: [],
+            detail_view_action:'',
             data: [],
             exportData: [],
             sort_field: '_',
@@ -232,19 +235,22 @@ export default class ListPage extends React.Component {
     }
 
     async onCreateNewItem() {
-        var item = await ItemStore.getEmptyItem(this.state.page_name);
+        var new_item = await ItemStore.getEmptyItem(this.state.page_name);
+        var new_formula_item = await ItemStore.getEmptyItem(Constants.formulas_page_name);
         const newData = this.state.data.slice();
-        newData.push(item);
+        newData.push(new_item);
 
         //for the pagination stuff
         const newExportData = this.state.exportData.slice();
-        newExportData.push(item);
+        newExportData.push(new_item);
 
         this.setState({ 
             data: newData,
             exportData: newExportData,
-            detail_view_item: item,
-            detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
+            detail_view_item: new_item,
+            detail_view_formula_item: new_formula_item,
+            detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel],
+            detail_view_action: Constants.details_create
         })
         this.toggle(Constants.details_modal);
         this.loadDataFromServer();
@@ -303,50 +309,82 @@ export default class ListPage extends React.Component {
         await this.setState({ selected_items: newState, selected_indexes: rowIndexes});
     };
 
-    onDetailViewSelect = (event, item) => {
+     onDetailViewSelect = async (event, item) => {
+        let formula_item = await SubmitRequest.submitGetFormulaByID(item.formula);
+        this.setState({
+            detail_view_item: item,
+            detail_view_formula_item: formula_item.data[0]
+        });
         if(currentUserIsAdmin().isValid){
             this.setState({ 
-            detail_view_item: item ,
-            detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
+            detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel],
+            detail_view_action: Constants.details_edit
             });
         }
         else{
             this.setState({ 
-                detail_view_item: item ,
-                detail_view_options: [Constants.details_cancel]
+                detail_view_options: [Constants.details_cancel],
+                detail_view_action: Constants.details_view
                 });
         }
         this.toggle(Constants.details_modal);
     };
 
-    async onDetailViewSubmit(event, item, option) {
-        var res = {};
+    async onDetailViewSubmit(event, item, formula_item, option) {
+        // var res = {};
+        var resItem = {};
+        var resFormula = {};
         var newData = this.state.data.splice();
+        console.log("this is the item  state."+ JSON.stringify(item));
+
         switch (option) {
             case Constants.details_create:
                 newData.push(item);
-                res = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
+                //need to create the new formula and get the id of the newly created formula and then put that in the 
+                //item equal to the formula section of item.
+                resFormula = await SubmitRequest.submitCreateItem(Constants.formulas_page_name, formula_item, this);
+                // var newSKUitem = this.formatNewSKUFormula(item, resFormula);
+                if(resFormula.success){
+                    item['formula']= resFormula.data._id;
+                }
+                console.log("this is the create res."+ JSON.stringify(resItem));
+
+                resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
+
+                console.log("this is the create res."+ JSON.stringify(resItem));
+                console.log("this is the create res formula."+ JSON.stringify(resFormula));
+
                 break;
             case Constants.details_save:
                 let toSave = newData.findIndex(obj => {return obj._id === item._id});
                 newData[toSave] = item;
-                res = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
+                resFormula = await SubmitRequest.submitUpdateItem(Constants.formulas_page_name, formula_item, this);
+                resItem = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
+                
+                console.log("this is the save res."+ JSON.stringify(resItem));
+                console.log("this is the save res."+ JSON.stringify(resFormula));
+
+
                 break;
             case Constants.details_delete:
                 let toDelete = newData.findIndex(obj => {return obj._id === item._id});
                 newData.splice(toDelete, 1);
-                res = await SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
+                resItem = await SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
                 break;
             case Constants.details_cancel:
-                res = {success: true}
+                resItem = {success: true}
                 break;
         }
-        if (!res.success) alert(res.error);
+        console.log("resItem was: "+resItem.success);
+        console.log("resFormula")
+        if (!resItem.success) alert(resItem.error);
         else {
             this.setState({ 
                 data: newData,
                 detail_view_item: null,
-                detail_view_options: []
+                detail_view_formula_item: null,
+                detail_view_options: [],
+                detail_view_action: ''
             });
             this.loadDataFromServer();
             this.toggle(Constants.details_modal);
@@ -375,6 +413,7 @@ export default class ListPage extends React.Component {
 
         return (
             <div className="list-page">
+            <GeneralNavBar></GeneralNavBar>
                 <div>
                     <PageTable 
                         columns={this.state.table_columns} 
@@ -405,7 +444,9 @@ export default class ListPage extends React.Component {
                 <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
                     <SkuDetails
                             item={this.state.detail_view_item}
+                            formula_item={this.state.detail_view_formula_item}
                             detail_view_options={this.state.detail_view_options}
+                            detail_view_action = {this.state.detail_view_action}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
                         />
                 </Modal>

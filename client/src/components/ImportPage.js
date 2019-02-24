@@ -8,6 +8,7 @@ import {ImportReport} from './ImportReport'
 import {Input} from 'reactstrap'
 import './Center.css';
 import {exportImportReport} from "../actions/exportActions";
+import GeneralNavBar from './GeneralNavBar';
 
 var endpoint = "not specified";
 
@@ -447,6 +448,9 @@ export default class ImportPage extends React.Component {
     render() {
         return (
             <div className = "Import">
+                <GeneralNavBar></GeneralNavBar>
+
+
                 <div className = "centerContainer">
                     <h1> Please enter a CSV below to bulk import.</h1>
                 </div>

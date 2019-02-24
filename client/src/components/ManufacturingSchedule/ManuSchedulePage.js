@@ -3,11 +3,19 @@
 import React, { Component } from "react";
 import Timeline from 'react-visjs-timeline'
 import SubmitRequest from "../../helpers/SubmitRequest";
+import CheckErrors from '../../helpers/CheckErrors'
 import * as Constants from '../../resources/Constants';
 import ManuSchedulePalette from './ManuSchedulePalette'
+<<<<<<< HEAD
 import ManuActivityErrors from './ManuActivityErrors';
 import './../../style/ManuSchedulePage.css';
+=======
+import './../../style/ManuSchedulePageStyle.css';
+import GeneralNavBar from '../GeneralNavBar';
+>>>>>>> 7b669c10137660dd368c8d558d9f7cf122164ca6
 const jwt_decode = require('jwt-decode');
+const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
+var moment = require('moment');
 
 export default class ManuSchedulePage extends Component {
     constructor(props) {
@@ -19,8 +27,9 @@ export default class ManuSchedulePage extends Component {
             options: {},
             lines: [],
             activities: [],
-            goals: [],
+            unscheduled_goals: [],
             activity_to_schedule: null,
+            selected_activities: [],
             loaded: false
         }
         if(localStorage != null){
@@ -30,6 +39,8 @@ export default class ManuSchedulePage extends Component {
         }
         this.prepareAddActivity = this.prepareAddActivity.bind(this);
         this.clickHandler = this.clickHandler.bind(this);
+        this.selectHandler = this.selectHandler.bind(this);
+        this.onMove = this.onMove.bind(this);
         this.onRemove = this.onRemove.bind(this);
         this.onAdd = this.onAdd.bind(this);
         this.updateRange = this.updateRange.bind(this);
@@ -42,22 +53,30 @@ export default class ManuSchedulePage extends Component {
     async loadScheduleData() {
         items.length = 0;
         groups.length = 0;
-        console.log(items)
         let activities = await SubmitRequest.submitGetData(Constants.manu_activity_page_name);
-        let goals = await SubmitRequest.submitGetManuGoalsData(this.state.user);
+        let goals = await SubmitRequest.submitGetManuGoalsByFilter('_', '_', '_'); //get all goals
+        console.log(goals)
         activities.data.map(act => {
             this.scheduleOrPalette(act, goals);
         });
+        let unscheduled_goals = goals.data.filter(goal => {
+            let not_all_scheduled = false
+            goal.activities.map(act => {
+                if (act.unscheduled_enabled) not_all_scheduled = true
+            })
+            return not_all_scheduled
+        })
         let lines = await SubmitRequest.submitGetData(Constants.manu_line_page_name);
         lines.data.map(line => {
             groups.push({ id: line._id, content: line.name });
         });
-        this.setState({
+        await this.setState({
             activities: activities.data,
             lines: lines.data,
-            goals: goals.data,
+            unscheduled_goals: unscheduled_goals,
             loaded: true
         });
+        console.log(items)
     }
 
     scheduleOrPalette(act, goals) {
@@ -71,31 +90,34 @@ export default class ManuSchedulePage extends Component {
                         assoc_goal = goal.name
                     }
                 })
+                let cName = '';
+                if (act.orphaned) cName = 'orphaned';
+                else {
+                    if (act.over_deadline) cName += 'over_deadline';
+                    if (act.overwritten) cName += ' ' + 'overwritten';
+                }
                 items.push({
                     start: start,
                     end: end,
                     content: 'SKU: ' + act.sku.name,
                     title: 'Goal: ' + assoc_goal,
                     group: act.manu_line._id,
+                    className: cName,
                     _id: act._id
                 });
             }
             
         }
-        else {
-            // let pa = this.state.palette_activities.slice()
-            // if (!pa.includes(act)) {
-            //     pa.push(act)
-            //     this.setState({ palette_activities : pa })
-            // }
-        }
     }
 
     async clickHandler(e) {
-        
-        // else {
-        //     await this.loadScheduleData();
-        // }
+        console.log(e)
+    }
+
+    async selectHandler(items, event) {
+        await this.setState({ selected_activities: items })
+        console.log(this.state.selected_activities)
+        return(items)
     }
 
     prepareAddActivity(activity) {
@@ -112,7 +134,7 @@ export default class ManuSchedulePage extends Component {
 
     getContainerStyle() {
         if (this.state.activity_to_schedule){
-            return { "cursor" : "copy" }
+            return { "cursor" : "copy" } //!important doesn't work...
         }
         return {}
     }
@@ -122,21 +144,50 @@ export default class ManuSchedulePage extends Component {
         let end = new Date(item.end)
         let start = new Date(item.start)
         let duration = parseInt(act.data[0].duration);
-        if ((end.getTime()-start.getTime())/(60*60*1000) !== duration &&
-            (end.getTime()-start.getTime())/(60*60*1000) !== Math.floor(duration/10)*24 + (duration%10)) {
-            alert('You cannot change activity duration on the schedule directly!')
-            return callback(null)
+        let hour_difference = (end.getTime()-start.getTime())/(60*60*1000);
+        if (hour_difference !== duration && (hour_difference !== Math.floor(duration/10)*24 + (duration%10))) {
+            if (currentUserIsAdmin().isValid){
+                act.data[0].start = item.start
+                act.data[0].duration = Math.floor(hour_difference/24)*10 + (hour_difference%24)
+                act.data[0].overwritten = true
+                await CheckErrors.updateActivityErrors(act.data[0]);
+                callback(item)
+                return
+            }
+            else {
+                alert('Only Admins can override durations!')
+                callback(null)
+                return
+            }
         }
-        if (start.getHours() < 8 || (end.getHours() === 18 && end.getMinutes() > 0) || (end.getHours() > 18)) {
-            alert("Activities can't be scheduled outside working hours!")
-            callback(null)
-            return;
+        if (this.checkWithinHoursAndOverlap(item, callback)) {
+            return
         }
         act.data[0].start = item.start;
         act.data[0].manu_line = { _id: item.group };
-        let ok = await SubmitRequest.submitUpdateItem(Constants.manu_activity_page_name, act.data[0])
-        console.log(ok)
+        await CheckErrors.updateActivityErrors(act.data[0]);
         callback(item)
+    }
+
+    checkWithinHoursAndOverlap(item, callback) {
+        if (item.start.getHours() < 8 || (item.end.getHours() === 18 && item.end.getMinutes() > 0) || (item.end.getHours() > 18)) {
+            alert("Activities can't be scheduled outside working hours!");
+            callback(null);
+            return true;
+        }
+        let toReturn = false
+        items.map(i => {
+            if (item.group === i.group && item.id !== i.id) {
+                if ((i.start < item.end && i.start > item.start) ||
+                    (i.end > item.start && i.end < item.end) ||
+                    (i.start <= item.start && i.end >= item.end)){
+                        alert("Activities can't overlap!");
+                        callback(null)
+                        toReturn = true
+                    }
+            }
+        })
+        return toReturn
     }
 
     async onAdd(item, callback) {
@@ -150,20 +201,11 @@ export default class ManuSchedulePage extends Component {
             let start = new Date(activity.start)
             let end = new Date()
             end.setTime(start.getTime() + activity.duration*60*60*1000)
-            if (start.getHours() < 8 || (end.getHours() === 18 && end.getMinutes() > 0) || (end.getHours() > 18)) {
-                alert("Activities can't be scheduled outside working hours!")
-                callback(null)
-                return;
+            item.end = end
+            if (this.checkWithinHoursAndOverlap(item, callback)) {
+                return
             }
-            let ok = await SubmitRequest.submitUpdateItem(Constants.manu_activity_page_name, activity)
-            console.log(ok)
-
-            item = {
-                end: end.toString(),
-                content: 'SKU: ' + activity.sku.name,
-                title: 'SKU: ' + activity.sku.name,
-                _id: activity._id
-            }
+            await CheckErrors.updateActivityErrors(activity);
             await this.loadScheduleData();
             await this.setState({ 
                 activity_to_schedule: null
@@ -179,9 +221,21 @@ export default class ManuSchedulePage extends Component {
         act.data[0].start = null;
         act.data[0].scheduled = false;
         act.data[0].manu_line = null;
-        let ok = await SubmitRequest.submitUpdateItem(Constants.manu_activity_page_name, act.data[0])
+        await CheckErrors.updateActivityErrors(act.data[0]);
         await this.loadScheduleData();
         callback(item)
+    }
+
+    snap(date, scale, step) {
+        // var clone = new Date(date.valueOf());
+        // if (clone.getMinutes() > 30){
+        //     clone.setHours(clone.getHours() + 1)
+        // }
+        // clone.setMinutes(0)
+        // clone.setMilliseconds(0)
+        // return clone
+        var hour = 60 * 60 * 1000;
+        return Math.round(date / hour) * hour;
     }
 
     getOptions() { 
@@ -205,6 +259,8 @@ export default class ManuSchedulePage extends Component {
             repeat:'daily'
         },
         selectable: true,
+        multiselect: true,
+        stack: false,
         editable: {
             add: true,
             remove: true,
@@ -216,7 +272,8 @@ export default class ManuSchedulePage extends Component {
         }, 
         onMove: this.onMove,
         onRemove: this.onRemove,
-        onAdd: this.onAdd
+        onAdd: this.onAdd,
+        snap: this.snap
     }}
 
     updateRange =  (event) => {
@@ -228,12 +285,18 @@ export default class ManuSchedulePage extends Component {
     render() {
         return (
         <div>
+            <GeneralNavBar></GeneralNavBar>
             <div className={'scheduler-container'} style={this.getContainerStyle()}>
                 <div className='timeline-container'>
                     {this.state.loaded ? (
                     <Timeline 
                         options={this.getOptions()}
-                        items={items}
+                        items={items.length ? items : [
+                            {
+                                start: new Date(),
+                                group: groups[0]._id,
+                            }
+                        ]}
                         groups={groups}
                         clickHandler={this.clickHandler.bind(this)}
                         rangechangeHandler = {this.updateRange}

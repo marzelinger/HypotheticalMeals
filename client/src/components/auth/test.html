@@ -1,0 +1,129 @@
+<html>
+<head>
+ <title>Co-Lab API test</title>
+ <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+</head>
+<body>
+ <h1>Co-Lab Events</h1>
+ <ul id="events"></ul>
+
+ <h1>Post a New Event</h1>
+ <span>New Event Title:</span>
+ <input type="text" id="eventTitle"></input>
+ <button id="post">Post!</button>
+</body>
+<script>
+const EVENTS_URL = "https://api.colab.duke.edu/events/v1/events";
+var events;
+
+var getAllEvents = function() {
+ $.ajax({
+   type: "GET",
+   url: EVENTS_URL,
+   headers: {
+     "x-api-key": "meta-alligators",
+     "Content-Type": "application/json"
+   },
+   dataType: "json",
+   contentType: 'application/json; charset=UTF-8'
+ }).done(function(response) {
+   events = response;
+   console.log(events);
+   displayEvents();
+ }).fail(function(response) {
+   console.error(response);
+ });
+};
+
+var displayEvents = function() {
+ $("#events").empty();
+ events.map(function(item) {
+   var $event = $("<li>");
+   $event.text(item["title"] + " - " + item["description"]);
+   $("#events").append($event);
+ });
+};
+
+var eventData = {
+ "title": "test event",
+ "description": "test event",
+ "facilitators": [
+   "hy103"
+ ],
+ "occurrences": [
+   {
+     "description": "test occurrence",
+     "capacity": 20,
+     "enrollment_list": [
+       {
+         "net_id": "hy103",
+         "attended": true,
+         "waitlisted": false
+       }
+     ],
+     "location": "TEC",
+     "starttime": "2016-10-1 17:00:00",
+     "endtime": "2016-10-1 19:00:00"
+   }
+ ]
+};
+var access_token = null;
+const OAUTH_URL = "https://oauth.oit.duke.edu/oauth/authorize.php";
+
+var postEvent = function() {
+ eventData["title"] = $("#eventTitle").val();
+ console.log("access_token: "+ access_token);
+   $.ajax({
+       type: "POST",
+       url: "https://api.colab.duke.edu/events/v1/event",
+       headers: {
+           "x-api-key": "meta-alligators",
+           "Authorization": "Bearer " + access_token,
+           "Content-Type": "application/json"
+       },
+       dataType: "json",
+       contentType: 'application/json; charset=UTF-8',
+       data: JSON.stringify(eventData)
+   }).done(function(response) {
+       alert("Success!");
+   getAllEvents();
+   }).fail(function(response) {
+       alert("Error!");
+   console.error(response);
+   });
+};
+
+var getQueryString = function() {
+   return "?" + $.param({
+       response_type: 'token',
+       redirect_uri: 'http://localhost:3000/test.html',
+       client_id: "meta-alligators",
+       scope: 'basic events:event:update',
+       state: 11291
+   });
+};
+
+var getAccessToken = function() {
+    console.log("access_token: "+ access_token);
+   var url = window.location.href;
+   var regex = new RegExp("access_token" + "(=([^&#]*)|&|#|$)"),
+   results = regex.exec(url);
+   if (results == null) return 0;
+   return results[2];
+};
+
+var checkAccessToken = function() {
+   access_token = getAccessToken();
+   console.log(access_token);
+   if (!access_token) {
+       window.location.replace(OAUTH_URL + getQueryString());
+   }
+};
+
+$(document).ready(function() {
+ checkAccessToken();
+ getAllEvents();
+ $("#post").click(postEvent);
+});
+</script>
+</html>

@@ -48,7 +48,8 @@ export default class PageTable extends Component {
       enableSelectAll: false,
       deselectOnClickaway: false,
       showCheckboxes: props.selectable!=undefined ? props.selectable : true,
-      showDetails: props.showDetails!= undefined ? props.showDetails : false
+      showDetails: props.showDetails!= undefined ? props.showDetails : false,
+      page_name: this.props.page_name
     };
   }
   
@@ -127,6 +128,7 @@ export default class PageTable extends Component {
                 skus = {this.props.skus}
                 id = "tableactions"
                 onTableOptionSelection = {this.props.onTableOptionSelection}
+                page_name = {this.state.page_name}
               >
               </TableActions>
             

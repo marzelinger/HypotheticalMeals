@@ -4,7 +4,29 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { getAllUsers } from "../../actions/authActions";
 
+import { Button } from 'reactstrap';
+const querystring = require('querystring');
+
 const adminHasInit = require("../auth/adminHasInit");
+
+//const OAUTH_URL = "https://oauth.oit.duke.edu/oauth/authorize.php";
+
+// var authURI;
+// const params = {
+//   client_id: "meta-alligators",
+//   client_secret: "zHMB4Sl*o*Awu*mjZv$VEa+fX=QACLIWuRNWyNe@kNtTYLd*4E",
+//   redirect_uri: "http://localhost:3000",
+//   response_type: "token",
+//   state: 7777,
+//   scope: "basic"
+// // };
+
+// const EVENTS_URL = "https://api.colab.duke.edu/events/v1/events";
+// var events;
+
+
+// var access_token = null;
+
 
 class Landing extends Component {
 
@@ -13,36 +35,30 @@ class Landing extends Component {
     this.state = {
       user: 0
     };
-    console.log("this is user state: " +this.state.user);
 
-    var response = this.props.getAllUsers();
-    console.log('this is the constructor for landing');
-    this.change = this.change.bind(this);
-   // console.log("this is the response for the getAll Users: " +sessionStorage.getItem('firstAdminCreated'));
-    // if (response != null){
-    //   this.setState({
-    //     user : 1
-    //   });
-    // }
-      //console.log("this is the response data: " +response.data.data.length);
-
-    
+    //var response = this.props.getAllUsers();
+    //console.log('this is the constructor for landing');
+    //this.change = this.change.bind(this);
 
   }
 
-  change(){
-    var response = this.props.getAllUsers();
-    this.setState = {
-      user: 0
-    }
-  }
+
+
+  // encodeGetParams = p => 
+  // Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");
 
 
   componentDidMount() {
-    console.log("trying to mount the adminregister" +this.props.history);
-    var response = this.props.getAllUsers();
-    console.log("this is the response for the getAll Users: " +response);
-    this.setState(this.state.users);
+    //console.log("trying to mount the adminregister" +this.props.history);
+    //var response = this.props.getAllUsers();
+    //console.log("this is the response for the getAll Users: " +response);
+    //this.setState(this.state.users);
+    // authURI = OAUTH_URL +'?'+this.encodeGetParams(params);
+    // console.log("this is the authURI: "+authURI);
+    // console.log("this is the hash: "+window.location.hash);
+
+    //this.checkAccessToken();
+    //this.getAccessToken();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -57,16 +73,97 @@ class Landing extends Component {
 
 
 
+// async onRadioBtnClick() {
+//   //this.setState({  });
+//   let authURI = OAUTH_URL +'?'+this.encodeGetParams(params);
+//     console.log("this is the authURI: "+authURI);
+//   await this.checkAccessToken(authURI);
+
+//   //decodeURIComponent
+//   console.log("this is the parse "+querystring.parse(window.location.hash));
+
+//   //window.location.href = authURI;
+//   await console.log("this is the hash: "+window.location.hash);
+//   //let hash = window.location.hash;
+//   //access_token = this.getAccessToken();
+//   console.log('this is access_token'+access_token);
+
+//   //access_token = this.getAccessToken();
+//   console.log('this is access_token2 '+access_token);
+
+// }
+
+
   onChange = () => {
-    console.log("something is changing on change");
-    var response = this.props.getAllUsers();
-    this.setState({
-      user : 1
-    }
+    //console.log("something is changing on change");
+    // var response = this.props.getAllUsers();
+    // this.setState({
+    //   user : 1
+    // }
       
-    );
+    // );
     //this.setState(this.state)
   }
+
+//   async getAccessToken () {
+//     console.log("access_token: "+ access_token);
+//    var url = window.location.href;
+//    var regex = new RegExp("access_token" + "(=([^&#]*)|&|#|$)"),
+//    results = regex.exec(url);
+//    if (results == null) return 0;
+//    return results[2];
+// }
+
+
+
+//  async checkAccessToken (authURI) {
+//   access_token = await this.getAccessToken();
+//   console.log(access_token);
+//   if (!access_token) {
+//       //window.location.replace(OAUTH_URL + this.getQueryString());
+//       window.location.replace(authURI)
+//       //access_token = await this.getAccessToken();
+//       console.log(access_token);
+//       console.log("this is the hash: "+window.location.hash);
+
+//   }
+// }
+
+  loginLocalComp(){
+      return (
+        <div className="col s6">
+          <Link
+            to="/login"
+            style={{
+              width: "140px",
+              borderRadius: "3px",
+              letterSpacing: "1.5px"
+            }}
+            className="btn btn-large btn-flat waves-effect white black-text"
+          >
+          Log In Local User
+          </Link>
+          </div>
+        );
+  }
+
+  loginDukeComp(){
+    return (
+      <div className="col s6">
+        <Link
+          to={"/loginDuke"}
+          style={{
+            width: "140px",
+            borderRadius: "3px",
+            letterSpacing: "1.5px"
+          }}
+          className="btn btn-large btn-flat waves-effect white black-text"
+        >
+        Log In With NetID
+        </Link>
+        </div>
+      );
+}
 
   switchLanding = (param) => {
     console.log("this is the param: "+param);
@@ -107,9 +204,7 @@ class Landing extends Component {
     }
   };
 
-  render() {
-    var response = this.props.getAllUsers();
-   
+  render() {   
     return (
       <div style={{ height: "75vh" }} className="container valign-wrapper">
         <div className="row">
@@ -121,7 +216,13 @@ class Landing extends Component {
               Blah Blah Blah Blah Food Yum
             </p>
             <br />
-            {this.switchLanding(adminHasInit().isValid)}    
+            {/* {this.switchLanding(adminHasInit().isValid)}     */}
+            {this.loginLocalComp()}
+            {this.loginDukeComp()}
+            {/* <Button color="primary" 
+          onClick={() => this.onRadioBtnClick()} 
+          >Continue to DukeLogin</Button> */}
+
           </div>
         </div>
       </div>
@@ -142,75 +243,3 @@ export default connect(
   mapStateToProps,
   { getAllUsers }
 )(withRouter(Landing));
-
-//export default Landing;
-
-
-
-// {
-//   currentUserIsAdmin().isValid 
-//   ? (
-//   <div>
-//   <Link
-//   to="/register"
-//   style={{
-//     width: "140px",
-//     borderRadius: "3px",
-//     letterSpacing: "1.5px"
-//   }}
-//   className="btn btn-large waves-effect waves-light hoverable blue accent-3"
-// >
-//   Register New User
-// </Link>
-// </div>)
-// : (<div/>)
-// }
-
-
-
-
-// class Landing extends Component {
-//   render() {
-//     return (
-//       <div style={{ height: "75vh" }} className="container valign-wrapper">
-//         <div className="row">
-//           <div className="col s12 center-align">
-//             <h4>
-//               <b>blah</b> blahhhhhhhh
-//             </h4>
-//             <p className="flow-text grey-text text-darken-1">
-//               Blah Blah Blah Blah Food Yum
-//             </p>
-//             <br />
-//             <div className="col s6">
-//               <Link
-//                 to="/adminregister"
-//                 style={{
-//                   width: "140px",
-//                   borderRadius: "3px",
-//                   letterSpacing: "1.5px"
-//                 }}
-//                 className="btn btn-large waves-effect waves-light hoverable blue accent-3"
-//               >
-//                 Register First Admin
-//               </Link>
-//             </div>
-//             <div className="col s6">
-//               <Link
-//                 to="/login"
-//                 style={{
-//                   width: "140px",
-//                   borderRadius: "3px",
-//                   letterSpacing: "1.5px"
-//                 }}
-//                 className="btn btn-large btn-flat waves-effect white black-text"
-//               >
-//                 Log In
-//               </Link>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     );
-//   }
-// }

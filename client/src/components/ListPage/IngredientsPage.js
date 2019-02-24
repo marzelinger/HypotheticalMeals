@@ -17,6 +17,7 @@ import DataStore from './../../helpers/DataStore'
 import TablePagination from './TablePagination'
 import DependencyReport from "../export/DependencyReport";
 import ExportSimple from '../export/ExportSimple';
+import GeneralNavBar from '../GeneralNavBar';
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
@@ -328,6 +329,7 @@ export default class IngredientsPage extends React.Component {
     render() {
         return (
             <div className="list-page">
+                <GeneralNavBar></GeneralNavBar>
                 <div>
                     <PageTable 
                         columns={this.state.table_columns} 

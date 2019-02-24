@@ -28,7 +28,6 @@ module.exports = function adminHasInit(){
       }
     }
     }
-    console.log("this is admin will be false: ");
 
     errors.admin = "The initial admin has not been created.";
     return {

@@ -176,7 +176,7 @@ export default class FormulaDetails extends React.Component {
                     disabled = {currentUserIsAdmin().isValid ? false : true}
                 />
                 <IngredientsViewSimple 
-                    sku={this.state.item} 
+                    formula={this.state.item} 
                     handlePropChange={this.onPropChange}
                     disabled={currentUserIsAdmin().isValid ? false : true}
                 />
