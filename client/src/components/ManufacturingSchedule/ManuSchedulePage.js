@@ -5,12 +5,14 @@ import Timeline from 'react-visjs-timeline'
 import SubmitRequest from "../../helpers/SubmitRequest";
 import * as Constants from '../../resources/Constants';
 import ManuSchedulePalette from './ManuSchedulePalette'
+import ManuActivityErrors from './ManuActivityErrors';
 import './../../style/ManuSchedulePage.css';
 const jwt_decode = require('jwt-decode');
 
 export default class ManuSchedulePage extends Component {
     constructor(props) {
         super(props)
+        this.range = {};
         
         this.state = {
             user: '',
@@ -30,6 +32,7 @@ export default class ManuSchedulePage extends Component {
         this.clickHandler = this.clickHandler.bind(this);
         this.onRemove = this.onRemove.bind(this);
         this.onAdd = this.onAdd.bind(this);
+        this.updateRange = this.updateRange.bind(this);
     }
 
     async componentDidMount() {
@@ -216,26 +219,37 @@ export default class ManuSchedulePage extends Component {
         onAdd: this.onAdd
     }}
 
+    updateRange =  (event) => {
+        // this.setState({start: event.start})
+        this.range['start'] = event.start
+        this.range.end = event.end;
+    }
+
     render() {
         return (
         <div>
             <div className={'scheduler-container'} style={this.getContainerStyle()}>
                 <div className='timeline-container'>
-                    {this.state.loaded ? (<Timeline 
+                    {this.state.loaded ? (
+                    <Timeline 
                         options={this.getOptions()}
                         items={items}
                         groups={groups}
                         clickHandler={this.clickHandler.bind(this)}
+                        rangechangeHandler = {this.updateRange}
                     />) : null}
                 </div>
-                <div className='palette-container'>
-                    <ManuSchedulePalette
-                        goals={this.state.goals}
-                        activities={this.state.activities}
-                        lines={this.state.lines}
-                        activity_to_schedule={this.state.activity_to_schedule}
-                        prepareAddActivity={this.prepareAddActivity}
-                    />
+                <div className = "belowTimeline">
+                    <div className='palette-container'>
+                        <ManuSchedulePalette
+                            goals={this.state.goals}
+                            activities={this.state.activities}
+                            lines={this.state.lines}
+                            activity_to_schedule={this.state.activity_to_schedule}
+                            prepareAddActivity={this.prepareAddActivity}
+                        />
+                    </div>
+                    <ManuActivityErrors className = "errors" range = {this.range} activities = {this.state.activities.filter((activity) => activity.scheduled)}></ManuActivityErrors>
                 </div>
             </div>
         </div>
