@@ -57,19 +57,19 @@ export class GoalSkuTable extends React.Component{
     
     render() {
         let tablebody = (
-
             this.state.list_items.map((item, index) => 
             <TableRow
               key={item.num + index}
               selectable = {!this.state.simple}
               selected = {this.state.selected !=undefined && this.state.selected.includes(index) && !this.state.simple}
             >
-              {this.props.table_properties.map(prop => 
-                <TableRowColumn key={prop}>
-                  {prop == 'quantity' ? this.createQuantityElement(item, index) : item.sku[prop]}
-                </TableRowColumn>
-              )}
-
+              {this.props.table_properties.map(prop => {
+                if(!item.sku){
+                  return <TableRowColumn></TableRowColumn>
+                }
+                return <TableRowColumn key={prop}>{prop == 'quantity' ? this.createQuantityElement(item, index) : item.sku[prop]}</TableRowColumn>
+                })
+              }
             </TableRow>
           ))
       return (

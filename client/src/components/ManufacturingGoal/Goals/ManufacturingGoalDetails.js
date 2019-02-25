@@ -8,7 +8,7 @@ import {
     Input,
     FormGroup,
     Label,
-    Modal } from 'reactstrap';
+    Modal, FormFeedback } from 'reactstrap';
 import DataStore from '../../../helpers/DataStore'
 import ItemStore from '../../../helpers/ItemStore';
 import ItemSearchModifyListQuantity from '../../ListPage/ItemSearchModifyListQuantity';
@@ -143,8 +143,13 @@ export default class ManufacturingGoalDetails extends React.Component {
             var item = this.state.item;
             item.deadline = new Date(item.deadline)
             var return_val = await this.props.handleDetailViewSubmit(e, item, opt)
-            if(return_val){
-                this.setState({modal: false})
+            console.log(return_val);
+            if(return_val.success){
+                this.setState({modal: false, errorText: ''})
+            }
+            else{
+                alert(`${alert_string}, ${return_val.error}`)
+                // this.setState({invalid_inputs: [...this.state.invalid_inputs, 'name']})
             }
         }
         else {
@@ -153,17 +158,34 @@ export default class ManufacturingGoalDetails extends React.Component {
     }
 
     async validateInputs() { 
+        console.log("validating")
         var inv_in = [];
-        this.state.item_properties.map(prop => {
-            if (!this.state.item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
+        var error_text = '';
+        this.state.item_properties.forEach(prop => {
+            console.log("checking props");
+            if (!this.state.item[prop].toString().match(this.getPropertyPattern(prop))){
+                inv_in.push(prop);
+                error_text = 'Manufacturing Goals need a name.'
+            }
         })
+        if(inv_in.length == 0){
+            console.log("checking unique")
+            var resp = await SubmitRequest.submitQueryString(`/api/manugoals_name/${this.state.item.name}`);
+            if(resp.success) {
+                console.log(resp)
+                if(!this.state.item._id || this.state.item._id != resp.data[0]._id){
+                    inv_in.push('name');
+                    error_text = 'Manufacturing Goal with this name already exists.'
+                } 
+            }
+            console.log("unique")
+        }
+        console.log("now here")
         var date = new Date(this.state.item['deadline'])
         console.log(Boolean(+date))
         if(!Boolean(+date))inv_in.push('deadline')
         console.log(inv_in)
-        // if(this.state.item['deadline'] == 'Invalid Date') inv_in.push('deadline')
-        // if(!this.state.item['deadline'].toString().match(''))inv_in.push('deadline')
-        await this.setState({ invalid_inputs: inv_in });
+        await this.setState({ invalid_inputs: inv_in, errorText: error_text });
     }
 
     onEnable = () => {
@@ -186,8 +208,10 @@ export default class ManufacturingGoalDetails extends React.Component {
                         type={this.getPropertyFieldType(prop)}
                         value={ this.state.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
+                        errorText = {this.state.errorText}
                         onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
                     />
+                    <FormFeedback invalid>{this.state.errorText}</FormFeedback>
                 </FormGroup>));
 
             var enable = this.state.detail_view_options.includes(Constants.details_save) && currentUserIsAdmin().isValid ? 
