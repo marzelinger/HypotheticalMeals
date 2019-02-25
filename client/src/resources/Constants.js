@@ -76,6 +76,36 @@ export const manu_goals_modal = 'manu_goal'
 export const edit_manu_lines = 'Bulk Edit Manufacturing Lines'
 export const manu_lines_modal = 'manu_lines'
 export const details_modal = 'details'
+
+
+// CSV parsing constants
+export const csv_sku_num = "SKU#";
+export const csv_sku_name = "Name";
+export const csv_sku_caseUPC = "Case UPC";
+export const csv_sku_unitUPC = "Unit UPC";
+export const csv_sku_unitsize = "Unit size";
+export const csv_sku_cpc = "Count per case";
+export const csv_sku_pl = "PL Name";
+export const csv_sku_formula = "Formula#";
+export const csv_sku_formula_factor = "Formula Factor";
+export const csv_sku_ml = "ML Shortnames";
+export const csv_sku_rate = "Rate";
+export const csv_sku_comment = "Comment";
+
+export const csv_ingr_num = "Ingr#";
+export const csv_ingr_name = "Name";
+export const csv_ingr_vendor = "Vendor Info";
+export const csv_ingr_size = "Size";
+export const csv_ingr_comment = "Comment";
+
+export const csv_prod_lines = "Name";
+
+export const csv_formula_num = "Formula#";
+export const csv_formula_name = "Name";
+export const csv_formula_ingr = "Ingr#";
+export const csv_formula_quantity = "Quantity";
+export const csv_formula_comment = "Comment";
+
 export const manu_report_modal = 'manu_report_modal'
 export const modify_manu_lines_label = 'Modify Manufacturing Lines'
 export const modify_formula_label = 'Modify Formula'

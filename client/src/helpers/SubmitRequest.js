@@ -87,6 +87,7 @@ export default class SubmitRequest{
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
       }).then(res => res.json()).then((res) => {
+        console.log(res);
         if (!res.success) return { success: res.success, error: res.error };
         else return { success: res.success, data: res.data};
       });
@@ -247,9 +248,10 @@ export default class SubmitRequest{
     )
   }
 
-  static submitGetFilterData = (route, sort_field, filter_value, keyword, currentPage, pageSize, prod_line) => {
+  static submitGetFilterData = (route, sort_field, filter_value, keyword, currentPage, pageSize, prod_line, formula) => {
     var path = '/api/' + route + '/' + sort_field + '/' + filter_value + '/' + keyword + '/' + currentPage +'/' + pageSize;
     path += (prod_line === undefined) ? '' : ('/' + prod_line);
+    path += (formula === undefined) ? '' : ('/' + formula);
     //printFuncFront("this is path in submitGetFilterData"+path);
     return fetch(path, { method: 'GET' })
       .then(data => data.json())

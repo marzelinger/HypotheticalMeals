@@ -19,7 +19,7 @@ class FilterHandler{
                 sku_ids = sku_ids.replace(/\s/g, "").split(',');
                 let skus = await SKU.find({ _id : { $in : sku_ids } });
                 if (skus.length == 0) return res.json({success: true, data: []})
-                skus.map(sku => sku.ingredients.map(ing => ids.push(ing._id)));
+                skus.map(sku => sku.formula.ingredients.map(ing => ids.push(ing._id)));
                 and_query.push( {_id: { $in: ids } } );
             }
             var keyword = req.params.keyword;
@@ -79,6 +79,15 @@ class FilterHandler{
             if (prod_line_ids !== undefined && prod_line_ids !== "_"){
                 prod_line_ids = prod_line_ids.replace(/\s/g, "").split(',');
                 and_query.push({ prod_line: prod_line_ids }); 
+            }
+
+            var formula_id = req.params.formula_id;
+            var formula_ids = [];
+            if (formula_id !== undefined && formula_id != "_"){
+                formula_ids.push(formula_id);
+                let skus = await SKU.find({ formula : {$in : formula_ids } });
+                skus.map(sku => ids.push(sku._id));
+                and_query.push( {_id: { $in: ids } } );
             }
             let results = (and_query.length === 0) ? await SKU.find( ).skip(currentPage*pageSize).limit(pageSize)
                                                         .populate('ingredients').populate('prod_line').sort(sort_field)

@@ -177,7 +177,8 @@ export default class FormulasPage extends React.Component {
         this.loadDataFromServer();
     }
 
-    onFilterValueSelection(vals, e, type){
+
+    onFilterValueSelection (vals, e, type)  {
         var filters = this.state.filters;
         vals.map((item) => {
             if (!filters[type].includes(item.value._id)){
@@ -309,10 +310,11 @@ export default class FormulasPage extends React.Component {
                         onFilterValueChange = {this.onFilterValueChange}
                         onRemoveFilter = {this.onRemoveFilter}
                         ingredients = {this.state.ingredients}
+                        onTableOptionSelection = {this.onTableOptionSelection}
                     />
                 </div>
                 <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
-                    <FormulaDetails
+                <FormulaDetails
                             item={this.state.detail_view_item}
                             detail_view_options={this.state.detail_view_options}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
