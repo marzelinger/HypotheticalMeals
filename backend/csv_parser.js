@@ -882,13 +882,27 @@ export default class CSV_parser{
             toReturn.formulaIngrIssue = true;
             return toReturn;
         }
+        var isUnitNum = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/.test(obj[Constants.csv_formula_quantity]);
+        var ingr = Ingredient.find({ num: obj[Constants.csv_formula_ingr] });
+        var unitType = await this.findUnit(ingr[0].pkg_size);
+        var unitType2 = await this.findUnit(obj[Constants.csv_formula_ingr]);
+        if(unitType != unitType2 || !isUnitNum){
+            toReturn.success = false;
+            toReturn.unitIssue = true;
+            return toReturn;
+        }
+
         toReturn.success = true;
         return toReturn;
     }
 
+    static async findUnit(ingredient_pkg_size){
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg)$/.test(ingredient_pkg_size)) return 1;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (fl.oz.|pt.|qt.|gal.|mL|L)$/.test(ingredient_pkg_size)) return 2;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count)$/.test(ingredient_pkg_size)) return 3;
+    }
+
     static async indicateFormulaDataValidationFailure(res, dataValidationObj, row){
-        console.log("this is happening");
-        console.log(dataValidationObj);
         if(dataValidationObj.missingRequiredField){
             return res.json({ success: false, badData: row});
         } else if(dataValidationObj.formulaNumIssue){
@@ -896,6 +910,8 @@ export default class CSV_parser{
         } else if(dataValidationObj.formulaNameIssue){
             return res.json({ success: false, badData: row});
         } else if(dataValidationObj.formulaIngrIssue){
+            return res.json({ success: false, badData: row});
+        } else if(dataValidationObj.unitIssue){
             return res.json({ success: false, badData: row});
         }
     }
