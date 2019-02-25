@@ -143,8 +143,9 @@ class Manu_ActivityHandler{
             var target_start_date = req.params.start_date;
             var target_end_date = req.params.end_date;
             //let conflict = await Manu_Goal.find({ name : new_name, user: new_user, activities: new_activities});
+           // let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id}, {scheduled: true}, {start: {$regex: {target_start_date}, $options: "$i"}}).populate('sku').populate('manu_line').populate({
 
-            let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id}).populate('sku').populate('manu_line').populate({
+            let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id , scheduled: true}).populate('sku').populate('manu_line').populate({
                 path: 'sku',
                 populate: { path: 'ingredients' }
               });
