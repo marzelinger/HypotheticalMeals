@@ -828,6 +828,26 @@ export default class CSV_parser{
         return res.json({ success: true, showImport: true, adds: formulas_added, updates: formulas_to_update_new, ignores: formulas_to_ignore});
     }
 
+    static async reformatFormula(newObj, oldObj, formulasMap, formulasToCommentsMap){
+        var ingredients = [];
+        var quantities = [];
+        newObj.name = oldObj[Constants.csv_formula_name];
+        newObj.num = oldObj[Constants.csv_formula_num];
+        var ingredient_map = formulasMap.get(oldObj[Constants.csv_formula_num]);
+        for(var ingredient_key of ingredient_map.keys()){
+            ingredients.push(ingredient_key);
+            quantities.push(ingredient_map.get(ingredient_key));
+        }
+        var comment = formulasToCommentsMap.get(oldObj[Constants.csv_formula_num]);
+        newObj.comment = comment;
+        newObj.ingredients = ingredients;
+        newObj.ingredient_quantities = quantities;
+        var toReturn = [];
+        toReturn[0] = objNew;
+        toReturn[1] = objOld;
+        return toReturn;
+    }
+
     static async validateDataFormulas(obj, all_formulas, db_ingredients_num){
         var toReturn = {};
 
