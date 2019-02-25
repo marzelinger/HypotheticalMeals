@@ -857,7 +857,7 @@ export default class CSV_parser{
             return toReturn;
         }
 
-        if(obj[Constants.csv_formula_num] == "\"\"" || !obj[Constants.csv_formula_num]) = ItemStore.getUniqueNumber(all_formulas);
+        if(obj[Constants.csv_formula_num] == "\"\"" || !obj[Constants.csv_formula_num]) obj[Constants.csv_formula_num] = ItemStore.getUniqueNumber(all_formulas);
         var isNum = /^\d+$/.test(obj[Constants.csv_formula_num]);
         if(!isNum){
             toReturn.success = false;

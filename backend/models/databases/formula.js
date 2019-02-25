@@ -15,7 +15,7 @@ const FormulaSchema = new Schema({
       ref: 'Ingredient'
     }
   ],
-  ingredient_quantities:[String],
+  ingredient_quantities:[Number],
   comment: String
 }, { timestamps: true });
 

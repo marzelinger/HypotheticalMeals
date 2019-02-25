@@ -76,7 +76,7 @@ export const manu_goals_modal = 'manu_goal'
 export const edit_manu_lines = 'Bulk Edit Manufacturing Lines'
 export const manu_lines_modal = 'manu_lines'
 export const details_modal = 'details'
-export const modify_manu_lines_label = 'Modify Manufacturing Lines'
+
 
 // CSV parsing constants
 export const csv_sku_num = "SKU#";
