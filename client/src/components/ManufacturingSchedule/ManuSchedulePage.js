@@ -8,6 +8,7 @@ import * as Constants from '../../resources/Constants';
 import ManuSchedulePalette from './ManuSchedulePalette'
 import './../../style/ManuSchedulePageStyle.css';
 import GeneralNavBar from '../GeneralNavBar';
+import ManuActivityErrors from './ManuActivityErrors';
 const jwt_decode = require('jwt-decode');
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 var moment = require('moment');
@@ -15,6 +16,7 @@ var moment = require('moment');
 export default class ManuSchedulePage extends Component {
     constructor(props) {
         super(props)
+        this.range = {};
         
         this.state = {
             user: '',
@@ -37,6 +39,7 @@ export default class ManuSchedulePage extends Component {
         this.onMove = this.onMove.bind(this);
         this.onRemove = this.onRemove.bind(this);
         this.onAdd = this.onAdd.bind(this);
+        this.updateRange = this.updateRange.bind(this);
     }
 
     async componentDidMount() {
@@ -269,13 +272,21 @@ export default class ManuSchedulePage extends Component {
         snap: this.snap
     }}
 
+    updateRange =  (event) => {
+        // this.setState({start: event.start})
+        this.range['start'] = event.start
+        this.range.end = event.end;
+        console.log("updating");
+    }
+
     render() {
         return (
         <div>
             <GeneralNavBar></GeneralNavBar>
             <div className={'scheduler-container'} style={this.getContainerStyle()}>
                 <div className='timeline-container'>
-                    {this.state.loaded ? (<Timeline 
+                    {this.state.loaded ? (
+                    <Timeline 
                         options={this.getOptions()}
                         items={items.length ? items : [
                             {
@@ -285,17 +296,21 @@ export default class ManuSchedulePage extends Component {
                         ]}
                         groups={groups}
                         clickHandler={this.clickHandler.bind(this)}
+                        rangechangeHandler = {this.updateRange}
                         // selectHandler={this.selectHandler.bind(this)}
                     />) : null}
                 </div>
-                <div className='palette-container'>
-                    <ManuSchedulePalette
-                        goals={this.state.unscheduled_goals}
-                        activities={this.state.activities}
-                        lines={this.state.lines}
-                        activity_to_schedule={this.state.activity_to_schedule}
-                        prepareAddActivity={this.prepareAddActivity}
-                    />
+                <div className = "belowTimeline">
+                    <div className='palette-container'>
+                        <ManuSchedulePalette
+                            goals={this.state.unscheduled_goals}
+                            activities={this.state.activities}
+                            lines={this.state.lines}
+                            activity_to_schedule={this.state.activity_to_schedule}
+                            prepareAddActivity={this.prepareAddActivity}
+                        />
+                    </div>
+                    <ManuActivityErrors className = "errors" range = {this.range} activities = {this.state.activities.filter((activity) => activity.scheduled)}></ManuActivityErrors>
                 </div>
             </div>
         </div>
