@@ -150,9 +150,9 @@ export default class PageTable extends Component {
           onRowSelection = {(res) => this.props.handleSelect(res)}
         >
           <TableHeader
-            displaySelectAll={false}
+            displaySelectAll={true}
             adjustForCheckbox={this.state.selectable}
-            enableSelectAll={false}
+            enableSelectAll={true}
           >
               {this.getTableSuperHeader()}
             <TableRow className = "cols" selectable = {true} >
