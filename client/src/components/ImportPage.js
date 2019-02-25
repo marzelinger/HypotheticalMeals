@@ -67,6 +67,11 @@ export default class ImportPage extends React.Component {
             badData: false,
             incompleteEntry: false,
             badDataRow: -1,
+
+            formula_comment: false,
+            ingr_duplicate: false,
+            ingr_dup_num: -1,
+            formula_num: -1,
         }
     }
 
@@ -125,6 +130,20 @@ export default class ImportPage extends React.Component {
                 .then((res) => {
                     console.log(res);
                     // Setting state for a duplicate
+                    if(typeof res.data.formula_comment != 'undefined'){
+                        this.setState({
+                            formula_comment: true,
+                            rowIssue: res.data.formula_comment
+                        });
+                    }
+                    if(typeof res.data.ingredient_duplicate != 'undefined'){
+                        this.setState({
+                            ingr_duplicate: true,
+                            rowIssue: res.data.ingredient_duplicate,
+                            ingr_dup_num: res.data.ingredient_num,
+                            formula_num: res.data.formula_num
+                        })
+                    }
                     if(typeof res.data.duplicate != 'undefined'){
                         this.setState({
                             duplicate: true,
@@ -440,6 +459,10 @@ export default class ImportPage extends React.Component {
             badData: false,
             incompleteEntry: false,
             badDataRow: -1,
+            formula_comment: false,
+            ingr_duplicate: false,
+            ingr_dup_num: -1,
+            formula_num: -1,
         })
     }
 
@@ -519,6 +542,14 @@ export default class ImportPage extends React.Component {
 
                 <Alert color="danger" isOpen={this.state.badData} toggle={this.onDismissBadData}>
                     The entry specified in row {this.state.badDataRow} has bad data
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.formula_comment} toggle={this.resetState}>
+                    The formula specified in row {this.state.rowIssue} is not the first occurence in the CSV and should not have a comment
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.ingr_duplicate} toggle={this.resetState}>
+                    Ingredient # {this.state.ingr_dup_num} is specified more than once for Formula # {this.state.formula_num}
                 </Alert>
                 
 

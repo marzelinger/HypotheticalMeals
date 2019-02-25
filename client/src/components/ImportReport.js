@@ -31,8 +31,8 @@ export class ImportReport extends React.Component{
         } else if(this.props.label==="Formulas"){
             this.state ={
                 page_title: "Formulas",
-                table_columns: ['Name', 'Number','Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line', "Comment"],
-                table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', "comment"],
+                table_columns: ['Name', 'Number', "Comment"],
+                table_properties: ['name', 'num', "comment"],
                 added_items: this.props.added_items,
                 updated_items: this.props.updated_items,
                 ignored_items: this.props.ignored_items,
