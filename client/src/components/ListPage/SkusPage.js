@@ -136,14 +136,15 @@ export default class ListPage extends React.Component {
         var final_ing_filter = this.state.filters['ingredients'].join(',');
         var final_keyword_filter = this.state.filters['keyword'];
         var final_prod_line_filter = this.state.filters['products'].join(',');
+        //Check how the filter state is being set 
         if (final_ing_filter === '') final_ing_filter = '_';
         if (final_keyword_filter === '') final_keyword_filter = '_';
         if (final_prod_line_filter === '') final_prod_line_filter = '_';
         var resALL = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
-            this.state.sort_field, final_ing_filter, final_keyword_filter, 0, 0, final_prod_line_filter);
+            this.state.sort_field, final_ing_filter, final_keyword_filter, 0, 0, final_prod_line_filter, '_');
         await this.checkCurrentPageInBounds(resALL);
         var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
-            this.state.sort_field, final_ing_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize, final_prod_line_filter); 
+            this.state.sort_field, final_ing_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize, final_prod_line_filter, "_"); 
         if (res === undefined || !res.success) {
             res.data = [];
             resALL.data = [];
