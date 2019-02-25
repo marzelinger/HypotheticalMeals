@@ -732,7 +732,7 @@ export default class CSV_parser{
         return res.json({ success: true, adds: returningAdds,
                         updates: returningUpdates, ignores: ignoreArray});
     }
-
+/*
     static async parseFormulasCSV(req, res){
         var db_formula_nums = new Set();
         var db_ingredients_num = new Set();

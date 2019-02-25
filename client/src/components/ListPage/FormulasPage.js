@@ -314,11 +314,7 @@ export default class FormulasPage extends React.Component {
                     />
                 </div>
                 <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
-                    <FormulaDetails
-                            item={this.state.detail_view_item}
-                            detail_view_options={this.state.detail_view_options}
-                            handleDetailViewSubmit={this.onDetailViewSubmit}
-                        />
+                    
                 </Modal>
                 <TablePagination
                  currentPage = {this.state.currentPage}
