@@ -771,13 +771,13 @@ export default class CSV_parser{
             // Checks to see formula name is under 32 digits and the ingredient units are all correct
             var dataValidationObj = await this.validateDataFormulas(obj, all_formulas, db_ingredients_num);
             if(dataValidationObj.success == false){
-                indicateFormulaDataValidationFailure(res, dataValidationObj, i+2);
+                return await this.indicateFormulaDataValidationFailure(res, dataValidationObj, i+2);
             }
 
             // Builds the maps needed to reconstruct the database entries after validating them
             var collisionObj = await this.searchForFormulaCollision(obj, formulas_to_add, db_formula_nums, formulas_to_update, formulas_to_comments);
             if(collisionObj.success == false){
-                indicateFormulaCollisionFailure(res, collisionObj, i+2);
+                return await this.indicateFormulaCollisionFailure(res, collisionObj, i+2);
             }
         }
 
@@ -797,6 +797,7 @@ export default class CSV_parser{
                 updated = updated + 1;
                 var newObj ={};
                 var reformattedFormulas = await this.reformatFormula(newObj, obj, formulas_to_update, formulas_to_comments);
+                console.log(reformattedFormulas[0]);
                 formulas_to_update_new.push(reformattedFormulas[0]);
                 formulas_dealt_with.add(obj[Constants.csv_formula_num]);
             }
@@ -825,6 +826,7 @@ export default class CSV_parser{
                 {$set: {name: formulas_to_update_new[i].name, num: formulas_to_update_new[i].num, 
                         ingredients: formulas_to_update_new[i].ingredients, ingredient_quantities: formulas_to_update_new[i].ingredient_quantities,
                         comment: formulas_to_update_new[i].comment}}, {upsert: true, new: true});
+            console.log(updated_formula);
         }
         return res.json({ success: true, showImport: true, adds: formulas_added, updates: formulas_to_update_new, ignores: formulas_to_ignore});
     }
@@ -885,6 +887,8 @@ export default class CSV_parser{
     }
 
     static async indicateFormulaDataValidationFailure(res, dataValidationObj, row){
+        console.log("this is happening");
+        console.log(dataValidationObj);
         if(dataValidationObj.missingRequiredField){
             return res.json({ success: false, badData: row});
         } else if(dataValidationObj.formulaNumIssue){

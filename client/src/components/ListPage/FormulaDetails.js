@@ -98,6 +98,7 @@ export default class FormulaDetails extends React.Component {
 
     addIngredient(item, value, qty) {
         let ind = -1;
+
         qty = parseInt(qty);
         item.ingredients.map((ing, index) => {
             if (ing._id === value._id)

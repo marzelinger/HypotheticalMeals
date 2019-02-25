@@ -87,6 +87,7 @@ export default class SubmitRequest{
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
       }).then(res => res.json()).then((res) => {
+        console.log(res);
         if (!res.success) return { success: res.success, error: res.error };
         else return { success: res.success, data: res.data};
       });
