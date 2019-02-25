@@ -54,9 +54,9 @@ td, tr {
 }
 
 /* alternating column backgrounds */
-.vis-time-axis .vis-grid.vis-odd {
+/* .vis-time-axis .vis-grid.vis-odd {
     background: #f5f5f5;
-}
+} */
 
 .scheduler-container {
     display: flex;
