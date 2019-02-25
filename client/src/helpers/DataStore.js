@@ -58,8 +58,10 @@ export default class DataStore{
           page_name: Constants.users_page_name,
           page_title: 'Users',
           filter_options: [Constants.keyword_label],
-          table_columns: ['Username', 'Admin', 'Created By', 'Comment'],
-          table_properties: ['username', 'isAdmin', 'admin_creator', 'comment'],
+          table_columns: ['Username', 'Admin', 'Created By'],
+          table_properties: ['username', 'isAdmin', 'admin_creator'],
+          // table_columns: ['Username', 'Admin', 'Created By', 'Comment'],
+          // table_properties: ['username', 'isAdmin', 'admin_creator', 'comment'],
           table_options: [Constants.add_keyword_filter],
           //table_options: [Constants.create_user, Constants.add_keyword_filter],
 
@@ -83,10 +85,10 @@ export default class DataStore{
         table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line'],
         table_options: [Constants.create_item, Constants.add_to_manu_goals, Constants.add_keyword_filter, 
           Constants.add_ing_filter, Constants.add_prod_filter],
-        item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'comment', 'manu_rate'],
-        item_property_labels: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Comment', 'Manufactuing Rate'],
-        item_property_patterns: ['.+', '^[0-9]+$', '^[016789][0-9]{11}$', '^[016789][0-9]{11}$', '.+', '^[0-9]+$', '.*', '^[+]?[0-9]*\.?[0-9]*$'], 
-        item_property_field_type: ['text', 'text', 'text', 'text', 'text', 'text', 'textarea', 'text','text', 'text'],
+        item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'comment', 'manu_rate', 'scale_factor'],
+        item_property_labels: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Comment', 'Manufactuing Rate', 'Formula Scale Factor'],
+        item_property_patterns: ['.+', '^[0-9]+$', '^[016789][0-9]{11}$', '^[016789][0-9]{11}$', '.+', '^[0-9]+$', '.*', '^[+]?[0-9]*\.?[0-9]*$','^[+]?[0-9]*\.?[0-9]*$'], 
+        item_property_field_type: ['text', 'text', 'text', 'text', 'text', 'text', 'textarea', 'text','text', 'text', 'text'],
 
 
       };

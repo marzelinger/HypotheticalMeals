@@ -8,6 +8,8 @@ import {
 import * as Constants from '../../resources/Constants';
 import SubmitRequest from './../../helpers/SubmitRequest'
 import Filter from './Filter'
+const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
+
 
 export default class ModifyManuLines extends React.Component {
     constructor(props) {
@@ -32,6 +34,7 @@ export default class ModifyManuLines extends React.Component {
     }
 
     async onFilterValueSelection (opts, e) {
+        if(currentUserIsAdmin().isValid){
         let newLines = [];
         opts.map(opt => {
             if (!newLines.includes(opt.value._id)){
@@ -39,6 +42,7 @@ export default class ModifyManuLines extends React.Component {
             }
         })
         this.props.handleModifyManuLines(newLines)
+    }
     }
 
     async injectManuLines() { 

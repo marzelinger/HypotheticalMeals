@@ -45,7 +45,9 @@ export default class ManufacturingLine extends React.Component{
           <input onKeyPress = {(event) => this.onNameSubmit(event)} type = "text" value = {this.state.name} onChange = {(event) => this.onNameChange(event)}></input>
           </div>
         </div>
+        <Button id = "detailsButton" color="primary" onClick={(e) => this.props.handleDetailViewSelect(e, this.props.manu_line)}  > Edit</Button>{' '}
         <Button id = "manuLineScheduleButton" color="primary" onClick={(e) => this.onReportClick(e)}  > Report</Button>{' '}
+
           <div className="singleGoalButtons">
             {/* <a onClick={() => { props.handleUpdateGoal(props.id); }}>update</a> */}
             <img id ="deleteButton" onClick={() => {this.props.handleDeleteManuLine(this.props.id); }} src= {deleteButton}></img>
@@ -57,11 +59,13 @@ export default class ManufacturingLine extends React.Component{
 }
 
 ManufacturingLine.propTypes = {
+  manu_line: PropTypes.object,
   name: PropTypes.string.isRequired,
   skus: PropTypes.array.isRequired,
   id: PropTypes.string.isRequired,
   handleUpdateManuLine: PropTypes.func.isRequired,
   handleDeleteManuLine: PropTypes.func.isRequired,
   handleReportSelect: PropTypes.func.isRequired,
-  manu_lines: PropTypes.array.isRequired
+  manu_lines: PropTypes.array.isRequired,
+  handleDetailViewSelect: PropTypes.func
 };

@@ -185,22 +185,22 @@ class Landing extends Component {
       </div>);
       case false:
 
-        return  (
-          <div>
-          <Link
-          to="/adminregister"
-          onClick={this.onChange}
-          style={{
-            width: "140px",
-            borderRadius: "3px",
-            letterSpacing: "1.5px"
-          }}
-          className="btn btn-large waves-effect waves-light hoverable blue accent-3"
-        >
-          Register New Admin
-        </Link>
-        </div>
-        );
+        // return  (
+        //   <div>
+        //   <Link
+        //   to="/adminregister"
+        //   onClick={this.onChange}
+        //   style={{
+        //     width: "140px",
+        //     borderRadius: "3px",
+        //     letterSpacing: "1.5px"
+        //   }}
+        //   className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+        // >
+        //   Register New Admin
+        // </Link>
+        // </div>
+        // );
     }
   };
 

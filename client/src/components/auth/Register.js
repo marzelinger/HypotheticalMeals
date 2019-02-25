@@ -23,7 +23,7 @@ class Register extends Component {
       username: "",
       password: "",
       password2: "",
-      privileges: [],
+      // privileges: [],
       admin_creator: currentUserUsername(),
       isNetIDLogin: false,
       isAdmin: false,
@@ -63,7 +63,7 @@ onSubmit(e){
       admin_creator: this.state.admin_creator,
       isNetIDLogin: this.state.isNetIDLogin,
       isAdmin: this.state.isAdmin,
-      privileges: [this.state.privileges]
+      // privileges: [this.state.privileges]
     };
 
     if(currentUserIsAdmin().isValid){

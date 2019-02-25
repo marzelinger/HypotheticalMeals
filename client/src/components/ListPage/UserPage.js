@@ -121,8 +121,8 @@ export default class UserPage extends React.Component {
         printFuncFront("here in loadDataFromServer");
         var resALL = await SubmitRequest.submitGetFilterData(Constants.users_filter_path, 
             this.state.sort_field, final_users_filter, final_keyword_filter, 0, 0);
-        printFuncFront("this is resALL"+resALL);
-        printFuncFront("this is resALL stringify"+JSON.stringify(resALL));
+        //printFuncFront("this is resALL"+resALL);
+        //printFuncFront("this is resALL stringify"+JSON.stringify(resALL));
 
         await this.checkCurrentPageInBounds(resALL);
         var res = await SubmitRequest.submitGetFilterData(Constants.users_filter_path, 
@@ -286,7 +286,7 @@ export default class UserPage extends React.Component {
             printFuncFront("This is the new item being saved: "+JSON.stringify(item));
             this.setState({ 
             detail_view_item: item ,
-            detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
+            detail_view_options: [Constants.details_save, Constants.details_cancel]
             });
         }
         else{

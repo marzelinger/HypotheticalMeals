@@ -73,6 +73,9 @@ export default class PageTable extends Component {
         return item[prop].name;
       case 'pkg_cost':
         return '$' + (item[prop] === '') ? item[prop] : item[prop].toFixed(2);
+      case 'isAdmin':
+        if(item[prop]) return 'true';
+        else return 'false';
       default:
         return item[prop];
     }

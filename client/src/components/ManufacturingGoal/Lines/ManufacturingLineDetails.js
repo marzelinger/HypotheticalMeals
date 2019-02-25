@@ -210,5 +210,8 @@ export default class ManufacturingLineDetails extends React.Component {
 }
 
 ManufacturingLineDetails.propTypes = {
-    handleDetailViewSubmit: PropTypes.func
+    handleDetailViewSubmit: PropTypes.func,
+    manu_line: PropTypes.object,
+    detail_view_options: PropTypes.arrayOf(PropTypes.string),
+    detail_view_action: PropTypes.string,
   };

@@ -3,7 +3,7 @@ import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, NavLink } from 'r
 import { Link } from "react-router-dom";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Register from "./auth/Register";
-import AdminRegister from "./auth/AdminRegister";
+// import AdminRegister from "./auth/AdminRegister";
 import RaisedButton from 'material-ui/RaisedButton';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';

@@ -5,7 +5,7 @@ import SkusPage from "./ListPage/SkusPage";
 import FormulasPage from "./ListPage/FormulasPage";
 import Landing from "./layout/Landing";
 import Register from "./auth/Register";
-import AdminRegister from "./auth/AdminRegister";
+// import AdminRegister from "./auth/AdminRegister";
 import Login from "./auth/Login";
 import DukeLogin from "./auth/DukeLogin";
 import PrivateRoute from "./private-route/PrivateRoute";

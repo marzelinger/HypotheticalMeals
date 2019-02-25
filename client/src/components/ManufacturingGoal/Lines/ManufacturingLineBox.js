@@ -177,6 +177,7 @@ export default class ManufacturingLinesBox extends Component {
             handleDeleteManuLine={this.onDeleteManuLine}
             handleUpdateManuLine={this.onUpdateManuLine}
             handleReportSelect={this.props.handleManuScheduleReportSelect}
+            handleDetailViewSelect = {this.props.handleDetailViewSelect}
           />
         </div>
         <div className="form">
@@ -190,5 +191,6 @@ export default class ManufacturingLinesBox extends Component {
 }
 
 ManufacturingLinesBox.propTypes = {
-  handleManuScheduleReportSelect: PropTypes.func
+  handleManuScheduleReportSelect: PropTypes.func,
+  handleDetailViewSelect:PropTypes.func
 };

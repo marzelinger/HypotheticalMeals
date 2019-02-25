@@ -292,14 +292,14 @@ export default class SKUDetails extends React.Component {
                     item={this.state.item}
                     label={Constants.modify_manu_lines_label}
                     handleModifyManuLines={this.onModifyManuLines}
-                    disabled = {currentUserIsAdmin().isValid ? false : true}
+                    disabled = {!currentUserIsAdmin().isValid}
                 />
                 <ItemSearchInput
                     curr_item={this.state.prod_line_item}
                     item_type={Constants.prod_line_label}
                     invalid_inputs={this.state.invalid_inputs}
                     handleSelectItem={this.onSelectProductLine}
-                    disabled = {currentUserIsAdmin().isValid ? false : true}
+                    disabled = {!currentUserIsAdmin().isValid}
                 />
                 <SkuFormulaDetails
                     item = {this.state.item}
