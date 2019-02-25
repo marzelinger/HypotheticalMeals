@@ -258,6 +258,9 @@ export default class IngredientsPage extends React.Component {
     };
 
     onSelect = (rowIndexes) => {
+        if(rowIndexes == 'none' || rowIndexes == 'all'){
+            return;
+        }
         var newState = [];
         rowIndexes.forEach( index => {
             newState.push(this.state.data[index]);
@@ -342,6 +345,7 @@ export default class IngredientsPage extends React.Component {
                         handleDetailViewSelect={this.onDetailViewSelect}
                         showDetails = {true}
                         sortable = {true}
+                        selectable = {false}
                         title = {this.state.page_title}
                         showHeader = {true}
                         simple = {this.props.simple}

@@ -183,6 +183,21 @@
 
   }
 
+  .MuiInput-underline-27:before {
+    border-bottom: none !important;
+  }
+
+  .form-group > div > div {
+    border-bottom: none !important;
+  }
+
+  .form-group > div > ::before {
+    border-bottom: none !important;
+  }
+  
+  .form-group > div > ::after {
+    border-bottom: none !important;
+  }
 
 
   

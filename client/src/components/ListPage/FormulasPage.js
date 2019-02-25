@@ -184,8 +184,8 @@ export default class FormulasPage extends React.Component {
             if (!filters[type].includes(item.value._id)){
                 filters[type].push(item.value._id);
             }
-        })
-        
+        });
+
         this.setState({
             filters: filters,
             filterChange: true

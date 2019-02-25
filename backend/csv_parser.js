@@ -3,7 +3,6 @@ import SKU from './models/databases/sku';
 import Formula from './models/databases/formula';
 import Ingredient from './models/databases/ingredient';
 import ItemStore from './../client/src/helpers/ItemStore';
-import FormulaDetails from '../client/src/components/ListPage/FormulaDetails';
 import Manu_lines from './model/databases/manu_lines';
 import * as Constants from './../client/src/resources/Constants';
 
