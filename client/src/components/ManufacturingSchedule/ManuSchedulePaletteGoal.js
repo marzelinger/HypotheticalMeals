@@ -14,9 +14,9 @@ export default class ManuSchedulePaletteGoal extends Component {
     render() {
         return (
             <div className='goal-container'>
-                <h4 className="u-position-relative">{this.props.goal.name}
+                <h6 className="u-position-relative">{this.props.goal.name}
                     <div className="accordion__arrow" role="presentation"/> 
-                </h4>
+                </h6>
             </div>
         )
     }

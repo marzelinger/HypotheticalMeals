@@ -179,9 +179,11 @@ export default class FormulasPage extends React.Component {
 
     onFilterValueSelection(vals, e, type){
         var filters = this.state.filters;
-        filters[type] = vals.map((item) => {
-            return item.value_id
-        })
+        vals.map((item) => {
+            if (!filters[type].includes(item.value._id)){
+                filters[type].push(item.value._id);
+            }
+        });
 
         this.setState({
             filters: filters,
@@ -328,6 +330,6 @@ export default class FormulasPage extends React.Component {
     }
 }
 
-ListPage.propTypes = {
-    default_ing_flter: PropTypes.object
+FormulasPage.propTypes = {
+    default_ing_filter: PropTypes.object
 }
