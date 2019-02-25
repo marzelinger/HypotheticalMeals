@@ -2,8 +2,8 @@ import Prod_Line from './models/databases/prod_line';
 import SKU from './models/databases/sku';
 import Formula from './models/databases/formula';
 import Ingredient from './models/databases/ingredient';
+import Manu_Line from './models/databases/manu_line';
 import ItemStore from './../client/src/helpers/ItemStore';
-import Manu_lines from './model/databases/manu_lines';
 import * as Constants from './../client/src/resources/Constants';
 
 const csv = require('csvtojson');
@@ -149,10 +149,10 @@ export default class CSV_parser{
                 db_formulas.add(formula.num);
             });
 
-            var db_manu_lines = new Set();
-            var all_manu_lines = await Manu_lines.find();
-            all_manu_lines.forEach(function (manu_line) {
-                db_manu_lines.add(manu_line.short_name);
+            var db_Manu_Line = new Set();
+            var all_Manu_Line = await Manu_Line.find();
+            all_Manu_Line.forEach(function (manu_line) {
+                db_Manu_Line.add(manu_line.short_name);
             });
 
             // Imports CSV, converts to JSON and makes sure it isn't empty
@@ -195,7 +195,7 @@ export default class CSV_parser{
                     return await this.indicateSKUDataFailure(res, dataValidationObj, i+2);
                 }
                 
-                var collisionObj = await this.searchForSKUCollision(obj, db_prod_lines, skus_to_add_num, skus_to_add_caseUPC, db_skus, db_caseUPCs, skus_to_update, skus_to_ignore, db_formulas, db_manu_lines)
+                var collisionObj = await this.searchForSKUCollision(obj, db_prod_lines, skus_to_add_num, skus_to_add_caseUPC, db_skus, db_caseUPCs, skus_to_update, skus_to_ignore, db_formulas, db_Manu_Line)
                 if(collisionObj.success == false){
                     return await this.indicateSKUCollisionFailure(res, collisionObj, i+2);
                 }
@@ -371,7 +371,7 @@ export default class CSV_parser{
         return toReturn;
     }
 
-    static async searchForSKUCollision(obj, db_prod_lines, skus_to_add_num, skus_to_add_caseUPC, db_skus, db_caseUPCs, skus_to_update, skus_to_ignore, db_formulas, db_manu_lines) {
+    static async searchForSKUCollision(obj, db_prod_lines, skus_to_add_num, skus_to_add_caseUPC, db_skus, db_caseUPCs, skus_to_update, skus_to_ignore, db_formulas, db_Manu_Line) {
         var toReturn = {};
         // If the specified product line doesn't exist, indicate to the user
         if(!db_prod_lines.has(obj[Constants.csv_sku_pl])) {
@@ -731,7 +731,7 @@ export default class CSV_parser{
         return res.json({ success: true, adds: returningAdds,
                         updates: returningUpdates, ignores: ignoreArray});
     }
-/*
+
     static async parseFormulasCSV(req, res){
         var db_formula_nums = new Set();
         var db_ingredients_num = new Set();
@@ -781,9 +781,9 @@ export default class CSV_parser{
             }
         }
 
-        added = 0;
-        ignored = 0;
-        updated = 0;
+        var added = 0;
+        var ignored = 0;
+        var updated = 0;
         var formulas_added = [];
         var intermediate_formulas_added = [];
         var formulas_dealt_with = new Set();
@@ -808,17 +808,19 @@ export default class CSV_parser{
                 formulas_dealt_with.add(obj[Constants.csv_formula_num]);
             }
         }
-
-        for (var i = 0; i < formulas_added; i++){
+        
+        for (var i = 0; i < formulas_added.length; i++){
+            console.log("gets here");
             var formula = new Formula();
             formula.name = formulas_added[i].name;
             formula.num = formulas_added[i].num;
             formula.ingredients = formulas_added[i].ingredients;
             formula.ingredient_quantities = formulas_added[i].ingredient_quantities;
             formula.comment = formulas_added[i].comment;
+            console.log(formula);
             let new_formula = await formula.save();
         }
-        for (var i = 0; i < formulas_to_update_new; i++){
+        for (var i = 0; i < formulas_to_update_new.length; i++){
             let updated_formula = await Formula.findOneAndUpdate({ num : formulas_to_update_new[i].num },
                 {$set: {name: formulas_to_update_new[i].name, num: formulas_to_update_new[i].num, 
                         ingredients: formulas_to_update_new[i].ingredients, ingredient_quantities: formulas_to_update_new[i].ingredient_quantities,
@@ -833,8 +835,13 @@ export default class CSV_parser{
         newObj.name = oldObj[Constants.csv_formula_name];
         newObj.num = oldObj[Constants.csv_formula_num];
         var ingredient_map = formulasMap.get(oldObj[Constants.csv_formula_num]);
+        console.log("gets here");
         for(var ingredient_key of ingredient_map.keys()){
-            ingredients.push(ingredient_key);
+            console.log(ingredient_key);
+            var ingredient = await Ingredient.find({ num: ingredient_key });
+            console.log(ingredient.length);
+            var ingredient_id = ingredient[0]._id; 
+            ingredients.push(ingredient_id);
             quantities.push(ingredient_map.get(ingredient_key));
         }
         var comment = formulasToCommentsMap.get(oldObj[Constants.csv_formula_num]);
@@ -842,8 +849,8 @@ export default class CSV_parser{
         newObj.ingredients = ingredients;
         newObj.ingredient_quantities = quantities;
         var toReturn = [];
-        toReturn[0] = objNew;
-        toReturn[1] = objOld;
+        toReturn[0] = newObj;
+        toReturn[1] = oldObj;
         return toReturn;
     }
 
