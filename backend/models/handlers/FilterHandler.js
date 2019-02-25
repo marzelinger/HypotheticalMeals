@@ -19,7 +19,7 @@ class FilterHandler{
                 sku_ids = sku_ids.replace(/\s/g, "").split(',');
                 let skus = await SKU.find({ _id : { $in : sku_ids } });
                 if (skus.length == 0) return res.json({success: true, data: []})
-                skus.map(sku => sku.ingredients.map(ing => ids.push(ing._id)));
+                skus.map(sku => sku.formula.ingredients.map(ing => ids.push(ing._id)));
                 and_query.push( {_id: { $in: ids } } );
             }
             var keyword = req.params.keyword;
