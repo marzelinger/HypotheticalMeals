@@ -110,11 +110,11 @@ class IngredientHandler{
             var target_id = req.params.ingredient_id;
             let skus = await SKU.find({ ingredients : target_id });
             skus.map(async (sku) => {
-                let ind = sku.ingredients.indexOf(target_id);
-                sku.ingredients.splice(ind, 1);
-                sku.ingredient_quantities.splice(ind, 1);
+                let ind = sku.formula.ingredients.indexOf(target_id);
+                sku.formula.ingredients.splice(ind, 1);
+                sku.formula.ingredient_quantities.splice(ind, 1);
                 await SKU.findOneAndUpdate({ _id : sku._id},
-                    {$set: {ingredients : sku.ingredients, ingredient_quantities: sku.ingredient_quantities}}, 
+                    {$set: {ingredients : sku.formula.ingredients, ingredient_quantities: sku.formula.ingredient_quantities}}, 
                     {upsert : true, new : true});
             })
             let to_remove = await Ingredient.findOneAndDelete({ _id: target_id});
