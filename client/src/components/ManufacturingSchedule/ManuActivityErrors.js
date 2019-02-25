@@ -23,7 +23,6 @@ export default class ManuSchedulePalette extends Component {
     }
 
     shouldComponentUpdate(nextProps){
-        console.log("here");
         var Datenext =  Date.parse(this.state.range.start);
         var Dateprev =  Date.parse(this.state.prevRange.start);
         if(!Datenext && !Dateprev){
@@ -51,7 +50,7 @@ export default class ManuSchedulePalette extends Component {
             return ((activityEnd >= timelineStart) &&  (activityStart <= timelineEnd))
         })
         var error_info = [];
-        console.log(current_activities);
+        // console.log(current_activities);
         for(var i = 0; i < current_activities.length; i ++){
             await CheckErrors.updateActivityErrors(current_activities[i])
             let info = await CheckErrors.getErrorMessages(current_activities[i])
@@ -62,11 +61,11 @@ export default class ManuSchedulePalette extends Component {
     }
 
     render(){
-        console.log("re rendered");
+        // console.log("re rendered");
         let errors;
-        console.log(this.state.error_info)
+        // console.log(this.state.error_info)
         var messages = this.state.error_info.map((info) => {
-            console.log(info.error_messages)
+            // console.log(info.error_messages)
             return (
                 <div key = {info.name}>
                     <h3>{info.name}</h3>

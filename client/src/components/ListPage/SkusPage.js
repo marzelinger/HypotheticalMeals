@@ -355,14 +355,14 @@ export default class ListPage extends React.Component {
                 newData.push(item);
                 //need to create the new formula and get the id of the newly created formula and then put that in the 
                 //item equal to the formula section of item.
-                resFormula = await SubmitRequest.submitCreateItem(Constants.formulas_page_name, formula_item, this);
+                resFormula = await SubmitRequest.submitCreateItem(Constants.formulas_page_name, formula_item);
                 // var newSKUitem = this.formatNewSKUFormula(item, resFormula);
                 if(resFormula.success){
                     item['formula']= resFormula.data._id;
                 }
                 console.log("this is the create res."+ JSON.stringify(resItem));
 
-                resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
+                resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item);
 
                 console.log("this is the create res."+ JSON.stringify(resItem));
                 console.log("this is the create res formula."+ JSON.stringify(resFormula));
@@ -371,7 +371,7 @@ export default class ListPage extends React.Component {
             case Constants.details_save:
                 let toSave = newData.findIndex(obj => {return obj._id === item._id});
                 newData[toSave] = item;
-                resFormula = await SubmitRequest.submitUpdateItem(Constants.formulas_page_name, formula_item, this);
+                resFormula = await SubmitRequest.submitUpdateItem(Constants.formulas_page_name, formula_item);
                 resItem = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
                 
                 console.log("this is the save res."+ JSON.stringify(resItem));
@@ -382,14 +382,20 @@ export default class ListPage extends React.Component {
             case Constants.details_delete:
                 let toDelete = newData.findIndex(obj => {return obj._id === item._id});
                 newData.splice(toDelete, 1);
-                resItem = await SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
+                resItem = await SubmitRequest.submitDeleteItem(this.state.page_name, item);
+                // console.log(resItem)
+                // let activities_to_delete = resItem.data.activities
+                // console.log(activities_to_delete)
+                // activities_to_delete.map(async(act) => {
+                //     let resAct = await SubmitRequest.submitDeleteItem(Constants.manu_activity_page_name, act)
+                //     console.log(resAct)
+                // })
                 break;
             case Constants.details_cancel:
                 resItem = {success: true}
                 break;
         }
-        console.log("resItem was: "+resItem.success);
-        console.log("resFormula")
+        console.log(resItem)
         if (!resItem.success) alert(resItem.error);
         else {
             this.setState({ 
@@ -426,7 +432,7 @@ export default class ListPage extends React.Component {
 
         return (
             <div className="list-page">
-            <GeneralNavBar></GeneralNavBar>
+            {this.props.default_ing_filter === undefined ? <GeneralNavBar></GeneralNavBar> : null}
                 <div>
                     <PageTable 
                         columns={this.state.table_columns} 
