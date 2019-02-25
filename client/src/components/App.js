@@ -19,7 +19,7 @@ import ManufacturingPage from "./ManufacturingGoal/ManufacturingPage";
 import ManufacturingLinePage from "./ManufacturingGoal/ManufacturingLinePage";
 import ImportPage from "./ImportPage";
 import IngredientsPage from "./ListPage/IngredientsPage";
-import UserPage from "./ListPage/UsersPage";
+import UserPage from "./ListPage/UserPage";
 import ProductLinePage from "./ProductLine/ProductLinePage";
 import * as Constants from '../resources/Constants';
 import Logout from '../components/auth/Logout';

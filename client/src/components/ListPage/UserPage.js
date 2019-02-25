@@ -25,7 +25,7 @@ const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
 
 
-export default class UsersPage extends React.Component {
+export default class UserPage extends React.Component {
     constructor(props) {
         super(props);
 
@@ -395,6 +395,6 @@ export default class UsersPage extends React.Component {
 
 }
 
-UsersPage.propTypes = {
+UserPage.propTypes = {
     default_users_filter: PropTypes.object
 }
