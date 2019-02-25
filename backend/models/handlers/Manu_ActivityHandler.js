@@ -76,9 +76,10 @@ class Manu_ActivityHandler{
             var new_quantity = req.body.quantity;
             var new_scheduled = req.body.scheduled || false
             var new_start = req.body.start
-            var new_duration = new_sku.manu_rate * new_quantity;
+            var new_overwritten = req.body.overwritten
+            if (new_overwritten) var new_duration = req.body.duration;
+            else var new_duration = new_sku.manu_rate * new_quantity;
             var new_manu_line = req.body.manu_line;
-            var new_overwritten = req.body.overwritten;
             var new_orphaned= req.body.orphaned;
             var new_over_deadline = req.body.over_deadline;
             var new_unscheduled_enabled = req.body.unscheduled_enabled;
