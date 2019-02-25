@@ -142,7 +142,6 @@ export default class ManufacturingGoalDetails extends React.Component {
         if (inv.length === 0) {
             var item = this.state.item;
             item.deadline = new Date(item.deadline)
-            console.log(item.deadline);
             var return_val = await this.props.handleDetailViewSubmit(e, item, opt)
             if(return_val){
                 this.setState({modal: false})
@@ -158,6 +157,12 @@ export default class ManufacturingGoalDetails extends React.Component {
         this.state.item_properties.map(prop => {
             if (!this.state.item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
         })
+        var date = new Date(this.state.item['deadline'])
+        console.log(Boolean(+date))
+        if(!Boolean(+date))inv_in.push('deadline')
+        console.log(inv_in)
+        // if(this.state.item['deadline'] == 'Invalid Date') inv_in.push('deadline')
+        // if(!this.state.item['deadline'].toString().match(''))inv_in.push('deadline')
         await this.setState({ invalid_inputs: inv_in });
     }
 
@@ -196,12 +201,14 @@ export default class ManufacturingGoalDetails extends React.Component {
                 <div>
                     {inputs}
                     {enable}
+                    <FormGroup>
+                    <Label>Deadline</Label>
+                    <br></br>
                     <TextField
                         id="datetime-local"
-                        label="Deadline"
                         type="datetime-local"
                         value = {this.state.item['deadline']}
-                        className={'text'}
+                        className={`text ${this.state.invalid_inputs.includes('deadline') ? 'is-invalid form-control' : ''}`}
                         onClick = {(event) => this.onPropChange(event.target.value, this.state.item, 'deadline')}
                         onKeyPress = {(event) => this.onPropChange(event.target.value, this.state.item, 'deadline')}
                         onChange = {(event) => this.onPropChange((event.target.value), this.state.item, 'deadline')}
@@ -209,6 +216,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                         shrink: true,
                         }}
                     />
+                    </FormGroup>
                 </div>
                 )
         }
