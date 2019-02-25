@@ -45,7 +45,7 @@ export default class PageTable extends Component {
       showRowHover: true,
       selectable: props.selectable!=undefined ? props.selectable : true,
       multiSelectable: props.selectable!=undefined ? props.selectable : true,
-      enableSelectAll: false,
+      enableSelectAll: props.selectable!=undefined ? props.selectable : true,
       deselectOnClickaway: false,
       showCheckboxes: props.selectable!=undefined ? props.selectable : true,
       showDetails: props.showDetails!= undefined ? props.showDetails : false,
@@ -150,9 +150,9 @@ export default class PageTable extends Component {
           onRowSelection = {(res) => this.props.handleSelect(res)}
         >
           <TableHeader
-            displaySelectAll={false}
+            displaySelectAll={this.state.enableSelectAll}
             adjustForCheckbox={this.state.selectable}
-            enableSelectAll={false}
+            enableSelectAll={this.state.enableSelectAll}
           >
               {this.getTableSuperHeader()}
             <TableRow className = "cols" selectable = {true} >

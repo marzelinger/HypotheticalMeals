@@ -302,6 +302,18 @@ export default class ListPage extends React.Component {
     };
 
     onSelect = async (rowIndexes) => {
+        if(rowIndexes == 'all'){
+            var indexes = []
+            for(var i = 0; i < this.state.data.length; i ++){
+                indexes.push(i);
+            }
+            await this.setState({selected_items: this.state.data, selected_indexes: indexes});
+            return;
+        }
+        else if(rowIndexes == 'none'){
+            rowIndexes = [];
+        }
+        console.log(rowIndexes);
         var newState = [];
         rowIndexes.forEach( index => {
             newState.push(this.state.data[index]);
