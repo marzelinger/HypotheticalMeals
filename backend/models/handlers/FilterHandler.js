@@ -80,6 +80,15 @@ class FilterHandler{
                 prod_line_ids = prod_line_ids.replace(/\s/g, "").split(',');
                 and_query.push({ prod_line: prod_line_ids }); 
             }
+
+            var formula_id = req.params.formula_id;
+            var formula_ids = [];
+            if (formula_id !== undefined && formula_id != "_"){
+                formula_ids.push(formula_id);
+                let skus = await SKU.find({ formula : {$in : formula_ids } });
+                skus.map(sku => ids.push(sku._id));
+                and_query.push( {_id: { $in: ids } } );
+            }
             let results = (and_query.length === 0) ? await SKU.find( ).skip(currentPage*pageSize).limit(pageSize)
                                                         .populate('ingredients').populate('prod_line').sort(sort_field)
                                                         .collation({locale: "en_US", numericOrdering: true}) : 
