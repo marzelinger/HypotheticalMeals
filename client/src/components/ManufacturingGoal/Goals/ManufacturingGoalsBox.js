@@ -31,6 +31,7 @@ class ManufacturingGoalsBox extends Component {
         'name':'_'
       }
     };
+    console.log(this.state.isAdmin);
     if(localStorage != null){
       if(localStorage.getItem("jwtToken")!= null){
         this.state.user = jwt_decode(localStorage.getItem("jwtToken")).username;
