@@ -59,6 +59,7 @@ class FilterHandler{
             var ids = [];
             var sort_field = req.params.sort_field;
             var ingredient_ids = req.params.ingredient_ids;
+            
             if (ingredient_ids !== undefined && ingredient_ids !== "_"){
                 ingredient_ids = ingredient_ids.replace(/\s/g, "").split(',');
                 let skus = await SKU.find({ ingredients : {$in : ingredient_ids } });
@@ -70,6 +71,12 @@ class FilterHandler{
                 and_query.push({$or: [{name: { $regex: keyword , $options: "$i"}}, 
                 {num: { $regex: keyword , $options: "$i"}}, {case_upc: { $regex: keyword , $options: "$i"}},
                 {unit_upc: { $regex: keyword , $options: "$i"}}]}); 
+            }
+
+            var formula_id = req.params.formula_id;
+            if(formula_id !== undefined && formula_id !== "_"){
+                //TODO ask riley what $in
+                let skus = await SKU.find({ formula: {$in: formula_id}})
             }
 
             var currentPage = Number(req.params.currentPage);
