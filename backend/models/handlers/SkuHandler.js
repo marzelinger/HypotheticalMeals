@@ -160,7 +160,7 @@ class SkuHandler{
             let to_remove = await SKU.findOneAndDelete({ _id : target_id});
             console.log('removed: ' + to_remove)
             console.log(to_remove._id)
-            let res = await Manu_Activity.find({ sku : { _id : to_remove._id })
+            let res = await Manu_Activity.find({ sku : { _id : to_remove._id }})
             console.log(res)
             if (res.length > 0){
                 console.log('here!')
