@@ -158,16 +158,10 @@ class SkuHandler{
         try{
             var target_id = req.params.sku_id;
             let to_remove = await SKU.findOneAndDelete({ _id : target_id});
-            console.log('removed: ' + to_remove)
-            console.log(to_remove._id)
-            let res = await Manu_Activity.find({ sku : { _id : to_remove._id }})
-            console.log(res)
-            if (res.length > 0){
-                console.log('here!')
-                await res.map(async (act) => {
-                    console.log(act._id)
+            let actRes = await Manu_Activity.find({ sku : { _id : to_remove._id }}) 
+            if (actRes.length > 0){
+                await actRes.map(async (act) => {
                     let act_res = await Manu_Activity.findOneAndDelete({ _id : act._id })
-                    console.log('act: ' + act_res)
                 })
             }
             if(!to_remove){
