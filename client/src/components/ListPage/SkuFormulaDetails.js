@@ -191,11 +191,20 @@ export default class SkuFormulaDetails extends React.Component {
 
     }
 
-    formulaButtonsCreate = () => {
+    formulaButtonsCreate = async() => {
+        let res = await submitRequest.getData(Constants.formulas_page_name);
+        var formulasExist = false;
+        if(res.success){
+            if(res.data>0){
+                formulasExist = true;
+            }
+        }
         return (
             <div>
                 <Button color="primary" onClick = {() => this.handleNewFormula()} >Create New Formula</Button>{' '}
-                <Button color="secondary" onClick = {() => this.handleExistingFormula()} >Add Existing Formula</Button>{' '}
+                {formulasExist? 
+                (<Button color="secondary" onClick = {() => this.handleExistingFormula()} >Add Existing Formula</Button>)
+                 : <div/>}
             </div>
         );
     }
