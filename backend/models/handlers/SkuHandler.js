@@ -124,6 +124,7 @@ class SkuHandler{
             });
         }
         catch (err) {
+            console.log(err)
             return res.json({ success: false, error: err});
         }
     }
