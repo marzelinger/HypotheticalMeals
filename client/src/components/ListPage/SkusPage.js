@@ -226,7 +226,7 @@ export default class ListPage extends React.Component {
                 filters[type].push(item.value._id);
             }
         })
-        
+        console.log(filters)
         this.setState({
             filters: filters,
             filterChange: true
@@ -482,8 +482,7 @@ export default class ListPage extends React.Component {
                     pagesCount = {this.state.pagesCount}
                     handlePageClick = {this.handlePageClick}
                     getButtons = {this.getButtons}
-                >
-                </TablePagination>
+                />
             </div>
         );
     }
