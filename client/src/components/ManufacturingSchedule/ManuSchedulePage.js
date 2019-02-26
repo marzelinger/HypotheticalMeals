@@ -1,6 +1,12 @@
 // ManuSchedulePage.js
 
 import React, { Component } from "react";
+import { 
+    Modal,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    Button } from 'reactstrap';
 import Timeline from 'react-visjs-timeline'
 import SubmitRequest from "../../helpers/SubmitRequest";
 import CheckErrors from '../../helpers/CheckErrors'
@@ -9,9 +15,9 @@ import ManuSchedulePalette from './ManuSchedulePalette'
 import './../../style/ManuSchedulePageStyle.css';
 import GeneralNavBar from '../GeneralNavBar';
 import ManuActivityErrors from './ManuActivityErrors';
+import ManuSchedHelp from '../../resources/ManuSchedHelp.png'
 const jwt_decode = require('jwt-decode');
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
-var moment = require('moment');
 
 export default class ManuSchedulePage extends Component {
     constructor(props) {
@@ -26,7 +32,9 @@ export default class ManuSchedulePage extends Component {
             unscheduled_goals: [],
             activity_to_schedule: null,
             selected_activities: [],
-            loaded: false
+            loaded: false,
+            modal: false,
+            modalTitle : '',
         }
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!= null){
@@ -40,6 +48,7 @@ export default class ManuSchedulePage extends Component {
         this.onRemove = this.onRemove.bind(this);
         this.onAdd = this.onAdd.bind(this);
         this.updateRange = this.updateRange.bind(this);
+        this.toggleModal = this.toggleModal.bind(this);
     }
 
     async componentDidMount() {
@@ -106,6 +115,19 @@ export default class ManuSchedulePage extends Component {
         }
     }
 
+    toggleModal(type) {
+        if (type === 'palette'){
+            var title = 'Manufacturing Schedule Help'
+        }
+        if (type === 'errors'){
+            var title = 'Manufacturing Schedule Help'
+        }
+        this.setState(prevState => ({
+          modal: !prevState.modal,
+          modalTitle: title
+        }));
+      }
+
     async doubleClickHandler(e) {
         if (e.item !== null) {
             let clicked_item = items.filter(i => {return i.id === e.item})
@@ -139,7 +161,7 @@ export default class ManuSchedulePage extends Component {
 
     getContainerStyle() {
         if (this.state.activity_to_schedule){
-            return { "cursor" : "copy" } //!important doesn't work...
+            return { cursor : "copy" } //!important doesn't work...
         }
         return {}
     }
@@ -257,6 +279,21 @@ export default class ManuSchedulePage extends Component {
         return Math.round(date / hour) * hour;
     }
 
+    getModalElements() {
+        if (this.state.modalTitle === 'palette') {
+            console.log('y')
+            return (
+                <img
+                    className='manu-sched-help'
+                    source={ManuSchedHelp}
+                />
+            )
+        }
+        else if (this.state.modalTitle === 'errors') {
+
+        }
+    }
+
     getOptions() { 
         console.log(items.length)
         return {
@@ -286,9 +323,6 @@ export default class ManuSchedulePage extends Component {
             updateGroup: true,
             updateTime: true,
         },
-        groupEditable: {
-            order: true
-        }, 
         verticalScroll: true,
         onMove: this.onMove,
         onRemove: this.onRemove,
@@ -326,6 +360,11 @@ export default class ManuSchedulePage extends Component {
                 </div>
                 <div className = "belowTimeline">
                     <div className='palette-container'>
+                        <h6 className='palette-title'>Unscheduled Activities</h6>
+                        <div 
+                            className = "info-modal-button" 
+                            onClick={(e) => this.toggleModal('palette')}
+                        >?</div>
                         <ManuSchedulePalette
                             goals={this.state.unscheduled_goals}
                             activities={this.state.activities}
@@ -334,8 +373,32 @@ export default class ManuSchedulePage extends Component {
                             prepareAddActivity={this.prepareAddActivity}
                         />
                     </div>
-                    <ManuActivityErrors className = "errors" range = {this.range} activities = {this.state.activities.filter((activity) => activity.scheduled)}></ManuActivityErrors>
+                    <div className='errors-container'>
+                        <h6 className='errors-title'>Activity Errors</h6>
+                        <div 
+                            className = "info-modal-button" 
+                            onClick={(e) => this.toggleModal('errors')}
+                        >?</div>
+                        <ManuActivityErrors 
+                            className = "errors" 
+                            range = {this.range} 
+                            activities = {this.state.activities.filter((activity) => activity.scheduled)}
+                        />
+                    </div>
                 </div>
+                <Modal isOpen={this.state.modal} toggle={this.toggleModal} className={this.props.className}>
+                    <ModalHeader toggle={this.toggleModal}>{this.state.modalTitle}</ModalHeader>
+                    <ModalBody>
+                        <img
+                            className='manu-sched-help'
+                            src={ManuSchedHelp}
+                        />
+                        {this.getModalElements}                          
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="secondary" onClick={this.toggleModal}>Close</Button>
+                    </ModalFooter>
+                </Modal>
             </div>
         </div>
         );
