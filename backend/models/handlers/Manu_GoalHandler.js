@@ -37,6 +37,7 @@ class Manu_GoalHandler{
         }
     }
 
+
     static async updateManufacturingGoalByID(req, res){
         try {
             var target_id = req.params.manu_goal_id;
@@ -80,7 +81,18 @@ class Manu_GoalHandler{
             var user_id = req.params.user_id;
             let to_return = await Manu_Goal.find({ _id : target_id, user:user_id});
 
-            if(to_return.length == 0) return res.json({success: false, error: '404'}).populate('activities').populate({path: 'activities', populate: { path: 'sku' }});
+            if(to_return.length == 0) return res.json({success: false, error: '404'});
+            return res.json({ success: true, data: to_return});
+        } catch (err){
+            return res.json({ success: false, error: err});
+        }
+    }
+
+    static async getManufacturingGoalByName(req, res){
+        try {
+            var target_name = req.params.name;
+            let to_return = await Manu_Goal.find({ name : target_name});
+            if(to_return.length == 0) return res.json({success:false, error: 'Manufacturing Goal with this name does not exist.'})
             return res.json({ success: true, data: to_return});
         } catch (err){
             return res.json({ success: false, error: err});
