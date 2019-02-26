@@ -34,7 +34,7 @@ export default class ManuSchedulePage extends Component {
             selected_activities: [],
             loaded: false,
             modal: false,
-            modalTitle : '',
+            modal_type : '',
         }
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!= null){
@@ -80,7 +80,6 @@ export default class ManuSchedulePage extends Component {
             unscheduled_goals: unscheduled_goals,
             loaded: true
         });
-        console.log(items)
     }
 
     scheduleOrPalette(act, goals) {
@@ -105,7 +104,7 @@ export default class ManuSchedulePage extends Component {
                     start: start,
                     end: end,
                     content: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity,
-                    title: 'Goal: ' + assoc_goal.name + '<br>Deadline: ' + dl.getMonth() + '/' + dl.getDate() + '/' + 
+                    title: 'Goal: ' + assoc_goal.name + '<br>Deadline: ' + (parseInt(dl.getMonth())+1) + '/' + dl.getDate() + '/' + 
                         dl.getFullYear() + ' ' + dl.getHours() + ':' + (dl.getMinutes()<10 ? ('0'+dl.getMinutes()) : dl.getMinutes()),
                     group: act.manu_line._id,
                     className: cName,
@@ -115,35 +114,29 @@ export default class ManuSchedulePage extends Component {
         }
     }
 
-    toggleModal(type) {
-        if (type === 'palette'){
-            var title = 'Manufacturing Schedule Help'
-        }
-        if (type === 'errors'){
-            var title = 'Manufacturing Schedule Help'
-        }
-        this.setState(prevState => ({
+    async toggleModal(type) {
+        await this.setState(prevState => ({
           modal: !prevState.modal,
-          modalTitle: title
+          modal_type: type
         }));
       }
 
     async doubleClickHandler(e) {
         if (e.item !== null) {
             let clicked_item = items.filter(i => {return i.id === e.item})
-            console.log(clicked_item[0])
-            console.log(this.state.activities)
             let clicked_activity = this.state.activities.filter(a => {return a._id === clicked_item[0]._id})
             console.log(clicked_activity[0])
-            clicked_activity[0].overwritten = false
-            await CheckErrors.updateActivityErrors(clicked_activity[0]);
-            await this.loadScheduleData();
+            if (window.confirm('Revert the overridden duration of ' + clicked_activity[0].duration + ' hours to the calculated ' + 
+               (clicked_activity[0].sku.manu_rate*clicked_activity[0].quantity) + ' hours?')) {
+                    clicked_activity[0].overwritten = false
+                    await CheckErrors.updateActivityErrors(clicked_activity[0]);
+                    await this.loadScheduleData();
+            }
         }
     }
 
     async selectHandler(items, event) {
         await this.setState({ selected_activities: items })
-        console.log(this.state.selected_activities)
         return(items)
     }
 
@@ -179,6 +172,7 @@ export default class ManuSchedulePage extends Component {
                 act.data[0].overwritten = true
                 await CheckErrors.updateActivityErrors(act.data[0]);
                 callback(item)
+                await this.loadScheduleData();
                 return
             }
             else {
@@ -195,6 +189,7 @@ export default class ManuSchedulePage extends Component {
         act.data[0].manu_line = { _id: item.group };
         await CheckErrors.updateActivityErrors(act.data[0]);
         callback(item)
+        await this.loadScheduleData();
     }
 
     checkManuLineIsValid(item, sku_manu_lines, callback) {
@@ -240,6 +235,7 @@ export default class ManuSchedulePage extends Component {
             })
             let start = new Date(activity.start)
             let end = new Date()
+            activity.duration = Math.round(activity.duration)
             end.setTime(start.getTime() + activity.duration*60*60*1000)
             item.end = end
             if (!this.checkWithinHoursAndOverlap(item, callback) || 
@@ -280,25 +276,32 @@ export default class ManuSchedulePage extends Component {
     }
 
     getModalElements() {
-        if (this.state.modalTitle === 'palette') {
-            console.log('y')
+        if (this.state.modal_type === 'palette') {
             return (
                 <img
                     className='manu-sched-help'
-                    source={ManuSchedHelp}
+                    src={ManuSchedHelp}
                 />
             )
         }
-        else if (this.state.modalTitle === 'errors') {
+        else if (this.state.modal_type === 'errors') {
+            return null
+        }
+    }
 
+    getModalTitle() {
+        if (this.state.modal_type === 'palette') {
+            return 'Manufacturing Schedule Help'
+        }
+        else if (this.state.modal_type === 'errors') {
+            return 'Manufacturing Errors Help'
         }
     }
 
     getOptions() { 
-        console.log(items.length)
         return {
         width: '100%',
-        maxHeight: 54 + 8*35 + 'px',
+        maxHeight: 54 + 8*38 + 'px',
         stack: false,
         showMajorLabels: true,
         showCurrentTime: true,
@@ -334,7 +337,6 @@ export default class ManuSchedulePage extends Component {
         // this.setState({start: event.start})
         this.range['start'] = event.start
         this.range.end = event.end;
-        console.log("updating");
     }
 
     render() {
@@ -387,13 +389,9 @@ export default class ManuSchedulePage extends Component {
                     </div>
                 </div>
                 <Modal isOpen={this.state.modal} toggle={this.toggleModal} className={this.props.className}>
-                    <ModalHeader toggle={this.toggleModal}>{this.state.modalTitle}</ModalHeader>
+                    <ModalHeader toggle={this.toggleModal}>{this.getModalTitle()}</ModalHeader>
                     <ModalBody>
-                        <img
-                            className='manu-sched-help'
-                            src={ManuSchedHelp}
-                        />
-                        {this.getModalElements}                          
+                        {this.getModalElements()}                          
                     </ModalBody>
                     <ModalFooter>
                         <Button color="secondary" onClick={this.toggleModal}>Close</Button>

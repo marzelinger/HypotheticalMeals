@@ -7,6 +7,7 @@ export default class CheckErrors{
         var orphaned = CheckErrors.checkOrphaned(goal, activity)
         var unscheduled_enabled = CheckErrors.checkUnscheduledEnabled(goal,activity);
         var over_deadline = CheckErrors.checkOverDeadline(goal, activity);
+        console.log(over_deadline)
         var new_activity = {
             ...activity, 
             orphaned, 
@@ -30,13 +31,15 @@ export default class CheckErrors{
         }
         var end = this.getEndTime(activity);
         var deadline = new Date(goal.deadline);
-        return (end > deadline);
+        console.log('end: ' + end)
+        console.log('deadline: ' + deadline)
+        return (end.getTime() > deadline.getTime());
     }
 
     static getEndTime(activity){
         var {start, duration} = activity;
         var start_date = new Date(start);
-        start_date.setHours(start_date.getHours() + duration);
+        start_date.setHours(start_date.getHours() + Math.floor(duration/10)*24 + (duration%10));
         return start_date;
     }
 
