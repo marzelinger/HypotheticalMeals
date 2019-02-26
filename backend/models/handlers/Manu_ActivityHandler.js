@@ -107,9 +107,8 @@ class Manu_ActivityHandler{
         try {
             let all_manu_activities = await Manu_Activity.find().populate('sku').populate('manu_line').populate({
                 path: 'sku',
-                populate: { path: 'ingredients' }
+                populate: { path: 'formula' }
               })
-            // all_manu_activities.data.sku.populate('ingredients');
             return res.json({ success: true, data: all_manu_activities});
         }
         catch (err) {

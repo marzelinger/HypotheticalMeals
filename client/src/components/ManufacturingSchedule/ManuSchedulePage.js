@@ -105,7 +105,7 @@ export default class ManuSchedulePage extends Component {
                     start: start,
                     end: end,
                     content: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity,
-                    title: 'Goal: ' + assoc_goal.name + '<br>Deadline: ' + dl.getMonth() + '/' + dl.getDate() + '/' + 
+                    title: 'Goal: ' + assoc_goal.name + '<br>Deadline: ' + (parseInt(dl.getMonth())+1) + '/' + dl.getDate() + '/' + 
                         dl.getFullYear() + ' ' + dl.getHours() + ':' + (dl.getMinutes()<10 ? ('0'+dl.getMinutes()) : dl.getMinutes()),
                     group: act.manu_line._id,
                     className: cName,
@@ -131,13 +131,14 @@ export default class ManuSchedulePage extends Component {
     async doubleClickHandler(e) {
         if (e.item !== null) {
             let clicked_item = items.filter(i => {return i.id === e.item})
-            console.log(clicked_item[0])
-            console.log(this.state.activities)
             let clicked_activity = this.state.activities.filter(a => {return a._id === clicked_item[0]._id})
             console.log(clicked_activity[0])
-            clicked_activity[0].overwritten = false
-            await CheckErrors.updateActivityErrors(clicked_activity[0]);
-            await this.loadScheduleData();
+            if (window.confirm('Revert the overridden duration of ' + clicked_activity[0].duration + ' hours to the calculated ' + 
+               (clicked_activity[0].sku.manu_rate*clicked_activity[0].quantity) + ' hours?')) {
+                    clicked_activity[0].overwritten = false
+                    await CheckErrors.updateActivityErrors(clicked_activity[0]);
+                    await this.loadScheduleData();
+            }
         }
     }
 
@@ -179,6 +180,7 @@ export default class ManuSchedulePage extends Component {
                 act.data[0].overwritten = true
                 await CheckErrors.updateActivityErrors(act.data[0]);
                 callback(item)
+                await this.loadScheduleData();
                 return
             }
             else {
@@ -195,6 +197,7 @@ export default class ManuSchedulePage extends Component {
         act.data[0].manu_line = { _id: item.group };
         await CheckErrors.updateActivityErrors(act.data[0]);
         callback(item)
+        await this.loadScheduleData();
     }
 
     checkManuLineIsValid(item, sku_manu_lines, callback) {
