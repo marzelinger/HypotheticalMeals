@@ -112,7 +112,7 @@ export default class ListPage extends React.Component {
 
     async componentDidMount() {
         if (this.props.default_ing_filter !== undefined){
-            await this.onFilterValueSelection([{ value: this.props.default_ing_filter._id }], null, 'ingredients');
+            await this.onFilterValueSelection([{ value: { _id : this.props.default_ing_filter._id }}], null, 'ingredients');
         }
         this.loadDataFromServer();
     }
@@ -126,7 +126,6 @@ export default class ListPage extends React.Component {
     updateDataState = async () => {
         var {data: ingredients} = await SubmitRequest.submitGetData(Constants.ingredients_page_name);
         var {data: productlines} = await SubmitRequest.submitGetData(Constants.prod_line_page_name);
-        //console.log(productlines)
         this.setState({ingredients: ingredients, product_lines: productlines});
     }
 
@@ -196,7 +195,6 @@ export default class ListPage extends React.Component {
 
     async setInitPages(){
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        console.log(allData)
         var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
         this.setState({
             currentPage: 0,
@@ -280,7 +278,6 @@ export default class ListPage extends React.Component {
 
     async onBulkManuLineSubmit(event, opt, skus) {
         var newSkus = Object.assign([], this.state.data);
-        console.log(opt)
         switch (opt){
             case Constants.details_save:
                 await skus.map(async (sku) => {
@@ -291,7 +288,6 @@ export default class ListPage extends React.Component {
             case Constants.details_cancel:
                 break;
         }
-        console.log(newSkus)
         this.setState({ data: newSkus });
         this.loadDataFromServer();
         this.toggle(Constants.manu_lines_modal);

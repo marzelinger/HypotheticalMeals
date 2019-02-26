@@ -88,7 +88,6 @@ export default class IngredientsPage extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
-        console.log(this.state.data)
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }
