@@ -165,7 +165,8 @@ export default class ManuSchedulePage extends Component {
                 return
             }
         }
-        if (this.checkWithinHoursAndOverlap(item, callback)) {
+        if (!this.checkWithinHoursAndOverlap(item, callback) || 
+            !this.checkManuLineIsValid(item, act.data[0].sku.manu_lines, callback)) {
             return
         }
         act.data[0].start = item.start;
@@ -174,13 +175,25 @@ export default class ManuSchedulePage extends Component {
         callback(item)
     }
 
+    checkManuLineIsValid(item, sku_manu_lines, callback) {
+        if (!sku_manu_lines.includes(item.group)){
+            let lines = this.state.lines.filter(l => { return sku_manu_lines.includes(l._id) } )
+            lines = lines.map(l => "'" + l.name + "'");
+            let lines_str = lines.join(', ')
+            alert('This activity can only be placed on ' + lines_str)
+            callback(null)
+            return false;
+        }
+        return true;
+    }
+
     checkWithinHoursAndOverlap(item, callback) {
         if (item.start.getHours() < 8 || (item.end.getHours() === 18 && item.end.getMinutes() > 0) || (item.end.getHours() > 18)) {
             alert("Activities can't be scheduled outside working hours!");
             callback(null);
-            return true;
+            return false;
         }
-        let toReturn = false
+        let toReturn = true
         items.map(i => {
             if (item.group === i.group && item.id !== i.id) {
                 if ((i.start < item.end && i.start > item.start) ||
@@ -188,7 +201,7 @@ export default class ManuSchedulePage extends Component {
                     (i.start <= item.start && i.end >= item.end)){
                         alert("Activities can't overlap!");
                         callback(null)
-                        toReturn = true
+                        toReturn = false
                     }
             }
         })
@@ -207,7 +220,8 @@ export default class ManuSchedulePage extends Component {
             let end = new Date()
             end.setTime(start.getTime() + activity.duration*60*60*1000)
             item.end = end
-            if (this.checkWithinHoursAndOverlap(item, callback)) {
+            if (!this.checkWithinHoursAndOverlap(item, callback) || 
+                !this.checkManuLineIsValid(item, this.state.activity_to_schedule.sku.manu_lines, callback)) {
                 return
             }
             await CheckErrors.updateActivityErrors(activity);

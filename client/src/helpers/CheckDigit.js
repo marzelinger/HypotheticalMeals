@@ -3,6 +3,7 @@
 export default class CheckDigit {
 
     static apply(code){
+        console.log(code)
         if (code.length !== 11) return 'invalid length';
         let oddSum = 0;
         for (var i=0; i < code.length; i+=2){
@@ -16,11 +17,12 @@ export default class CheckDigit {
         if (mod === 0){
             var dig =  0;
         }
-        var dig = 10 - mod;
+        var dig = (mod === 0 ? 0 : 10 - mod);
         return code + dig;
     }
 
     static isValid(code) {
+        console.log(code)
         if (code.length !== 12) return 'invalid length';
         return CheckDigit.apply(code.substring(0, 11)) === code;
 
