@@ -513,11 +513,22 @@ export default class ImportPage extends React.Component {
                 <GeneralNavBar></GeneralNavBar>
 
 
-                <div className = "centerContainer">
+                <div className = "centerTitle">
                     <h1> Please enter a CSV below to bulk import.</h1>
                 </div>
-                <div className = "centerContainer">
-                    <h3> Please upload one file at a time with the appropriate extension. </h3>
+                <div className = "centerTitle">
+                    <h3> Please upload one file at a time. The file formats that are accepted are specified below and are case-insensitive: </h3>
+                </div>
+                <div className="centerTitle">
+                    <ul>
+                        <li> A CSV file starting with "formulas" (i.e. formulas123213.csv)</li>
+                        <li> A CSV file starting with "product_lines" (i.e. product_linesPUT_ANYTHING_HERE.csv)</li>
+                        <li> A CSV file starting with "skus" (i.e. skusTHISWORKS.csv)</li>
+                        <li> A CSV file starting with "ingredients" (i.e. ingredientsblahblah.csv)</li>
+                    </ul>
+                </div>
+                <div className = "centerTitle">
+                    <h3> For more specifications regarding the upload format, please refer to this <a href="https://d1b10bmlvqabco.cloudfront.net/attach/jpvlvyxg51d1nc/iddif2iv5hz4jx/js9h14qu6k6a/Bulk_Import_Export_Format_Draft_2.3.pdf">link</a>. </h3>
                 </div>
                 <div className="centerContainer">
                     <Input className="centerFile" type="file" onChange={this.handleSelectedFile} />

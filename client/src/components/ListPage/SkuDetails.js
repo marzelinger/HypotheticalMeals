@@ -34,6 +34,8 @@ export default class SKUDetails extends React.Component {
             item_property_patterns,
             item_property_field_type } = DataStore.getSkuData();
 
+            let formProps = DataStore.getFormulaData();
+
         this.state = {
             item: Object.assign({}, props.item),
             formula_item: Object.assign({}, props.formula_item),
@@ -41,6 +43,7 @@ export default class SKUDetails extends React.Component {
             item_property_labels,
             item_property_patterns,
             item_property_field_type,
+            formProps,
             invalid_inputs: [],
             assisted_search_results: [],
             prod_line_item: {},
@@ -244,7 +247,7 @@ export default class SKUDetails extends React.Component {
     async handleSubmit(e, opt) {
         console.log("this is the handlesubmit");
         console.log("this is the prev formula:  "+ JSON.stringify(this.state.formula_item));
-        // var formulaItemToSubmit = await this.formatFormulaItem();
+        //var formulaItemToSubmit = await this.formatFormulaItem();
         var formulaItemToSubmit = this.state.formula_item;
 
         if (![Constants.details_save, Constants.details_create].includes(opt)) {
@@ -297,6 +300,12 @@ export default class SKUDetails extends React.Component {
         if (!CheckDigit.isValid(this.state.item['case_upc'])) inv_in.push('case_upc');
         if (!CheckDigit.isValid(this.state.item['unit_upc'])) inv_in.push('unit_upc');
         console.log(inv_in)
+
+        this.state.formProps.item_properties.map(prop => {
+            if (!this.state.formula_item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
+        })
+        if (this.state.formula_item['name'].length > 32) inv_in.push('name');
+
         await this.setState({ invalid_inputs: inv_in });
     }
 

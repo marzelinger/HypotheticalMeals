@@ -14,7 +14,10 @@ import IngredientsViewSimple from './IngredientsViewSimple'
 import ItemSearchInput from './ItemSearchInput';
 import ItemSearchModifyListQuantity from './ItemSearchModifyListQuantity';
 import SubmitRequest from '../../helpers/SubmitRequest';
+import DetailsViewSkuTable from './DetailsViewSkuTable'
+
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
+
 
 export default class FormulaDetails extends React.Component {
     constructor(props){
@@ -36,6 +39,7 @@ export default class FormulaDetails extends React.Component {
             assisted_search_results: [],
             to_undo: {}
         }
+        console.log("this is the formula object: "+JSON.stringify(this.state.item));
     }
 
     async componentDidMount(){
@@ -118,6 +122,7 @@ export default class FormulaDetails extends React.Component {
     }
 
     async handleSubmit(e, opt) {
+        console.log("fomrdetails; "+ JSON.stringify(this.state.item));
         if (![Constants.details_save, Constants.details_create].includes(opt)) {
             this.props.handleDetailViewSubmit(e, this.state.item, opt);
             return;
@@ -181,6 +186,8 @@ export default class FormulaDetails extends React.Component {
                     handlePropChange={this.onPropChange}
                     disabled={currentUserIsAdmin().isValid ? false : true}
                 />
+                <DetailsViewSkuTable id='2' formula={this.state.item}/>
+
                 
             </div>
             <div className='item-options'>
