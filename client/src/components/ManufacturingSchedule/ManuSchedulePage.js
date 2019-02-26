@@ -34,7 +34,7 @@ export default class ManuSchedulePage extends Component {
             selected_activities: [],
             loaded: false,
             modal: false,
-            modalTitle : '',
+            modal_type : '',
         }
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!= null){
@@ -80,7 +80,6 @@ export default class ManuSchedulePage extends Component {
             unscheduled_goals: unscheduled_goals,
             loaded: true
         });
-        console.log(items)
     }
 
     scheduleOrPalette(act, goals) {
@@ -115,16 +114,10 @@ export default class ManuSchedulePage extends Component {
         }
     }
 
-    toggleModal(type) {
-        if (type === 'palette'){
-            var title = 'Manufacturing Schedule Help'
-        }
-        if (type === 'errors'){
-            var title = 'Manufacturing Schedule Help'
-        }
-        this.setState(prevState => ({
+    async toggleModal(type) {
+        await this.setState(prevState => ({
           modal: !prevState.modal,
-          modalTitle: title
+          modal_type: type
         }));
       }
 
@@ -144,7 +137,6 @@ export default class ManuSchedulePage extends Component {
 
     async selectHandler(items, event) {
         await this.setState({ selected_activities: items })
-        console.log(this.state.selected_activities)
         return(items)
     }
 
@@ -243,6 +235,7 @@ export default class ManuSchedulePage extends Component {
             })
             let start = new Date(activity.start)
             let end = new Date()
+            activity.duration = Math.round(activity.duration)
             end.setTime(start.getTime() + activity.duration*60*60*1000)
             item.end = end
             if (!this.checkWithinHoursAndOverlap(item, callback) || 
@@ -283,25 +276,32 @@ export default class ManuSchedulePage extends Component {
     }
 
     getModalElements() {
-        if (this.state.modalTitle === 'palette') {
-            console.log('y')
+        if (this.state.modal_type === 'palette') {
             return (
                 <img
                     className='manu-sched-help'
-                    source={ManuSchedHelp}
+                    src={ManuSchedHelp}
                 />
             )
         }
-        else if (this.state.modalTitle === 'errors') {
+        else if (this.state.modal_type === 'errors') {
+            return null
+        }
+    }
 
+    getModalTitle() {
+        if (this.state.modal_type === 'palette') {
+            return 'Manufacturing Schedule Help'
+        }
+        else if (this.state.modal_type === 'errors') {
+            return 'Manufacturing Errors Help'
         }
     }
 
     getOptions() { 
-        console.log(items.length)
         return {
         width: '100%',
-        maxHeight: 54 + 8*35 + 'px',
+        maxHeight: 54 + 8*38 + 'px',
         stack: false,
         showMajorLabels: true,
         showCurrentTime: true,
@@ -337,7 +337,6 @@ export default class ManuSchedulePage extends Component {
         // this.setState({start: event.start})
         this.range['start'] = event.start
         this.range.end = event.end;
-        console.log("updating");
     }
 
     render() {
@@ -390,13 +389,9 @@ export default class ManuSchedulePage extends Component {
                     </div>
                 </div>
                 <Modal isOpen={this.state.modal} toggle={this.toggleModal} className={this.props.className}>
-                    <ModalHeader toggle={this.toggleModal}>{this.state.modalTitle}</ModalHeader>
+                    <ModalHeader toggle={this.toggleModal}>{this.getModalTitle()}</ModalHeader>
                     <ModalBody>
-                        <img
-                            className='manu-sched-help'
-                            src={ManuSchedHelp}
-                        />
-                        {this.getModalElements}                          
+                        {this.getModalElements()}                          
                     </ModalBody>
                     <ModalFooter>
                         <Button color="secondary" onClick={this.toggleModal}>Close</Button>

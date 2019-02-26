@@ -62,6 +62,12 @@ div.info-modal-button:hover {
     margin-left: 10px;
 }
 
+div.vis-item.vis-selected {
+    background-color: rgb(252, 255, 65);
+    border-color: rgb(252, 255, 65);
+    box-shadow: 0px 0px 3px;
+}
+
 .vis-item.orphaned {
     background-color: rgb(158, 158, 158);
     border-color: rgb(158, 158, 158);
@@ -86,7 +92,7 @@ div.vis-tooltip {
 }
 
 .vis-label .vis-inner {
-    min-height: 35px;
+    min-height: 38px;
 }
 
 td, tr {
