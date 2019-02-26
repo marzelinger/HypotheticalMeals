@@ -489,6 +489,10 @@ export default class CSV_parser{
         let formula = await Formula.find({ num : objOld[Constants.csv_sku_formula]});
         objNew.formula = formula[0]._id;
 
+        objNew.scale_factor = objOld[Constants.csv_sku_formula_factor];
+
+        
+
         objNew.comment = objOld[Constants.csv_sku_comment];
        /* 
         delete objOld[Constants.csv_sku_num];
