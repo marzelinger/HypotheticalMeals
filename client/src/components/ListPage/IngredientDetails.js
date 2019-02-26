@@ -71,7 +71,7 @@ export default class IngredientDetails extends React.Component {
     async validateInputs() { 
         var inv_in = [];
         this.state.item_properties.map(prop => {
-            if (prop === 'pkg_size') {
+            if (prop === 'pkg_cost') {
                 console.log('.' + this.props.item[prop].toString() + '.')
                 console.log(this.getPropertyPattern(prop))
                 console.log(this.props.item[prop].toString().match(this.getPropertyPattern(prop)))
