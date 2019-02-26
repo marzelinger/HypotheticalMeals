@@ -59,7 +59,7 @@ class FilterHandler{
             var ids = [];
             var sort_field = req.params.sort_field;
             var ingredient_ids = req.params.ingredient_ids;
-            console.log(ingredient_ids);
+
             if (ingredient_ids !== undefined && ingredient_ids !== "_"){
                 ingredient_ids = ingredient_ids.replace(/\s/g, "").split(',');
                 let formulas = await Formula.find({ ingredients : {$in : ingredient_ids } });
