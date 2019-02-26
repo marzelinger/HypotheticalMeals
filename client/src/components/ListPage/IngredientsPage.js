@@ -99,7 +99,7 @@ export default class IngredientsPage extends React.Component {
     }
 
     async loadDataFromServer() {
-        let allData = await SubmitRequest.submitGetData(this.state.page_name);
+        // let allData = await SubmitRequest.submitGetData(this.state.page_name);
         var final_keyword_filter = this.state.filters['keyword'];
         var final_sku_filter = this.state.filters['skus'].join(',');
         if (final_keyword_filter === '') final_keyword_filter = '_';
@@ -284,10 +284,8 @@ export default class IngredientsPage extends React.Component {
     };
 
     async onDetailViewSubmit(event, item, option) {
-        console.log(item)
         var res = {};
         var newData = this.state.data.splice();
-        //
         switch (option) {
             case Constants.details_create:
                 newData.push(item);
