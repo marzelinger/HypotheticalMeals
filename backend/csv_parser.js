@@ -5,10 +5,10 @@ import Ingredient from './models/databases/ingredient';
 import Manu_Line from './models/databases/manu_line';
 import ItemStore from './../client/src/helpers/ItemStore';
 import * as Constants from './../client/src/resources/Constants';
+import CheckDigit from "./../client/src/helpers/CheckDigit";
 
 const csv = require('csvtojson');
 const fs = require('fs');
-const checkdigit = require('checkdigit');
 
 
 export default class CSV_parser{
@@ -223,21 +223,31 @@ export default class CSV_parser{
                     old_sku_to_show.case_upc = old_sku[0].case_upc;
                     old_sku_to_show.unit_upc = old_sku[0].unit_upc;
                     old_sku_to_show.cpc = old_sku[0].cpc;
+                    
                     old_sku_to_show.prod_line = old_sku[0].prod_line;
-                    old_sku_to_show.prod_line_to_show = obj[Constants.csv_sku_pl];
+                    var prod_line = await Prod_Line.find({ _id: old_sku[0] });
+                    old_sku_to_show.prod_line_to_show = prod_line[0].name;
+
+                    old_sku_to_show.formula = old_sku[0].formula;
+                    old_sku_to_show.formula_to_show = 
+
+                    old_sku_to_show.scale_factor = old_sku[0].scale_factor;
+
+                    old_sku_to_show.manu_lines = old_sku[0].manu_lines;
+                    var manu_lines_to_show_string = "";
+                    for(var i = 0; i < old_sku[0].manu_lines.length; i++){
+                        var manu_line = await Manu_Line.find({ _id: old_sku[0].manu_lines[i] });
+                        manu_lines_to_show_string = manu_lines_to_show_string + manu_line.short_name + ",";
+                    }
+                    old_sku_to_show.manu_lines_to_show = manu_lines_to_show_string;
+
+                    old_sku_to_show.manu_rate = old_sku[0].manu_rate;
                     old_sku_to_show.comment = old_sku[0].comment;
-                    console.log(old_sku_to_show);
-                    var prod_line = await Prod_Line.find({ name : obj[Constants.csv_sku_pl]});
-                    console.log(prod_line[0].name);
-                    old_sku[0].newField = prod_line[0].name;
-                    var newObj = {};
+
                     var reformattedSKUS = await this.reformatSKU(newObj, obj);
                     skus_to_update_new.push(reformattedSKUS[0]);
                     skus_to_update_old.push(old_sku_to_show);
-                    console.log('old sku to show');
-                    console.log(old_sku_to_show);
-                    console.log('reformatted skus of 0');
-                    console.log(reformattedSKUS[0]);
+
                 }
                 else if(skus_to_add_num.has(obj[Constants.csv_sku_num])){
                     added = added + 1;
@@ -333,28 +343,25 @@ export default class CSV_parser{
             toReturn.skuNumIssue = true;
             return toReturn;
         }
-        var isCheckSumCase = checkdigit.mod11.isValid('036000241457');
-        console.log(isCheckSumCase);
-        console.log(obj[Constants.csv_sku_caseUPC]);
+
         var isNum3 = /^\d+$/.test(obj[Constants.csv_sku_caseUPC]);
         var firstCharCase = obj[Constants.csv_sku_caseUPC].substring(0,1);
-        console.log(!isNum3)
-        console.log(obj[Constants.csv_sku_caseUPC].length != 12);
-        console.log(firstCharCase);
+        var isCheckSumCase = CheckDigit.isValid(obj[Constants.csv_sku_caseUPC]);
         if((obj[Constants.csv_sku_caseUPC].length != 12) ||
            (!isNum3) ||
-           //(!isCheckSumCase) ||
+           (!isCheckSumCase) ||
            (firstCharCase != '0' && firstCharCase != '1' && firstCharCase !='6' && firstCharCase != '7' && firstCharCase !='8' && firstCharCase != '9')) {
             toReturn.success = false;
             toReturn.caseUPCIssue = true;
             return toReturn;
         }
-        var isCheckSumUnit = checkdigit.mod10.isValid(obj[Constants.csv_sku_unitUPC]);
+
+        var isCheckSumUnit = CheckDigit.isValid(obj[Constants.csv_sku_unitUPC]);
         var isNum2 = /^\d+$/.test(obj[Constants.csv_sku_unitUPC]);
         var firstCharUnit = obj[Constants.csv_sku_unitUPC].substring(0,1);
         if((obj[Constants.csv_sku_unitUPC].length != 12) || 
            (!isNum2) || 
-          // (!isCheckSumUnit) ||
+           (!isCheckSumUnit) ||
            (firstCharUnit != '0' && firstCharUnit != '1' && firstCharUnit !='6' && firstCharUnit != '7' && firstCharUnit !='8' && firstCharUnit != '9')){
             toReturn.success = false;
             toReturn.unitUPCIssue = true;
@@ -387,6 +394,17 @@ export default class CSV_parser{
             return toReturn;
         }
 
+        var sku_MLs_string = obj[Constants.csv_sku_ml].substring(1, obj[Constants.csv_sku_ml.length - 1]);
+        var sku_MLs_arr = sku_MLs_string.split(",");
+        for(var i = 0 ; i < sku_MLs_arr.length; i++){
+            if(!db_Manu_Line.has(sku_MLs_arr[i])) {
+                toReturn = success = false;
+                toReturn.manu_line_error = true;
+                toReturn.manu_line_name = sku_MLs_arr[i];
+                return toReturn;
+            }
+        }
+
         
         // Check for a duplicate in the same CSV file
         if(skus_to_add_num.has(obj[Constants.csv_sku_num]) || skus_to_add_caseUPC.has(obj[Constants.csv_sku_caseUPC])){
@@ -404,9 +422,15 @@ export default class CSV_parser{
         else if(db_skus.has(obj[Constants.csv_sku_num])){
             var db_sku_arr= await SKU.find({ num : obj[Constants.csv_sku_num] });
             var curr_prod_line_arr = await Prod_Line.find({ name: obj[Constants.csv_sku_pl] });
+            var curr_formula_arr = await Formula.find({ num : obj[Constants.csv_sku_formula] });
+            var curr_formula = curr_formula_arr[0];
             var db_sku = db_sku_arr[0];
             var curr_prod_line = curr_prod_line_arr[0];
 
+            var all_manu_lines = new Set();
+            for(var i = 0; i < db_sku.manu_lines.length; i++){
+                all_manu_lines.add(db_sku.manu_lines[i]);
+            }
             if(db_sku.name == obj[Constants.csv_sku_name] &&
             db_sku.num == obj[Constants.csv_sku_num] &&
             db_sku.case_upc == obj[Constants.csv_sku_caseUPC] &&
@@ -414,8 +438,20 @@ export default class CSV_parser{
             db_sku.unit_size == obj[Constants.csv_sku_unitsize] &&
             db_sku.cpc == obj[Constants.csv_sku_cpc] &&
             db_sku.prod_line._id + "" == curr_prod_line._id + "" &&
-            db_sku.comment == obj[Constants.csv_sku_comment]) {
-                skus_to_ignore.add(obj[Constants.csv_sku_num])
+            db_sku.formula._id + "" == curr_formula._id + "" &&
+            db_sku.comment == obj[Constants.csv_sku_comment] &&
+            db_sku.scale_factor == obj[Constants.csv_sku_formula_factor] &&
+            db_sku.manu_rate == obj[Constants.csv_sku_rate])
+            {
+                var good = true;
+                var ML_array = obj[Constants.csv_sku_ml].substring(1, obj[Constants.csv_sku_ml].length - 1).split(',');
+                for(var i = 0; i < ML_array.length; i++){
+                    if(!all_manu_lines.has(ML_array[i])){
+                        good = false;
+                        break;
+                    }
+                }
+                if(good) skus_to_ignore.add(obj[Constants.csv_sku_num])
             }
             // If its an ambiguous collision, indicate to the user
             else if(db_skus.get(obj[Constants.csv_sku_num]) != obj[Constants.csv_sku_caseUPC] && db_caseUPCs.has(obj[Constants.csv_sku_caseUPC])) {
@@ -440,9 +476,10 @@ export default class CSV_parser{
 
     static async indicateSKUCollisionFailure(res, collisionObj, row){
         if(collisionObj.prod_line_error == true) return res.json({ success: false, row: row+1, prod_line_name: collisionObj.prod_line_name});
-        else if(collisionObj.formula_error == true) return res.json({ success: false, row: row+1, formula_num: collisionObj.formula_num});
+        else if(collisionObj.formula_error == true) return res.json({ success: false, row: row+1, sku_formula_num: collisionObj.formula_num});
         else if(collisionObj.duplicate == true) return res.json({ success: false, duplicate: row})
         else if(collisionObj.ambiguousCollision == true) return res.json({ success: false, collision: row})
+        else if(collisionObj.manu_line_error == true) return res.json({ success: false, row: row+1, manu_line_name: collisionObj.manu_line_name});
     }
 
     static async reformatSKU(objNew, objOld){
@@ -452,9 +489,30 @@ export default class CSV_parser{
         objNew.unit_upc = objOld[Constants.csv_sku_unitUPC];
         objNew.unit_size = objOld[Constants.csv_sku_unitsize];
         objNew.cpc = objOld[Constants.csv_sku_cpc];
+
         objNew.prod_line_to_show = objOld[Constants.csv_sku_pl];
         let prod_line = await Prod_Line.find({ name : objOld[Constants.csv_sku_pl]});
         objNew.prod_line = prod_line[0]._id;
+
+        objNew.formula_to_show = objOld[Constants.csv_sku_formula];
+        let formula = await Formula.find({ num : objOld[Constants.csv_sku_formula]});
+        objNew.formula = formula[0]._id;
+
+        objNew.scale_factor = objOld[Constants.csv_sku_formula_factor];
+        
+        var manu_lines_string = oldOld[Constants.csv_sku_ml];
+        manu_lines_string = manu_lines_string.substring(1, manu_lines_string.length - 1)
+        var manu_lines_arr = manu_lines_arr.split(",");
+
+        var manu_lines_to_add = [];
+        for(var i = 0; i < manu_lines_arr.length; i++){
+            let manu_line = await Manu_Line.find({ short_name : manu_lines_arr[i] });
+            manu_lines_to_add.push(manu_line[0]._id);
+        }
+        objNew.manu_lines_to_show = manu_lines_string;
+        objNew.manu_lines = manu_lines_to_add;
+        
+        objNew.manu_rate = objOld[Constants.csv_sku_rate];
         objNew.comment = objOld[Constants.csv_sku_comment];
        /* 
         delete objOld[Constants.csv_sku_num];
@@ -882,13 +940,27 @@ export default class CSV_parser{
             toReturn.formulaIngrIssue = true;
             return toReturn;
         }
+        var isUnitNum = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/.test(obj[Constants.csv_formula_quantity]);
+        var ingr = Ingredient.find({ num: obj[Constants.csv_formula_ingr] });
+        var unitType = await this.findUnit(ingr[0].pkg_size);
+        var unitType2 = await this.findUnit(obj[Constants.csv_formula_ingr]);
+        if(unitType != unitType2 || !isUnitNum){
+            toReturn.success = false;
+            toReturn.unitIssue = true;
+            return toReturn;
+        }
+
         toReturn.success = true;
         return toReturn;
     }
 
+    static async findUnit(ingredient_pkg_size){
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg)$/.test(ingredient_pkg_size)) return 1;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (fl.oz.|pt.|qt.|gal.|mL|L)$/.test(ingredient_pkg_size)) return 2;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count)$/.test(ingredient_pkg_size)) return 3;
+    }
+
     static async indicateFormulaDataValidationFailure(res, dataValidationObj, row){
-        console.log("this is happening");
-        console.log(dataValidationObj);
         if(dataValidationObj.missingRequiredField){
             return res.json({ success: false, badData: row});
         } else if(dataValidationObj.formulaNumIssue){
@@ -896,6 +968,8 @@ export default class CSV_parser{
         } else if(dataValidationObj.formulaNameIssue){
             return res.json({ success: false, badData: row});
         } else if(dataValidationObj.formulaIngrIssue){
+            return res.json({ success: false, badData: row});
+        } else if(dataValidationObj.unitIssue){
             return res.json({ success: false, badData: row});
         }
     }
