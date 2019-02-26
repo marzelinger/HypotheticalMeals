@@ -223,22 +223,31 @@ export default class CSV_parser{
                     old_sku_to_show.case_upc = old_sku[0].case_upc;
                     old_sku_to_show.unit_upc = old_sku[0].unit_upc;
                     old_sku_to_show.cpc = old_sku[0].cpc;
-                    // old_sku_to_show.formula = old_sku[0].formula
+                    
                     old_sku_to_show.prod_line = old_sku[0].prod_line;
-                    old_sku_to_show.prod_line_to_show = obj[Constants.csv_sku_pl];
+                    var prod_line = await Prod_Line.find({ _id: old_sku[0] });
+                    old_sku_to_show.prod_line_to_show = prod_line[0].name;
+
+                    old_sku_to_show.formula = old_sku[0].formula;
+                    old_sku_to_show.formula_to_show = 
+
+                    old_sku_to_show.scale_factor = old_sku[0].scale_factor;
+
+                    old_sku_to_show.manu_lines = old_sku[0].manu_lines;
+                    var manu_lines_to_show_string = "";
+                    for(var i = 0; i < old_sku[0].manu_lines.length; i++){
+                        var manu_line = await Manu_Line.find({ _id: old_sku[0].manu_lines[i] });
+                        manu_lines_to_show_string = manu_lines_to_show_string + manu_line.short_name + ",";
+                    }
+                    old_sku_to_show.manu_lines_to_show = manu_lines_to_show_string;
+
+                    old_sku_to_show.manu_rate = old_sku[0].manu_rate;
                     old_sku_to_show.comment = old_sku[0].comment;
-                    console.log(old_sku_to_show);
-                    var prod_line = await Prod_Line.find({ name : obj[Constants.csv_sku_pl]});
-                    console.log(prod_line[0].name);
-                    old_sku[0].newField = prod_line[0].name;
-                    var newObj = {};
+
                     var reformattedSKUS = await this.reformatSKU(newObj, obj);
                     skus_to_update_new.push(reformattedSKUS[0]);
                     skus_to_update_old.push(old_sku_to_show);
-                    console.log('old sku to show');
-                    console.log(old_sku_to_show);
-                    console.log('reformatted skus of 0');
-                    console.log(reformattedSKUS[0]);
+
                 }
                 else if(skus_to_add_num.has(obj[Constants.csv_sku_num])){
                     added = added + 1;
@@ -387,7 +396,7 @@ export default class CSV_parser{
 
         var sku_MLs_string = obj[Constants.csv_sku_ml].substring(1, obj[Constants.csv_sku_ml.length - 1]);
         var sku_MLs_arr = sku_MLs_string.split(",");
-        for(var i = 0 ; i < sku_MLs_arr; i++){
+        for(var i = 0 ; i < sku_MLs_arr.length; i++){
             if(!db_Manu_Line.has(sku_MLs_arr[i])) {
                 toReturn = success = false;
                 toReturn.manu_line_error = true;
@@ -490,9 +499,20 @@ export default class CSV_parser{
         objNew.formula = formula[0]._id;
 
         objNew.scale_factor = objOld[Constants.csv_sku_formula_factor];
-
         
+        var manu_lines_string = oldOld[Constants.csv_sku_ml];
+        manu_lines_string = manu_lines_string.substring(1, manu_lines_string.length - 1)
+        var manu_lines_arr = manu_lines_arr.split(",");
 
+        var manu_lines_to_add = [];
+        for(var i = 0; i < manu_lines_arr.length; i++){
+            let manu_line = await Manu_Line.find({ short_name : manu_lines_arr[i] });
+            manu_lines_to_add.push(manu_line[0]._id);
+        }
+        objNew.manu_lines_to_show = manu_lines_string;
+        objNew.manu_lines = manu_lines_to_add;
+        
+        objNew.manu_rate = objOld[Constants.csv_sku_rate];
         objNew.comment = objOld[Constants.csv_sku_comment];
        /* 
         delete objOld[Constants.csv_sku_num];
