@@ -51,7 +51,6 @@ export default class ManuSchedulePalette extends Component {
             <tr>
                 {this.state.item_properties.map(prop => {
                 if (prop === 'sku'){
-                    console.log(act)
                     return (<td>{act[prop].name}</td>)
                 }
                 if (prop === 'add_to_schedule'){
@@ -67,8 +66,10 @@ export default class ManuSchedulePalette extends Component {
                     )
                 }
                 // change how this is shown
-                return (<td>{act[prop]}</td>)}
-                )}
+                if (prop === 'duration'){
+                    return (<td>{act[prop] + ' hours'}</td>)
+                }
+            })}
             </tr>)
     }
 
@@ -82,7 +83,7 @@ export default class ManuSchedulePalette extends Component {
                                 <ManuSchedulePaletteGoal goal={goal} />
                             </AccordionItemTitle>
                             <AccordionItemBody>
-                                <Table className='accordian-table'>
+                                <Table borderless size="sm" className='accordian-table'>
                                     <thead>
                                     <tr>
                                         {this.state.item_properties.map(prop =>
