@@ -358,7 +358,9 @@ export default class ListPage extends React.Component {
                 newData.push(item);
                 //need to create the new formula and get the id of the newly created formula and then put that in the 
                 //item equal to the formula section of item.
+                console.log("this is the formula_item: "+JSON.stringify(formula_item));
                 resFormula = await SubmitRequest.submitCreateItem(Constants.formulas_page_name, formula_item);
+
                 // var newSKUitem = this.formatNewSKUFormula(item, resFormula);
                 console.log(resFormula)
                 if(resFormula.success){

@@ -103,6 +103,8 @@ export default class DataStore{
     };
   }
 
+  
+
 
     static getSkuDataSimple() {
       var results = DataStore.getSkuData();
