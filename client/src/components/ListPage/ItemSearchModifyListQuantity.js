@@ -87,7 +87,7 @@ export default class ItemSearchModifyListQuantity extends React.Component {
     }
 
     async onFilterValueSelection (name, value, e) {
-        console.log(value);
+        console.log("this was selected: "+JSON.stringify(name)+"    "+JSON.stringify(value));
         this.setState({value: value});
     }
 
@@ -96,10 +96,19 @@ export default class ItemSearchModifyListQuantity extends React.Component {
         console.log(state.value)
         console.log(state.qty)
         console.log(this.props.qty_disable)
+        console.log("this is the option: "+ option);
+        console.log("item-type   "+JSON.stringify(this.props.item_type));
+        console.log("item-qty disable   "+JSON.stringify(this.props.qty_disable));
+        console.log("satisfiesREgex: "+JSON.stringify(satisfiesRegex));
+
         switch (option) {
             case Constants.details_add:
+                var answer = (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient) || (state.qty <= 0 && this.props.qty_disable !== true));
+                console.log("anser in add: "+answer);
                 return (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient) || (state.qty <= 0 && this.props.qty_disable !== true))
             case Constants.details_remove:
+                var answer2 = (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient) || (state.qty <= 0 && this.props.qty_disable !== true));                
+                console.log("anser in remove: "+answer2);
                 return (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient) || (state.qty <= 0 && this.props.qty_disable !== true))
         }
     }

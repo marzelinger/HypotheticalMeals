@@ -346,6 +346,7 @@ export default class ListPage extends React.Component {
     };
 
     async onDetailViewSubmit(event, item, formula_item, option) {
+        console.log("made it to the ondetailviewsubmit");
         // var res = {};
         var resItem = {};
         var resFormula = {};

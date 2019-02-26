@@ -168,6 +168,11 @@ export default class SKUDetails extends React.Component {
     };
 
     onModifyList = (option, value, qty) => {
+        console.log("in on modify list: "+ JSON.stringify(option));
+        console.log("in on modify list: val "+ JSON.stringify(value));
+        console.log("in on modify list qty: "+ JSON.stringify(qty));
+
+
         if(currentUserIsAdmin().isValid){
             var formula_item = Object.assign({}, this.state.formula_item);
             console.log("this is the current formula"+ JSON.stringify(formula_item));
@@ -233,6 +238,7 @@ export default class SKUDetails extends React.Component {
     }
 
     async handleSubmit(e, opt) {
+        console.log("this is the handlesubmit");
         if (![Constants.details_save, Constants.details_create].includes(opt)) {
             this.props.handleDetailViewSubmit(e, this.state.item, this.state.formula_item, opt);
             return;
@@ -240,6 +246,8 @@ export default class SKUDetails extends React.Component {
         await this.validateInputs();
         let alert_string = 'Invalid Fields';
         let inv = this.state.invalid_inputs;
+        console.log("made is the invalid fields: "+JSON.stringify(inv));
+
         if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.state.item, this.state.formula_item, opt)
         else {
             console.log(CheckDigit.apply(this.state.item['case_upc'].slice(0,11)))
