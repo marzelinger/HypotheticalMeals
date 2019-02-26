@@ -135,6 +135,7 @@ export default class ListPage extends React.Component {
         var final_ing_filter = this.state.filters['ingredients'].join(',');
         var final_keyword_filter = this.state.filters['keyword'];
         var final_prod_line_filter = this.state.filters['products'].join(',');
+        var final_formula_filter = this.state.filters['formula'];
         //Check how the filter state is being set 
         if (final_ing_filter === '') final_ing_filter = '_';
         if (final_keyword_filter === '') final_keyword_filter = '_';
@@ -143,7 +144,7 @@ export default class ListPage extends React.Component {
             this.state.sort_field, final_ing_filter, final_keyword_filter, 0, 0, final_prod_line_filter, '_');
         await this.checkCurrentPageInBounds(resALL);
         var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
-            this.state.sort_field, final_ing_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize, final_prod_line_filter, "_"); 
+            this.state.sort_field, final_ing_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize, final_prod_line_filter, '_'); 
         if (res === undefined || !res.success) {
             res.data = [];
             resALL.data = [];
@@ -409,17 +410,17 @@ export default class ListPage extends React.Component {
     getButtons = () => {
         return (
         <div className = "ingbuttons"> 
-            {this.props.default_ing_filter !== undefined || this.state.selected_items.length === 0 ? null : 
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || this.state.selected_items.length === 0 ? null : 
                             (<div className = "manugoalbutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}
                             primary={true}
                             > {Constants.add_to_manu_goals} </div>)}
-            {this.props.default_ing_filter !== undefined || !currentUserIsAdmin().isValid || this.state.selected_items.length === 0 ? null : 
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || !currentUserIsAdmin().isValid || this.state.selected_items.length === 0 ? null : 
                             (<div className = "manulinebutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.edit_manu_lines)}
                             primary={true}
                             > {Constants.edit_manu_lines} </div>)}
-            {this.props.default_ing_filter !== undefined ? null : (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}   
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) ? null : (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}   
         </div>
         );
     }
@@ -489,5 +490,6 @@ export default class ListPage extends React.Component {
 }
 
 ListPage.propTypes = {
-    default_ing_filter: PropTypes.object
+    default_ing_filter: PropTypes.object,
+    default_formula_filter: PropTypes.object,
 }
