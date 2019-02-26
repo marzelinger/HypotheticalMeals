@@ -29,8 +29,11 @@ export const createManuReport = (reportData, data) => {
     var end_cut = data.ending_cut;
     var all_cut = data.all_cut;
     var header = [];
+    var ingSUMmap = new Map();
     header.push("Manufacturing Schedule Report for "+new Date(reportData.start_date) +" to "+new Date(reportData.end_date)+" (Duration "+reportData.duration+" hour(s)) on Manufacturing Line: "+ reportData.manu_line.short_name);
     rows.push(header);
+    rows.push(["\r\n"]);
+
     var numActs = complete.length;
     for(let act = 0; act<numActs; act++){
         var manulabel= [];
@@ -81,8 +84,38 @@ export const createManuReport = (reportData, data) => {
             ingLine.push(skudata.formula.ingredients[ing].name);
             ingLine.push(skudata.formula.ingredient_quantities[ing]);
             rows.push(ingLine);
+
+            //now want to add each ing into the map
+            //map is key =ing value = sum
+            if(ingSUMmap.has(skudata.formula.ingredients[ing].name)){
+                //want to add the values together.
+                var tot = parseFloat(ingSUMmap.get(skudata.formula.ingredients[ing].name)) + parseFloat(skudata.formula.ingredient_quantities[ing])*curAct.quantity;
+                ingSUMmap.set(skudata.formula.ingredients[ing].name, tot);
+                console.log("in the map stuff");
+                console.log("this is the tot; "+tot);
+
+            }
+            else{ //TODO DOUBLE CHECK THIS SUMMATION AFTER BELAL'S STUFF
+                ingSUMmap.set(skudata.formula.ingredients[ing].name, 
+                    parseFloat(skudata.formula.ingredient_quantities[ing])*curAct.quantity);
+                    console.log("in the map 3");
+
+            }
         }
 
+    }
+    console.log("isummation??? ");
+    rows.push(["\r\n"]);
+    rows.push(["This is the Summation of All Ingredients in This Timespan"]);    
+    rows.push(ingHeader());
+    console.log("the keyset is: "+JSON.stringify(ingSUMmap.keys));
+    //var summationData = getSummationData(data,reportData);
+    for( var k in ingSUMmap){
+        console.log("in the map with key: "+(k));
+        var ingLabel = []
+        ingLabel.push(k);
+        ingLabel.push(ingSUMmap.get(k));
+        rows.push(ingLabel);
     }
 
     let csvContent = "";
@@ -93,6 +126,11 @@ export const createManuReport = (reportData, data) => {
     fileDownload(csvContent, "Manufacturing Schedule Report For "+reportData.manu_line.short_name+'.csv');
 
 }
+
+// getSummationData = (data, reportData) =>{
+
+
+// }
 
 export const getEndTime = (start, dur) => {
     var curEnd = new Date(start);
