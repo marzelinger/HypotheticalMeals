@@ -96,11 +96,14 @@ export default class ItemSearchModifyListQuantity extends React.Component {
         console.log(state.value)
         console.log(state.qty)
         console.log(this.props.qty_disable)
+        console.log(this.props.item_type)
         switch (option) {
             case Constants.details_add:
-                return (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient) || (state.qty <= 0 && this.props.qty_disable !== true))
+                return (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient && 
+                        this.props.qty_disable === true) || (state.qty <= 0 && this.props.qty_disable !== true))
             case Constants.details_remove:
-                return (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient) || (state.qty <= 0 && this.props.qty_disable !== true))
+                return (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient && 
+                        this.props.qty_disable === true) || (state.qty <= 0 && this.props.qty_disable !== true))
         }
     }
 

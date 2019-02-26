@@ -242,7 +242,6 @@ export default class SKUDetails extends React.Component {
         let inv = this.state.invalid_inputs;
         if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.state.item, this.state.formula_item, opt)
         else {
-            console.log(CheckDigit.apply(this.state.item['case_upc'].slice(0,11)))
             if (inv.includes('case_upc') && this.state.item['case_upc'].length > 11)
                 alert_string += '\nTry Case UPC: ' + CheckDigit.apply(this.state.item['case_upc'].slice(0,11));
             if (inv.includes('unit_upc') && this.state.item['unit_upc'].length > 11)
