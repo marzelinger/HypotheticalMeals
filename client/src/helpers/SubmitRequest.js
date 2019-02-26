@@ -251,8 +251,8 @@ export default class SubmitRequest{
 
   static submitGetFilterData = (route, sort_field, filter_value, keyword, currentPage, pageSize, prod_line, formula) => {
     var path = '/api/' + route + '/' + sort_field + '/' + filter_value + '/' + keyword + '/' + currentPage +'/' + pageSize;
-    path += (prod_line === undefined) ? '' : ('/' + prod_line);
-    path += (formula === undefined) ? '' : ('/' + formula);
+    path += (prod_line === undefined) ? '/_' : ('/' + prod_line);
+    path += (formula === undefined) ? '/_' : ('/' + formula);
     //printFuncFront("this is path in submitGetFilterData"+path);
     return fetch(path, { method: 'GET' })
       .then(data => {
