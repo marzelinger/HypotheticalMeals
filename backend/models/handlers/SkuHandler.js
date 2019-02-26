@@ -35,14 +35,14 @@ class SkuHandler{
             // SkuHandler.checkForZeroQtys(new_ingredients, new_ingredient_quantities);
 
 
-            // let conflict1 = await SKU.find({ num : Number(new_sku_num) });
-            // let conflict2 = await SKU.find({ case_upc : Number(new_case_upc) });
-            // if(conflict1.length > 0){
-            //     return res.json({ success: false, error: 'Conflict: SKU#'});
-            // }
-            // if(conflict2.length > 0){
-            //     return res.json({ success: false, error: 'Conflict: Case UPC'});
-            // }
+            let conflict1 = await SKU.find({ num : new_sku_num });
+            let conflict2 = await SKU.find({ case_upc : new_case_upc });
+            if(conflict1.length > 0){
+                 return res.json({ success: false, error: 'Conflict: SKU#'});
+            }
+            if(conflict2.length > 0){
+                 return res.json({ success: false, error: 'Conflict: Case UPC'});
+            }
 
             sku.name = new_name;
             sku.num = new_sku_num;
@@ -97,10 +97,10 @@ class SkuHandler{
             var new_manu_rate = req.body.manu_rate
             // SkuHandler.checkForZeroQtys(new_ingredients, new_ingredient_quantities);
 
-            let conflict = await SKU.find({ num: Number(new_sku_num) });
+            let conflict = await SKU.find({ num: new_sku_num });
             if(conflict.length > 0 && conflict[0]._id != target_id) return res.json({ success: false, error: 'CONFLICT: SKU# already exists'});
             
-            let conflict2 = await SKU.find({ case_upc: Number(new_case_upc)});
+            let conflict2 = await SKU.find({ case_upc: new_case_upc });
             if(conflict2.length > 0 && conflict2[0]._id != target_id) return res.json({ success: false, error: 'CONFLICT: Case UPC already exists'});
 
             let updated_sku = await SKU.findOneAndUpdate({ _id : target_id},
