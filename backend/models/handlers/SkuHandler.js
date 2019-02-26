@@ -2,6 +2,7 @@
 // Belal and Riley
 
 import SKU from '../databases/sku';
+import Manu_Activity from '../databases/manu_activity';
 
 class SkuHandler{
 
@@ -15,8 +16,8 @@ class SkuHandler{
             var new_unit_size = req.body.unit_size;
             var new_cpc = req.body.cpc;
             var new_prod_line = req.body.prod_line;
-            var new_ingredients = req.body.ingredients;
-            var new_ingredient_quantities = req.body.ingredient_quantities;
+            //var new_ingredients = req.body.ingredients;
+            //var new_ingredient_quantities = req.body.ingredient_quantities;
             var new_comment = req.body.comment;
             var new_formula = req.body.formula
             var new_scale_factor = req.body.scale_factor
@@ -52,8 +53,8 @@ class SkuHandler{
             sku.unit_size = new_unit_size;
             sku.cpc = new_cpc;
             sku.prod_line = new_prod_line;
-            sku.ingredients = new_ingredients;
-            sku.ingredient_quantities = new_ingredient_quantities;
+           // sku.ingredients = new_ingredients;
+            //sku.ingredient_quantities = new_ingredient_quantities;
             sku.comment = new_comment;
             sku.formula = new_formula
             sku.scale_factor = new_scale_factor
@@ -92,9 +93,9 @@ class SkuHandler{
             var new_unit_size = req.body.unit_size;
             var new_cpc = req.body.cpc;
             var new_prod_line = req.body.prod_line;
-            var new_ingredient_quantities = req.body.ingredient_quantities;
+            //var new_ingredient_quantities = req.body.ingredient_quantities;
             var new_comment = req.body.comment;
-            var new_ingredients = req.body.ingredients;
+            //var new_ingredients = req.body.ingredients;
             var new_formula = req.body.formula
             var new_scale_factor = req.body.scale_factor
             var new_manu_lines = req.body.manu_lines
@@ -157,6 +158,12 @@ class SkuHandler{
         try{
             var target_id = req.params.sku_id;
             let to_remove = await SKU.findOneAndDelete({ _id : target_id});
+            let actRes = await Manu_Activity.find({ sku : { _id : to_remove._id }}) 
+            if (actRes.length > 0){
+                await actRes.map(async (act) => {
+                    let act_res = await Manu_Activity.findOneAndDelete({ _id : act._id })
+                })
+            }
             if(!to_remove){
                 return res.json({ success: false, error: '404'});
             }
@@ -188,7 +195,7 @@ class SkuHandler{
             var target_id = req.params.sku_id;
             let sku = await SKU.find({ _id : target_id }).populate('ingredients');
             if (sku.length == 0) return res.json({success: false, error: '404'})
-            return res.json({ success: true, data: sku[0].ingredients});
+            return res.json({ success: true, data: sku[0].formula.ingredients});
         }
         catch (err) {
             return res.json({ success: false, error: err});

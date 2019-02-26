@@ -69,7 +69,7 @@ router.post('/formulas', (req, res) => FormulaHandler.createFormula(req, res));
 router.put('/formulas/:formula_id', (req, res) => FormulaHandler.updateFormulaByID(req, res));
 router.get('/formulas', (req, res) => FormulaHandler.getAllFormulas(req, res));
 router.get('/formulas/:formula_id', (req, res) => FormulaHandler.getFormulaByID(req, res));
-router.delete('formulas/:formula_id', (req, res) => FormulaHandler.deleteFormulaByID(req, res));
+router.delete('/formulas/:formula_id', (req, res) => FormulaHandler.deleteFormulaByID(req, res));
 router.get('/formulas_name/:search_substr', (req, res) => FormulaHandler.getFormulasByNameSubstring(req, res));
 
 // Product Line database APIs
@@ -118,7 +118,7 @@ router.get('/manugoals_activity/:activity_id', (req, res) => Manu_GoalHandler.ge
 router.get('/manugoals_name/:name',(req, res) => Manu_GoalHandler.getManufacturingGoalByName(req, res));
 // Multiple database APIs
 router.get('/ingredients_filter/:sort_field/:sku_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
-router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize/:prod_line_ids', (req, res) => FilterHandler.getSkusByFilter(req, res));
+router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize/:prod_line_ids/:formula_id', (req, res) => FilterHandler.getSkusByFilter(req, res));
 router.get('/users_filter/:sort_field/:user_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getUsersByFilter(req, res));
 router.get('/formulas_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getFormulasbyFilter(req, res));
 

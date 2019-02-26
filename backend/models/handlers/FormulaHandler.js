@@ -2,18 +2,35 @@
 // Riley
 
 import Formula from '../databases/formula';
+import SKU from '../databases/sku';
+import Ingredient from '../databases/ingredient';
 
 class FormulaHandler{
 
     // Creates an ingredient in the Database
     // If the Ingredient exists, return error if it exists
     static async createFormula(req, res){
-      //  try {
+        try {
             var formula = new Formula();
             var new_formula_name = req.body.name;
             var new_formula_num = req.body.num;
             var new_formula_ingredients = req.body.ingredients;
             var new_ingredient_quantities = req.body.ingredient_quantities;
+            if(new_formula_ingredients.length != new_ingredient_quantities.length) return res.json({ success: false, error: 'Mismatch in parallel arrays'});
+            for(var i = 0; i < new_formula_ingredients.length; i++){
+                var curr_ingredient_quantity = new_ingredient_quantities[i];
+                var satisfiesRegex = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/.test(curr_ingredient_quantity);
+                if(!satisfiesRegex) return res.json({ success: false, error: 'Please provide a quantity with the appropriate units'});
+                
+                var curr_ingredient_id = new_formula_ingredients[i];
+                var curr_ingredient_arr = await Ingredient.find({ _id: curr_ingredient_id });
+                var curr_ingredient = curr_ingredient_arr[0];
+
+                var typeOfUnit = await this.findUnit(curr_ingredient.pkg_size);
+                var otherTypeOfUnit = await this.findUnit(curr_ingredient_quantity);
+                if(typeOfUnit != otherTypeOfUnit) return res.json({ success: false, error: 'Ingredient unit mismatch'});
+            }
+
             var new_comment = req.body.comment;
             if(!new_formula_name || !new_formula_num){
                 return res.json({
@@ -34,10 +51,16 @@ class FormulaHandler{
 
             let new_formula = await formula.save();
             return res.json({ success: true, data: new_formula});
-   //     }
-    //    catch (err) {
-   //         return res.json({ success: false, error: err});
-     //   }
+        }
+        catch (err) {
+            return res.json({ success: false, error: err});
+        }
+    }
+
+    static async findUnit(ingredient_pkg_size){
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg)$/.test(ingredient_pkg_size)) return 1;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (fl.oz.|pt.|qt.|gal.|mL|L)$/.test(ingredient_pkg_size)) return 2;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count)$/.test(ingredient_pkg_size)) return 3;
     }
 
     static async updateFormulaByID(req, res){
@@ -51,6 +74,22 @@ class FormulaHandler{
             var new_formula_ingredients = req.body.ingredients;
             var new_ingredient_quantities = req.body.ingredient_quantities;
             var new_comment = req.body.comment;
+            
+
+            for(var i = 0; i < new_formula_ingredients.length; i++){
+                var curr_ingredient_quantity = new_ingredient_quantities[i];
+                console.log(curr_ingredient_quantity);
+                var satisfiesRegex = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/.test(curr_ingredient_quantity);
+                if(!satisfiesRegex) return res.json({ success: false, error: 'Please provide a quantity with the appropriate units'});
+                
+                var curr_ingredient_id = new_formula_ingredients[i];
+                var curr_ingredient_arr = await Ingredient.find({ _id: curr_ingredient_id });
+                var curr_ingredient = curr_ingredient_arr[0];
+
+                var typeOfUnit = await this.findUnit(curr_ingredient.pkg_size);
+                var otherTypeOfUnit = await this.findUnit(curr_ingredient_quantity);
+                if(typeOfUnit != otherTypeOfUnit) return res.json({ success: false, error: 'Ingredient unit mismatch'});
+            }
 
             let conflict = await Formula.find({ num : new_formula_num });
             if(conflict.length > 0){
@@ -100,7 +139,7 @@ class FormulaHandler{
 
     static async deleteFormulaByID(req, res){
         try{
-            var target_id = req.params.ingredient_id;
+            var target_id = req.params.formula_id;
             let skus = await SKU.find({ formula : target_id });
           /*  skus.map(async (sku) => {
                 let ind = sku.ingredients.indexOf(target_id);
@@ -111,7 +150,7 @@ class FormulaHandler{
                     {upsert : true, new : true});
             })*/
             if(skus.length > 1) return res.json({ success: false, error: 'Formula still tied to at least one SKU'});
-
+            console.log(target_id);
             let to_remove = await Formula.findOneAndDelete({ _id: target_id});
             if(!to_remove) return res.json({ success: true, error: '404'});
             return res.json({ success: true, data: to_remove });
