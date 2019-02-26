@@ -66,7 +66,8 @@ export default class ListPage extends React.Component {
             filters: {
                 'keyword': '',
                 'ingredients': [],
-                'products': []
+                'products': [],
+                'formula' : [],
             },
             filterChange: false,
             ingredients: [], 
@@ -114,6 +115,9 @@ export default class ListPage extends React.Component {
         if (this.props.default_ing_filter !== undefined){
             await this.onFilterValueSelection([{ value: { _id : this.props.default_ing_filter._id }}], null, 'ingredients');
         }
+        if( this.props.default_formula_filter !== undefined){
+            await this.onFilterValueSelection([{ value: { _id : this.props.default_formula_filter._id }}], null, 'formula');
+        }
         this.loadDataFromServer();
     }
 
@@ -135,15 +139,19 @@ export default class ListPage extends React.Component {
         var final_ing_filter = this.state.filters['ingredients'].join(',');
         var final_keyword_filter = this.state.filters['keyword'];
         var final_prod_line_filter = this.state.filters['products'].join(',');
+        console.log(final_prod_line_filter);
+        var final_formula_filter = this.state.filters['formula'].join(',');
+        console.log(final_formula_filter);
         //Check how the filter state is being set 
         if (final_ing_filter === '') final_ing_filter = '_';
         if (final_keyword_filter === '') final_keyword_filter = '_';
         if (final_prod_line_filter === '') final_prod_line_filter = '_';
+        if (final_formula_filter === '') final_formula_filter = '_';
         var resALL = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
-            this.state.sort_field, final_ing_filter, final_keyword_filter, 0, 0, final_prod_line_filter, '_');
+            this.state.sort_field, final_ing_filter, final_keyword_filter, 0, 0, final_prod_line_filter, final_formula_filter);
         await this.checkCurrentPageInBounds(resALL);
         var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
-            this.state.sort_field, final_ing_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize, final_prod_line_filter, "_"); 
+            this.state.sort_field, final_ing_filter, final_keyword_filter, this.state.currentPage, this.state.pageSize, final_prod_line_filter, final_formula_filter); 
         if (res === undefined || !res.success) {
             res.data = [];
             resALL.data = [];
@@ -409,17 +417,17 @@ export default class ListPage extends React.Component {
     getButtons = () => {
         return (
         <div className = "ingbuttons"> 
-            {this.props.default_ing_filter !== undefined || this.state.selected_items.length === 0 ? null : 
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || this.state.selected_items.length === 0 ? null : 
                             (<div className = "manugoalbutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}
                             primary={true}
                             > {Constants.add_to_manu_goals} </div>)}
-            {this.props.default_ing_filter !== undefined || !currentUserIsAdmin().isValid || this.state.selected_items.length === 0 ? null : 
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || !currentUserIsAdmin().isValid || this.state.selected_items.length === 0 ? null : 
                             (<div className = "manulinebutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.edit_manu_lines)}
                             primary={true}
                             > {Constants.edit_manu_lines} </div>)}
-            {this.props.default_ing_filter !== undefined ? null : (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}   
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) ? null : (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}   
         </div>
         );
     }
@@ -428,7 +436,7 @@ export default class ListPage extends React.Component {
 
         return (
             <div className="list-page">
-            {this.props.default_ing_filter === undefined ? <GeneralNavBar></GeneralNavBar> : null}
+            {this.props.default_ing_filter === undefined && this.props.default_formula_filter === undefined ? <GeneralNavBar></GeneralNavBar> : null}
                 <div>
                     <PageTable 
                         columns={this.state.table_columns} 
@@ -489,5 +497,6 @@ export default class ListPage extends React.Component {
 }
 
 ListPage.propTypes = {
-    default_ing_filter: PropTypes.object
+    default_ing_filter: PropTypes.object,
+    default_formula_filter: PropTypes.object,
 }
