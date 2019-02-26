@@ -101,15 +101,15 @@ export default class ItemSearchModifyListQuantity extends React.Component {
         console.log("item-qty disable   "+JSON.stringify(this.props.qty_disable));
         console.log("satisfiesREgex: "+JSON.stringify(satisfiesRegex));
 
+        
+        console.log(this.props.item_type)
         switch (option) {
             case Constants.details_add:
-                var answer = (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient) || (state.qty <= 0 && this.props.qty_disable !== true));
-                console.log("anser in add: "+answer);
-                return (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient) || (state.qty <= 0 && this.props.qty_disable !== true))
+                return (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient && 
+                        this.props.qty_disable === true) || (state.qty <= 0 && this.props.qty_disable !== true))
             case Constants.details_remove:
-                var answer2 = (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient) || (state.qty <= 0 && this.props.qty_disable !== true));                
-                console.log("anser in remove: "+answer2);
-                return (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient) || (state.qty <= 0 && this.props.qty_disable !== true))
+                return (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient && 
+                        this.props.qty_disable === true) || (state.qty <= 0 && this.props.qty_disable !== true))
         }
     }
 

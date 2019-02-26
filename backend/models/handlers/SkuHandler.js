@@ -61,6 +61,7 @@ class SkuHandler{
             return res.json({ success: true, data: new_sku});
         }
         catch (err) {
+            console.log(err)
             return res.json({ success: false, error: err});
         }
     }
@@ -128,7 +129,7 @@ class SkuHandler{
             return res.json({ success: true, data: all_skus});
         }
         catch (err) {
-            console.log('something is wrong');
+            console.log(err)
             return res.json({ success: false, error: err});
         }
     }
@@ -143,6 +144,7 @@ class SkuHandler{
             if(to_return.length == 0) return res.json({ success: false, error: '404'});
             return res.json({ success: true, data: to_return});
         } catch (err) {
+            console.log(err)
             return res.json({ success: false, error: err});
         }
     }
@@ -163,6 +165,7 @@ class SkuHandler{
             }
             return res.json({ success: true, data: to_remove});
         } catch (err) {
+            console.log(err)
             return res.json({ success: false, error: err});
         }
     }
@@ -204,6 +207,7 @@ class SkuHandler{
             return res.json({ success: true, data: results});
         }
         catch (err) {
+            console.log(err)
             return res.json({ success: false, error: err});
         }
     }

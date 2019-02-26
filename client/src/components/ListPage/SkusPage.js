@@ -360,15 +360,14 @@ export default class ListPage extends React.Component {
                 //item equal to the formula section of item.
                 resFormula = await SubmitRequest.submitCreateItem(Constants.formulas_page_name, formula_item);
                 // var newSKUitem = this.formatNewSKUFormula(item, resFormula);
+                console.log(resFormula)
                 if(resFormula.success){
                     item['formula']= resFormula.data._id;
+                    resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item);
+                } 
+                else {
+                    resItem = { success: false, error: 'Formula Quantity is not entered correctly'}
                 }
-                console.log("this is the create res."+ JSON.stringify(resItem));
-
-                resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item);
-
-                console.log("this is the create res."+ JSON.stringify(resItem));
-                console.log("this is the create res formula."+ JSON.stringify(resFormula));
 
                 break;
             case Constants.details_save:

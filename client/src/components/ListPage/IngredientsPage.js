@@ -302,6 +302,8 @@ export default class IngredientsPage extends React.Component {
                 res = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_delete:
+                console.log(await SubmitRequest.submitGetFilterData(Constants.formula_filter_path, '_', item._id, '_', 0, 0))
+                return
                 let toDelete = newData.findIndex(obj => {return obj._id === item._id});
                 newData.splice(toDelete, 1);
                 res = await SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
