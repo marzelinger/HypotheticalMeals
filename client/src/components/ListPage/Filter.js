@@ -91,6 +91,12 @@ export default class Filter extends React.Component {
         if (this.props.defaultItems !== undefined && this.props.defaultItems[0] === 'loading') {
             return null;
         }
+        const customStyles = {
+            control: (base, state) => ({
+                ...base,
+                borderColor: this.props.invalid ? 'red' : '#ddd'
+            })
+        }
         return (
         <div className='filter-item'>
             <Select
@@ -111,6 +117,7 @@ export default class Filter extends React.Component {
                     },
                   })}
                 isDisabled={this.props.disabled}
+                styles={customStyles}
             />
         </div>
         );
@@ -124,5 +131,6 @@ Filter.propTypes = {
     handleFilterValueSelection: PropTypes.func,
     handleRemoveFilter: PropTypes.func,
     type: PropTypes.string,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    invalid: PropTypes.bool
   };

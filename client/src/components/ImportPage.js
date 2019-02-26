@@ -72,6 +72,12 @@ export default class ImportPage extends React.Component {
             ingr_duplicate: false,
             ingr_dup_num: -1,
             formula_num: -1,
+
+            sku_formula_num: -1,
+            sku_formula_error: false,
+
+            manu_line_error: false,
+            manu_line_name: "",
         }
     }
 
@@ -129,14 +135,27 @@ export default class ImportPage extends React.Component {
                 //.then(data => data.json())
                 .then((res) => {
                     console.log(res);
+                    if(typeof res.data.manu_line_error != 'undefined'){
+                        this.setState({
+                            manu_line_error: true,
+                            rowIssue: res.data.row,
+                            manu_line_name: res.data.prod_line_name
+                        })
+                    }
+                    if(typeof res.data.sku_formula_num != 'undefined'){
+                        this.setState({
+                            sku_formula_num: res.data.sku_formula_num,
+                            sku_formula_error: true,
+                        })
+                    }
                     // Setting state for a duplicate
-                    if(typeof res.data.formula_comment != 'undefined'){
+                    else if(typeof res.data.formula_comment != 'undefined'){
                         this.setState({
                             formula_comment: true,
                             rowIssue: res.data.formula_comment
                         });
                     }
-                    if(typeof res.data.ingredient_duplicate != 'undefined'){
+                    else if(typeof res.data.ingredient_duplicate != 'undefined'){
                         this.setState({
                             ingr_duplicate: true,
                             rowIssue: res.data.ingredient_duplicate,
@@ -144,7 +163,7 @@ export default class ImportPage extends React.Component {
                             formula_num: res.data.formula_num
                         })
                     }
-                    if(typeof res.data.duplicate != 'undefined'){
+                    else if(typeof res.data.duplicate != 'undefined'){
                         this.setState({
                             duplicate: true,
                             rowIssue: res.data.duplicate
@@ -319,6 +338,13 @@ export default class ImportPage extends React.Component {
         })
     }
 
+    onDismissManuLine = () => {
+        this.setState({
+            manu_line_error: false,
+            manu_line_name: ""
+        })
+    }
+
     onDismissNoFile = () => {
         this.setState({
             noFile: false
@@ -350,6 +376,13 @@ export default class ImportPage extends React.Component {
             badDataRow: -1,
             badData: false,
             incompleteEntry: false,
+        })
+    }
+
+    onDismissSkuFormula = () =>{
+        this.setState({
+            sku_formula_error: false,
+            sku_formula_num: -1,
         })
     }
 
@@ -463,6 +496,12 @@ export default class ImportPage extends React.Component {
             ingr_duplicate: false,
             ingr_dup_num: -1,
             formula_num: -1,
+
+            manu_line_error: false,
+            manu_line_name: "",
+
+            sku_formula_num: -1,
+            sku_formula_error: false,
         })
     }
 
@@ -508,8 +547,16 @@ export default class ImportPage extends React.Component {
                     The provided CSV file had no entries
                 </Alert>
 
+                <Alert color="danger" isOpen={this.state.sku_formula_error} toggle={this.onDismissSkuFormula}>
+                    Formula # {this.state.formula_num} does not exist
+                </Alert>
+
                 <Alert color="danger" isOpen={this.state.prod_line_error} toggle={this.onDismissProdLine} >
                     The product line "{this.state.prod_line_name}" from row {this.state.rowIssue} does not exist
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.manu_line_error} toggle={this.onDismissManuLine}>
+                    The manufacturing line shortname "{this.state.manu_line_name}" from row {this.state.rowIssue} does not exist
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.noFile} toggle={this.onDismissNoFile}>

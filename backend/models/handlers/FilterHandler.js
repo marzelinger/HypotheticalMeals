@@ -45,7 +45,6 @@ class FilterHandler{
             // let results = (and_query.length === 0) ? await Ingredient.find( ).populate('skus').sort(sort_field) : 
             //                                          await Ingredient.find( {$and: and_query }).populate('skus').sort(sort_field);
             
-            if (results.length == 0) return results = [];
             return res.json({ success: true, data: results});
         }
         catch (err) {
@@ -59,9 +58,21 @@ class FilterHandler{
             var ids = [];
             var sort_field = req.params.sort_field;
             var ingredient_ids = req.params.ingredient_ids;
+            console.log(ingredient_ids);
             if (ingredient_ids !== undefined && ingredient_ids !== "_"){
                 ingredient_ids = ingredient_ids.replace(/\s/g, "").split(',');
-                let skus = await SKU.find({ ingredients : {$in : ingredient_ids } });
+                let formulas = await Formula.find({ ingredients : {$in : ingredient_ids } });
+                var formula_string = "";
+
+                for(var i = 0; i < formulas.length; i++){
+                    var obj = formulas[i]
+                    console.log(obj._id);
+                    formula_string = formula_string + obj._id + ",";
+                }
+                formula_string = formula_string.substring(0,formula_string.length-1);
+                console.log(formula_string);
+                let skus = await SKU.find({ formula : {$in : formula_string } });
+                console.log(skus.length);
                 skus.map(sku => ids.push(sku._id));
                 and_query.push( {_id: { $in: ids } } );
             }
@@ -90,12 +101,11 @@ class FilterHandler{
                 and_query.push( {_id: { $in: ids } } );
             }
             let results = (and_query.length === 0) ? await SKU.find( ).skip(currentPage*pageSize).limit(pageSize)
-                                                        .populate('ingredients').populate('prod_line').sort(sort_field)
+                                                        .populate('formula').populate('prod_line').sort(sort_field)
                                                         .collation({locale: "en_US", numericOrdering: true}) : 
                                                      await SKU.find( {$and: and_query }).skip(currentPage*pageSize)
-                                                        .limit(pageSize).populate('ingredients').populate('prod_line')
+                                                        .limit(pageSize).populate('formula').populate('prod_line')
                                                         .sort(sort_field).collation({locale: "en_US", numericOrdering: true});
-            if (results.length == 0) results = [];
             return res.json({ success: true, data: results});
         }
         catch (err) {
@@ -133,7 +143,6 @@ class FilterHandler{
                                                      await User.find( {$and: and_query }).skip(currentPage*pageSize)
                                                         .limit(pageSize).populate('users')
                                                         .sort(sort_field).collation({locale: "en_US", numericOrdering: true});
-            if (results.length == 0) results = [];
             printFuncBack('this is the results: '+results);
             return res.json({ success: true, data: results});
         }
@@ -171,7 +180,6 @@ class FilterHandler{
                                                      await Formula.find( {$and: and_query }).skip(currentPage*pageSize)
                                                         .limit(pageSize).populate('ingredients')
                                                         .sort(sort_field).collation({locale: "en_US", numericOrdering: true});
-            if (results.length == 0) results = [];
             return res.json({ success: true, data: results});
         }
         catch (err) {

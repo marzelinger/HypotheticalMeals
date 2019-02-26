@@ -13,6 +13,7 @@
 .accordion {
     border: 1px solid #d7fbfd;
     border-radius: 2px;
+    box-shadow: 0px 0px 2px;
 }
 
 .accordion__item + .accordion__item {
