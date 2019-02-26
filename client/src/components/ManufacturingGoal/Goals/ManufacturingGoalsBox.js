@@ -142,6 +142,7 @@ class ManufacturingGoalsBox extends Component {
     else {
       this.setState({ name: '', activities: [], error: null });
     }
+    return res;
   }
 
 
@@ -163,6 +164,7 @@ class ManufacturingGoalsBox extends Component {
       this.setState({ name: '', activities: '', enabled: false, error: null })
       this.loadGoalsFromServer();
     }
+    return res;
   }
 
   componentDidMount() {
@@ -201,8 +203,9 @@ class ManufacturingGoalsBox extends Component {
             deadline: item.deadline
           })
           console.log(this.state.deadline);
-          this.submitNewGoal();
-          break;
+          var response = await this.submitNewGoal();
+          console.log(response)
+          return response;
         case Constants.details_save:
             // let activities = [];
             await this.setState({
@@ -212,8 +215,9 @@ class ManufacturingGoalsBox extends Component {
               enabled: item.enabled,
               deadline: item.deadline
           });
-            this.submitUpdatedGoal();
-            break;
+            var response = await this.submitUpdatedGoal();
+            console.log(response)
+            return response;
         case Constants.details_cancel:
             break;
     }

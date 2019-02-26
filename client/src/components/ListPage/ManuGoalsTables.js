@@ -32,6 +32,9 @@ export default class ManuGoalsTables extends React.Component {
     sortData = (data) => {
         var newdata = [...data];
         var sortKey = this.state.sortKey
+        if(this.state.sortKey == ''){
+            return data;
+        }
         data.sort((activitya,activityb) => {
             let a, b;
             if(sortKey == 'quantity'){
