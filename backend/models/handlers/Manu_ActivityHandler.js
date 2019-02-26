@@ -147,9 +147,10 @@ class Manu_ActivityHandler{
             console.log("start_date: "+target_start_date);
             console.log("target_end_date: "+target_end_date);
 
-            let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id , scheduled: true, start: {$gte: target_start_date, $lt: target_end_date}}).populate('sku').populate('manu_line').populate({
+            let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id , scheduled: true, start: {$gte: target_start_date, $lt: target_end_date}})
+            .populate('sku').populate('manu_line').populate({
                 path: 'sku',
-                populate: { path: 'ingredients' }
+                populate: { path: 'formula', populate: {path: 'ingredients'} }
               });
 
             if(to_return.length == 0) return res.json({success: false, error: '404'});
