@@ -112,7 +112,7 @@ export default class ListPage extends React.Component {
 
     async componentDidMount() {
         if (this.props.default_ing_filter !== undefined){
-            await this.onFilterValueSelection([{ value: this.props.default_ing_filter._id }], null, 'ingredients');
+            await this.onFilterValueSelection([{ value: { _id : this.props.default_ing_filter._id }}], null, 'ingredients');
         }
         this.loadDataFromServer();
     }
@@ -126,7 +126,6 @@ export default class ListPage extends React.Component {
     updateDataState = async () => {
         var {data: ingredients} = await SubmitRequest.submitGetData(Constants.ingredients_page_name);
         var {data: productlines} = await SubmitRequest.submitGetData(Constants.prod_line_page_name);
-        //console.log(productlines)
         this.setState({ingredients: ingredients, product_lines: productlines});
     }
 
@@ -196,7 +195,6 @@ export default class ListPage extends React.Component {
 
     async setInitPages(){
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        console.log(allData)
         var curCount = 0;
         if(allData!=undefined){
             if(allData.data!=undefined){
@@ -233,7 +231,7 @@ export default class ListPage extends React.Component {
                 filters[type].push(item.value._id);
             }
         })
-        
+        console.log(filters)
         this.setState({
             filters: filters,
             filterChange: true
@@ -285,7 +283,6 @@ export default class ListPage extends React.Component {
 
     async onBulkManuLineSubmit(event, opt, skus) {
         var newSkus = Object.assign([], this.state.data);
-        console.log(opt)
         switch (opt){
             case Constants.details_save:
                 await skus.map(async (sku) => {
@@ -296,7 +293,6 @@ export default class ListPage extends React.Component {
             case Constants.details_cancel:
                 break;
         }
-        console.log(newSkus)
         this.setState({ data: newSkus });
         this.loadDataFromServer();
         this.toggle(Constants.manu_lines_modal);
@@ -360,14 +356,14 @@ export default class ListPage extends React.Component {
                 newData.push(item);
                 //need to create the new formula and get the id of the newly created formula and then put that in the 
                 //item equal to the formula section of item.
-                resFormula = await SubmitRequest.submitCreateItem(Constants.formulas_page_name, formula_item, this);
+                resFormula = await SubmitRequest.submitCreateItem(Constants.formulas_page_name, formula_item);
                 // var newSKUitem = this.formatNewSKUFormula(item, resFormula);
                 if(resFormula.success){
                     item['formula']= resFormula.data._id;
                 }
                 console.log("this is the create res."+ JSON.stringify(resItem));
 
-                resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
+                resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item);
 
                 console.log("this is the create res."+ JSON.stringify(resItem));
                 console.log("this is the create res formula."+ JSON.stringify(resFormula));
@@ -376,7 +372,7 @@ export default class ListPage extends React.Component {
             case Constants.details_save:
                 let toSave = newData.findIndex(obj => {return obj._id === item._id});
                 newData[toSave] = item;
-                resFormula = await SubmitRequest.submitUpdateItem(Constants.formulas_page_name, formula_item, this);
+                resFormula = await SubmitRequest.submitUpdateItem(Constants.formulas_page_name, formula_item);
                 resItem = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
                 
                 console.log("this is the save res."+ JSON.stringify(resItem));
@@ -387,14 +383,20 @@ export default class ListPage extends React.Component {
             case Constants.details_delete:
                 let toDelete = newData.findIndex(obj => {return obj._id === item._id});
                 newData.splice(toDelete, 1);
-                resItem = await SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
+                resItem = await SubmitRequest.submitDeleteItem(this.state.page_name, item);
+                // console.log(resItem)
+                // let activities_to_delete = resItem.data.activities
+                // console.log(activities_to_delete)
+                // activities_to_delete.map(async(act) => {
+                //     let resAct = await SubmitRequest.submitDeleteItem(Constants.manu_activity_page_name, act)
+                //     console.log(resAct)
+                // })
                 break;
             case Constants.details_cancel:
                 resItem = {success: true}
                 break;
         }
-        console.log("resItem was: "+resItem.success);
-        console.log("resFormula")
+        console.log(resItem)
         if (!resItem.success) alert(resItem.error);
         else {
             this.setState({ 
@@ -431,7 +433,7 @@ export default class ListPage extends React.Component {
 
         return (
             <div className="list-page">
-            <GeneralNavBar></GeneralNavBar>
+            {this.props.default_ing_filter === undefined ? <GeneralNavBar></GeneralNavBar> : null}
                 <div>
                     <PageTable 
                         columns={this.state.table_columns} 
@@ -485,8 +487,7 @@ export default class ListPage extends React.Component {
                     pagesCount = {this.state.pagesCount}
                     handlePageClick = {this.handlePageClick}
                     getButtons = {this.getButtons}
-                >
-                </TablePagination>
+                />
             </div>
         );
     }

@@ -242,6 +242,7 @@ export default class SKUDetails extends React.Component {
         let inv = this.state.invalid_inputs;
         if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.state.item, this.state.formula_item, opt)
         else {
+            console.log(CheckDigit.apply(this.state.item['case_upc'].slice(0,11)))
             if (inv.includes('case_upc') && this.state.item['case_upc'].length > 11)
                 alert_string += '\nTry Case UPC: ' + CheckDigit.apply(this.state.item['case_upc'].slice(0,11));
             if (inv.includes('unit_upc') && this.state.item['unit_upc'].length > 11)
@@ -258,6 +259,7 @@ export default class SKUDetails extends React.Component {
         if (this.state.prod_line_item.name === undefined) inv_in.push('prod_line');
         if (!CheckDigit.isValid(this.state.item['case_upc'])) inv_in.push('case_upc');
         if (!CheckDigit.isValid(this.state.item['unit_upc'])) inv_in.push('unit_upc');
+        console.log(inv_in)
         await this.setState({ invalid_inputs: inv_in });
     }
 

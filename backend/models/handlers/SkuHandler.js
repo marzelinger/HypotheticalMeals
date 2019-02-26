@@ -2,6 +2,7 @@
 // Belal and Riley
 
 import SKU from '../databases/sku';
+import Manu_Activity from '../databases/manu_activity';
 
 class SkuHandler{
 
@@ -123,6 +124,7 @@ class SkuHandler{
             });
         }
         catch (err) {
+            console.log(err)
             return res.json({ success: false, error: err});
         }
     }
@@ -157,6 +159,12 @@ class SkuHandler{
         try{
             var target_id = req.params.sku_id;
             let to_remove = await SKU.findOneAndDelete({ _id : target_id});
+            let actRes = await Manu_Activity.find({ sku : { _id : to_remove._id }}) 
+            if (actRes.length > 0){
+                await actRes.map(async (act) => {
+                    let act_res = await Manu_Activity.findOneAndDelete({ _id : act._id })
+                })
+            }
             if(!to_remove){
                 return res.json({ success: false, error: '404'});
             }

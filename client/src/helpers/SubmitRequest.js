@@ -8,6 +8,7 @@ import printFuncFront from '../printFuncFront';
 export default class SubmitRequest{
 
   static submitQueryString(query) {
+    console.log(query)
     return fetch(query, { method: 'GET' })
           .then(data => data.json())
           .then((res) => {

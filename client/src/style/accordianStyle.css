@@ -1,3 +1,7 @@
+.accordian-table {
+    font-size: .8rem;
+}
+
 .u-position-absolute {
     position: absolute;
 }
@@ -7,12 +11,13 @@
 }
 
 .accordion {
-    border: 1px solid #97b0f8;
+    border: 1px solid #d7fbfd;
     border-radius: 2px;
+    box-shadow: 0px 0px 2px;
 }
 
 .accordion__item + .accordion__item {
-    border-top: 1px solid #97b0f8;
+    border-top: 1px solid #d7fbfd;
 }
 
 .accordion__item--has-icon {
@@ -20,8 +25,9 @@
 }
 
 .accordion__title {
-    background-color: #d5ddf6;
-    color: #444;
+    background-color: #d7fbfd;
+    color: rgb(0, 0, 0);
+    font-size: .9rem;
     cursor: pointer;
     padding: 5px;
     width: 100%;
@@ -30,7 +36,7 @@
 }
 
 .accordion__title:hover {
-    background-color: #ddd;
+    background-color: #98edf3;
 }
 
 .accordion__body {

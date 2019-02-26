@@ -19,7 +19,7 @@ export default class ItemStore{
 
   static getUniqueCaseUPC = (list) => {
     while(true){
-      var c_upc = Math.floor(Math.random() * 39999999999) + 60000000000;
+      var c_upc = Math.floor(Math.random() * 89999999999) + 10000000000;
       c_upc = CheckDigit.apply(c_upc.toString())
       var success = true;
       list.map(item => { if (item.case_upc === c_upc) success = false; });
@@ -29,7 +29,7 @@ export default class ItemStore{
 
   static getUniqueUnitUPC = (case_upc, list) => {
     while(true){
-      var u_upc = Math.floor(Math.random() * 39999999999) + 60000000000;
+      var u_upc = Math.floor(Math.random() * 89999999999) + 10000000000;
       u_upc = CheckDigit.apply(u_upc.toString())
       var success = true;
       list.map(item => { 
@@ -47,7 +47,8 @@ export default class ItemStore{
     
     switch (page_name){
       case Constants.ingredients_page_name:
-      var new_id = await ItemStore.getUniqueNumber(res.data);
+        var res = await SubmitRequest.submitGetData(page_name);
+        var new_id = await ItemStore.getUniqueNumber(res.data);
         return {
           _id: 'unassigned',
           name: '',

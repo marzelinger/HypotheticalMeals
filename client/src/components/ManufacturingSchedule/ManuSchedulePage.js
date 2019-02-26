@@ -1,6 +1,12 @@
 // ManuSchedulePage.js
 
 import React, { Component } from "react";
+import { 
+    Modal,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    Button } from 'reactstrap';
 import Timeline from 'react-visjs-timeline'
 import SubmitRequest from "../../helpers/SubmitRequest";
 import CheckErrors from '../../helpers/CheckErrors'
@@ -9,9 +15,9 @@ import ManuSchedulePalette from './ManuSchedulePalette'
 import './../../style/ManuSchedulePageStyle.css';
 import GeneralNavBar from '../GeneralNavBar';
 import ManuActivityErrors from './ManuActivityErrors';
+import ManuSchedHelp from '../../resources/ManuSchedHelp.png'
 const jwt_decode = require('jwt-decode');
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
-var moment = require('moment');
 
 export default class ManuSchedulePage extends Component {
     constructor(props) {
@@ -26,7 +32,9 @@ export default class ManuSchedulePage extends Component {
             unscheduled_goals: [],
             activity_to_schedule: null,
             selected_activities: [],
-            loaded: false
+            loaded: false,
+            modal: false,
+            modalTitle : '',
         }
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!= null){
@@ -34,12 +42,13 @@ export default class ManuSchedulePage extends Component {
             }
         }
         this.prepareAddActivity = this.prepareAddActivity.bind(this);
-        this.clickHandler = this.clickHandler.bind(this);
+        this.doubleClickHandler = this.doubleClickHandler.bind(this);
         this.selectHandler = this.selectHandler.bind(this);
         this.onMove = this.onMove.bind(this);
         this.onRemove = this.onRemove.bind(this);
         this.onAdd = this.onAdd.bind(this);
         this.updateRange = this.updateRange.bind(this);
+        this.toggleModal = this.toggleModal.bind(this);
     }
 
     async componentDidMount() {
@@ -50,8 +59,7 @@ export default class ManuSchedulePage extends Component {
         items.length = 0;
         groups.length = 0;
         let activities = await SubmitRequest.submitGetData(Constants.manu_activity_page_name);
-        let goals = await SubmitRequest.submitGetManuGoalsByFilter('_', '_', '_'); //get all goals
-        console.log(goals)
+        let goals = await SubmitRequest.submitGetManuGoalsByFilter('_', '_', '_');
         activities.data.map(act => {
             this.scheduleOrPalette(act, goals);
         });
@@ -80,10 +88,10 @@ export default class ManuSchedulePage extends Component {
             if (items.find(i => i._id === act._id) === undefined) {
                 let start = new Date(act.start);
                 let end = new Date(start.getTime() + Math.floor(act.duration/10)*24*60*60*1000 + (act.duration%10 * 60 * 60 * 1000));
-                let assoc_goal = ''
+                let assoc_goal = null;
                 goals.data.map(goal => {
                     if(goal.activities.find(a => a._id === act._id)){
-                        assoc_goal = goal.name
+                        assoc_goal = goal
                     }
                 })
                 let cName = '';
@@ -92,22 +100,45 @@ export default class ManuSchedulePage extends Component {
                     if (act.over_deadline) cName += 'over_deadline';
                     if (act.overwritten) cName += ' ' + 'overwritten';
                 }
+                let dl = new Date(assoc_goal.deadline);
                 items.push({
                     start: start,
                     end: end,
-                    content: 'SKU: ' + act.sku.name,
-                    title: 'Goal: ' + assoc_goal,
+                    content: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity,
+                    title: 'Goal: ' + assoc_goal.name + '<br>Deadline: ' + dl.getMonth() + '/' + dl.getDate() + '/' + 
+                        dl.getFullYear() + ' ' + dl.getHours() + ':' + (dl.getMinutes()<10 ? ('0'+dl.getMinutes()) : dl.getMinutes()),
                     group: act.manu_line._id,
                     className: cName,
                     _id: act._id
                 });
             }
-            
         }
     }
 
-    async clickHandler(e) {
-        console.log(e)
+    toggleModal(type) {
+        if (type === 'palette'){
+            var title = 'Manufacturing Schedule Help'
+        }
+        if (type === 'errors'){
+            var title = 'Manufacturing Schedule Help'
+        }
+        this.setState(prevState => ({
+          modal: !prevState.modal,
+          modalTitle: title
+        }));
+      }
+
+    async doubleClickHandler(e) {
+        if (e.item !== null) {
+            let clicked_item = items.filter(i => {return i.id === e.item})
+            console.log(clicked_item[0])
+            console.log(this.state.activities)
+            let clicked_activity = this.state.activities.filter(a => {return a._id === clicked_item[0]._id})
+            console.log(clicked_activity[0])
+            clicked_activity[0].overwritten = false
+            await CheckErrors.updateActivityErrors(clicked_activity[0]);
+            await this.loadScheduleData();
+        }
     }
 
     async selectHandler(items, event) {
@@ -130,7 +161,7 @@ export default class ManuSchedulePage extends Component {
 
     getContainerStyle() {
         if (this.state.activity_to_schedule){
-            return { "cursor" : "copy" } //!important doesn't work...
+            return { cursor : "copy" } //!important doesn't work...
         }
         return {}
     }
@@ -156,7 +187,8 @@ export default class ManuSchedulePage extends Component {
                 return
             }
         }
-        if (this.checkWithinHoursAndOverlap(item, callback)) {
+        if (!this.checkWithinHoursAndOverlap(item, callback) || 
+            !this.checkManuLineIsValid(item, act.data[0].sku.manu_lines, callback)) {
             return
         }
         act.data[0].start = item.start;
@@ -165,13 +197,25 @@ export default class ManuSchedulePage extends Component {
         callback(item)
     }
 
+    checkManuLineIsValid(item, sku_manu_lines, callback) {
+        if (!sku_manu_lines.includes(item.group)){
+            let lines = this.state.lines.filter(l => { return sku_manu_lines.includes(l._id) } )
+            lines = lines.map(l => "'" + l.name + "'");
+            let lines_str = lines.join(', ')
+            alert('This activity can only be placed on ' + lines_str)
+            callback(null)
+            return false;
+        }
+        return true;
+    }
+
     checkWithinHoursAndOverlap(item, callback) {
         if (item.start.getHours() < 8 || (item.end.getHours() === 18 && item.end.getMinutes() > 0) || (item.end.getHours() > 18)) {
             alert("Activities can't be scheduled outside working hours!");
             callback(null);
-            return true;
+            return false;
         }
-        let toReturn = false
+        let toReturn = true
         items.map(i => {
             if (item.group === i.group && item.id !== i.id) {
                 if ((i.start < item.end && i.start > item.start) ||
@@ -179,7 +223,7 @@ export default class ManuSchedulePage extends Component {
                     (i.start <= item.start && i.end >= item.end)){
                         alert("Activities can't overlap!");
                         callback(null)
-                        toReturn = true
+                        toReturn = false
                     }
             }
         })
@@ -198,7 +242,8 @@ export default class ManuSchedulePage extends Component {
             let end = new Date()
             end.setTime(start.getTime() + activity.duration*60*60*1000)
             item.end = end
-            if (this.checkWithinHoursAndOverlap(item, callback)) {
+            if (!this.checkWithinHoursAndOverlap(item, callback) || 
+                !this.checkManuLineIsValid(item, this.state.activity_to_schedule.sku.manu_lines, callback)) {
                 return
             }
             await CheckErrors.updateActivityErrors(activity);
@@ -234,10 +279,26 @@ export default class ManuSchedulePage extends Component {
         return Math.round(date / hour) * hour;
     }
 
+    getModalElements() {
+        if (this.state.modalTitle === 'palette') {
+            console.log('y')
+            return (
+                <img
+                    className='manu-sched-help'
+                    source={ManuSchedHelp}
+                />
+            )
+        }
+        else if (this.state.modalTitle === 'errors') {
+
+        }
+    }
+
     getOptions() { 
+        console.log(items.length)
         return {
         width: '100%',
-        maxHeight: 50 + 10*40 + 'px',
+        maxHeight: 54 + 8*35 + 'px',
         stack: false,
         showMajorLabels: true,
         showCurrentTime: true,
@@ -256,16 +317,13 @@ export default class ManuSchedulePage extends Component {
         },
         selectable: true,
         multiselect: true,
-        stack: false,
         editable: {
             add: true,
             remove: true,
             updateGroup: true,
             updateTime: true,
         },
-        groupEditable: {
-            order: true
-        }, 
+        verticalScroll: true,
         onMove: this.onMove,
         onRemove: this.onRemove,
         onAdd: this.onAdd,
@@ -295,13 +353,18 @@ export default class ManuSchedulePage extends Component {
                             }
                         ]}
                         groups={groups}
-                        clickHandler={this.clickHandler.bind(this)}
+                        doubleClickHandler={this.doubleClickHandler.bind(this)}
                         rangechangeHandler = {this.updateRange}
                         // selectHandler={this.selectHandler.bind(this)}
                     />) : null}
                 </div>
                 <div className = "belowTimeline">
                     <div className='palette-container'>
+                        <h6 className='palette-title'>Unscheduled Activities</h6>
+                        <div 
+                            className = "info-modal-button" 
+                            onClick={(e) => this.toggleModal('palette')}
+                        >?</div>
                         <ManuSchedulePalette
                             goals={this.state.unscheduled_goals}
                             activities={this.state.activities}
@@ -310,8 +373,32 @@ export default class ManuSchedulePage extends Component {
                             prepareAddActivity={this.prepareAddActivity}
                         />
                     </div>
-                    <ManuActivityErrors className = "errors" range = {this.range} activities = {this.state.activities.filter((activity) => activity.scheduled)}></ManuActivityErrors>
+                    <div className='errors-container'>
+                        <h6 className='errors-title'>Activity Errors</h6>
+                        <div 
+                            className = "info-modal-button" 
+                            onClick={(e) => this.toggleModal('errors')}
+                        >?</div>
+                        <ManuActivityErrors 
+                            className = "errors" 
+                            range = {this.range} 
+                            activities = {this.state.activities.filter((activity) => activity.scheduled)}
+                        />
+                    </div>
                 </div>
+                <Modal isOpen={this.state.modal} toggle={this.toggleModal} className={this.props.className}>
+                    <ModalHeader toggle={this.toggleModal}>{this.state.modalTitle}</ModalHeader>
+                    <ModalBody>
+                        <img
+                            className='manu-sched-help'
+                            src={ManuSchedHelp}
+                        />
+                        {this.getModalElements}                          
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="secondary" onClick={this.toggleModal}>Close</Button>
+                    </ModalFooter>
+                </Modal>
             </div>
         </div>
         );

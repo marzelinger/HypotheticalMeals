@@ -193,7 +193,7 @@ export default class PageTable extends Component {
                         onChange = {(e) => this.props.handleQuantityChange(e, index)} 
                         className = "inputs" 
                         value={this.props.quantities[index]} 
-                        type="number" 
+                        type="text" 
                         step="1"
                         disabled={this.props.disable_inputs}
                       />

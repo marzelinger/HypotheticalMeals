@@ -86,9 +86,15 @@ export default class DataStore{
         table_options: [Constants.create_item, Constants.add_to_manu_goals, Constants.add_keyword_filter, 
           Constants.add_ing_filter, Constants.add_prod_filter],
         item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'comment', 'manu_rate', 'scale_factor'],
+<<<<<<< HEAD
         item_property_labels: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Comment', 'Manufactuing Rate', 'Formula Scale Factor'],
         item_property_patterns: ['.+', '^[0-9]+$', '^[016789][0-9]{11}$', '^[016789][0-9]{11}$', '.+', '^[0-9]+$', '.*', '^[+]?[0-9]*\.?[0-9]*$','^[+]?[0-9]*\.?[0-9]*$'], 
         item_property_field_type: ['text', 'text', 'text', 'text', 'text', 'text', 'textarea', 'text','text', 'text', 'text'],
+=======
+        item_property_labels: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Comment', 'Manufacturing Rate', 'Formula Scale Factor'],
+        item_property_patterns: ['.+', '^[0-9]+$', '^[0-9]{12}$', '^[0-9]{12}$', '^[0-9]+ ?[a-z]+$', '^[0-9]+$', '.*', '^[0-9]*[\.]?[0-9]+$', '^[0-9]*[\.]?[0-9]+$'],  //^[0-9]*\.?[0-9]*$
+        item_property_field_type: ['text', 'text', 'text', 'text', 'text', 'text', 'textarea', 'text','text', 'text'],
+>>>>>>> 2858f8a326868791ccee661dd0f822c88690ef7e
 
 
       };
@@ -121,7 +127,7 @@ export default class DataStore{
     static getActivityData() {
       return {
         item_properties: ['sku', 'duration', 'add_to_schedule'],
-        item_property_labels: ['Unscheduled Activity', 'Duration', 'Add to Schedule']
+        item_property_labels: ['Unscheduled Manufacturing Activity', 'Duration', 'Add to Schedule']
       };
     }
   }

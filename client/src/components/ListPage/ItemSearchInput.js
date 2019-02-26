@@ -93,14 +93,6 @@ export default class ItemSearchInput extends React.Component {
     }
 
     render() {
-        const customStyles = {
-            control: (base, state) => ({
-                ...base,
-                borderColor: this.props.invalid_inputs.includes('prod_line') ? 'red' : '#ddd'
-            })
-        }
-        const getValue = (opts, val) => opts.find(o => o.value === val); 
-
         return (
         <div className='filter-item detailsfilter' style={{width: this.state.width + '%'}}>
             <FormGroup>
@@ -111,8 +103,8 @@ export default class ItemSearchInput extends React.Component {
                     multi = {false}
                     place_holder = {this.props.curr_item}
                     disabled = {this.props.disabled}
-                >
-                </Filter>
+                    invalid={this.props.invalid_inputs.includes('prod_line')}
+                />
             </FormGroup>
         </div>
         );
