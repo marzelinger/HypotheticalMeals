@@ -79,6 +79,7 @@ class FormulaHandler{
             for(var i = 0; i < new_formula_ingredients.length; i++){
                 var curr_ingredient_quantity = new_ingredient_quantities[i];
                 console.log(curr_ingredient_quantity);
+                console.log(" ");
                 var satisfiesRegex = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/.test(curr_ingredient_quantity);
                 if(!satisfiesRegex) return res.json({ success: false, error: 'Please provide a quantity with the appropriate units'});
                 

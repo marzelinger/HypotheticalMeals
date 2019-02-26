@@ -25,7 +25,7 @@ class IngredientHandler{
             }
 
             let conflict = await Ingredient.find({ name : new_ingredient_name});
-            let conflict2 = await Ingredient.find({ num: Number(new_ingredient_num) });
+            let conflict2 = await Ingredient.find({ num: new_ingredient_num });
             if(conflict.length > 0 || conflict2.length > 0){
                 return res.json({ success: false, error: 'CONFLICT'});
             }
@@ -60,7 +60,7 @@ class IngredientHandler{
             var new_sku_count = req.body.sku_count
             var new_comment = req.body.comment;
 
-            let conflict = await Ingredient.find({ num : Number(new_ingredient_num) });
+            let conflict = await Ingredient.find({ num : new_ingredient_num });
             if(conflict.length > 0 && conflict[0]._id != target_id) return res.json({ success: false, error: 'CONFLICT'});
             
             let conflict2 = await Ingredient.find({ name : new_ingredient_name});

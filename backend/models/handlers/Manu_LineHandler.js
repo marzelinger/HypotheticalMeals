@@ -46,7 +46,7 @@ class Manu_LineHandler{
       var new_short_name = req.body.short_name;
       var new_comment = req.body.comment;
       let conflict = await Manu_Line.find({ short_name : new_short_name});
-      if(conflict.length > 0){
+      if(conflict.length > 0 && conflict[0]._id != target_id){
         return res.json({ success: false, error:'CONFLICT, this short name is not unique'});
       }
     
