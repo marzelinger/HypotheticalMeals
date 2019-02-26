@@ -16,7 +16,7 @@ export default class DataStore{
         table_options: [Constants.create_item, Constants.add_keyword_filter, Constants.add_sku_filter],
         item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment'],
         item_property_labels: ['Name', 'Ingr#', 'Package Size', 'Package Cost (USD)', 'Vendor Info', 'Comments'],
-        item_property_patterns: ['.+', '^[0-9]+$', '^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$', '^[+]?([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2})$', '.*', '.*'],
+        item_property_patterns: ['.+', '^[0-9]+$', '^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$', '^[0-9]*[\.]?[0-9]{1,2}$', '.*', '.*'],
         item_property_field_type: ['text', 'text', 'text', 'text', 'textarea', 'textarea'],  
       };
     }
