@@ -6,6 +6,8 @@ import SubmitRequest from '../../../helpers/SubmitRequest';
 import '../../../style/ManufacturingGoalsBox.css'
 import ExportSimple from '../../export/ExportSimple';
 import ManufacturingLineDetails from './ManufacturingLineDetails';
+import ManufacturingLineDetailsEdit from './ManufacturingLineDetailsEdit';
+
 import PropTypes from "prop-types";
 import addButton from '../../../resources/add.png';
 import ItemStore from '../../../helpers/ItemStore';
@@ -25,38 +27,41 @@ export default class ManufacturingLinesBox extends Component {
       comment: '',
       detail_view_action: '',
       detail_view_options: [],
-      modal_state: false,
-      manu_line: {}
+      details_modal: false,
+      selected_manu_line: {}
     };
     this.pollInterval = null;
     this.submitNewManuLine = this.submitNewManuLine.bind(this);
     this.onDeleteManuLine = this.onDeleteManuLine.bind(this);
+    //need this one?
+    // this.onUpdateManuLine = this.onUpdateManuLine.bind(this);
     this.loadManuLinesFromServer = this.loadManuLinesFromServer.bind(this);
     this.submitUpdatedManuLine = this.submitUpdatedManuLine.bind(this);
     this.handleDetailViewSubmit = this.handleDetailViewSubmit.bind(this);
+    this.onDetailViewSelect = this.onDetailViewSelect.bind(this);
   }
 
-  onChangeText = (e) => {
-    const newState = { ...this.state };
-    newState[e.target.name] = e.target.value;
-    this.setState(newState);
-  }
+  // onChangeText = (e) => {
+  //   const newState = { ...this.state };
+  //   newState[e.target.name] = e.target.value;
+  //   this.setState(newState);
+  // }
 
-  onAddClick = async() => {
-    try{
-      var new_manu_line = await ItemStore.getEmptyItem(Constants.manu_line_page_name);
-      console.log(new_manu_line);
-      await this.setState({ 
-        modal_state: true,
-        manu_line: new_manu_line,
-        detail_view_action: Constants.details_create,
-        detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
-      })
-  } catch (e){
-      console.log(e);
-  }
+  // onAddClick = async() => {
+  //   try{
+  //     var new_manu_line = await ItemStore.getEmptyItem(Constants.manu_line_page_name);
+  //     console.log(new_manu_line);
+  //     await this.setState({ 
+  //       modal_state: true,
+  //       manu_line: new_manu_line,
+  //       detail_view_action: Constants.details_create,
+  //       detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
+  //     })
+  // } catch (e){
+  //     console.log(e);
+  // }
 
-  }
+  // }
 
   onUpdateManuLine = async (id, name) => {
     console.log('updating line')
@@ -104,33 +109,43 @@ export default class ManufacturingLinesBox extends Component {
             break;
         case Constants.details_save:
         //update manu line
+          newData.push(item);
+            await this.setState({
+              name: item.name,
+              skus: item.skus,
+              short_name: item.short_name,
+              comment: item.comment
+            })
+            this.submitUpdatedManuLine();
             break;
         case Constants.details_delete:
         //TODO
             break;
     }
-      this.setState({ 
+      await this.setState({ 
           data: newData,
           detail_view_action: '',
           detail_view_options: [],
-          modal_state: false,
-          manu_line: {}
+          details_modal: false,
+          selected_manu_line: {}
       });
+      console.log("this is the aaaaa sel_manu_line: "+JSON.stringify(this.state.selected_manu_line));
       this.loadManuLinesFromServer();
       return true;
   }
 
-  submitManuLine = (e) => {
-    e.preventDefault();
-    const { name, updateId } = this.state;
-    if (!name) return;
-    if (updateId) {
-      this.submitUpdatedManuLine();
-    } else {
-      this.submitNewManuLine();
-    }
-  }
+  // submitManuLine = (e) => {
+  //   e.preventDefault();
+  //   const { name, updateId } = this.state;
+  //   if (!name) return;
+  //   if (updateId) {
+  //     this.submitUpdatedManuLine();
+  //   } else {
+  //     this.submitNewManuLine();
+  //   }
+  // }
 
+  //TODO DOES THIS NEED TO BE BINDED
   validateUniqueShortName = async (short_name) => {
     console.log(short_name)
     let res = await SubmitRequest.submitGetManufacturingLineByShortName(short_name);
@@ -193,23 +208,30 @@ export default class ManufacturingLinesBox extends Component {
   }
 
 
-  onDetailViewSelect = (event, item) => {
+  onDetailViewSelect = async (event, item) => {
+    console.log("this is the item in the detail view select: "+JSON.stringify(item));
     if(currentUserIsAdmin().isValid){
-        this.setState({ 
-        manu_line: item,
-        detail_view_action: Constants.details_edit ,
+        await this.setState({ 
+        selected_manu_line: item,
+        details_modal: true,
+        detail_view_action: Constants.details_edit,
         detail_view_options: [Constants.details_save, Constants.details_cancel]
         });
+        console.log("this is the xxx sel_manu_line: "+JSON.stringify(this.state.selected_manu_line));
+
     }
     else{
-        this.setState({ 
-            manu_line: item,
+        await this.setState({ 
+            selected_manu_line: item,
+            details_modal: true,
             detail_view_action: Constants.details_view,
             detail_view_options: [Constants.details_exit]
             });
+            console.log("this is the ttttt sel_manu_line: "+JSON.stringify(this.state.selected_manu_line));
+
     }
-    // this.toggle(Constants.details_modal);
-    this.setState({modal_state: true});
+    console.log("this is the bbbbbb sel_manu_line: "+JSON.stringify(this.state.selected_manu_line));
+
 };
 
   async loadManuLinesFromServer() {
@@ -239,6 +261,14 @@ export default class ManufacturingLinesBox extends Component {
         </div>
         <div className="form">
         <ManufacturingLineDetails validateShortName = {this.validateUniqueShortName} handleDetailViewSubmit = {this.handleDetailViewSubmit}></ManufacturingLineDetails>
+        <ManufacturingLineDetailsEdit 
+        validateShortName = {this.validateUniqueShortName} 
+        handleDetailViewSubmit = {this.handleDetailViewSubmit} 
+        manu_line= {this.state.selected_manu_line} 
+        details_modal={this.state.details_modal}
+        detail_view_action= {this.state.detail_view_action}
+        detail_view_options= {this.state.detail_view_options}>
+        </ManufacturingLineDetailsEdit>
 
 {/* 
         <img className = "hoverable" id = "button" src={addButton} onClick={this.onAddClick}></img>

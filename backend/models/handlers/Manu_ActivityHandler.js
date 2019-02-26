@@ -143,16 +143,82 @@ class Manu_ActivityHandler{
             // }
             var target_start_date = req.params.start_date;
             var target_end_date = req.params.end_date;
-            //let conflict = await Manu_Goal.find({ name : new_name, user: new_user, activities: new_activities});
-           // let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id}, {scheduled: true}, {start: {$regex: {target_start_date}, $options: "$i"}}).populate('sku').populate('manu_line').populate({
+            var target_duration = req.params.duration;
+            console.log("start_date: "+target_start_date);
+            console.log("target_end_date: "+target_end_date);
 
-            let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id , scheduled: true}).populate('sku').populate('manu_line').populate({
+            let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id , scheduled: true, start: {$gte: target_start_date, $lt: target_end_date}}).populate('sku').populate('manu_line').populate({
                 path: 'sku',
                 populate: { path: 'ingredients' }
               });
 
             if(to_return.length == 0) return res.json({success: false, error: '404'});
-            return res.json({ success: true, data: to_return});
+            else{
+                //to-return is the activities with starts between the start and end date.
+                //go through each of these activities and if the start+duration of activity is less than our end,
+                //classified as a good activity
+                //if it overflows (ie, start is before end date, but duration has it going over) then put in bad data
+                let complete_activities = [];
+                let beginning_cut = [];
+                let ending_cut = [];
+                let all_cut = [];
+                var startRep = new Date(target_start_date);
+                var endRep = new Date(target_end_date);
+                for(let i = 0; i<to_return.length; i++){
+                    var startAct = new Date(to_return[i].start);
+                    var endAct = new Date(startAct);
+                    var numDays = Math.floor(to_return[i].duration/10);
+                    var extraHours = to_return[i].duration%10;
+                    endAct.setDate(endAct.getDate() + numDays);
+                    endAct.setHours(endAct.getHours() + extraHours);
+                    var end_act = new Date(endAct);
+                    var diffStart = startAct-startRep; //should be positive
+                    var diffEnd = endRep-endAct; //the endRep should be greater than end of activity so should be positive
+                    var diffEnd2 = endAct - endRep;
+                    console.log("startAct: "+startAct);
+                    console.log("endact: "+endAct);
+                    console.log("numdays: "+numDays);
+                    console.log("extrahours: "+extraHours);
+                    console.log("diffstart: "+diffStart +"   diffend: "+diffEnd + "    diffend2: "+diffEnd2);
+
+                    if(diffEnd>=0 && diffStart>=0){
+                        //this is a valid activity.
+                        //the start is greater than the rep
+                        //the end is less than the rep
+                        complete_activities.push(to_return[i]);
+                        console.log("complete: "+complete_activities.length);
+
+                        continue;
+                    }
+                    else if(diffEnd<0 && diffStart<0){
+                        //this activity is larger than the span
+                        all_cut.push(to_return[i]);
+                        console.log("allcut: "+all_cut.length);
+
+                        continue;
+                    }
+                    else if(diffEnd<0 && diffStart>=0){
+                        // activity starts after report
+                        //but tail cuttoff
+                        ending_cut.push(to_return[i]);
+                        console.log("ending: "+ending_cut.length);
+
+                        continue;
+                    }
+                    else if(diffEnd>=0 && diffStart<0){
+                        //activity starts before report,
+                        //front cut
+                        beginning_cut.push(to_return[i]);
+                        console.log("begginging: "+beginning_cut.length);
+                        continue;
+                    }
+                }
+                return res.json({ success: true, data: 
+                    { complete_activities : complete_activities, 
+                        beginning_cut: beginning_cut, 
+                        ending_cut: ending_cut, 
+                        all_cut:all_cut}});
+            }
         } catch (err){
             return res.json({ success: false, error: err});
         }

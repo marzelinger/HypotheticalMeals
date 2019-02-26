@@ -94,17 +94,18 @@ export default class ManufacturingLinePage extends React.Component {
     this.toggle(Constants.manu_report_modal);
   }
 
-  async onDetailViewSubmitReport(event, reportData, option) {
+  onDetailViewSubmitReport= async (event, reportData, option) => {
     console.log("this is the item  state."+ JSON.stringify(reportData));
 
     switch (option) {
         case Constants.details_export:
             exportManuScheduleReport(reportData);
             break;
-        case Constants.details_cancel:
-            break;
-    }
-        this.setState({ 
+        // case Constants.details_cancel:
+        //     break;
+        };
+
+        await this.setState({ 
             selected_manu_line: null,
             detail_view_options: [],
             detail_view_action: ''
