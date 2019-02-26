@@ -5,10 +5,10 @@ import Ingredient from './models/databases/ingredient';
 import Manu_Line from './models/databases/manu_line';
 import ItemStore from './../client/src/helpers/ItemStore';
 import * as Constants from './../client/src/resources/Constants';
+import CheckDigit from "./../client/src/helpers/CheckDigit";
 
 const csv = require('csvtojson');
 const fs = require('fs');
-const checkdigit = require('checkdigit');
 
 
 export default class CSV_parser{
@@ -223,6 +223,7 @@ export default class CSV_parser{
                     old_sku_to_show.case_upc = old_sku[0].case_upc;
                     old_sku_to_show.unit_upc = old_sku[0].unit_upc;
                     old_sku_to_show.cpc = old_sku[0].cpc;
+                    // old_sku_to_show.formula = old_sku[0].formula
                     old_sku_to_show.prod_line = old_sku[0].prod_line;
                     old_sku_to_show.prod_line_to_show = obj[Constants.csv_sku_pl];
                     old_sku_to_show.comment = old_sku[0].comment;
@@ -333,28 +334,25 @@ export default class CSV_parser{
             toReturn.skuNumIssue = true;
             return toReturn;
         }
-        var isCheckSumCase = checkdigit.mod11.isValid('036000241457');
-        console.log(isCheckSumCase);
-        console.log(obj[Constants.csv_sku_caseUPC]);
+
         var isNum3 = /^\d+$/.test(obj[Constants.csv_sku_caseUPC]);
         var firstCharCase = obj[Constants.csv_sku_caseUPC].substring(0,1);
-        console.log(!isNum3)
-        console.log(obj[Constants.csv_sku_caseUPC].length != 12);
-        console.log(firstCharCase);
+        var isCheckSumCase = CheckDigit.isValid(obj[Constants.csv_sku_caseUPC]);
         if((obj[Constants.csv_sku_caseUPC].length != 12) ||
            (!isNum3) ||
-           //(!isCheckSumCase) ||
+           (!isCheckSumCase) ||
            (firstCharCase != '0' && firstCharCase != '1' && firstCharCase !='6' && firstCharCase != '7' && firstCharCase !='8' && firstCharCase != '9')) {
             toReturn.success = false;
             toReturn.caseUPCIssue = true;
             return toReturn;
         }
-        var isCheckSumUnit = checkdigit.mod10.isValid(obj[Constants.csv_sku_unitUPC]);
+
+        var isCheckSumUnit = CheckDigit.isValid(obj[Constants.csv_sku_unitUPC]);
         var isNum2 = /^\d+$/.test(obj[Constants.csv_sku_unitUPC]);
         var firstCharUnit = obj[Constants.csv_sku_unitUPC].substring(0,1);
         if((obj[Constants.csv_sku_unitUPC].length != 12) || 
            (!isNum2) || 
-          // (!isCheckSumUnit) ||
+           (!isCheckSumUnit) ||
            (firstCharUnit != '0' && firstCharUnit != '1' && firstCharUnit !='6' && firstCharUnit != '7' && firstCharUnit !='8' && firstCharUnit != '9')){
             toReturn.success = false;
             toReturn.unitUPCIssue = true;
@@ -385,6 +383,17 @@ export default class CSV_parser{
             toReturn.formula_error = true;
             toReturn.formula_num = obj[Constants.csv_sku_formula];
             return toReturn;
+        }
+
+        var sku_MLs_string = obj[Constants.csv_sku_ml].substring(1, obj[Constants.csv_sku_ml.length - 1]);
+        var sku_MLs_arr = sku_MLs_string.split(",");
+        for(var i = 0 ; i < sku_MLs_arr; i++){
+            if(!db_Manu_Line.has(sku_MLs_arr[i])) {
+                toReturn = success = false;
+                toReturn.manu_line_error = true;
+                toReturn.manu_line_name = sku_MLs_arr[i];
+                return toReturn;
+            }
         }
 
         
@@ -440,9 +449,10 @@ export default class CSV_parser{
 
     static async indicateSKUCollisionFailure(res, collisionObj, row){
         if(collisionObj.prod_line_error == true) return res.json({ success: false, row: row+1, prod_line_name: collisionObj.prod_line_name});
-        else if(collisionObj.formula_error == true) return res.json({ success: false, row: row+1, formula_num: collisionObj.formula_num});
+        else if(collisionObj.formula_error == true) return res.json({ success: false, row: row+1, sku_formula_num: collisionObj.formula_num});
         else if(collisionObj.duplicate == true) return res.json({ success: false, duplicate: row})
         else if(collisionObj.ambiguousCollision == true) return res.json({ success: false, collision: row})
+        else if(collisionObj.manu_line_error == true) return res.json({ success: false, row: row+1, manu_line_name: collisionObj.manu_line_name});
     }
 
     static async reformatSKU(objNew, objOld){
