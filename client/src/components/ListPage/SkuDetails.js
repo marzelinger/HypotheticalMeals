@@ -258,6 +258,7 @@ export default class SKUDetails extends React.Component {
         if (this.state.prod_line_item.name === undefined) inv_in.push('prod_line');
         if (!CheckDigit.isValid(this.state.item['case_upc'])) inv_in.push('case_upc');
         if (!CheckDigit.isValid(this.state.item['unit_upc'])) inv_in.push('unit_upc');
+        console.log(inv_in)
         await this.setState({ invalid_inputs: inv_in });
     }
 

@@ -45,7 +45,6 @@ class FilterHandler{
             // let results = (and_query.length === 0) ? await Ingredient.find( ).populate('skus').sort(sort_field) : 
             //                                          await Ingredient.find( {$and: and_query }).populate('skus').sort(sort_field);
             
-            if (results.length == 0) return results = [];
             return res.json({ success: true, data: results});
         }
         catch (err) {
@@ -95,7 +94,6 @@ class FilterHandler{
                                                      await SKU.find( {$and: and_query }).skip(currentPage*pageSize)
                                                         .limit(pageSize).populate('ingredients').populate('prod_line')
                                                         .sort(sort_field).collation({locale: "en_US", numericOrdering: true});
-            if (results.length == 0) results = [];
             return res.json({ success: true, data: results});
         }
         catch (err) {
@@ -133,7 +131,6 @@ class FilterHandler{
                                                      await User.find( {$and: and_query }).skip(currentPage*pageSize)
                                                         .limit(pageSize).populate('users')
                                                         .sort(sort_field).collation({locale: "en_US", numericOrdering: true});
-            if (results.length == 0) results = [];
             printFuncBack('this is the results: '+results);
             return res.json({ success: true, data: results});
         }
@@ -171,7 +168,6 @@ class FilterHandler{
                                                      await Formula.find( {$and: and_query }).skip(currentPage*pageSize)
                                                         .limit(pageSize).populate('ingredients')
                                                         .sort(sort_field).collation({locale: "en_US", numericOrdering: true});
-            if (results.length == 0) results = [];
             return res.json({ success: true, data: results});
         }
         catch (err) {

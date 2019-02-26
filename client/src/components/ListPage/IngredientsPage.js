@@ -88,7 +88,6 @@ export default class IngredientsPage extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
-        console.log(this.state.data)
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }
@@ -100,7 +99,7 @@ export default class IngredientsPage extends React.Component {
     }
 
     async loadDataFromServer() {
-        let allData = await SubmitRequest.submitGetData(this.state.page_name);
+        // let allData = await SubmitRequest.submitGetData(this.state.page_name);
         var final_keyword_filter = this.state.filters['keyword'];
         var final_sku_filter = this.state.filters['skus'].join(',');
         if (final_keyword_filter === '') final_keyword_filter = '_';
@@ -161,7 +160,7 @@ export default class IngredientsPage extends React.Component {
     async updateSkuCounts() {
         let data = this.state.data.slice();
         await data.map(async (item) => {
-                       let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', this.state.currentPage, this.state.pageSize,'_');
+                       let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', this.state.currentPage, this.state.pageSize,'_', '_');
 
            // let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', '_');
             item.sku_count = skus.data.length;
@@ -285,10 +284,8 @@ export default class IngredientsPage extends React.Component {
     };
 
     async onDetailViewSubmit(event, item, option) {
-        console.log(item)
         var res = {};
         var newData = this.state.data.splice();
-        //
         switch (option) {
             case Constants.details_create:
                 newData.push(item);
