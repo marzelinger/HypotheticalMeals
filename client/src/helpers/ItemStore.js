@@ -47,7 +47,8 @@ export default class ItemStore{
     
     switch (page_name){
       case Constants.ingredients_page_name:
-      var new_id = await ItemStore.getUniqueNumber(res.data);
+        var res = await SubmitRequest.submitGetData(page_name);
+        var new_id = await ItemStore.getUniqueNumber(res.data);
         return {
           _id: 'unassigned',
           name: '',

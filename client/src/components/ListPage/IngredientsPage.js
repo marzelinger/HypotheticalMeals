@@ -161,7 +161,7 @@ export default class IngredientsPage extends React.Component {
     async updateSkuCounts() {
         let data = this.state.data.slice();
         await data.map(async (item) => {
-                       let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', this.state.currentPage, this.state.pageSize,'_');
+                       let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', this.state.currentPage, this.state.pageSize,'_', '_');
 
            // let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', '_');
             item.sku_count = skus.data.length;
