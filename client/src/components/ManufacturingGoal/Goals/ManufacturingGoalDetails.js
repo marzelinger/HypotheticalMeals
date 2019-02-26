@@ -162,29 +162,22 @@ export default class ManufacturingGoalDetails extends React.Component {
         var inv_in = [];
         var error_text = '';
         this.state.item_properties.forEach(prop => {
-            console.log("checking props");
             if (!this.state.item[prop].toString().match(this.getPropertyPattern(prop))){
                 inv_in.push(prop);
                 error_text = 'Manufacturing Goals need a name.'
             }
         })
         if(inv_in.length == 0){
-            console.log("checking unique")
             var resp = await SubmitRequest.submitQueryString(`/api/manugoals_name/${this.state.item.name}`);
             if(resp.success) {
-                console.log(resp)
                 if(!this.state.item._id || this.state.item._id != resp.data[0]._id){
                     inv_in.push('name');
                     error_text = 'Manufacturing Goal with this name already exists.'
                 } 
             }
-            console.log("unique")
         }
-        console.log("now here")
         var date = new Date(this.state.item['deadline'])
-        console.log(Boolean(+date))
         if(!Boolean(+date))inv_in.push('deadline')
-        console.log(inv_in)
         await this.setState({ invalid_inputs: inv_in, errorText: error_text });
     }
 
