@@ -7,10 +7,17 @@ import SkusPage from './SkusPage';
 import DataStore from './../../helpers/DataStore';
 
 const DetailsViewSkuTable = props => {
-
-  const skuTableData = {
-    default_ing_filter: props.ingredient,
-    simple: true
+var skuTableData = {};
+  if(props.id == 1) {
+    skuTableData = {
+      default_ing_filter: props.ingredient,
+      simple: true
+    }
+  } else {
+    skuTableData = {
+      default_formula_filter: props.formula,
+      simple: true
+    }
   }
   return (
     <div>
@@ -26,7 +33,8 @@ const DetailsViewSkuTable = props => {
 
 DetailsViewSkuTable.propTypes = {
   id: PropTypes.string.isRequired,
-  ingredient: PropTypes.object
+  ingredient: PropTypes.object,
+  formula: PropTypes.object,
 };
 
 export default DetailsViewSkuTable;

@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^3.9.2",
+    "ajv": "^6.9.2",
     "axios": "^0.18.0",
     "bootstrap": "^4.2.1",
     "classnames": "^2.2.6",
@@ -36,6 +37,7 @@
     "reactstrap": "^7.1.0",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
+    "typescript": "^3.3.3333",
     "uuid": "^3.3.2",
     "vis": "^4.21.0",
     "whatwg-fetch": "^3.0.0"

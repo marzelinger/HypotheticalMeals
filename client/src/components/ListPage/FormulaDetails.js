@@ -14,7 +14,10 @@ import IngredientsViewSimple from './IngredientsViewSimple'
 import ItemSearchInput from './ItemSearchInput';
 import ItemSearchModifyListQuantity from './ItemSearchModifyListQuantity';
 import SubmitRequest from '../../helpers/SubmitRequest';
+import DetailsViewSkuTable from './DetailsViewSkuTable'
+
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
+
 
 export default class FormulaDetails extends React.Component {
     constructor(props){
@@ -181,6 +184,8 @@ export default class FormulaDetails extends React.Component {
                     handlePropChange={this.onPropChange}
                     disabled={currentUserIsAdmin().isValid ? false : true}
                 />
+                <DetailsViewSkuTable id='2' formula={this.state.item}/>
+
                 
             </div>
             <div className='item-options'>
