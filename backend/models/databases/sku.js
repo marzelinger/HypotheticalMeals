@@ -30,17 +30,6 @@ const SkusSchema = new Schema({
     }
   ],
   manu_rate: Number,
-
-  //to be deleted
-  ingredients: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Ingredient'
-    }
-  ],
-  ingredient_quantities:[Number],
-  //
-
   comment: String
 }, { timestamps: true });
 

@@ -288,6 +288,7 @@ export default class ListPage extends React.Component {
                 await skus.map(async (sku) => {
                     newSkus[newSkus.findIndex(el => el._id === sku._id)] = sku;
                     var res = await SubmitRequest.submitUpdateItem(Constants.skus_page_name, sku);
+                    console.log(res)
                 });
                 break;
             case Constants.details_cancel:
