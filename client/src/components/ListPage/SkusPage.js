@@ -320,7 +320,7 @@ export default class ListPage extends React.Component {
     };
 
      onDetailViewSelect = async (event, item) => {
-        let formula_item = await SubmitRequest.submitGetFormulaByID(item.formula);
+        let formula_item = await SubmitRequest.submitGetFormulaByID(item.formula._id);
         this.setState({
             detail_view_item: item,
             detail_view_formula_item: formula_item.data[0]
