@@ -22,6 +22,7 @@ import DataStore from '../../helpers/DataStore'
 
 
 
+
 import Filter from './Filter'
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
@@ -191,20 +192,20 @@ export default class SkuFormulaDetails extends React.Component {
 
     }
 
-    formulaButtonsCreate = async() => {
-        let res = await submitRequest.getData(Constants.formulas_page_name);
-        var formulasExist = false;
-        if(res.success){
-            if(res.data>0){
-                formulasExist = true;
-            }
-        }
+    formulaButtonsCreate = () => {
+        // let res = await SubmitRequest.getData(Constants.formulas_page_name);
+        // var formulasExist = false;
+        // if(res.success){
+        //     if(res.data>0){
+        //         formulasExist = true;
+        //     }
+        // }
         return (
             <div>
                 <Button color="primary" onClick = {() => this.handleNewFormula()} >Create New Formula</Button>{' '}
-                {formulasExist? 
-                (<Button color="secondary" onClick = {() => this.handleExistingFormula()} >Add Existing Formula</Button>)
-                 : <div/>}
+                {/* {formulasExist?  */}
+                <Button color="secondary" onClick = {() => this.handleExistingFormula()} >Add Existing Formula</Button>
+                 {/* : <div/>} */}
             </div>
         );
     }
