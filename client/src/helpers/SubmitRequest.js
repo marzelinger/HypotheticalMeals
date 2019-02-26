@@ -255,7 +255,10 @@ export default class SubmitRequest{
     path += (formula === undefined) ? '' : ('/' + formula);
     //printFuncFront("this is path in submitGetFilterData"+path);
     return fetch(path, { method: 'GET' })
-      .then(data => data.json())
+      .then(data => {
+        console.log(data)
+        return data.json()
+      })
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error };
         else return ({ 
