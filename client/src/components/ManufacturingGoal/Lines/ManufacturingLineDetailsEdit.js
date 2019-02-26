@@ -13,7 +13,7 @@ import ItemStore from '../../../helpers/ItemStore';
 import addButton from '../../../resources/add.png';
 import ItemSearchModifyListQuantity from '../../ListPage/ItemSearchModifyListQuantity';
 
-export default class ManufacturingLineDetails extends React.Component {
+export default class ManufacturingLineDetailsEdit extends React.Component {
     constructor(props) {
         super(props);
 

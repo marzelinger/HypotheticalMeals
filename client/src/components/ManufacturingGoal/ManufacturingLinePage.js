@@ -6,7 +6,7 @@ import * as Constants from '../../resources/Constants';
 import '../../style/ManufacturingGoalsStyle.css';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import { Modal } from 'reactstrap';
-import ManuLineDetails from '../ManufacturingGoal/Lines/ManufacturingLineDetails';
+import ManuLineDetails from './Lines/ManufacturingLineDetails';
 
 import ManufacturingScheduleReportDetails from './ManufacturingScheduleReportDetails';
 import { exportManuScheduleReport} from "../../actions/ManufacturingScheduleReport";
@@ -61,7 +61,7 @@ export default class ManufacturingLinePage extends React.Component {
         }
     }
     this.toggle = this.toggle.bind(this);
-    this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
+    // this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
     // this.setInitPages();
   }
 
@@ -71,9 +71,9 @@ export default class ManufacturingLinePage extends React.Component {
             this.setState({manu_report_modal: !this.state.manu_report_modal})
             console.log("the toggle of manu_report_modal is: "+this.state.manu_report_modal);
             break;
-        case Constants.details_modal:
-            this.setState({details_modal: !this.state.details_modal})
-            break;
+        // case Constants.details_modal:
+        //     this.setState({details_modal: !this.state.details_modal})
+        //     break;
     }
   } 
 
@@ -113,43 +113,23 @@ export default class ManufacturingLinePage extends React.Component {
     
   }
 
-  async onDetailViewSubmit(event, manu_line, option) {
-
-    switch (option) {
-        case Constants.details_save:
-            //exportManuScheduleReport(reportData);
-            break;
-        case Constants.details_delete:
-          //
-          break;
-        case Constants.details_cancel:
-            break;
-    }
-        this.setState({ 
-            selected_manu_line: null,
-            detail_view_options: [],
-            detail_view_action: ''
-        });
-        this.toggle(Constants.details_modal);
-    
-  }
-
-
-  onDetailViewSelect = (event, item) => {
-    if(currentUserIsAdmin().isValid){
-        this.setState({ 
-        detail_view_item: item ,
-        detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
-        });
-    }
-    else{
-        this.setState({ 
-            detail_view_item: item ,
-            detail_view_options: [Constants.details_cancel]
-            });
-    }
-    this.toggle(Constants.details_modal);
-};
+  // async onDetailViewSubmit(event, manu_line, option) {
+  //   switch (option) {
+  //       case Constants.details_save:
+  //           break;
+  //       case Constants.details_delete:
+  //         //
+  //         break;
+  //       case Constants.details_cancel:
+  //           break;
+  //   }
+  //       this.setState({ 
+  //           selected_manu_line: null,
+  //           detail_view_options: [],
+  //           detail_view_action: ''
+  //       });
+  //       //this.toggle(Constants.details_modal);
+  // }
 
   render() {
     return (
@@ -157,7 +137,6 @@ export default class ManufacturingLinePage extends React.Component {
         <GeneralNavBar></GeneralNavBar>
         <ManufacturingLineBox
         handleManuScheduleReportSelect = {this.onManuReportSelect}
-        handleDetailViewSelect={this.onDetailViewSelect}
         ></ManufacturingLineBox>
         <Modal isOpen={this.state.manu_report_modal} toggle={this.toggle} id="popup" className='manu-report-details'>
                     <ManufacturingScheduleReportDetails
@@ -167,14 +146,6 @@ export default class ManufacturingLinePage extends React.Component {
                             handleDetailViewSubmit={this.onDetailViewSubmitReport}
                         />
         </Modal>
-        <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
-                    <ManuLineDetails
-                            manu_line={this.state.detail_view_item}
-                            detail_view_options={this.state.detail_view_options}
-                            detail_view_action = {this.state.detail_view_action}
-                            handleDetailViewSubmit={this.onDetailViewSubmit}
-                        />
-                </Modal>
       </div>
     );
   }

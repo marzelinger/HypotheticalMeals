@@ -7,6 +7,11 @@ import '../../../style/ManufacturingGoalsBox.css'
 import ExportSimple from '../../export/ExportSimple';
 import ManufacturingLineDetails from './ManufacturingLineDetails';
 import PropTypes from "prop-types";
+import addButton from '../../../resources/add.png';
+import ItemStore from '../../../helpers/ItemStore';
+const currentUserIsAdmin = require("../../auth/currentUserIsAdmin");
+
+
 const jwt_decode = require('jwt-decode');
 
 export default class ManufacturingLinesBox extends Component {
@@ -17,7 +22,11 @@ export default class ManufacturingLinesBox extends Component {
       error: null,
       name: '',
       short_name: '',
-      comment: ''
+      comment: '',
+      detail_view_action: '',
+      detail_view_options: [],
+      modal_state: false,
+      manu_line: {}
     };
     this.pollInterval = null;
     this.submitNewManuLine = this.submitNewManuLine.bind(this);
@@ -31,6 +40,22 @@ export default class ManufacturingLinesBox extends Component {
     const newState = { ...this.state };
     newState[e.target.name] = e.target.value;
     this.setState(newState);
+  }
+
+  onAddClick = async() => {
+    try{
+      var new_manu_line = await ItemStore.getEmptyItem(Constants.manu_line_page_name);
+      console.log(new_manu_line);
+      await this.setState({ 
+        modal_state: true,
+        manu_line: new_manu_line,
+        detail_view_action: Constants.details_create,
+        detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
+      })
+  } catch (e){
+      console.log(e);
+  }
+
   }
 
   onUpdateManuLine = async (id, name) => {
@@ -75,9 +100,21 @@ export default class ManufacturingLinesBox extends Component {
             break;
         case Constants.details_cancel:
             break;
+        case Constants.details_exit:
+            break;
+        case Constants.details_save:
+        //update manu line
+            break;
+        case Constants.details_delete:
+        //TODO
+            break;
     }
       this.setState({ 
           data: newData,
+          detail_view_action: '',
+          detail_view_options: [],
+          modal_state: false,
+          manu_line: {}
       });
       this.loadManuLinesFromServer();
       return true;
@@ -155,6 +192,26 @@ export default class ManufacturingLinesBox extends Component {
     return manu_lines;
   }
 
+
+  onDetailViewSelect = (event, item) => {
+    if(currentUserIsAdmin().isValid){
+        this.setState({ 
+        manu_line: item,
+        detail_view_action: Constants.details_edit ,
+        detail_view_options: [Constants.details_save, Constants.details_cancel]
+        });
+    }
+    else{
+        this.setState({ 
+            manu_line: item,
+            detail_view_action: Constants.details_view,
+            detail_view_options: [Constants.details_exit]
+            });
+    }
+    // this.toggle(Constants.details_modal);
+    this.setState({modal_state: true});
+};
+
   async loadManuLinesFromServer() {
     let res = await SubmitRequest.submitGetData(Constants.manu_line_page_name);
     if (!res.success) {
@@ -177,11 +234,22 @@ export default class ManufacturingLinesBox extends Component {
             handleDeleteManuLine={this.onDeleteManuLine}
             handleUpdateManuLine={this.onUpdateManuLine}
             handleReportSelect={this.props.handleManuScheduleReportSelect}
-            handleDetailViewSelect = {this.props.handleDetailViewSelect}
+            handleDetailViewSelect = {this.onDetailViewSelect}
           />
         </div>
         <div className="form">
-          <ManufacturingLineDetails validateShortName = {this.validateUniqueShortName} handleDetailViewSubmit = {this.handleDetailViewSubmit}></ManufacturingLineDetails>
+        <ManufacturingLineDetails validateShortName = {this.validateUniqueShortName} handleDetailViewSubmit = {this.handleDetailViewSubmit}></ManufacturingLineDetails>
+
+{/* 
+        <img className = "hoverable" id = "button" src={addButton} onClick={this.onAddClick}></img>
+          <ManufacturingLineDetails 
+          validateShortName = {this.validateUniqueShortName} 
+          handleDetailViewSubmit = {this.handleDetailViewSubmit} 
+          detail_view_action={this.state.detail_view_action}
+          detail_view_options={this.state.detail_view_options}
+          modal = {this.state.modal_state}
+          manu_line = {this.state.manu_line}
+          ></ManufacturingLineDetails> */}
           <ExportSimple data = {this.state.data} fileTitle = {"manufacturingLines"}/> 
         </div>
         {this.state.error && <p>{this.state.error}</p>}
