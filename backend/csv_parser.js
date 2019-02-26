@@ -413,9 +413,15 @@ export default class CSV_parser{
         else if(db_skus.has(obj[Constants.csv_sku_num])){
             var db_sku_arr= await SKU.find({ num : obj[Constants.csv_sku_num] });
             var curr_prod_line_arr = await Prod_Line.find({ name: obj[Constants.csv_sku_pl] });
+            var curr_formula_arr = await Formula.find({ num : obj[Constants.csv_sku_formula] });
+            var curr_formula = curr_formula_arr[0];
             var db_sku = db_sku_arr[0];
             var curr_prod_line = curr_prod_line_arr[0];
 
+            var all_manu_lines = new Set();
+            for(var i = 0; i < db_sku.manu_lines.length; i++){
+                all_manu_lines.add(db_sku.manu_lines[i]);
+            }
             if(db_sku.name == obj[Constants.csv_sku_name] &&
             db_sku.num == obj[Constants.csv_sku_num] &&
             db_sku.case_upc == obj[Constants.csv_sku_caseUPC] &&
@@ -423,8 +429,20 @@ export default class CSV_parser{
             db_sku.unit_size == obj[Constants.csv_sku_unitsize] &&
             db_sku.cpc == obj[Constants.csv_sku_cpc] &&
             db_sku.prod_line._id + "" == curr_prod_line._id + "" &&
-            db_sku.comment == obj[Constants.csv_sku_comment]) {
-                skus_to_ignore.add(obj[Constants.csv_sku_num])
+            db_sku.formula._id + "" == curr_formula._id + "" &&
+            db_sku.comment == obj[Constants.csv_sku_comment] &&
+            db_sku.scale_factor == obj[Constants.csv_sku_formula_factor] &&
+            db_sku.manu_rate == obj[Constants.csv_sku_rate])
+            {
+                var good = true;
+                var ML_array = obj[Constants.csv_sku_ml].substring(1, obj[Constants.csv_sku_ml].length - 1).split(',');
+                for(var i = 0; i < ML_array.length; i++){
+                    if(!all_manu_lines.has(ML_array[i])){
+                        good = false;
+                        break;
+                    }
+                }
+                if(good) skus_to_ignore.add(obj[Constants.csv_sku_num])
             }
             // If its an ambiguous collision, indicate to the user
             else if(db_skus.get(obj[Constants.csv_sku_num]) != obj[Constants.csv_sku_caseUPC] && db_caseUPCs.has(obj[Constants.csv_sku_caseUPC])) {
@@ -462,9 +480,15 @@ export default class CSV_parser{
         objNew.unit_upc = objOld[Constants.csv_sku_unitUPC];
         objNew.unit_size = objOld[Constants.csv_sku_unitsize];
         objNew.cpc = objOld[Constants.csv_sku_cpc];
+
         objNew.prod_line_to_show = objOld[Constants.csv_sku_pl];
         let prod_line = await Prod_Line.find({ name : objOld[Constants.csv_sku_pl]});
         objNew.prod_line = prod_line[0]._id;
+
+        objNew.formula_to_show = objOld[Constants.csv_sku_formula];
+        let formula = await Formula.find({ num : objOld[Constants.csv_sku_formula]});
+        objNew.formula = formula[0]._id;
+
         objNew.comment = objOld[Constants.csv_sku_comment];
        /* 
         delete objOld[Constants.csv_sku_num];
