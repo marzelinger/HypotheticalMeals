@@ -216,9 +216,16 @@ export default class SKUDetails extends React.Component {
                 ind = index;
         });
         if (ind > -1) {
+            let ingData = await this.parseIngUnit(qty);
+            var ingVal = ingData['val'];
+            var ingUnit = ingData['unit'];
             let curr_qty = formula_item.ingredient_quantities[ind];
-            curr_qty = curr_qty - qty;
-            if (curr_qty > 0) formula_item.ingredient_quantities[ind] = curr_qty;
+            let curr_data = await this.parseIngUnit(curr_qty);
+
+            var ingValcurr = ingPckgData['val'];
+            var ingUnitcurr = ingPckgData['unit'];
+            var new_qty = ingValcurr - ingVal;
+            if (new_qty > 0) formula_item.ingredient_quantities[ind] = new_qty + ' ' + ingunitcurr;
             else {
                 formula_item.ingredients.splice(ind,1);
                 formula_item.ingredient_quantities.splice(ind,1);
@@ -227,19 +234,44 @@ export default class SKUDetails extends React.Component {
         this.setState({ formula_item: formula_item})
     }
 
+    parseIngUnit = (unit_string) => {
+        console.log("unit_sting: "+unit_string);
+        var str = ""+unit_string;
+    
+        let match = str.match('^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|ounce|lb|pound|ton|g|gram|kg|kilogram|' + 'floz|fluidounce|pt|pint|qt|quart|gal|gallon|ml|milliliter|l|liter|ct|count)$');
+        if (match === null) {
+          console.log("Incorrect String Format in the parseIngUnit in Calculator");
+          return {};
+        }
+      
+        let val = match[1]
+        let unit = match[2]
+        console.log("val: "+ val + "    unit: "+unit);
+        return  {val: val, unit: unit};
+      }
+
 
     addIngredient(formula_item, value, qty) {
         let ind = -1;
         //qty = parseInt(qty);
+
         formula_item.ingredients.map((ing, index) => {
             if (ing._id === value._id)
                 ind = index;
         });
         console.log("this is after the mapping");
         if (ind > -1){
+            let ingData = await this.parseIngUnit(qty);
+            var ingVal = ingData['val'];
+            var ingUnit = ingData['unit'];
             let curr_qty = formula_item.ingredient_quantities[ind];
+            let curr_data = await this.parseIngUnit(curr_qty);
+
+            var ingValcurr = ingPckgData['val'];
+            var ingUnitcurr = ingPckgData['unit'];
             curr_qty = curr_qty + qty;
-            formula_item.ingredient_quantities[ind] = curr_qty;
+            var new_qty = ingVal + ingValcurr;
+            formula_item.ingredient_quantities[ind] = new_qty + ' ' + ingunitcurr;
         }
         else {
             formula_item.ingredients.push(value);
