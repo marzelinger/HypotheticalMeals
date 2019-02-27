@@ -6,6 +6,7 @@ import Manu_Line from './models/databases/manu_line';
 import ItemStore from './../client/src/helpers/ItemStore';
 import * as Constants from './../client/src/resources/Constants';
 import CheckDigit from "./../client/src/helpers/CheckDigit";
+import UnitConversion from "./../client/src/helpers/UnitConversion";
 
 const csv = require('csvtojson');
 const fs = require('fs');
@@ -632,6 +633,7 @@ export default class CSV_parser{
                     console.log(collisionObj);
                     return await this.indicateIngrCollisionFailure(res, collisionObj, i+2);
                 }  
+                console.log('data validation checks out');
             }
 
             var added = 0;
@@ -701,6 +703,13 @@ export default class CSV_parser{
         var isValid = obj[Constants.csv_ingr_cost].search(/^\$?\d+(,\d{3})*(\.\d*)?$/) >= 0;
         if(!isValid) {
             toReturn.success = false;
+            toReturn.costIssue = true;
+            return toReturn;
+        }
+        obj[Constants.csv_ingr_size] = UnitConversion.getCleanUnitForm(obj[Constants.csv_ingr_size]).data;
+        var isValid2 = await this.findUnit(obj[Constants.csv_ingr_size]);
+        if(isValid2 == -1){
+            // TODO: FIX THIS 
             toReturn.costIssue = true;
             return toReturn;
         }
@@ -985,17 +994,30 @@ export default class CSV_parser{
             return toReturn;
         }
 
-        this.convertUnits(obj[Constants.csv_formula_quantity]);
-
-        var isUnitNum = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/.test(obj[Constants.csv_formula_quantity]);
+        var santizedEntry = UnitConversion.getCleanUnitForm(obj[Constants.csv_formula_quantity]).data;
+        obj[Constants.csv_formula_quantity] = santizedEntry;
+ 
+        var isUnitNum = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$/.test(obj[Constants.csv_formula_quantity]);
+        if(!isUnitNum){
+            console.log('maybe here');
+            toReturn.success = false;
+            toReturn.unitIssue = true;
+            return toReturn;
+        }
         var ingr = await Ingredient.find({ num: obj[Constants.csv_formula_ingr] });
 
         var unitType = await this.findUnit(ingr[0].pkg_size);
         var unitType2 = await this.findUnit(obj[Constants.csv_formula_quantity]);
-        console.log("num 1 is " + unitType);
-        console.log("num 2 is " + unitType2);
-        console.log("num 3 is " + isUnitNum);
-        if(unitType != unitType2 || !isUnitNum){
+        if(unitType2 == -1) {
+            console.log('why this');
+            toReturn.success = false;
+            toReturn.unitIssue = true;
+            return toReturn;
+        }
+        if(unitType != unitType2){
+            console.log(unitType);
+            console.log(unitType2);
+            console.log('here?');
             toReturn.success = false;
             toReturn.unitIssue = true;
             return toReturn;
@@ -1005,15 +1027,11 @@ export default class CSV_parser{
         return toReturn;
     }
 
-    static async convertUnits(toConvert){
-        var quantity = toConvert[Constants.csv_formula_quantity];
-        
-    }
-
     static async findUnit(ingredient_pkg_size){
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|oz|ounce|lb.|lb|pound|ton|g|gram|kg|kilogram)$/.test(ingredient_pkg_size)) return 1;
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (floz|fluidounce|fl.oz.|pt|pint|pt.|qt.|qt|quart|gal.|gal|gallon|mL|milliliter|liter|L)$/.test(ingredient_pkg_size)) return 2;
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count||ct)$/.test(ingredient_pkg_size)) return 3;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg)$/.test(ingredient_pkg_size)) return 1;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (floz|pt|qt|gal|ml|l)$/.test(ingredient_pkg_size)) return 2;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count)$/.test(ingredient_pkg_size)) return 3;
+        return -1;
     }
 
     static async indicateFormulaDataValidationFailure(res, dataValidationObj, row){
