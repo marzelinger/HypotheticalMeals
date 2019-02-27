@@ -264,6 +264,10 @@ export default class ListPage extends React.Component {
     }
 
     onTableOptionSelection = async(e, opt) => {
+        if (this.state.selected_items.length === 0) {
+            alert('You must select items to use these features!')
+            return
+        }
         switch (opt){
             case Constants.create_item:
                 this.onCreateNewItem();
@@ -416,12 +420,12 @@ export default class ListPage extends React.Component {
     getButtons = () => {
         return (
         <div className = "ingbuttons"> 
-            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || this.state.selected_items.length === 0 ? null : 
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) ? null : 
                             (<div className = "manugoalbutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}
                             primary={true}
                             > {Constants.add_to_manu_goals} </div>)}
-            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || !currentUserIsAdmin().isValid || this.state.selected_items.length === 0 ? null : 
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || !currentUserIsAdmin().isValid ? null : 
                             (<div className = "manulinebutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.edit_manu_lines)}
                             primary={true}

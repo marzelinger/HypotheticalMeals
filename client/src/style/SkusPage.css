@@ -7,6 +7,10 @@
     justify-items: center;
 }
 
+.hoverable {
+    cursor: pointer;
+}
+
 #simple{
     display:none;
 }

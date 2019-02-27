@@ -182,7 +182,7 @@ export default class ManufacturingLineDetails extends React.Component {
                     { this.injectProperties() }
                     <ItemSearchModifyListQuantity
                         api_route={Constants.skus_page_name}
-                        item_type={Constants.details_add_sku}
+                        item_type={Constants.details_modify_skus}
                         options={[Constants.details_add, Constants.details_remove]}
                         handleModifyList={this.onModifyList}
                         simple = {true}
