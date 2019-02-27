@@ -13,6 +13,7 @@ import {
   import { Table } from 'reactstrap';
 
 import { Button, ModalBody, ModalFooter } from 'reactstrap';
+import UnitConversion from '../../helpers/UnitConversion';
 import '../../style/printing.css'
 const html2canvas = require('html2canvas');
 const jsPDF = require('jspdf');
@@ -28,8 +29,10 @@ export default class ManufacturingReport extends React.Component {
             manu_line: Object.assign({}, props.manuData.manu_line),
             duration: props.manuData.duration,
             start_date: props.manuData.start_date,
-            end_date: props.manuData.end_date
-        };
+            end_date: props.manuData.end_date,
+            ingredients_info: [],
+            current_ingredient_ids: []
+                };
         this.print = this.print.bind(this);
     }
 
@@ -219,6 +222,138 @@ export default class ManufacturingReport extends React.Component {
     }
 
 
+  addIngredientInfo = async (ingredient, quantity) => {
+
+    let ingData = await this.parseIngUnit(ingredient.quantity);
+    console.log("ingData; "+JSON.stringify(ingData));
+    var ingVal = ingData['val'];
+    var ingUnit = ingData['unit'];
+    console.log("quantityVal: "+ingVal);
+    console.log("quantityUnit: "+ingUnit);
+
+    let ingPckgData = await this.parseIngUnit(ingredient.pkg_size);
+
+    var ingValPCK = ingPckgData['val'];
+    var ingUnitPCK = ingPckgData['unit'];
+    console.log("ingunitpackage: "+ingUnitPCK);
+
+    //convert ingVal to be same unit as ingValpck
+    var convertVal= 0;
+    var convertUnit= '';
+
+    let {success,func} = UnitConversion.getConversionFunction(ingredient.pkg_size);
+    if(success){
+      var result = func(ingredient.quantity);
+      console.log("resultOBJ: "+result);
+
+      console.log("result: "+JSON.stringify(result));
+      let resData = await this.parseIngUnit(result);
+      var convertVal = resData['val'];
+      var convertUnit = resData['unit'];
+    }
+    // var res = getConversionFunction(ingredient.quantity)
+    // //give back a func
+    // //
+
+
+
+    if(this.state.current_ingredient_ids.includes(ingredient._id)){
+       var index =  this.state.current_ingredient_ids.indexOf(ingredient._id);
+       var currentData = this.state.ingredients_info;      
+
+       currentData[index].unitQuantity = currentData[index].unitQuantity + (quantity * convertVal);
+       currentData[index].pckgQuant = currentData[index].pckgQuant + (quantity * convertVal)/ingValPCK;
+
+
+       await this.setState({ingredients_info: currentData});
+    }   
+    else{
+      // also need package quantity which is quantity * ingredient quantity (total amount of ingredients in formula units / total number of ingredient in a package in package units)
+        console.log('setting state');
+        console.log(ingredient.quantity);
+        var newIngredient = {
+            ...ingredient, 
+            unitQuantity: (quantity * convertVal),
+            pckgQuant: (quantity * convertVal)/ingValPCK
+            //unitQuantity: quantityVal * ingredient.quantity
+        }
+        let info = this.state.ingredients_info;
+        info.push(newIngredient);
+        await this.setState({ingredients_info: info, current_ingredient_ids: [...this.state.current_ingredient_ids, ingredient._id]})
+    }
+  }
+
+  // broken rn bc using old structure of skus
+  getIngredientInfo = async () => {
+      console.log("activities" + JSON.stringify(this.props.activities));
+
+      let index = 0;
+      await this.props.data.complete.forEach( async (activity) => {
+        var quantity = activity.quantity * activity.sku.scale_factor;
+        var ingredients = activity.sku.formula.ingredients;
+        var ingr_quantities = activity.sku.formula.ingredient_quantities;
+        for(var i = 0; i < ingredients.length; i ++){
+          var ingr_with_quantity = {
+            ...ingredients[i],
+            quantity: ingr_quantities[i]
+          }
+          console.log("ingr with quantity"+JSON.stringify(ingr_with_quantity));
+          console.log("this is the quant: "+quantity);
+          await this.addIngredientInfo(ingr_with_quantity, quantity);
+        }
+        index++;
+      })
+      return this.state.ingredients_info
+  }
+
+  parseIngUnit = (unit_string) => {
+    console.log("unit_sting: "+unit_string);
+    var str = ""+unit_string;
+
+    let match = str.match('^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|ounce|lb|pound|ton|g|gram|kg|kilogram|' + 'floz|fluidounce|pt|pint|qt|quart|gal|gallon|ml|milliliter|l|liter|ct|count)$');
+    if (match === null) {
+      console.log("Incorrect String Format in the parseIngUnit in Calculator");
+      return {};
+    }
+  
+    let val = match[1]
+    let unit = match[2]
+    console.log("val: "+ val + "    unit: "+unit);
+    return  {val: val, unit: unit};
+  }
+
+  formatSumTable = () => {
+    if(this.state.ingredients_info!=undefined){
+        console.log('ingtable yes');
+    return (
+        <div>
+            <Table>
+    <thead>
+      <tr>
+        <th>Ingr#</th>
+        <th>Unit Quantity</th>
+        <th>Package Quantity</th>
+      </tr>
+    </thead>
+    <tbody>
+        {this.state.ingredients_info.map((item, index) =>
+            <tr>
+                <td>{this.state.ingredients_info[index].ingredient.num}</td>
+                <td>{this.state.ingredients_info[index].unitQuantity}</td>
+                <td>{this.state.ingredients_info[index].pckgQuant}</td>
+
+            </tr>
+        )}
+    </tbody>
+  </Table>
+  </div>
+    );
+        }
+        else{
+            return;
+        }
+}
+
     render() {
         console.log("propsdata "+JSON.stringify(this.props.data));
         return (
@@ -239,7 +374,7 @@ export default class ManufacturingReport extends React.Component {
                     </div>)}
                 </div>
                 <div>
-                    SUMMATION
+                    {this.formatSumTable()}
                 </div>
                 <div>
                 {(this.props.data.all_cut !=undefined) ? 
