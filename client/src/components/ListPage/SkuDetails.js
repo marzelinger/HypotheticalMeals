@@ -140,6 +140,10 @@ export default class SKUDetails extends React.Component {
     }
 
     onPropChange = (value, item, prop) => {
+        if (item.manu_lines.length > 0 && prop === 'manu_rate') {
+            alert('Once Manufacturing Lines are set, you cannot change Manufacturing Rate!')
+            return
+        }
         item[prop] = value
         this.setState({ item: item });
     };
@@ -264,7 +268,7 @@ export default class SKUDetails extends React.Component {
 
     injectProperties = () => {
         if (this.state.item){
-            return (this.state.item_properties.map(prop => 
+            return this.state.item_properties.map(prop => 
                 <FormGroup key={prop}>
                     <Label>{this.getPropertyLabel(prop)}</Label>
                     <Input 
@@ -272,9 +276,10 @@ export default class SKUDetails extends React.Component {
                         value={ this.state.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
                         onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
-                        disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
+                        disabled = {(currentUserIsAdmin().isValid) ? "" : "disabled"}
                    />
-                </FormGroup>));
+                </FormGroup>
+            )
         }
         return;
     }
