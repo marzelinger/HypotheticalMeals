@@ -1,5 +1,7 @@
 .centerContainer{text-align:center;}
 
+.centerTitle{text-align:center; color: rgb(128,128,128); padding: 10px;}
+
 .centerFile{display: inline-block !important; width:20% !important;
 padding: 10px;}
 

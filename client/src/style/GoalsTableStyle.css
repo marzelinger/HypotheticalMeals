@@ -1,0 +1,4 @@
+
+.goals-table tr {
+    grid-template-columns:  minmax(100px, 1fr) minmax(100px, 2fr) minmax(100px, 2fr) minmax(100px,2fr) minmax(100px,1fr) minmax(150px,2fr) minmax(100px,1fr);
+}

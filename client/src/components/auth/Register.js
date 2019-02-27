@@ -4,7 +4,11 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
+import { CustomInput, Form, FormGroup, Label } from 'reactstrap';
+import GeneralNavBar from '../GeneralNavBar';
+
 const currentUserIsAdmin = require("./currentUserIsAdmin");
+const currentUserUsername = require("./currentUserUsername");
 
 var userIsAdmin = false;
 
@@ -16,10 +20,13 @@ class Register extends Component {
     this.onChange = this.onChange.bind(this);
 
     this.state = {
-      name: "",
-      email: "",
+      username: "",
       password: "",
       password2: "",
+      // privileges: [],
+      admin_creator: currentUserUsername(),
+      isNetIDLogin: false,
+      isAdmin: false,
       errors: {}
     };
   }
@@ -28,6 +35,7 @@ class Register extends Component {
     console.log("trying to mount the register" +this.props.history);
 
     // If logged in and user navigates to Register page, should redirect them to dashboard
+    //TODO refactor the below to use this.props.auth.isAdmin
     if (this.props.auth.isAuthenticated && !currentUserIsAdmin().isValid) {
       this.props.history.push("/skus"); //if they are not an admin, get redirected to skus.
       console.log("mounted" +this.props.history);
@@ -48,18 +56,15 @@ onChange(e){
 
 onSubmit(e){
     e.preventDefault();
-const newUser = {
-      name: this.state.name,
-      email: this.state.email,
+    const newUser = {
+      username: this.state.username,
       password: this.state.password,
       password2: this.state.password2,
-      privileges: []
+      admin_creator: this.state.admin_creator,
+      isNetIDLogin: this.state.isNetIDLogin,
+      isAdmin: this.state.isAdmin,
+      // privileges: [this.state.privileges]
     };
-    console.log(e);
-    console.log(this.state);
-    console.log(this.props.history);
-    console.log(this.props);
-    console.log(newUser);
 
     if(currentUserIsAdmin().isValid){
       this.props.registerUser(newUser, this.props.history); 
@@ -76,9 +81,9 @@ render() {
     const { errors } = this.state;
 return (
       <div className="container">
+      {/* <GeneralNavBar></GeneralNavBar> */}
         <div className="row">
           <div className="col s8 offset-s2">
-
             <div className="col s12" style={{ paddingLeft: "11.250px" }}>
               <h4>
                 <b>Register</b> New User Below
@@ -88,18 +93,18 @@ return (
               <div className="input-field col s12">
                 <input
                   onChange={this.onChange}
-                  value={this.state.name}
-                  error={errors.name}
-                  id="name"
+                  value={this.state.username}
+                  error={errors.username}
+                  id="username"
                   type="text"
                   className={classnames("", {
-                    invalid: errors.name
+                    invalid: errors.username
                   })}
                 />
-                <label htmlFor="name">Name</label>
-                <span className="red-text">{errors.name}</span>
+                <label htmlFor="name">Username</label>
+                <span className="red-text">{errors.username}</span>
               </div>
-              <div className="input-field col s12">
+              {/* <div className="input-field col s12">
                 <input
                   onChange={this.onChange}
                   value={this.state.email}
@@ -112,7 +117,7 @@ return (
                 />
                 <label htmlFor="email">Email</label>
                 <span className="red-text">{errors.email}</span>
-              </div>
+              </div> */}
               <div className="input-field col s12">
                 <input
                   onChange={this.onChange}
@@ -141,6 +146,14 @@ return (
                 <label htmlFor="password2">Confirm Password</label>
                 <span className="red-text">{errors.password2}</span>
               </div>
+
+              <FormGroup>
+          <div>
+            {/* <CustomInput type="checkbox" id="admin" label="Assign Admin Privilige" //onSelect = {this.setPrivileges("Admin")}
+            />
+             */}
+          </div>
+        </FormGroup>
               <div className="col s12" style={{ paddingLeft: "11.250px" }}>
                 <button
                   style={{

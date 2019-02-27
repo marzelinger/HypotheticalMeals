@@ -47,7 +47,7 @@ export default class ItemDetails extends React.Component {
             </div>
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
-                    <Button key={opt} onClick={(e) => this.props.handleDetailViewSubmit(e, this.props.item, opt)}>
+                    <Button className = "detailButtons" key={opt} onClick={(e) => this.props.handleDetailViewSubmit(e, this.props.item, opt)}>
                         {opt}
                     </Button>
                 )}

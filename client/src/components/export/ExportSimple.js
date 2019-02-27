@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
-import { exportSKUS, exportIngredients, exportProdLines, exportCalculator } from "../../actions/exportActions";
+import { exportSKUS, exportIngredients, exportProdLines, exportCalculator, exportFormulas } from "../../actions/exportActions";
 class ExportSimple extends Component {
 
   constructor() {
@@ -33,6 +33,9 @@ class ExportSimple extends Component {
         break;
       case ("productLines"): //TODO WHAT IS THE ACTUAL SYNTAX HERE
         exportProdLines(this.props.data, this.props.fileTitle);
+        break;
+      case ("formulas"):
+        exportFormulas(this.props.data, this.props.fileTitle);
         break;
     }
 

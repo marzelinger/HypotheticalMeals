@@ -1,0 +1,8 @@
+@import url('https://fonts.googleapis.com/css?family=Major+Mono+Display|Roboto');
+
+
+#title{
+font-family: 'Major Mono Display', monospace;
+font-size: 150%;
+color: #424242;
+}

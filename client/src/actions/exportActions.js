@@ -18,12 +18,43 @@ export const exportSKUS = (dataIN, fileTitle)  => {
         var dataLine = [];
         dataLine.push(curData.num);
         dataLine.push(curData.name);
-        dataLine.push(curData.case_cpc);
+        dataLine.push(curData.case_upc);
         dataLine.push(curData.unit_upc);
         dataLine.push(curData.unit_size);
         dataLine.push(curData.cpc);
         dataLine.push(curData.prod_line.name);
         dataLine.push(curData.comment);
+        rows.push(dataLine);
+    }    
+    let csvContent = "";
+    rows.forEach(function(rowArray){
+        let row = rowArray.join(",");
+        csvContent += row + "\r\n";
+     }); 
+    fileDownload(csvContent, fileTitle+'.csv');
+}
+
+export const exportFormulas = (dataIN, fileTitle)  => {
+    var count = dataIN.length;
+    const rows = [];
+    var label = [];
+    label.push("Formula #");
+    label.push("Name");
+    label.push("Ingr#");
+    label.push("Quantity");
+    label.push("Comment");
+    rows.push(label);
+
+    for(let i = 0; i<count ; i++){
+        var curData = dataIN[i];
+        var dataLine = [];
+        dataLine.push(curData.num);
+        dataLine.push(curData.name);
+        dataLine.push(curData.ingredients[i]['num']);
+        dataLine.push(curData.ingredient_quantities[i]);
+        if(i==0){
+        dataLine.push(curData.comment);
+        }
         rows.push(dataLine);
     }    
     let csvContent = "";
@@ -151,7 +182,7 @@ export const exportReportSKUs = (addedLabel, updatedLabel, ignoredLabel,added_it
         var addLine = [];
         addLine.push(curAdd.num);
         addLine.push(curAdd.name);
-        addLine.push(curAdd.case_cpc);
+        addLine.push(curAdd.case_upc);
         addLine.push(curAdd.unit_upc);
         addLine.push(curAdd.unit_size);
         addLine.push(curAdd.cpc);
@@ -172,7 +203,7 @@ export const exportReportSKUs = (addedLabel, updatedLabel, ignoredLabel,added_it
         var upLine = [];
         upLine.push(curUp.num);
         upLine.push(curUp.name);
-        upLine.push(curUp.case_cpc);
+        upLine.push(curUp.case_upc);
         upLine.push(curUp.unit_upc);
         upLine.push(curUp.unit_size);
         upLine.push(curUp.cpc);
@@ -193,7 +224,7 @@ export const exportReportSKUs = (addedLabel, updatedLabel, ignoredLabel,added_it
         var ignLine = [];
         ignLine.push(curIgn.num);
         ignLine.push(curIgn.name);
-        ignLine.push(curIgn.case_cpc);
+        ignLine.push(curIgn.case_upc);
         ignLine.push(curIgn.unit_upc);
         ignLine.push(curIgn.unit_size);
         ignLine.push(curIgn.cpc);
@@ -442,7 +473,7 @@ export const exportReportFormulas = (addedLabel, updatedLabel, ignoredLabel,adde
 }
 
 export const exportImportReport = (added_items, updated_items, ignored_items, fileType)  => {
-    console.log("in this exportImport file");
+    //console.log("in this exportImport file");
     var addedLabel = [];
     addedLabel.push("Added "+ fileType);
     var updatedLabel = [];
@@ -477,3 +508,4 @@ export const exportImportReport = (added_items, updated_items, ignored_items, fi
          }); 
         fileDownload(csvContent, fileTitle+'.csv');
 }
+

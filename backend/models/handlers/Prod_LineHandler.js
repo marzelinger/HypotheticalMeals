@@ -37,6 +37,9 @@ class Prod_LineHandler{
       var target_id = req.params.prod_line_id;
       var new_name = req.body.name;
 
+      let conflict = await Prod_Line.find({ name: new_name });
+      if(conflict.length > 0 && conflict[0]._id != target_id) return res.json({ success: false, error: 'CONFLICT'});
+
       let updated_prod_line = await Prod_Line.findOneAndUpdate({ _id : target_id},
         {$set: {name : new_name}}, {upsert: true, new : true});
 

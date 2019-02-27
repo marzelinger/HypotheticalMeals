@@ -2,15 +2,22 @@ import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import GeneralNavBar from '../GeneralNavBar';
+
 const PrivateRoute = ({ component: Component, auth, ...rest }) => (
   <Route
     {...rest}
     render={props =>
-      auth.isAuthenticated === true ? (
+      <div>
+      {/* <GeneralNavBar></GeneralNavBar> */}
+      {
+       ((auth.isAuthenticated === true))? (
         <Component {...props} />
       ) : (
-        <Redirect to="/login" />
+        <Redirect to="/" />
       )
+        }
+      </div>
     }
   />
 );
@@ -21,3 +28,6 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 export default connect(mapStateToProps)(PrivateRoute);
+
+
+// ((auth.isAuthenticated === true) || component.isNetID === true )? (

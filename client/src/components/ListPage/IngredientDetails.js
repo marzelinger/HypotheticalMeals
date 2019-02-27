@@ -12,6 +12,10 @@ import {
     Label } from 'reactstrap';
 import DataStore from './../../helpers/DataStore'
 import DetailsViewSkuTable from './DetailsViewSkuTable'
+import UnitConversion from '../../helpers/UnitConversion';
+
+const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
+
 
 
 export default class IngredientDetails extends React.Component {
@@ -21,12 +25,15 @@ export default class IngredientDetails extends React.Component {
         let {
             item_properties, 
             item_property_labels,
-            item_property_patterns } = DataStore.getIngredientData();
+            item_property_patterns,
+            item_property_field_type } = DataStore.getIngredientData();
 
         this.state = {
+            item: props.item,
             item_properties,
             item_property_labels,
             item_property_patterns,
+            item_property_field_type,
             invalid_inputs: []
         }
     }
@@ -38,6 +45,16 @@ export default class IngredientDetails extends React.Component {
     getPropertyPattern = (prop) => {
         return this.state.item_property_patterns[this.state.item_properties.indexOf(prop)];
     }
+
+    getPropertyFieldType = (prop) => {
+        return this.state.item_property_field_type[this.state.item_properties.indexOf(prop)];
+    }
+
+
+    onPropChange = (value, item, prop) => {
+        item[prop] = value;
+        this.setState({ item: item });
+    };
 
     async handleSubmit(e, opt) {
         if (![Constants.details_save, Constants.details_create].includes(opt)) {
@@ -54,7 +71,16 @@ export default class IngredientDetails extends React.Component {
     async validateInputs() { 
         var inv_in = [];
         this.state.item_properties.map(prop => {
-            if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) {
+            if (prop === 'pkg_size') {
+                let clean_res = UnitConversion.getCleanUnitForm(this.props.item[prop])
+                if (clean_res.success){
+                    this.onPropChange(clean_res.data, this.props.item, prop)
+                }
+                else {
+                    inv_in.push(prop);
+                }
+            }
+            else if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) {
                 inv_in.push(prop);
             }
         })
@@ -67,9 +93,11 @@ export default class IngredientDetails extends React.Component {
                 <FormGroup key={prop}>
                     <Label>{this.getPropertyLabel(prop)}</Label>
                     <Input 
+                        type={this.getPropertyFieldType(prop)}
                         value={ this.props.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
-                        onChange={ (e) => this.props.handlePropChange(e.target.value, this.props.item, prop) }
+                        onChange={ (e) => this.onPropChange(e.target.value, this.props.item, prop) }
+                        disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
                     />
                 </FormGroup>));
         }
@@ -89,6 +117,7 @@ export default class IngredientDetails extends React.Component {
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
                     <Button 
+                        className = "detailButtons"
                         key={opt} 
                         onClick={(e) => this.handleSubmit(e, opt)}
                     >{opt}</Button>
@@ -102,6 +131,5 @@ export default class IngredientDetails extends React.Component {
 IngredientDetails.propTypes = {
     item: PropTypes.object,
     detail_view_options: PropTypes.arrayOf(PropTypes.string),
-    handlePropChange: PropTypes.func,
     handleDetailViewSubmit: PropTypes.func
   };

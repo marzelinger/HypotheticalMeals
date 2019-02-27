@@ -2,25 +2,31 @@ import React from 'react'
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import SkusPage from "./ListPage/SkusPage";
+import FormulasPage from "./ListPage/FormulasPage";
 import Landing from "./layout/Landing";
 import Register from "./auth/Register";
-import AdminRegister from "./auth/AdminRegister";
+// import AdminRegister from "./auth/AdminRegister";
 import Login from "./auth/Login";
+import DukeLogin from "./auth/DukeLogin";
 import PrivateRoute from "./private-route/PrivateRoute";
+import AdminPrivateRoute from "./private-route/AdminPrivateRoute";
 import Dashboard from "./dashboard/Dashboard";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "../utils/setAuthToken";
+import setAdminToken from "../utils/setAdminToken";
 import GeneralNavBar from "./GeneralNavBar";
-import ManufacturingGoalsPage from "./ManufacturingGoalsPage";
+import ManufacturingPage from "./ManufacturingGoal/ManufacturingPage";
+import ManufacturingLinePage from "./ManufacturingGoal/ManufacturingLinePage";
 import ImportPage from "./ImportPage";
 import IngredientsPage from "./ListPage/IngredientsPage";
-import ProductLinePage from "../ProductLine/ProductLinePage";
-import * as Constants from './../resources/Constants';
+import UserPage from "./ListPage/UserPage";
+import ProductLinePage from "./ProductLine/ProductLinePage";
+import * as Constants from '../resources/Constants';
 import Logout from '../components/auth/Logout';
+import ManuSchedulePage from './ManufacturingSchedule/ManuSchedulePage'
 
 import { setCurrentUser, logoutUser, getAllUsers } from "../actions/authActions";
 import { Provider } from "react-redux";
-//import store from '../store/configureStore';
 import configureStore from '../store/configureStore';
 
 import PropTypes from "prop-types";
@@ -32,15 +38,17 @@ import { Link, withRouter } from "react-router-dom";
 // Check for token to keep user logged in
 const store = configureStore();
 
+
 class App extends React.Component{
   constructor() {
     super();
+    
     //localStorage.clear();
     //this.determineUserInit();
-    this.determineUser();
     this.state = {
-      navbar_items: [Constants.SkuTitle, Constants.IngTitle, Constants.ManuGoalTitle],
+      navbar_items: [Constants.SkuTitle, Constants.IngTitle, Constants.ManuGoalTitle, Constants.FormulaTitle],
     }
+    this.determineUser();
   }
 
   determineUser = () => {
@@ -49,8 +57,15 @@ class App extends React.Component{
         // Set auth token header auth
         const token = localStorage.jwtToken;
         setAuthToken(token);
+        
         // Decode token and get user info and exp
         const decoded = jwt_decode(token);
+        if(decoded.admin==true){
+          setAdminToken(token);
+          this.state = {
+            user: true,
+          }
+        }
         // Set user and isAuthenticated
         store.dispatch(setCurrentUser(decoded));
         // Check for expired token
@@ -58,6 +73,9 @@ class App extends React.Component{
         if (decoded.exp < currentTime) {
           // Logout user
           store.dispatch(logoutUser());
+          this.state = {
+            user: false,
+          }
       
           // Redirect to login
           window.location.href = "./login";
@@ -73,20 +91,30 @@ class App extends React.Component{
         <Provider store={store}>
           <Router>
             <div className="App">
-
-                <PrivateRoute component={GeneralNavBar}/>
-
+                {/* <div>
+                  {(this.state.user)? (
+                    <GeneralNavBar></GeneralNavBar>
+                    ) : (
+                    <div></div>
+                    )}
+                </div> */}
                <Route exact path="/login" component={Login} />
-               <Route exact path="/register" component={Register} />
-               <Route exact path="/adminregister" component={AdminRegister} />
-              
+               {/* <Route exact path="/adminregister" component={AdminRegister} />   */}
+               <Route exact path= "/" component={Landing} />
+               <Route path= "/loginDuke" component = {DukeLogin}/>     
               <Switch>
+                {/* <PrivateRoute component={GeneralNavBar}/> */}
                 <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
-                <PrivateRoute exact path="/dashboard" component={Dashboard} />
+                <AdminPrivateRoute exact path="/register" component={Register} />
+                <PrivateRoute exact path="/" component={Dashboard} />
+                <AdminPrivateRoute exact path="/manu_schedule" component={ManuSchedulePage} />
                 <PrivateRoute exact path="/skus" component={SkusPage} />
-                <PrivateRoute exact path="/manu_goals" component={ManufacturingGoalsPage} />
+                <PrivateRoute exact path="/manu_goals" component={ManufacturingPage} />
+                <PrivateRoute exact path="/manu_lines" component={ManufacturingLinePage} />
                 <PrivateRoute exact path="/prod_lines" component={ProductLinePage} />
-                <PrivateRoute exact path="/import" component={ImportPage} />
+                <AdminPrivateRoute exact path="/import" component={ImportPage} />
+                <AdminPrivateRoute exact path="/users" component={UserPage}/>
+                <PrivateRoute exact path="/formulas" component={FormulasPage} />
               </Switch>
             </div>
           </Router>
@@ -97,9 +125,3 @@ class App extends React.Component{
 }
 
 export default App;
-
-
-// <Route exact path="/" component={Landing} />
-//               <Route exact path="/login" component={Login} />
-//               <Route exact path="/register" component={Register} />
-//               <Route exact path="/adminregister" component={AdminRegister} />

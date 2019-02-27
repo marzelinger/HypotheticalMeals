@@ -10,6 +10,7 @@ import {
 import * as Constants from '../../resources/Constants';
 import SubmitRequest from './../../helpers/SubmitRequest'
 import ReactSelect from 'react-select'
+import Filter from './Filter';
 
 
 export default class ItemSearchInput extends React.Component {
@@ -26,6 +27,7 @@ export default class ItemSearchInput extends React.Component {
         };
     }
 
+    //TODO MAKE SURE THAT THE CURITEM SENDING FROM FORMULADETAILS IS THE POPULATED ONE.
     async componentDidUpdate (prevProps, prevState) {
         if (prevState.substr !== this.state.substr) {
             await this.updateResults();
@@ -40,11 +42,15 @@ export default class ItemSearchInput extends React.Component {
     }
 
     async updateResults() {
+        console.log("this is the item type: "+this.props.item_type);
         if (this.props.item_type === Constants.ingredient_label && this.state.substr.length > 0) {
             var res = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.substr);
         }
         else if (this.props.item_type === Constants.prod_line_label && this.state.substr.length > 0) {
             var res = await SubmitRequest.submitGetProductLinesByNameSubstring(this.state.substr);
+        }
+        else if (this.props.item_type === Constants.formula_label && this.state.substr.length > 0) {
+            var res = await SubmitRequest.submitGetFormulasByNameSubstring(this.state.substr);
         }
         else {
             var res = {};
@@ -69,35 +75,35 @@ export default class ItemSearchInput extends React.Component {
         return this.state.substr;
     }
 
-    onFilterValueSelection (name, value, e) {
+    getType = () => {
+        if(this.props.item_type ===Constants.prod_line_label){
+            return Constants.prod_line_page_name;
+        }
+        if(this.props.item_type ===Constants.formula_label){
+            return Constants.formulas_page_name;
+        }
+    }
+    onFilterValueSelection (label, value) {
         this.setState({
-            substr: name,
+            substr: label,
             value: value,
             assisted_search_results: []
         });
-        this.props.handleSelectItem({name: name, _id: value});
+        this.props.handleSelectItem({name: label, _id: value});
     }
 
     render() {
-        const customStyles = {
-            control: (base, state) => ({
-                ...base,
-                borderColor: this.props.invalid_inputs.includes('prod_line') ? 'red' : '#ddd'
-            })
-        }
-        const getValue = (opts, val) => opts.find(o => o.value === val); 
-
         return (
-        <div className='filter-item' style={{width: this.state.width + '%'}}>
+        <div className='filter-item detailsfilter' style={{width: this.state.width + '%'}}>
             <FormGroup>
                 <Label>{this.props.item_type}</Label>
-                <ReactSelect 
-                    inputValue={this.state.substr}
-                    onChange={(opt, e) => this.onFilterValueSelection(opt.label, opt.value, e)}
-                    onInputChange={(val, e) => this.onFilterValueChange(val, e)} 
-                    options={this.state.assisted_search_results.map(res => ({ label: res.name, value: res._id }))}
-                    styles={customStyles}
-                    placeholder={'Select Product Line...'}
+                <Filter
+                    handleFilterValueSelection = {(opt, e) => this.onFilterValueSelection(opt.label, opt.value._id)}
+                    type = {this.getType()}
+                    multi = {false}
+                    place_holder = {this.props.curr_item}
+                    disabled = {this.props.disabled}
+                    invalid={this.props.invalid_inputs.includes('prod_line')}
                 />
             </FormGroup>
         </div>
@@ -109,5 +115,6 @@ ItemSearchInput.propTypes = {
     curr_item: PropTypes.object,
     item_type: PropTypes.string,
     invalid_inputs: PropTypes.arrayOf(PropTypes.string),
-    handleSelectItem: PropTypes.func
+    handleSelectItem: PropTypes.func,
+    disabled: PropTypes.bool
   };

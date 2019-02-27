@@ -9,13 +9,14 @@ const Schema = mongoose.Schema;
 const Manu_GoalSchema = new Schema({
     name: String,
     user: String,
-    skus: [
+    activities: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'SKU'
+            ref: 'Manu_Activity'
         }
     ],
-    quantities: [Number],
+    enabled: Boolean,
+    deadline: Date
 }, { timestamps: true });
 
 // export our module to use in server.js

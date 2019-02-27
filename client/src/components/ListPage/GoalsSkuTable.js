@@ -20,49 +20,79 @@ import '../../style/TableStyle.css'
 export class GoalSkuTable extends React.Component{
     constructor(props) {
       super(props);
+      //console.log(props)
       this.state = {
-        showCheckboxes:false
+        showCheckboxes:true,
+        selected: '',
+        list_items: props.list_items,
+        simple: this.props.simple !=undefined ? this.props.simple : false
+      } 
+    }
+
+    componentDidUpdate(prevProps){
+      if(prevProps.list_items !== this.props.list_items){
+          this.setState({          
+              list_items: this.props.list_items
+          });
       }
     }
+
     getPropertyLabel = (col) => {
       return this.props.columns[this.props.table_properties.indexOf(col)];
     }
 
     createQuantityElement = (item, index) => {
-        return <Input onChange = {(e) => this.props.onQuantityChange(e, index)} placeholder={item['quantity']} type="number" step="1" />
+        return <Input min = {1} onChange = {(e) => this.props.onQuantityChange(e, index)} placeholder={item['quantity']} type="number" step="1" />
+    }
+
+    handleSelectedRow  = async (indexes) => {
+      await this.setState({selected: indexes});
+      console.log(this.state.selected);
+    }  
+
+    handleDeleteButton = () =>{
+      this.props.handleDeleteActivities(this.state.selected);
+      this.setState({selected: []});
     }
     
     render() {
         let tablebody = (
-            this.props.list_items.map((item, index) => 
+            this.state.list_items.map((item, index) => 
             <TableRow
               key={item.num + index}
+              selectable = {!this.state.simple}
+              selected = {this.state.selected !=undefined && this.state.selected.includes(index) && !this.state.simple}
             >
-              {this.props.table_properties.map(prop => 
-                <TableRowColumn key={prop}>
-                  {prop == 'quantity' ? this.createQuantityElement(item, index) : item[prop]}
-                </TableRowColumn>
-              )}
+              {this.props.table_properties.map(prop => {
+                //console.log(prop);
+                if(!item.sku){
+                  return <TableRowColumn></TableRowColumn>
+                }
+                return <TableRowColumn key={prop}>{(prop == 'quantity' || prop == 'duration') ? item[prop] : item.sku[prop]}</TableRowColumn>
+                })
+              }
             </TableRow>
           ))
-        
-
       return (
         <div>
-          <Table>
-            <TableHeader displaySelectAll={this.state.showCheckboxes} adjustForCheckbox={this.state.showCheckboxes}>
-              <TableRow class = "cols">
+          <Table multiSelectable = {this.props.simple}
+          onRowSelection = {(index) => this.handleSelectedRow(index)}
+          deselect
+          >
+            <TableHeader adjustForCheckbox={this.state.showCheckboxes && !this.state.simple} displaySelectAll = {false}>
+              <TableRow selectable = {false} class = "cols trselect">
                 {this.props.table_properties.map(prop => 
-                  <TableHeaderColumn tooltip = {"Sort By " + this.getPropertyLabel(prop)} className = "hoverable" key={prop}>
+                  <TableHeaderColumn tooltip = {this.state.simple ? null : "Sort By " + this.getPropertyLabel(prop)} className = "hoverable" key={prop}>
                     <div onClick={e => this.props.handleSort(e, prop)}>{this.getPropertyLabel(prop)}</div>
                   </TableHeaderColumn>
                 )}
               </TableRow>
             </TableHeader>
-            <TableBody displayRowCheckbox = {this.state.showCheckboxes}>
+            <TableBody displayRowCheckbox = {this.state.showCheckboxes && !this.state.simple} deselectOnClickaway = {false}>
                 {tablebody}
             </TableBody>
           </Table>
+          {!this.state.simple ? <div onClick = {() => this.handleDeleteButton()} className = "delete detailButtons hoverable">delete selected activities</div> : <div></div>}
         </div>
       );
     }
@@ -77,7 +107,8 @@ GoalSkuTable.propTypes = {
   handleSort: PropTypes.func,
   handleSelect: PropTypes.func,
   handleDetailViewSelect: PropTypes.func,
-  onQuantityChange: PropTypes.func
+  onQuantityChange: PropTypes.func,
+  handleDeleteActivities: PropTypes.func
 };
 
 

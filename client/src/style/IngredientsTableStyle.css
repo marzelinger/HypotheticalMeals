@@ -1,0 +1,18 @@
+
+
+.ingredients-table tr {
+    grid-template-columns:  minmax(100px, 2.5fr) minmax(100px, 2.5fr) minmax(100px, 2fr) minmax(100px,2fr) minmax(100px,2fr) minmax(100px,1fr) 
+}
+
+.ingredients-table #complex {
+    grid-template-columns: minmax(200px, 1fr) minmax(200px , 1fr)  50px;
+}
+
+
+.ingredients-table .superrow {
+    grid-template-columns: 1fr 11fr;
+}
+
+.details-ingredients-table tr{
+    grid-template-columns: minmax(100px, 4fr) minmax(100px,4fr)  0 minmax(100px, 4fr);
+}

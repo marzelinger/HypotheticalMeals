@@ -6,6 +6,8 @@ import TableOptions from './TableOptions'
 import TextField from 'material-ui/TextField';
 import SearchIcon from 'material-ui/svg-icons/action/search'
 import AddIcon from 'material-ui/svg-icons/content/add-circle'
+const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
+
 
 export default class TableActions extends React.Component {
   constructor(props) {
@@ -13,20 +15,33 @@ export default class TableActions extends React.Component {
     console.log(props)
     this.state = {
       simple: props.simple,
+      page_name: this.props.page_name
     };
+    console.log("this is the tableactions props: "+JSON.stringify(this.props));
   }
 
   render() {
+    var iconsize = {
+      width: 10,
+      height: 10,
+    }
+  
     return (
       <div id={this.state.simple ? "simple" : "complex"}>
-      <SearchIcon style = {{width: '50px', height: '50px'}}></SearchIcon>
+      {(this.state.page_name != Constants.users_page_name)? 
+      (<div>
+      <SearchIcon style = {{width: '20px', height: '20px'}}></SearchIcon>
+      
       <TextField
         hintText="Keyword Search"
         onChange = {(e, val) => this.props.onFilterValueChange(e, val, 'keyword')}
       />
+      </div>)
+      : (<div/>)
+      }
       {
         Object.keys(this.props.filters).map( (type) => {
-          if(type == 'keyword')return 
+          if(type == 'keyword' || type == 'formula')return 
           return (
             <Filter data = {this.props[type]} 
                 handleFilterValueChange = {this.props.onFilterValueChange}
@@ -37,7 +52,9 @@ export default class TableActions extends React.Component {
 
         )})
       }
-      <AddIcon id = "addnewitem"  onClick = {() => {this.props.onTableOptionSelection(null, Constants.create_item)}}></AddIcon>
+      {(currentUserIsAdmin().isValid && (this.state.page_name != Constants.users_page_name))? 
+      (<AddIcon style = {{width: '50px', height: '50px', cursor: 'pointer'}} onClick = {() => {this.props.onTableOptionSelection(null, Constants.create_item)}}></AddIcon>)
+      :(<div/>)}
       </div>
     );
   }

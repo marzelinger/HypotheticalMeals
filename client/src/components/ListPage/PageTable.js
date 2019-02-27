@@ -21,17 +21,6 @@ import PropTypes from 'prop-types';
 import TableActions from './TableActions';
 import '../../style/TableStyle.css'
 
-const styles = {
-  propContainer: {
-    width: 200,
-    overflow: 'hidden',
-    margin: '20px auto 0',
-  },
-  propToggleHeader: {
-    margin: '20px auto 10px',
-  },
-};
-
 /**
  * A more complex example, allowing the table height to be set, and key boolean properties to be toggled.
  */
@@ -45,10 +34,11 @@ export default class PageTable extends Component {
       showRowHover: true,
       selectable: props.selectable!=undefined ? props.selectable : true,
       multiSelectable: props.selectable!=undefined ? props.selectable : true,
-      enableSelectAll: false,
+      enableSelectAll: props.selectable!=undefined ? props.selectable : true,
       deselectOnClickaway: false,
       showCheckboxes: props.selectable!=undefined ? props.selectable : true,
-      showDetails: props.showDetails!= undefined ? props.showDetails : false
+      showDetails: props.showDetails!= undefined ? props.showDetails : false,
+      page_name: this.props.page_name
     };
   }
   
@@ -66,6 +56,22 @@ export default class PageTable extends Component {
     this.setState({height: event.target.value});
   };
 
+  displayValue(item, prop) {
+    switch (prop){
+      case 'prod_line':
+        return item[prop].name;
+      case 'pkg_cost':
+        return '$' + (item[prop] === '') ? item[prop] : item[prop].toFixed(2);
+      case 'isAdmin':
+        if(item[prop]) return 'true';
+        else return 'false';
+      default:
+        return item[prop];
+    }
+    // return (['string','number'].includes(typeof item[prop]) || item[prop] === null || item[prop] === undefined) 
+    //                       ? item[prop] : item[prop].name
+  }
+
   determineSelected= (index) => {
     if(this.state.selectable){
       return this.props.selected_indexes.includes(index);
@@ -79,7 +85,7 @@ export default class PageTable extends Component {
 
   getDetailsCol = () => {
     {if(this.state.showDetails){
-      return (<TableHeaderColumn> See More Details </TableHeaderColumn>);
+      return (<TableHeaderColumn> {this.props.simple? 'Details' : 'See More Details'} </TableHeaderColumn>);
       }
     }
   }
@@ -87,12 +93,12 @@ export default class PageTable extends Component {
   getColumnComponent = (prop) => {
     if(this.props.sortable != undefined && this.props.sortable){
       return (                  
-        <TableHeaderColumn style={{ height: 'auto !important' }} tooltip = {"Sort By " + this.getPropertyLabel(prop)} className = "hoverable" key={prop}>
+        <TableHeaderColumn tooltip = {"Sort By " + this.getPropertyLabel(prop)} className = "hoverable" key={prop}>
           <div onClick={e => this.props.handleSort(e, prop)}>{this.getPropertyLabel(prop)}</div>
         </TableHeaderColumn>
       )
     }
-    return (<TableHeaderColumn>{this.getPropertyLabel(prop)}</TableHeaderColumn>);
+    return (<TableHeaderColumn  >{this.getPropertyLabel(prop)}</TableHeaderColumn>);
   }
 
   getTableSuperHeader = () => {
@@ -109,11 +115,12 @@ export default class PageTable extends Component {
                 onFilterValueChange = {this.props.onFilterValueChange}
                 onRemoveFilter = {this.props.onRemoveFilter}
                 filters = {this.props.filters}
-                ingredient = {this.props.ingredients}
-                product_line = {this.props.product_lines}
-                sku = {this.props.skus}
+                ingredients = {this.props.ingredients}
+                products = {this.props.product_lines}
+                skus = {this.props.skus}
                 id = "tableactions"
                 onTableOptionSelection = {this.props.onTableOptionSelection}
+                page_name = {this.state.page_name}
               >
               </TableActions>
             
@@ -125,7 +132,7 @@ export default class PageTable extends Component {
 
   render() {
     return (
-      <div>
+      <div className = "table-container">
         <Table
           height={!this.state.selectable ? null : '413px'}
           fixedHeader={this.state.fixedHeader}
@@ -135,12 +142,12 @@ export default class PageTable extends Component {
           onRowSelection = {(res) => this.props.handleSelect(res)}
         >
           <TableHeader
-            displaySelectAll={false}
+            displaySelectAll={this.state.enableSelectAll}
             adjustForCheckbox={this.state.selectable}
-            enableSelectAll={false}
+            enableSelectAll={this.state.enableSelectAll}
           >
               {this.getTableSuperHeader()}
-            <TableRow class = "cols" selectable = {true} >
+            <TableRow className = "cols" selectable = {true} >
                 {this.props.table_properties.map(prop => 
                   this.getColumnComponent(prop)
                 )}
@@ -154,15 +161,13 @@ export default class PageTable extends Component {
             stripedRows={this.state.stripedRows}
           >
               {this.props.list_items.map((item, index) => 
-                <TableRow className = "myrow" selected = {this.determineSelected(index)} key={index}>
+                <TableRow className = {`myrow ${this.state.showCheckboxes ? " trselect":""}`} selected = {this.determineSelected(index)} key={index}>
                   {this.props.table_properties.map(prop => 
                     <TableRowColumn
                       key={prop}
                       onClick={e => this.props.handleSelect(e, item)}
-                      style={{ height: 'auto !important' }}
                     >
-                      {(['string','number'].includes(typeof item[prop]) || item[prop] === null || item[prop] === undefined) 
-                          ? item[prop] : item[prop].name}
+                      {this.displayValue(item, prop)}
                     </TableRowColumn>
                   )}
                   {([undefined,null].includes(this.props.quantities)) ? 
@@ -172,7 +177,14 @@ export default class PageTable extends Component {
                       </IconButton>
                     </TableRowColumn>) : 
                     (<TableRowColumn>
-                      <Input onChange = {(e) => this.props.handleQuantityChange(e, index)} className = "inputs" placeholder={this.props.quantities[index]} type="number" step="1" />
+                      <Input 
+                        onChange = {(e) => this.props.handleQuantityChange(e, index)} 
+                        className = "inputs" 
+                        value={this.props.quantities[index]} 
+                        type="text" 
+                        step="1"
+                        disabled={this.props.disable_inputs}
+                      />
                     </TableRowColumn>)}
                 </TableRow>
               )}
@@ -194,5 +206,6 @@ PageTable.propTypes = {
   handleSelect: PropTypes.func,
   handleDetailViewSelect: PropTypes.func,
   handleQuantityChange: PropTypes.func,
-  showHeader: PropTypes.bool.isRequired
+  showHeader: PropTypes.bool,
+  disable_inputs: PropTypes.bool
 };

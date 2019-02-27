@@ -7,14 +7,15 @@ import {Table} from 'reactstrap';
 import PropTypes from 'prop-types';
 import './SideBySideBox.css';
 
+
 export class ImportReport extends React.Component{
     constructor(props){
         super(props);
         if(this.props.label==="SKUs"){
             this.state = {
                 page_title: "SKUs",
-                table_columns: ['Name', 'Number','Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line', "Comment"],
-                table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', "comment"],
+                table_columns: ['Name', 'Number','Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line', "Formula #", "Formula Factor", "Manufacturing Line", "Manufacturing Rate", "Comment"],
+                table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', "formula", "scale_factor", "manu_lines", "manu_rate", "comment"],
                 added_items: this.props.added_items,
                 updated_items: this.props.updated_items,
                 ignored_items: this.props.ignored_items,
@@ -31,8 +32,8 @@ export class ImportReport extends React.Component{
         } else if(this.props.label==="Formulas"){
             this.state ={
                 page_title: "Formulas",
-                table_columns: ['Name', 'Number','Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line', "Comment"],
-                table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', "comment"],
+                table_columns: ['Name', 'Number', "Comment"],
+                table_properties: ['name', 'num', "comment"],
                 added_items: this.props.added_items,
                 updated_items: this.props.updated_items,
                 ignored_items: this.props.ignored_items,
@@ -64,6 +65,13 @@ export class ImportReport extends React.Component{
         return this.state.table_columns[this.state.table_properties.indexOf(col)];
     }
 
+    injectProperty = (item, prop) => {
+        if(prop === "prod_line") return (item["prod_line_to_show"]);
+        if(prop === "manu_lines") return (item["manu_lines_to_show"]);
+        if(prop === "formula") return (item["formula_to_show"]);
+        return (item[prop]);
+    }
+
     render() {
         console.log(this.state.ignored_items);
         console.log(this.state.table_properties);
@@ -71,9 +79,9 @@ export class ImportReport extends React.Component{
             <div className = "ImportReport">
                 <div className="paddedDiv">
                     {this.state.added_items.length} records were added.
-                    <Table>
+                    <Table className = 'import-table'>
                         <thead>
-                            <tr>
+                            <tr style ={{gridTemplateColumns: `repeat( ${this.state.table_properties.length}, minmax(100px, 1fr))` }}>
                                 {this.state.table_properties.map(prop =>
                                     <th key={prop}>
                                         {this.getPropertyLabel(prop)}
@@ -84,13 +92,15 @@ export class ImportReport extends React.Component{
                         <tbody>
                             {this.state.added_items.map(item =>
                                 <tr
+                                style ={{gridTemplateColumns: `repeat( ${this.state.table_properties.length}, minmax(100px, 1fr))` }}
                                     key={this.props.label === "Product Line" ? item.name : item.num}
                                 >
                                     {this.state.table_properties.map(prop =>
                                     <td
                                         key={prop}
                                     >
-                                        {prop === 'prod_line' ? item[prop] : item[prop]}
+                                        {prop === "prod_line" ? (item["prod_line_to_show"]) : (prop==="formula" ? item["formula_to_show"] : (prop ==="manu_lines" ? item["manu_lines_to_show"] : item[prop])) }
+                                        
                                     </td>
                                 )}
                                 </tr>
@@ -99,9 +109,9 @@ export class ImportReport extends React.Component{
                     </Table>
 
                     {this.state.updated_items.length} records were updated.
-                    <Table>
+                    <Table className = 'import-table'>
                         <thead>
-                            <tr>
+                            <tr style = {{gridTemplateColumns: `repeat( ${this.state.table_properties.length}, minmax(100px, 1fr))` }}>
                                 {this.state.table_properties.map(prop =>
                                     <th key={prop}>
                                         {this.getPropertyLabel(prop)}
@@ -112,13 +122,14 @@ export class ImportReport extends React.Component{
                         <tbody>
                             {this.state.updated_items.map(item =>
                                 <tr
+                                    style ={{gridTemplateColumns: `repeat( ${this.state.table_properties.length}, minmax(100px, 1fr))` }}
                                     key={this.props.label === "Product Line" ? item.name : item.num}
                                 >
                                     {this.state.table_properties.map(prop =>
                                     <td
                                         key={prop}
                                     >
-                                         {prop === "prod_line" ? item[prop] : item[prop]}
+                                        {prop === "prod_line" ? (item["prod_line_to_show"]) : (prop==="formula" ? item["formula_to_show"] : (prop ==="manu_lines" ? item["manu_lines_to_show"] : item[prop])) }
                                     </td>
                                 )}
                                 </tr>
@@ -127,9 +138,9 @@ export class ImportReport extends React.Component{
                     </Table>
 
                     {this.state.ignored_items.length} records were ignored.
-                    <Table>
+                    <Table className = 'import-table'>
                         <thead>
-                            <tr>
+                            <tr style ={{gridTemplateColumns: `repeat( ${this.state.table_properties.length}, minmax(100px, 1fr))` }}>
                                 {this.state.table_properties.map(prop =>
                                     <th key={prop}>
                                         {this.getPropertyLabel(prop)}
@@ -140,13 +151,15 @@ export class ImportReport extends React.Component{
                         <tbody>
                             {this.state.ignored_items.map(item =>
                                 <tr
+                                style ={{gridTemplateColumns: `repeat( ${this.state.table_properties.length}, minmax(100px, 1fr))` }}
                                     key={this.props.label === "Product Line" ? item.name : item.num}
                                 >
                                     {this.state.table_properties.map(prop =>
                                     <td
                                         key={prop}
                                     >
-                                         {prop === "prod_line" ? item[prop] : item[prop]}
+                                        {prop === "prod_line" ? (item["prod_line_to_show"]) : (prop==="formula" ? item["formula_to_show"] : (prop ==="manu_lines" ? item["manu_lines_to_show"] : item[prop])) }
+
                                     </td>
                                 )}
                                 </tr>

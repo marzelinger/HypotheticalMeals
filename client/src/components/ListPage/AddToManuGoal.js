@@ -1,4 +1,4 @@
-// Comment.js
+// AddToManuGoal.js
 import React from 'react';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import PropTypes from 'prop-types';
@@ -31,17 +31,23 @@ export default class AddToManuGoal extends React.Component {
     async handleSubmit(quantities) {
         var goal = this.state.goal;
         console.log(goal);
-        Object.keys(quantities).forEach( (key) => {
-            if(!goal.skus.includes(key)){
-                goal.quantities.push(quantities[key]);
-                goal.skus.push(key);
+        let skus = goal.activities.map(activity => activity.sku._id);
+        console.log(skus);
+        console.log(goal.activities);
+        for(const skustring in quantities){
+            var sku = JSON.parse(skustring);
+            var skukey = sku._id
+            if(!skus.includes(skukey)){
+                let activity = await SubmitRequest.submitCreateItem('manuactivities', {sku: sku, quantity: quantities[skustring]})
+                goal['activities'].push(activity.data);
             }
             else{
-                console.log('found it');
-                var index = goal.skus.indexOf(key);
-                goal.quantities[index] = goal.quantities[index]+ quantities[key];
+                console.log('found it')
+                var index = skus.indexOf(skukey);
+                goal.activities[index]['quantity'] = goal.activities[index]['quantity']+ quantities[skustring];
+                await SubmitRequest.submitUpdateItem('manuactivities', goal.activities[index]);
             }
-          });
+        };
         console.log(goal);
         let res = await SubmitRequest.submitUpdateGoal(goal.user, goal._id, goal);
         if (!res.success) {

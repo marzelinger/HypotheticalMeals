@@ -8,6 +8,7 @@ import {ImportReport} from './ImportReport'
 import {Input} from 'reactstrap'
 import './Center.css';
 import {exportImportReport} from "../actions/exportActions";
+import GeneralNavBar from './GeneralNavBar';
 
 var endpoint = "not specified";
 
@@ -66,6 +67,19 @@ export default class ImportPage extends React.Component {
             badData: false,
             incompleteEntry: false,
             badDataRow: -1,
+
+            formula_comment: false,
+            ingr_duplicate: false,
+            ingr_dup_num: -1,
+            formula_num: -1,
+
+            sku_formula_num: -1,
+            sku_formula_error: false,
+
+            manu_line_error: false,
+            manu_line_name: "",
+
+            unknownError: false,
         }
     }
 
@@ -123,8 +137,35 @@ export default class ImportPage extends React.Component {
                 //.then(data => data.json())
                 .then((res) => {
                     console.log(res);
+                    if(typeof res.data.manu_line_name != 'undefined'){
+                        this.setState({
+                            manu_line_error: true,
+                            rowIssue: res.data.row,
+                            manu_line_name: res.data.manu_line_name,
+                        })
+                    }
+                    if(typeof res.data.sku_formula_num != 'undefined'){
+                        this.setState({
+                            sku_formula_num: res.data.sku_formula_num,
+                            sku_formula_error: true,
+                        })
+                    }
                     // Setting state for a duplicate
-                    if(typeof res.data.duplicate != 'undefined'){
+                    else if(typeof res.data.formula_comment != 'undefined'){
+                        this.setState({
+                            formula_comment: true,
+                            rowIssue: res.data.formula_comment
+                        });
+                    }
+                    else if(typeof res.data.ingredient_duplicate != 'undefined'){
+                        this.setState({
+                            ingr_duplicate: true,
+                            rowIssue: res.data.ingredient_duplicate,
+                            ingr_dup_num: res.data.ingredient_num,
+                            formula_num: res.data.formula_num
+                        })
+                    }
+                    else if(typeof res.data.duplicate != 'undefined'){
                         this.setState({
                             duplicate: true,
                             rowIssue: res.data.duplicate
@@ -138,11 +179,15 @@ export default class ImportPage extends React.Component {
                         })
                     }
                     // Setting state for the number of fields being off
-                    else if(typeof res.data.numFields != 'undefined'){
+                    else if(typeof res.data.incorrectNumHeaders != 'undefined'){
                         this.setState({
                             incorrectNumHeaders: true,
-                            numHeaders: res.data.numFields,
                             requiredHeaders: res.data.requiredFields
+                        })
+                    }
+                    else if(typeof res.data.error == "Catch all error"){
+                        this.setState({
+                            unknownError: true,
                         })
                     }
                     // Setting state for the headers being mislabeled
@@ -239,9 +284,9 @@ export default class ImportPage extends React.Component {
                     } else if(typeof res.data.showImport != 'undefined' && endpoint == '/api/parseFormulas'){
                         this.setState({
                             showImportReport: true,
-                            update_list_items_new: res.data.sku_data,
-                            update_list_no_collisions: [],
-                            update_list_ignores: [],
+                            update_list_items_new: res.data.updates,
+                            update_list_no_collisions: res.data.adds,
+                            update_list_ignores: res.data.ignores,
                             import_report_type: "Formulas",
                         })
                     }
@@ -274,7 +319,6 @@ export default class ImportPage extends React.Component {
     onDismissHeaderCount = () => {
         this.setState({
             incorrectNumHeaders: false,
-            numHeaders: -1,
             requiredHeaders: -1,
         })
     }
@@ -298,6 +342,13 @@ export default class ImportPage extends React.Component {
         this.setState({
             prod_line_error: false,
             prod_line_name: ""
+        })
+    }
+
+    onDismissManuLine = () => {
+        this.setState({
+            manu_line_error: false,
+            manu_line_name: ""
         })
     }
 
@@ -332,6 +383,13 @@ export default class ImportPage extends React.Component {
             badDataRow: -1,
             badData: false,
             incompleteEntry: false,
+        })
+    }
+
+    onDismissSkuFormula = () =>{
+        this.setState({
+            sku_formula_error: false,
+            sku_formula_num: -1,
         })
     }
 
@@ -403,7 +461,6 @@ export default class ImportPage extends React.Component {
 
             // Incorrect number of headers
             incorrectNumHeaders: false,
-            numHeaders: -1,
             requiredHeaders: -1,
 
             // Incorrect column headers
@@ -442,6 +499,21 @@ export default class ImportPage extends React.Component {
             badData: false,
             incompleteEntry: false,
             badDataRow: -1,
+            formula_comment: false,
+            ingr_duplicate: false,
+            ingr_dup_num: -1,
+            formula_num: -1,
+
+            manu_line_error: false,
+            manu_line_name: "",
+
+            sku_formula_num: -1,
+            sku_formula_error: false,
+
+            manu_line_error: false,
+            manu_line_name: "",
+
+            unknownError: false,
         })
     }
 
@@ -450,7 +522,26 @@ export default class ImportPage extends React.Component {
     render() {
         return (
             <div className = "Import">
+                <GeneralNavBar></GeneralNavBar>
 
+
+                <div className = "centerTitle">
+                    <h1> Please enter a CSV below to bulk import.</h1>
+                </div>
+                <div className = "centerTitle">
+                    <h3> Please upload one file at a time. The file formats that are accepted are specified below and are case-insensitive: </h3>
+                </div>
+                <div className="centerTitle">
+                    <ul>
+                        <li> A CSV file starting with "formulas" (i.e. formulas123213.csv)</li>
+                        <li> A CSV file starting with "product_lines" (i.e. product_linesPUT_ANYTHING_HERE.csv)</li>
+                        <li> A CSV file starting with "skus" (i.e. skusTHISWORKS.csv)</li>
+                        <li> A CSV file starting with "ingredients" (i.e. ingredientsblahblah.csv)</li>
+                    </ul>
+                </div>
+                <div className = "centerTitle">
+                    <h3> For more specifications regarding the upload format, please refer to this <a href="https://d1b10bmlvqabco.cloudfront.net/attach/jpvlvyxg51d1nc/iddif2iv5hz4jx/js9h14qu6k6a/Bulk_Import_Export_Format_Draft_2.3.pdf">link</a>. </h3>
+                </div>
                 <div className="centerContainer">
                     <Input className="centerFile" type="file" onChange={this.handleSelectedFile} />
                 </div>
@@ -460,27 +551,39 @@ export default class ImportPage extends React.Component {
                 { this.state.waiting ? <Progress animated value={100}/> : null}
 
                 <Alert color="danger" isOpen={this.state.duplicate} toggle={this.onDismissDuplicate}>
-                    A duplicate occured on row {this.state.rowIssue+1}
+                    A duplicate occured on row {this.state.rowIssue}
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.collision} toggle={this.onDismissCollision}>
-                    An ambiguous collision occured on row {this.state.rowIssue+1}
+                    An ambiguous collision occured on row {this.state.rowIssue}
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.incorrectNumHeaders} toggle={this.onDismissHeaderCount}>
-                    {this.state.numHeaders} columns were specified when {this.state.requiredHeaders} were expected
+                    Please check the number of columns provided. {this.state.requiredHeaders} columns were expected
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.incorrectHeaders} toggle={this.onDismissHeaderName}>
-                    Column {this.state.incorrectColumnNum} had name {this.state.incorrectColumnName} when {this.state.correctColumnName} was expected
+                    Column {this.state.incorrectColumnNum} had name "{this.state.incorrectColumnName}" when "{this.state.correctColumnName}" was expected
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.unknownError} toggle={this.resetState}>
+                    An unknown error occured. Please reload the page and try again.
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.empty} toggle={this.onDismissEmpty} >
                     The provided CSV file had no entries
                 </Alert>
 
+                <Alert color="danger" isOpen={this.state.sku_formula_error} toggle={this.onDismissSkuFormula}>
+                    Formula # {this.state.formula_num} does not exist
+                </Alert>
+
                 <Alert color="danger" isOpen={this.state.prod_line_error} toggle={this.onDismissProdLine} >
-                    The product line {this.state.prod_line_name} from entry {this.state.rowIssue} does not exist
+                    The product line "{this.state.prod_line_name}" from row {this.state.rowIssue} does not exist
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.manu_line_error} toggle={this.onDismissManuLine}>
+                    The manufacturing line shortname "{this.state.manu_line_name}" from row {this.state.rowIssue} does not exist
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.noFile} toggle={this.onDismissNoFile}>
@@ -508,11 +611,19 @@ export default class ImportPage extends React.Component {
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.incompleteEntry} toggle={this.onDismissBadData}>
-                    The entry specified in row {this.state.badDataRow+1} does not exist
+                    The entry specified in row {this.state.badDataRow} does not exist
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.badData} toggle={this.onDismissBadData}>
-                    The entry specified in row {this.state.badDataRow+1} has bad data
+                    The entry specified in row {this.state.badDataRow} has bad data
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.formula_comment} toggle={this.resetState}>
+                    The formula specified in row {this.state.rowIssue} is not the first occurence in the CSV and should not have a comment
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.ingr_duplicate} toggle={this.resetState}>
+                    Ingredient # {this.state.ingr_dup_num} is specified more than once for Formula # {this.state.formula_num}
                 </Alert>
                 
 

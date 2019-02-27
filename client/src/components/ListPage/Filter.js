@@ -9,6 +9,7 @@ import {
     InputGroupAddon } from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import Select from 'react-select'
+import SubmitRequest from './../../helpers/SubmitRequest'
 
 
 export default class Filter extends React.Component {
@@ -17,24 +18,95 @@ export default class Filter extends React.Component {
         this.state = {
             width: 100,
             focus: false,
-            open: false
+            open: false,
+            options: [],
+            loaded: false
         };
     }
 
+    handleResponse = (response) => {
+        if(response.data == undefined){
+            this.setState({options: []})
+        }
+        else{
+            this.setState({options: response.data.map((item) => ({label: item.name, value: item}))});
+        }
+            
+    }
+
+    getLabel(type) {
+        switch (type){
+            case Constants.ingredients_page_name:
+                return 'Ingredients'
+            case Constants.skus_page_name:
+                return 'SKUs'
+            case Constants.prod_line_page_name:
+                return 'Product Lines'
+            case Constants.manu_line_page_name:
+                return 'Manufacturing Lines'
+        }
+    }
+
+    getNewOptions = (input) => {
+        console.log("getting new options here.");
+        if(input == ""){
+            this.setState({options: []})
+            return;
+        }
+        switch (this.props.type) {
+                case Constants.ingredients_page_name:
+                    SubmitRequest.submitGetIngredientsByNameSubstring(input).then((response) => {
+                        this.handleResponse(response)
+                    });
+                    break;
+                case Constants.skus_page_name:
+                    SubmitRequest.submitGetSkusByNameSubstring(input).then((response) => {
+                        this.handleResponse(response)
+                    })
+                    break;
+                case Constants.prod_line_page_name:
+                    SubmitRequest.submitGetProductLinesByNameSubstring(input).then((response) => {
+                        this.handleResponse(response)
+                    });
+                    break;
+                case Constants.manu_line_page_name:
+                    SubmitRequest.submitGetManufacturingLinesByNameSubstring(input).then((response) => {
+                        this.handleResponse(response)
+                    });
+                    break;
+                case Constants.formulas_page_name:
+                    SubmitRequest.submitGetFormulasByNameSubstring(input).then((response) => {
+                        this.handleResponse(response)
+                    });
+                    break;
+
+            }
+    }
+
+    getDetailsPlaceholder = () => {
+        return (this.props.place_holder != undefined ? this.props.place_holder.name : `Add ${this.getLabel(this.props.type)}`);
+    }
+
     render() {
-        // var style = {
-        //     height: '10px !important',
-        //     width: '80%',
-        //     marginTop: '10px',
-        //     marginBottom: '10px'
-        // }
+        if (this.props.defaultItems !== undefined && this.props.defaultItems[0] === 'loading') {
+            return null;
+        }
+        const customStyles = {
+            control: (base, state) => ({
+                ...base,
+                borderColor: this.props.invalid ? 'red' : '#ddd'
+            })
+        }
         return (
         <div className='filter-item'>
             <Select
-                placeholder = {`Filter by ${this.props.type}`}
-                isMulti
+                key = {this.props.type}
+                value = {this.props.currItems}
+                placeholder = {this.props.multi != undefined ? this.getDetailsPlaceholder() : `Filter by ${this.props.type}`}
+                isMulti = {this.props.multi != undefined ? this.props.multi : true}
+                onInputChange = { (input) => this.getNewOptions(input)}
                 onChange={(opt, e) => this.props.handleFilterValueSelection(opt, e, this.props.type)}
-                options={this.props.data.map((item) => ({label: item.name, value: item._id}))}
+                options={this.state.options}
                 noOptionsMessage={() => null}
                 theme={(theme) => ({
                     ...theme,
@@ -44,8 +116,9 @@ export default class Filter extends React.Component {
                       primary: 'rgb(66, 66, 66)',
                     },
                   })}
+                isDisabled={this.props.disabled}
+                styles={customStyles}
             />
-            {/* <InputGroupAddon addonType="append">{this.props.type}</InputGroupAddon> */}
         </div>
         );
     }
@@ -53,9 +126,11 @@ export default class Filter extends React.Component {
 
 Filter.propTypes = {
     value: PropTypes.string,
-    data: PropTypes.arrayOf(PropTypes.object),
+    currItems: PropTypes.arrayOf(PropTypes.object),
     handleFilterValueChange: PropTypes.func,
     handleFilterValueSelection: PropTypes.func,
     handleRemoveFilter: PropTypes.func,
-    type: PropTypes.string
+    type: PropTypes.string,
+    disabled: PropTypes.bool,
+    invalid: PropTypes.bool
   };
