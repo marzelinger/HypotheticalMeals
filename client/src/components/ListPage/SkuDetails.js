@@ -146,12 +146,6 @@ export default class SKUDetails extends React.Component {
     }
 
     onPropChange = (value, item, prop) => {
-        // let {success,func} = UnitConversion.getConversionFunction(value)
-        // console.log(success)
-        // if (success){
-        //     console.log(func('1 gal'))
-        // }
-        console.log(UnitConversion.getCleanUnitForm(value))
         if (item.manu_lines.length > 0 && prop === 'manu_rate') {
             alert('Once Manufacturing Lines are set, you cannot change Manufacturing Rate!')
             return

@@ -35,6 +35,7 @@ class IngredientHandler{
             ingredient.num = new_ingredient_num;
             ingredient.vendor_info = new_vendor_info;
             ingredient.pkg_size = new_pkg_size;
+            if(await this.findUnit(new_pkg_size == -1)) return res.json({ success: false, error: "Please enter one of the following units: oz, lb, ton, g, kg, floz, pt, qt, gal, mL, L, count"});
             ingredient.pkg_cost = new_pkg_cost;
             ingredient.sku_count = new_sku_count;
             ingredient.comment = new_comment; 
@@ -47,6 +48,13 @@ class IngredientHandler{
         }
     }
 
+    static async findUnit(ingredient_pkg_size){
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg)$/.test(ingredient_pkg_size)) return 1;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (floz|pt|qt|gal|ml|l)$/.test(ingredient_pkg_size)) return 2;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count)$/.test(ingredient_pkg_size)) return 3;
+        return -1;
+    }
+
     static async updateIngredientByID(req, res){
         try {
             var target_id = req.params.ingredient_id;
@@ -57,6 +65,8 @@ class IngredientHandler{
             var new_ingredient_num = req.body.num;
             var new_vendor_info = req.body.vendor_info;
             var new_pkg_size = req.body.pkg_size;
+            console.log(new_pkg_size);
+            if(await this.findUnit(new_pkg_size) == -1) return res.json({ success: false, error: "Please enter one of the following units: oz, lb, ton, g, kg, floz, pt, qt, gal, mL, L, count"});
             var new_pkg_cost = req.body.pkg_cost;
             var new_sku_count = req.body.sku_count
             var new_comment = req.body.comment;

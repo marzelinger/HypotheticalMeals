@@ -91,7 +91,7 @@ export default class ItemSearchModifyListQuantity extends React.Component {
     }
 
     determineButtonDisplay(state, option) {
-        var satisfiesRegex = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/.test(this.state.qty);
+        var satisfiesRegex = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$/.test(this.state.qty);
         switch (option) {
             case Constants.details_add:
                 return (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient && 

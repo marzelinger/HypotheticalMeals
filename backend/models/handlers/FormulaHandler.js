@@ -19,7 +19,7 @@ class FormulaHandler{
             if(new_formula_ingredients.length != new_ingredient_quantities.length) return res.json({ success: false, error: 'Mismatch in parallel arrays'});
             for(var i = 0; i < new_formula_ingredients.length; i++){
                 var curr_ingredient_quantity = new_ingredient_quantities[i];
-                var satisfiesRegex = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/.test(curr_ingredient_quantity);
+                var satisfiesRegex = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$/.test(curr_ingredient_quantity);
                 if(!satisfiesRegex) return res.json({ success: false, error: 'Please provide a quantity with the appropriate units'});
                 
                 var curr_ingredient_id = new_formula_ingredients[i];
@@ -28,6 +28,7 @@ class FormulaHandler{
 
                 var typeOfUnit = await this.findUnit(curr_ingredient.pkg_size);
                 var otherTypeOfUnit = await this.findUnit(curr_ingredient_quantity);
+                if(otherTypeOfUnit == -1) return res.json({ success: false, error: "Please enter one of the following units: oz, lb, ton, g, kg, floz, pt, qt, gal, mL, L, count"});
                 if(typeOfUnit != otherTypeOfUnit) return res.json({ success: false, error: 'Ingredient unit mismatch'});
             }
 
@@ -58,9 +59,10 @@ class FormulaHandler{
     }
 
     static async findUnit(ingredient_pkg_size){
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg)$/.test(ingredient_pkg_size)) return 1;
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (fl.oz.|pt.|qt.|gal.|mL|L)$/.test(ingredient_pkg_size)) return 2;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg)$/.test(ingredient_pkg_size)) return 1;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (floz|pt|qt|gal|ml|l)$/.test(ingredient_pkg_size)) return 2;
         if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count)$/.test(ingredient_pkg_size)) return 3;
+        return -1;
     }
 
     static async updateFormulaByID(req, res){
@@ -80,7 +82,7 @@ class FormulaHandler{
                 var curr_ingredient_quantity = new_ingredient_quantities[i];
                 console.log(curr_ingredient_quantity);
                 console.log(" ");
-                var satisfiesRegex = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/.test(curr_ingredient_quantity);
+                var satisfiesRegex = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|ml|l|count)$/.test(curr_ingredient_quantity);
                 if(!satisfiesRegex) return res.json({ success: false, error: 'Please provide a quantity with the appropriate units'});
                 
                 var curr_ingredient_id = new_formula_ingredients[i];
@@ -89,6 +91,7 @@ class FormulaHandler{
 
                 var typeOfUnit = await this.findUnit(curr_ingredient.pkg_size);
                 var otherTypeOfUnit = await this.findUnit(curr_ingredient_quantity);
+                if(otherTypeOfUnit == -1) return res.json({ success: false, error: "Please enter one of the following units: oz, lb, ton, g, kg, floz, pt, qt, gal, mL, L, count"});
                 if(typeOfUnit != otherTypeOfUnit) return res.json({ success: false, error: 'Ingredient unit mismatch'});
             }
 
