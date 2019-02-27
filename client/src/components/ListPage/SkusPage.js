@@ -450,7 +450,7 @@ export default class ListPage extends React.Component {
         return (
             <div className="list-page">
             {this.props.default_ing_filter === undefined && this.props.default_formula_filter === undefined ? <GeneralNavBar></GeneralNavBar> : null}
-                <div>
+                <div className = "sku-table">
                     <PageTable 
                         columns={this.state.table_columns} 
                         table_properties={this.state.table_properties} 
@@ -460,7 +460,7 @@ export default class ListPage extends React.Component {
                         handleSort={this.onSort}
                         handleSelect={this.onSelect}
                         handleDetailViewSelect={this.onDetailViewSelect}
-                        showDetails = {this.props.simple !=undefined ? !this.props.simple : true}
+                        showDetails = {true}
                         selectable = {this.props.simple !=undefined ? !this.props.simple : true}
                         sortable = {this.props.simple != undefined ? !this.props.simple : true}
                         title = {this.state.page_title}

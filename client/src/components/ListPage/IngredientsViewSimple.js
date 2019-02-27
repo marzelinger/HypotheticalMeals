@@ -165,7 +165,7 @@ export default class IngredientsViewSimple extends React.Component {
     }
     render() {
         return (
-            <div className="list-page">
+            <div className="list-page ingredients-table details-ingredients-table">
                 <div>
                     <PageTable 
                         columns={this.state.table_columns} 

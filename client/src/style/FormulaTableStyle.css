@@ -1,0 +1,12 @@
+
+.formula-table tr {
+    grid-template-columns:  minmax(100px, 5fr) minmax(100px, 5fr) minmax(100px, 2fr);
+}
+
+.formula-table #complex {
+    grid-template-columns: minmax(150px, 1fr) minmax(200px , 1fr) 50px;
+}
+
+.formula-table .superrow {
+    grid-template-columns: 1fr 11fr;
+}

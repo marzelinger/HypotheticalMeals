@@ -19,7 +19,7 @@ import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
 import PropTypes from 'prop-types';
 import TableActions from './TableActions';
-// import '../../style/TableStyle.css'
+import '../../style/TableStyle.css'
 
 /**
  * A more complex example, allowing the table height to be set, and key boolean properties to be toggled.
@@ -85,7 +85,7 @@ export default class PageTable extends Component {
 
   getDetailsCol = () => {
     {if(this.state.showDetails){
-      return (<TableHeaderColumn> See More Details </TableHeaderColumn>);
+      return (<TableHeaderColumn> {this.props.simple? 'Details' : 'See More Details'} </TableHeaderColumn>);
       }
     }
   }

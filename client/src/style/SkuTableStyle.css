@@ -1,106 +1,26 @@
-th, td {
-    padding: 0px !important;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100% !important;
-    margin-left: 5px;
-    margin-right: 5px;
-    height: 30px !important;
-    align-self: center;
+
+.sku-table tr {
+    grid-template-columns:  .5fr minmax(100px, 1fr) minmax(100px, 2fr) minmax(100px, 2fr) minmax(100px,2fr) minmax(50px,1fr) minmax(75px,1.5fr) minmax(100px,2fr) minmax(50px,1fr);
 }
 
-tbody {
-    display: grid;
-    grid-auto-rows: 30px;
-}
-
-.table-container {
-    padding: 15px;
-}
-
-tr {
-    height: 30px !important;
-    padding-left: 25px !important;
-    padding-right: 25px !important;
-    display: grid;
-    grid-template-columns:  .5fr minmax(50px, 1fr) minmax(100px, 2fr) minmax(100px, 2fr) minmax(100px,2fr) minmax(50px,1fr) minmax(75px,1.5fr) minmax(100px,2fr) minmax(50px,1fr);
-}
-
-#complex {
-    display: grid;
-    grid-template-columns: minmax(200px, 1fr) minmax(200px , 1fr) minmax(200px, 1fr) minmax(200px, 1fr) 50px;
-    justify-items: end;
-    grid-gap: 10px;
-    width: 100%;
-    padding-right: 20px;
-}
-
-.superrow {
-    height: 70px !important;
-    display: grid;
-    grid-template-columns: 0fr 1fr 11fr;
-    justify-items: end;
-    grid-gap: 10px;
-    padding-right: 0px !important;
-}
-
-thead {
-    height: 50px !important;
-}
-
-
-#complex > * {
-    align-self: center;
-}
-
-.filter-item > div > div > div{
-    padding: 0px;
-}
-
-.filter-item {
-    margin: 10px;
-}
-
-svg {
-    background-size: 10px 10px;
-}
-
-/* .filter-item > div > div > div div:nth-child(2){
-    width: 10px
-}
-
-.filter-item > div > div > div div:first-child{
-    width: 150px;
-} */
-
-.css-1hwfws3 {
-    width: 200px !important;
-    height: 30px !important;
-    overflow: scroll !important;
-}
-
-.css-1g6gooi {
-    height: 30px;
+.sku-table table {
     overflow: scroll;
 }
 
-.css-1g6gooi > *{
-    height: 20px;
+.sku-table #complex {
+    grid-template-columns: minmax(150px, 1.5fr) minmax(200px , 1fr) minmax(200px, 1fr) 50px;
+    justify-items: end;
 }
 
-#complex > div > div {
-    width: 200px !important;
+.sku-table #complex > *{
+    justify-self: flex-end;
+    
 }
 
-.css-1ep9fjw{
-    padding: 0px !important;
+.sku-table .superrow {
+    grid-template-columns: 0fr 1fr 11fr;
 }
 
-.css-1uq0kb5 {
-    padding: 0px !important;
-}
-
-.css-12jo7m5 {
-    padding: 0px !important;
+.details-sku-table .sku-table tr {
+    grid-template-columns:  minmax(70px, 1fr) minmax(60px, 1fr) minmax(100px, 2fr) minmax(50px,2fr) minmax(50px,1fr);
 }

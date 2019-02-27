@@ -24,12 +24,10 @@ tr {
     padding-left: 25px !important;
     padding-right: 25px !important;
     display: grid;
-    grid-template-columns:  .5fr minmax(50px, 1fr) minmax(100px, 2fr) minmax(100px, 2fr) minmax(100px,2fr) minmax(50px,1fr) minmax(75px,1.5fr) minmax(100px,2fr) minmax(50px,1fr);
 }
 
 #complex {
     display: grid;
-    grid-template-columns: minmax(200px, 1fr) minmax(200px , 1fr) minmax(200px, 1fr) minmax(200px, 1fr) 50px;
     justify-items: end;
     grid-gap: 10px;
     width: 100%;
@@ -39,7 +37,6 @@ tr {
 .superrow {
     height: 70px !important;
     display: grid;
-    grid-template-columns: 0fr 1fr 11fr;
     justify-items: end;
     grid-gap: 10px;
     padding-right: 0px !important;

@@ -339,7 +339,7 @@ export default class IngredientsPage extends React.Component {
         return (
             <div className="list-page">
                 <GeneralNavBar></GeneralNavBar>
-                <div>
+                <div className = "ingredients-table">
                     <PageTable 
                         columns={this.state.table_columns} 
                         table_properties={this.state.table_properties} 

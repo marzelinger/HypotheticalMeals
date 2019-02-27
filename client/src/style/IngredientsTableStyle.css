@@ -1,111 +1,18 @@
-th, td {
-    padding: 0px !important;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100% !important;
-    margin-left: 5px;
-    margin-right: 5px;
-    height: 30px !important;
-    align-self: center;
+
+
+.ingredients-table tr {
+    grid-template-columns:  minmax(100px, 2.5fr) minmax(100px, 2.5fr) minmax(100px, 2fr) minmax(100px,2fr) minmax(100px,2fr) minmax(100px,1fr) 
 }
 
-tbody {
-    display: grid;
-    grid-auto-rows: 30px;
-}
-
-.table-container {
-    padding: 15px;
-}
-
-tr {
-    height: 30px !important;
-    padding-left: 25px !important;
-    padding-right: 25px !important;
-    display: grid;
-    grid-template-columns:  minmax(100px, 2fr) minmax(100px, 2fr) minmax(100px, 2fr) minmax(100px,2fr) minmax(100px,2fr) minmax(100px,2fr) 
-}
-
-#complex {
-    display: grid;
+.ingredients-table #complex {
     grid-template-columns: minmax(200px, 1fr) minmax(200px , 1fr)  50px;
-    justify-items: end;
-    grid-gap: 10px;
-    width: 100%;
-    padding-right: 20px;
 }
 
-#complex > * {
-    align-items: center;
-    justify-self: center;
-}
 
-.superrow {
-    height: 70px !important;
-    display: grid;
+.ingredients-table .superrow {
     grid-template-columns: 1fr 11fr;
-    justify-items: end;
-    grid-gap: 10px;
-    padding-right: 0px !important;
 }
 
-thead {
-    height: 50px !important;
-}
-
-
-#complex > * {
-    align-self: center;
-}
-
-.filter-item > div > div > div{
-    padding: 0px;
-}
-
-.filter-item {
-    margin: 10px;
-}
-
-svg {
-    background-size: 10px 10px;
-}
-
-/* .filter-item > div > div > div div:nth-child(2){
-    width: 10px
-}
-
-.filter-item > div > div > div div:first-child{
-    width: 150px;
-} */
-
-.css-1hwfws3 {
-    width: 200px !important;
-    height: 30px !important;
-    overflow: scroll !important;
-}
-
-.css-1g6gooi {
-    height: 30px;
-    overflow: scroll;
-}
-
-.css-1g6gooi > *{
-    height: 20px;
-}
-
-#complex > div > div {
-    width: 200px !important;
-}
-
-.css-1ep9fjw{
-    padding: 0px !important;
-}
-
-.css-1uq0kb5 {
-    padding: 0px !important;
-}
-
-.css-12jo7m5 {
-    padding: 0px !important;
+.details-ingredients-table .ingredients-table tr{
+    grid-template-columns: minmax(100px, 4fr) minmax(100px,4fr) minmax(100px, 4fr)
 }
