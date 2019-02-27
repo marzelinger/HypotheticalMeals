@@ -132,6 +132,7 @@ td, tr {
 
 .report-sum-table tr {
     grid-template-columns:  minmax(50px, 1fr)  minmax(100px,2fr) minmax(100px,2fr);
+}
 .report-sku-table tr {
     padding-left: 0px !important;
     padding-right: 0px !important;
