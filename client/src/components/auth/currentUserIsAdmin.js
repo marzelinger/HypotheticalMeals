@@ -19,7 +19,7 @@ module.exports = function currentUserIsAdmin(){
         }
       }
     }
-    errors.privileges = "Only admins may create new users.";
+    errors.isAdmin = "Only admins may create new users.";
     return {
     errors,
     isValid: isEmpty(errors)

@@ -6,12 +6,16 @@ import ManufacturingLine from './ManufacturingLine';
 const ManufacturingLineList = (props) => {
   const LineNodes = props.data.map(line => (
     <ManufacturingLine
+      manu_line = {line}
       key={line._id}
       id={line._id}
       name={line.name}
       handleUpdateManuLine={props.handleUpdateManuLine}
       handleDeleteManuLine={props.handleDeleteManuLine}
       handleReportSelect={props.handleReportSelect}
+      handleDetailViewSelect = {props.handleDetailViewSelect}
+      handleDetailViewSubmit = {props.handleDetailViewSubmit}
+      validateShortName = {props.validateShortName}
     >
       { line.name}
     </ManufacturingLine>
@@ -30,7 +34,9 @@ ManufacturingLineList.propTypes = {
   })),
   handleDeleteManuLine: PropTypes.func,
   handleUpdateManuLine: PropTypes.func,
-  handleReportSelect: PropTypes.func
+  handleReportSelect: PropTypes.func,
+  handleDetailViewSelect: PropTypes.func,
+  handleDetailViewSubmit: PropTypes.func
 };
 
 ManufacturingLineList.defaultProps = {
