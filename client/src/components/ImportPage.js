@@ -78,6 +78,8 @@ export default class ImportPage extends React.Component {
 
             manu_line_error: false,
             manu_line_name: "",
+
+            unknownError: false,
         }
     }
 
@@ -181,6 +183,11 @@ export default class ImportPage extends React.Component {
                         this.setState({
                             incorrectNumHeaders: true,
                             requiredHeaders: res.data.requiredFields
+                        })
+                    }
+                    else if(typeof res.data.error == "Catch all error"){
+                        this.setState({
+                            unknownError: true,
                         })
                     }
                     // Setting state for the headers being mislabeled
@@ -502,6 +509,11 @@ export default class ImportPage extends React.Component {
 
             sku_formula_num: -1,
             sku_formula_error: false,
+
+            manu_line_error: false,
+            manu_line_name: "",
+
+            unknownError: false,
         })
     }
 
@@ -552,6 +564,10 @@ export default class ImportPage extends React.Component {
 
                 <Alert color="danger" isOpen={this.state.incorrectHeaders} toggle={this.onDismissHeaderName}>
                     Column {this.state.incorrectColumnNum} had name "{this.state.incorrectColumnName}" when "{this.state.correctColumnName}" was expected
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.unknownError} toggle={this.resetState}>
+                    An unknown error occured. Please reload the page and try again.
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.empty} toggle={this.onDismissEmpty} >
