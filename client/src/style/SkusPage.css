@@ -73,6 +73,18 @@ li {
     cursor: pointer;
 }
 
+#manuLineScheduleButton{
+    background-color: rgb(0, 188, 212) !important;
+    height: 40px;
+    width: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    margin-left: 20px;
+    cursor: pointer;
+}
+
 .depbutton{
     background-color: rgb(0, 188, 212) !important;
     border-color: #212529;
