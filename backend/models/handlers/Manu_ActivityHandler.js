@@ -88,7 +88,11 @@ class Manu_ActivityHandler{
                 {$set: {sku: new_sku, quantity: new_quantity, scheduled: new_scheduled, start: new_start, 
                     duration: new_duration, manu_line: new_manu_line, overwritten: new_overwritten,
                     orphaned: new_orphaned, over_deadline: new_over_deadline, unscheduled_enabled: new_unscheduled_enabled}}, 
-                    {upsert: true, new: true});
+                    {upsert: true, new: true}).populate('sku').populate('manu_line').populate({
+                        path: 'sku',
+                        populate: { path: 'formula' }
+                      });
+            console.log(updated_manu_activity)
             if(!updated_manu_activity){
                 return res.json({
                     success: true, error: 'This document does not exist'
