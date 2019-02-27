@@ -102,11 +102,18 @@ export default class IngredientsViewSimple extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
+        //identify is you've changed an ingredient 
+        let starting_index = this.state.pageSize * this.state.currentPage;
+        let cQtys = this.props.formula.ingredient_quantities.slice(starting_index, starting_index+this.state.pageSize);
+        cQtys.forEach((qt, index) => {
+            if(qt != this.state.currQtys[index]){
+                this.setNumberPages();
+            }
+        })
         if (this.props.formula.ingredients.length != this.state.itemCount){
             this.setNumberPages();
-
-
         }
+        //
     }
 
     async handlePageClick(e, index) {
@@ -147,7 +154,9 @@ export default class IngredientsViewSimple extends React.Component {
         cQtys[index] = e.target.value;
         this.setState({ currQtys: cQtys })
         let ind_actual = this.state.currentPage * this.state.pageSize + index;
+        console.log(this.props.formula.ingredient_quantities);
         var ing_quant = this.props.formula.ingredient_quantities.slice();
+        console.log(e.target.value);
         ing_quant[ind_actual] = e.target.value;
         console.log("in on quantitychange: "+JSON.stringify(ing_quant));
         console.log("in on quantitychange2: "+ind_actual);
@@ -165,7 +174,7 @@ export default class IngredientsViewSimple extends React.Component {
     }
     render() {
         return (
-            <div className="list-page">
+            <div className="list-page ingredients-table details-ingredients-table">
                 <div>
                     <PageTable 
                         columns={this.state.table_columns} 
