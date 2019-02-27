@@ -111,16 +111,18 @@ export default class ManuSchedulePage extends Component {
                     if (act.overwritten) cName += ' ' + 'overwritten';
                 }
                 let dl = new Date(assoc_goal.deadline);
-                items.push({
-                    start: start,
-                    end: end,
-                    content: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity,
-                    title: 'Goal: ' + assoc_goal.name + '<br>Deadline: ' + (parseInt(dl.getMonth())+1) + '/' + dl.getDate() + '/' + 
-                        dl.getFullYear() + ' ' + dl.getHours() + ':' + (dl.getMinutes()<10 ? ('0'+dl.getMinutes()) : dl.getMinutes()),
-                    group: act.manu_line,
-                    className: cName,
-                    _id: act._id
-                });
+                if(act.manu_line!=null){
+                    items.push({
+                        start: start,
+                        end: end,
+                        content: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity,
+                        title: 'Goal: ' + assoc_goal.name + '<br>Deadline: ' + (parseInt(dl.getMonth())+1) + '/' + dl.getDate() + '/' + 
+                            dl.getFullYear() + ' ' + dl.getHours() + ':' + (dl.getMinutes()<10 ? ('0'+dl.getMinutes()) : dl.getMinutes()),
+                        group: act.manu_line._id,
+                        className: cName,
+                        _id: act._id
+                    }); 
+                }
                 console.log(items)
             }
         }
