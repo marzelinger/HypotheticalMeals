@@ -13,6 +13,7 @@ import {
     Modal, ModalHeader} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import './../../style/SkusPage.css';
+import './../../style/IngredientsTableStyle.css'
 import DataStore from './../../helpers/DataStore'
 import TablePagination from './TablePagination'
 import DependencyReport from "../export/DependencyReport";
