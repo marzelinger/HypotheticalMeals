@@ -217,6 +217,7 @@ export default class ListPage extends React.Component {
     }
 
     onFilterValueChange = (e, value, filterType) => {
+        console.log(this.state.filters)
         var filters = this.state.filters;
         if(filterType == 'keyword'){
             filters[filterType] = value;
@@ -234,12 +235,10 @@ export default class ListPage extends React.Component {
 
     onFilterValueSelection (vals, e, type)  {
         var filters = this.state.filters;
+        filters[type] = []
         vals.map((item) => {
-            if (!filters[type].includes(item.value._id)){
-                filters[type].push(item.value._id);
-            }
+            filters[type].push(item.value._id);
         })
-        console.log(filters)
         this.setState({
             filters: filters,
             filterChange: true

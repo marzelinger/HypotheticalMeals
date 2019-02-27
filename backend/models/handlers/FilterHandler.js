@@ -17,7 +17,7 @@ class FilterHandler{
             var sku_ids = req.params.sku_ids;
             if (sku_ids !== undefined && sku_ids !== "_"){
                 sku_ids = sku_ids.replace(/\s/g, "").split(',');
-                let skus = await SKU.find({ _id : { $in : sku_ids } });
+                let skus = await SKU.find({ _id : { $in : sku_ids } }).populate('formula');
                 if (skus.length == 0) return res.json({success: true, data: []})
                 skus.map(sku => sku.formula.ingredients.map(ing => ids.push(ing._id)));
                 and_query.push( {_id: { $in: ids } } );
@@ -48,6 +48,7 @@ class FilterHandler{
             return res.json({ success: true, data: results});
         }
         catch (err) {
+            console.log(err)
             return res.json({ success: false, error: err});
         }
     }
@@ -58,21 +59,13 @@ class FilterHandler{
             var ids = [];
             var sort_field = req.params.sort_field;
             var ingredient_ids = req.params.ingredient_ids;
-            //console.log(ingredient_ids);
+
             if (ingredient_ids !== undefined && ingredient_ids !== "_"){
                 ingredient_ids = ingredient_ids.replace(/\s/g, "").split(',');
                 let formulas = await Formula.find({ ingredients : {$in : ingredient_ids } });
-                var formula_string = "";
-
-                for(var i = 0; i < formulas.length; i++){
-                    var obj = formulas[i]
-                    //console.log(obj._id);
-                    formula_string = formula_string + obj._id + ",";
-                }
-                formula_string = formula_string.substring(0,formula_string.length-1);
-                //log(formula_string);
-                let skus = await SKU.find({ formula : {$in : formula_string } });
-                //console.log(skus.length);
+                console.log(formulas)
+                let skus = await SKU.find({ formula : {$in : formulas } });
+                console.log(skus.length);
                 skus.map(sku => ids.push(sku._id));
                 and_query.push( {_id: { $in: ids } } );
             }
@@ -147,6 +140,7 @@ class FilterHandler{
             return res.json({ success: true, data: results});
         }
         catch (err) {
+            console.log(err)
             return res.json({ success: false, error: err});
         }
 

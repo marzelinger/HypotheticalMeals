@@ -36,7 +36,7 @@ export default class TableActions extends React.Component {
       }
       {
         Object.keys(this.props.filters).map( (type) => {
-          if(type == 'keyword')return 
+          if(type == 'keyword' || type == 'formula')return 
           return (
             <Filter data = {this.props[type]} 
                 handleFilterValueChange = {this.props.onFilterValueChange}

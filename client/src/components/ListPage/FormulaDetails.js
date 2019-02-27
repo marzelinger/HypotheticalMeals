@@ -14,7 +14,7 @@ import IngredientsViewSimple from './IngredientsViewSimple'
 import ItemSearchInput from './ItemSearchInput';
 import ItemSearchModifyListQuantity from './ItemSearchModifyListQuantity';
 import SubmitRequest from '../../helpers/SubmitRequest';
-import DetailsViewSkuTable from './DetailsViewSkuTable'
+import DetailsViewSkuTable from './DetailsViewSkuTable';
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
@@ -100,15 +100,30 @@ export default class FormulaDetails extends React.Component {
         this.setState({ item: item })
     }
 
-    addIngredient(item, value, qty) {
+    findUnit(ingredient_pkg_size){
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg)$/.test(ingredient_pkg_size)) return 1;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (fl.oz.|pt.|qt.|gal.|mL|L)$/.test(ingredient_pkg_size)) return 2;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count)$/.test(ingredient_pkg_size)) return 3;
+    }
+
+    async addIngredient(item, value, qty) {
         let ind = -1;
+        console.log('hello');
+        let ingr = await SubmitRequest.submitGetIngredientByID(value._id);
+        console.log(ingr);
+        console.log('gets here');
+        var ingrType = await this.findUnit(qty);
+        var ingrType2 = await this.findUnit(ingr.data[0].pkg_size);
+        if (ingrType != ingrType2) {
+            alert("Please enter a unit matching this ingredient's unit");
+            return;
+        }
 
         //qty = parseInt(qty);
         item.ingredients.map((ing, index) => {
             if (ing._id === value._id)
                 ind = index;
         });
-        console.log()
         if (ind > -1){
             let curr_qty = item.ingredient_quantities[ind];
             curr_qty = curr_qty + qty;

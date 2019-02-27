@@ -8,13 +8,11 @@ import SubmitRequest from '../../helpers/SubmitRequest'
 import ItemStore from '../../helpers/ItemStore'
 import DataStore from './../../helpers/DataStore'
 import TablePagination from './TablePagination'
-import ListPage from './SkusPage';
 import ExportSimple from '../export/ExportSimple';
-import './../../style/SkusPage.css';
+import './../../style/FormulasPageStyle.css';
 import {Modal, ModalHeader} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import FormulaDetails from './FormulaDetails';
-import '../../style/SkusPage.css'
 import GeneralNavBar from '../GeneralNavBar';
 
 const jwt_decode = require('jwt-decode');
@@ -185,12 +183,10 @@ export default class FormulasPage extends React.Component {
 
     onFilterValueSelection (vals, e, type)  {
         var filters = this.state.filters;
+        filters[type] = []
         vals.map((item) => {
-            if (!filters[type].includes(item.value._id)){
-                filters[type].push(item.value._id);
-            }
-        });
-
+            filters[type].push(item.value._id);
+        })
         this.setState({
             filters: filters,
             filterChange: true

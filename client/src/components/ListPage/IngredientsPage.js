@@ -216,6 +216,7 @@ export default class IngredientsPage extends React.Component {
         filters[type] = vals.map((item) => {
             return item.value._id
         })
+        console.log(filters[type])
         
         this.setState({
             filters: filters,

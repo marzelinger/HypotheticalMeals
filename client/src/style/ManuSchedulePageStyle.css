@@ -72,12 +72,12 @@ div.vis-item.vis-selected {
     background-color: rgb(158, 158, 158);
     border-color: rgb(158, 158, 158);
 }
-.vis-item.over_deadline {
-    border-color: red;
+div.vis-item.over_deadline {
+    border: 2px solid red;
 }
 .vis-item.overwritten {
-    background-color: orange;
-    border-color: orange;
+    background-color: rgb(255, 185, 55);
+    border-color: rgb(255, 185, 55);
 }
 
 .vis-item {
