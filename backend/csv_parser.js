@@ -132,7 +132,7 @@ export default class CSV_parser{
     }
 
     static async parseSKUCSV(req, res){
-     //   try{ 
+        try{ 
             // Extracts all skus from the database
             var db_skus = new Map();
             var db_caseUPCs = new Set();
@@ -306,9 +306,9 @@ export default class CSV_parser{
             } else{
                 return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: intermediate_skus_added, old_data: skus_to_update_old, new_data: skus_to_update_new, ignored_data: skus_to_ignore_arr});
             }
-   //     catch (err) {
-   //         return res.json({ success: false, error: 'Catch all error'});
-   //     }
+        } catch (err){
+            return res.json({ success: false, error: "Catch all error"})
+        }
     }
 
     static async indicateSKUDataFailure(res, dataValidationObj, row){
