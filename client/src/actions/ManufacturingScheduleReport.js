@@ -3,26 +3,113 @@ import { splitIngQuantity} from "./splitIngQuantity";
 
 var fileDownload = require('js-file-download');
 //The former should be fine: name, number, and quantity/unit for ingredients.
+const html2canvas = require('html2canvas');
+const jsPDF = require('jspdf');
 
 
 
-export const exportManuScheduleReport = async (reportData) => {
+
+export const exportManuScheduleReport = async (manuData) => {
     console.log("making the manu report in export manu schedule report: ");
-    let res = await SubmitRequest.submitGetManufacturingActivitiesForReport(reportData);
+    let res = await SubmitRequest.submitGetManufacturingActivitiesForReport(manuData);
     if(res.success){
 
         console.log("complete_acti: "+JSON.stringify(res.data.complete_activities));
         console.log("beginning_cut: "+JSON.stringify(res.data.beginning_cut));
         console.log("ending_cut: "+JSON.stringify(res.data.ending_cut));
         console.log("allcut: "+JSON.stringify(res.data.all_cut));
-        createManuReport(reportData, res.data);
+        //createManuReport(manuData, res.data);
+        let calculations = doCalcs(manuData, res.data.complete_activities);
 
+        return { reportData : {
+            complete: res.data.complete_activities,
+            beg_cut: res.data.beg_cut,
+            end_cut: res.data.end_cut,
+            all_cut: res.data.all_cut,
+            summation: calculations
+        }
+        }
     } 
     else{
         console.log("error in the manureport");
+        return {};
     } 
 }
 
+export const doCalcs = (manuData, activitites) => {
+    var ingSUMmap = new Map();
+    if(activitites.length==0) return [];
+    var calculations =[];
+    for(let act = 0; act<activitites.length; act++){
+        var curAct = activitites[act];
+        var skudata = curAct.sku;
+        if(skudata !=undefined){
+        var numIngs=0;
+        if(skudata.formula!=undefined){
+            if(skudata.formula.ingredients!= undefined){
+                numIngs = skudata.formula.ingredients.length;
+            }
+        }
+
+        for (let ing = 0; ing<numIngs; ing++){
+            var curIng = skudata.formula.ingredients[ing];
+            console.log("this is the current ing: "+ JSON.stringify(curIng));
+            var {ingQuant, ingMeas} = splitIngQuantity(skudata.formula.ingredient_quantities[ing]);
+
+            //now want to add each ing into the map
+            //map is key =ing value = sum
+            if(ingSUMmap.has(skudata.formula.ingredients[ing].name)){
+                //want to add the values together.
+                var {ingFromMap, ingMeasMap} = splitIngQuantity(ingSUMmap.get(skudata.formula.ingredients[ing].name));
+                var tot = ingFromMap + ingQuant*curAct.quantity;
+                ingSUMmap.set(skudata.formula.ingredients[ing].name, tot+""+ingMeas);
+                console.log("in the map stuff");
+                console.log("this is the tot; "+tot);
+
+            }
+            else{ //TODO DOUBLE CHECK THIS SUMMATION AFTER BELAL'S STUFF
+                ingSUMmap.set(skudata.formula.ingredients[ing].name, 
+                    ingQuant*curAct.quantity+""+ingMeas);
+                    console.log("in the map 3");
+
+            }
+        }
+        }
+
+    }
+    var ingNames = [];
+    var ingTots = [];
+    for( var k in ingSUMmap){
+        ingNames.push(k);
+        ingTots.push(ingSUMmap.get(k));
+    }
+
+    return {summation: {
+            ingredientNames: ingNames,
+            ingredientQuantities: ingTots
+    }
+}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//THIS WORKS DO NOT EDIT JUST IN CASE.
 export const createManuReport = (reportData, data) => {
     const rows = [];
     console.log("this is the data.complete_act: "+JSON.stringify(data.complete_activities));

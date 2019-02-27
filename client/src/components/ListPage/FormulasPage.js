@@ -10,10 +10,12 @@ import DataStore from './../../helpers/DataStore'
 import TablePagination from './TablePagination'
 import ExportSimple from '../export/ExportSimple';
 import './../../style/FormulasPageStyle.css';
+import './../../style/FormulaTableStyle.css';
 import {Modal, ModalHeader} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import FormulaDetails from './FormulaDetails';
 import GeneralNavBar from '../GeneralNavBar';
+
 
 const jwt_decode = require('jwt-decode');
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
@@ -222,11 +224,11 @@ export default class FormulasPage extends React.Component {
     }
 
     onSelect = (rowIndexes) => {
-        var newState = [];
+        /*var newState = [];
         rowIndexes.forEach( index => {
             newState.push(this.state.data[index]);
         });
-        this.setState({ selected_items: newState, selected_indexes: rowIndexes});
+        this.setState({ selected_items: newState, selected_indexes: rowIndexes});*/
     };
 
     onDetailViewSelect = (event, item) => {
@@ -288,7 +290,7 @@ export default class FormulasPage extends React.Component {
         return(
             <div className="list-page">
             <GeneralNavBar></GeneralNavBar>
-                <div>
+                <div className = 'formula-table'>
                     <PageTable
                         columns={this.state.table_columns} 
                         table_properties={this.state.table_properties} 
@@ -299,7 +301,7 @@ export default class FormulasPage extends React.Component {
                         handleSelect={this.onSelect}
                         handleDetailViewSelect={this.onDetailViewSelect}
                         showDetails = {this.props.simple !=undefined ? !this.props.simple : true}
-                        selectable = {this.props.simple !=undefined ? !this.props.simple : true}
+                        selectable = {this.props.simple !=undefined ? !this.props.simple : false}
                         sortable = {this.props.simple != undefined ? !this.props.simple : true}
                         title = {this.state.page_title}
                         showHeader = {true}

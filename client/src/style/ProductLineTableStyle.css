@@ -1,0 +1,13 @@
+
+
+.prod-line-table tr {
+    grid-template-columns:  minmax(50px, 1fr) minmax(100px, 2fr) minmax(50px,1fr) minmax(100px,2fr) minmax(100px,2fr);
+}
+
+.prod-line-table #complex {
+    grid-template-columns: minmax(200px, 1fr) minmax(200px , 1fr) minmax(200px, 1fr) minmax(200px, 1fr) 50px;
+}
+
+.prod-line-table .css-vj8t7z {
+    min-height: 20px;
+}

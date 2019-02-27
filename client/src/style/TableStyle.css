@@ -1,81 +1,103 @@
-td {
-    padding: 5px;
-    height: auto !important;
-    cursor: default;
-}
-
-.trselect > th {
-    cursor: pointer;
-}
-
-.trselect > td{
-    cursor: pointer;
-}
-
-tr > th {
-    height: auto !important;
-}
-
-.superrow>* {
-    padding-bottom: 5px !important;
-    padding-top: 20px !important;
-}
-
-.superrow:first-child {
-    height: 75px !important;
+th, td {
     padding: 0px !important;
-    margin: 0px !important;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100% !important;
+    margin-left: 5px;
+    margin-right: 5px;
+    height: 30px !important;
+    align-self: center;
+}
+
+tbody {
+    display: grid;
+    grid-auto-rows: 30px;
+}
+
+.table-container {
+    padding: 15px;
+}
+
+tr {
+    height: 30px !important;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+    display: grid;
 }
 
 #complex {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-end;
+    display: grid;
+    justify-items: end;
+    grid-gap: 10px;
+    width: 100%;
+    padding-right: 20px;
+}
+
+.superrow {
+    height: 70px !important;
+    display: grid;
+    justify-items: end;
+    grid-gap: 10px;
+    padding-right: 0px !important;
+}
+
+thead {
+    height: 50px !important;
+}
+
+
+#complex > * {
+    align-self: center;
+}
+
+.filter-item > div > div > div{
+    padding: 0px;
 }
 
 .filter-item {
-    width: 60%;
-
-    margin-right: 10px;
-    padding-bottom: 10px;
+    margin: 10px;
 }
 
-input {
-    margin-bottom: 0px !important;
+svg {
+    background-size: 10px 10px;
 }
 
-#pagetitle{
-    margin-bottom: 10px;
-    font-size: 20px !important;
-    text-align: left;
-    cursor: default;
+/* .filter-item > div > div > div div:nth-child(2){
+    width: 10px
 }
 
-#complex > .filter-item {
-    padding: 0px;
-    margin-left: 20px;
+.filter-item > div > div > div div:first-child{
+    width: 150px;
+} */
+
+.css-1hwfws3 {
+    width: 200px !important;
+    height: 30px !important;
+    overflow: scroll !important;
 }
 
-.filter-item > div > div:first-of-type {
-    height: 50px !important;
-    padding: 0px;
-   
+.css-1g6gooi {
+    height: 30px;
+    overflow: scroll;
 }
 
-div.css-15k3avv {
-    cursor: pointer !important;
+.css-1g6gooi > *{
+    height: 20px;
 }
 
-.filter-item > div > * {
-    cursor: pointer !important;
+#complex > div > div {
+    width: 200px !important;
 }
 
-.filter-item > div > div:first-of-type::selection {
-    border: none;
+.css-1ep9fjw{
+    padding: 0px !important;
 }
 
-td > .select {
-    height: 50px !important;
-
+.css-1uq0kb5 {
+    padding: 0px !important;
 }
 
+.css-12jo7m5 {
+    padding: 0px !important;
+}

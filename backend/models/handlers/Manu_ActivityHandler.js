@@ -148,7 +148,8 @@ class Manu_ActivityHandler{
             // console.log("target manu line id: "+target)
 
             // let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id , scheduled: true, start: {$gte: target_start_date, $lt: target_end_date}})
-            let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id , scheduled: true}).populate('sku').populate('manu_line').populate({
+            let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id , scheduled: true})
+            .populate('sku').populate('manu_line').populate({
                 path: 'sku',
                 populate: { path: 'formula', populate: {path: 'ingredients'} }
             });

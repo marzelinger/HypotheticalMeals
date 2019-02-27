@@ -13,6 +13,7 @@ import {
     Modal, ModalHeader} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import './../../style/SkusPage.css';
+import './../../style/UserTableStyle.css';
 import DataStore from '../../helpers/DataStore'
 import TablePagination from './TablePagination'
 import ExportSimple from '../export/ExportSimple';
@@ -353,7 +354,7 @@ export default class UserPage extends React.Component {
             <div className="list-page">
                         <GeneralNavBar></GeneralNavBar>
 
-                <div>
+                <div className = 'user-table'>
                     <PageTable 
                         columns={this.state.table_columns} 
                         table_properties={this.state.table_properties} 
@@ -367,6 +368,7 @@ export default class UserPage extends React.Component {
                         sortable = {true}
                         title = {this.state.page_title}
                         showHeader = {true}
+                        selectable = {false}
                         simple = {this.props.simple}
                         filters = {this.state.filters}
                         table_options = {this.state.table_options}

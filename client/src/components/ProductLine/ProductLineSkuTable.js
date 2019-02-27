@@ -47,22 +47,28 @@ export class ProductLineSkuTable extends React.Component{
     }
     
     render() {
+      var rev_index = this.props.list_items.length;
         let tablebody = (
-            this.props.list_items.map((item, index) => 
-            <TableRow
+            this.props.list_items.map((item, index) => {
+              rev_index = rev_index - 1;
+              return (<TableRow
               key={item.num + index}
             >
               {this.props.table_properties.map(prop => 
-                <TableRowColumn style = {{overflow: prop == 'prod_line' ? 'visible' : 'hidden', zIndex: `${index}`}}  key={prop}>
+                <TableRowColumn style = {{overflow: prop == 'prod_line' ? 'visible' : 'hidden', zIndex: `${rev_index}`}}  key={prop}>
                   {prop == 'prod_line' ? this.createProductLineElement(item, index) : item[prop]}
                 </TableRowColumn>
               )}
             </TableRow>
+              )
+
+            }
+
           ))
         
 
       return (
-        <div>
+        <div className = 'prod-line-table'>
           <Table
           height={'200px'}>
             <TableHeader displaySelectAll={this.state.showCheckboxes} adjustForCheckbox={this.state.showCheckboxes}>
