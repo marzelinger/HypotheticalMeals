@@ -294,27 +294,21 @@ export default class CSV_parser{
 
     static async indicateSKUDataFailure(res, dataValidationObj, row){
         if(dataValidationObj.missingRequiredField){
-            console.log('1');
             return res.json({ success: false,
-                              badData: row});
+                              missingRequiredField: row});
         } else if(dataValidationObj.nameIssue){
-            console.log('2');
             return res.json({ success: false,
                 badData: row});
         } else if(dataValidationObj.skuNumIssue){
-            console.log('3');
             return res.json({ success: false,
                 badData: row});
         } else if(dataValidationObj.caseUPCIssue){
-            console.log('4');
             return res.json({ success: false,
                 badData: row});
         } else if(dataValidationObj.unitUPCIssue){
-            console.log('5');
             return res.json({ success: false,
                 badData: row});
         } else if(dataValidationObj.cpcIssue){
-            console.log('6');
             return res.json({ success: false,
                 badData: row});
         }
