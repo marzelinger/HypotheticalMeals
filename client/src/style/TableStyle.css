@@ -51,56 +51,21 @@ thead {
     align-self: center;
 }
 
-.filter-item > div > div > div{
-    padding: 0px;
-}
-
-.filter-item {
-    margin: 10px;
-}
-
 svg {
     background-size: 10px 10px;
 }
 
-.filter-item > div > div > div div:nth-child(2){
-    width: 10px
-}
-
-.filter-item > div > div > div div:first-child{
-    width: 150px;
-}
-
 .css-1hwfws3 {
-    width: 200px !important;
     height: 30px !important;
-    overflow: scroll !important;
+    /* overflow: scroll !important; */
 }
 
-.css-1g6gooi {
-    height: 30px;
-    overflow: scroll;
-}
-
-.css-1g6gooi > *{
-    height: 20px;
-}
-
-#complex > div > div {
-    width: 200px !important;
-}
-
-.css-1ep9fjw{
+.css-1wy0on6 {
+    height: auto !important;
     padding: 0px !important;
+    /* overflow: scroll; */
 }
 
-.css-1uq0kb5 {
-    padding: 0px !important;
-}
-
-.css-12jo7m5 {
-    padding: 0px !important;
-}
 
 .import-table {
     min-height: 50px;

@@ -184,7 +184,7 @@ export default class ManufacturingLineDetails extends React.Component {
     render() {
         return (
         <div>
-        <img className = "hoverable" id = "button" src={this.props.buttonImage} onClick={this.toggle}></img>
+        <img id = "buttonline" src={this.props.buttonImage} onClick={this.toggle}></img>
             <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup" className='item-details'>
             <div className='item-details'>
                 <div className='item-title'>
