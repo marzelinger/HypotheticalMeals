@@ -195,6 +195,7 @@ export default class CSV_parser{
                 var dataValidationObj = await this.validateDataSKUs(obj, all_skus);
                 if(dataValidationObj.success == false){
                     console.log('fails here 1');
+                    console.log(dataValidationObj);
                     return await this.indicateSKUDataFailure(res, dataValidationObj, i+2);
                 }
                 
@@ -957,6 +958,9 @@ export default class CSV_parser{
             toReturn.formulaIngrIssue = true;
             return toReturn;
         }
+
+        this.convertUnits(obj[Constants.csv_formula_quantity]);
+
         var isUnitNum = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/.test(obj[Constants.csv_formula_quantity]);
         var ingr = await Ingredient.find({ num: obj[Constants.csv_formula_ingr] });
 
@@ -975,10 +979,15 @@ export default class CSV_parser{
         return toReturn;
     }
 
+    static async convertUnits(toConvert){
+        var quantity = toConvert[Constants.csv_formula_quantity];
+        
+    }
+
     static async findUnit(ingredient_pkg_size){
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg)$/.test(ingredient_pkg_size)) return 1;
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (fl.oz.|pt.|qt.|gal.|mL|L)$/.test(ingredient_pkg_size)) return 2;
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count)$/.test(ingredient_pkg_size)) return 3;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|oz|ounce|lb.|lb|pound|ton|g|gram|kg|kilogram)$/.test(ingredient_pkg_size)) return 1;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (floz|fluidounce|fl.oz.|pt|pint|pt.|qt.|qt|quart|gal.|gal|gallon|mL|milliliter|liter|L)$/.test(ingredient_pkg_size)) return 2;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count||ct)$/.test(ingredient_pkg_size)) return 3;
     }
 
     static async indicateFormulaDataValidationFailure(res, dataValidationObj, row){
