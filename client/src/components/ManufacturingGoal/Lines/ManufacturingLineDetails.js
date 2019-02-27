@@ -57,6 +57,14 @@ export default class ManufacturingLineDetails extends React.Component {
     }
 
     onPropChange = (value, item, prop) => {
+        if (prop === 'short_name' && value.length > 5) {
+            alert('Manufacturing Line shortname must be a maximum of 5 characters!')
+            return
+        }
+        if (prop === 'name' && value.length > 32) {
+            alert('Manufacturing Line name must be a maximum of 32 characters!')
+            return
+        }
         item[prop] = value
         this.setState({ item: item });
     };
