@@ -96,6 +96,7 @@ export const csv_ingr_num = "Ingr#";
 export const csv_ingr_name = "Name";
 export const csv_ingr_vendor = "Vendor Info";
 export const csv_ingr_size = "Size";
+export const csv_ingr_cost = "Cost";
 export const csv_ingr_comment = "Comment";
 
 export const csv_prod_lines = "Name";

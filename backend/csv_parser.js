@@ -78,11 +78,13 @@ export default class CSV_parser{
 
     static async checkColumns(obj, correctColumnNames, correctColumnNum){
         var toReturn = {};
-        var count = 0;
+        var count = 0; 
         console.log(obj);
+        console.log(correctColumnNames.length);
         for(var key in obj){
             console.log(key);
             console.log(count);
+            console.log(correctColumnNames[count]);
             if(count >= correctColumnNum){
                 toReturn.success = false;
                 toReturn.colCountIncorrect = true;
@@ -584,7 +586,14 @@ export default class CSV_parser{
             }
             
             var requiredNumFields = 6;
-            var columnsObj = await this.checkColumns(jsonArray[0], [Constants.csv_ingr_num, Constants.csv_ingr_name, Constants.csv_ingr_vendor, Constants.csv_ingr_size, Constants.csv_ingr_cost, Constants.csv_ingr_comment], requiredNumFields);
+            console.log("the constants file is getting : " + Constants.csv_ingr_cost)
+            var columnsObj = await this.checkColumns(jsonArray[0], 
+                [Constants.csv_ingr_num, 
+                Constants.csv_ingr_name, 
+                Constants.csv_ingr_vendor, 
+                Constants.csv_ingr_size,
+                Constants.csv_ingr_cost,
+                Constants.csv_ingr_comment], requiredNumFields);
             if(columnsObj.success == false){
                 return await this.indicateColumnFailure(res, columnsObj, requiredNumFields);
             }
@@ -622,17 +631,17 @@ export default class CSV_parser{
                 if(ingrs_to_update.has(obj[Constants.csv_ingr_num])) {
                     updated = updated + 1;
                     var old_ingr = await Ingredient.find({ num: obj[Constants.csv_ingr_num]});
-                    var reformattedIngrs = reformatIngredient(obj, obj);
+                    var reformattedIngrs = await this.reformatIngredient(obj, obj);
                     ingrs_to_update_new.push(reformattedIngrs[0]);
                     ingrs_to_update_old.push(old_ingr[0]);
                 }
                 else if(ingrs_to_add_nums.has(obj[Constants.csv_ingr_num])){
                     added = added + 1;
                     var ingredient = new Ingredient();
-                    var reformattedIngrs = reformatIngredient(ingredient, obj);
+                    var reformattedIngrs = await this.reformatIngredient(ingredient, obj);
                     intermediate_ingrs_added.push(reformattedIngrs[0]);
                 } else {
-                    var reformattedIngrs = reformatIngredient(obj, obj);
+                    var reformattedIngrs = await this.reformatIngredient(obj, obj);
                     ingrs_to_ignore_arr.push(reformattedIngrs[0]);
                     ignored = ignored+1;
                 }
@@ -835,7 +844,9 @@ export default class CSV_parser{
             // Checks to see formula name is under 32 digits and the ingredient units are all correct
             var dataValidationObj = await this.validateDataFormulas(obj, all_formulas, db_ingredients_num);
             if(dataValidationObj.success == false){
+                console.log(dataValidationObj);
                 return await this.indicateFormulaDataValidationFailure(res, dataValidationObj, i+2);
+
             }
 
             // Builds the maps needed to reconstruct the database entries after validating them
@@ -947,9 +958,13 @@ export default class CSV_parser{
             return toReturn;
         }
         var isUnitNum = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/.test(obj[Constants.csv_formula_quantity]);
-        var ingr = Ingredient.find({ num: obj[Constants.csv_formula_ingr] });
+        var ingr = await Ingredient.find({ num: obj[Constants.csv_formula_ingr] });
+
         var unitType = await this.findUnit(ingr[0].pkg_size);
-        var unitType2 = await this.findUnit(obj[Constants.csv_formula_ingr]);
+        var unitType2 = await this.findUnit(obj[Constants.csv_formula_quantity]);
+        console.log("num 1 is " + unitType);
+        console.log("num 2 is " + unitType2);
+        console.log("num 3 is " + isUnitNum);
         if(unitType != unitType2 || !isUnitNum){
             toReturn.success = false;
             toReturn.unitIssue = true;
