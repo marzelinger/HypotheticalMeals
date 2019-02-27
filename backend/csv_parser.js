@@ -233,7 +233,7 @@ export default class CSV_parser{
                     old_sku_to_show.cpc = old_sku[0].cpc;
                     
                     old_sku_to_show.prod_line = old_sku[0].prod_line;
-                    var prod_line = await Prod_Line.find({ _id: old_sku[0] });
+                    var prod_line = await Prod_Line.find({ _id: old_sku[0].prod_line._id });
                     old_sku_to_show.prod_line_to_show = prod_line[0].name;
 
                     old_sku_to_show.formula = old_sku[0].formula;
@@ -252,6 +252,7 @@ export default class CSV_parser{
                     old_sku_to_show.manu_rate = old_sku[0].manu_rate;
                     old_sku_to_show.comment = old_sku[0].comment;
 
+                    var newObj = {};
                     var reformattedSKUS = await this.reformatSKU(newObj, obj);
                     skus_to_update_new.push(reformattedSKUS[0]);
                     skus_to_update_old.push(old_sku_to_show);
@@ -260,6 +261,7 @@ export default class CSV_parser{
                 else if(skus_to_add_num.has(obj[Constants.csv_sku_num])){
                     added = added + 1;
                     var newObj = {};
+                    console.log('break here2');
                     var reformattedSKUS = await this.reformatSKU(newObj, obj);
                     intermediate_skus_added.push(reformattedSKUS[0]);
                     intermediate_unformatted_skus_added.push(reformattedSKUS[1]);
@@ -276,6 +278,7 @@ export default class CSV_parser{
                 for(var i = 0; i < intermediate_unformatted_skus_added.length; i++){
                     var sku = new SKU();
                     var toShow = {};
+                    console.log('break here');
                     var reformattedSKUS = await this.reformatSKU(toShow, intermediate_unformatted_skus_added[i]);
                     sku.name = reformattedSKUS[0].name;
                     sku.num = reformattedSKUS[0].num;
@@ -493,6 +496,7 @@ export default class CSV_parser{
     }
 
     static async reformatSKU(objNew, objOld){
+        console.log("objNew is " + objNew);
         objNew.name = objOld.Name;
         objNew.num = objOld[Constants.csv_sku_num];
         objNew.case_upc = objOld[Constants.csv_sku_caseUPC];
@@ -539,6 +543,7 @@ export default class CSV_parser{
     }
 
     static async parseUpdateSKU(req, res){
+        try{
         var updateArray = JSON.parse(req.body.updates);
         var addArray = JSON.parse(req.body.adds);
         var ignoreArray = JSON.parse(req.body.ignores);
@@ -572,6 +577,9 @@ export default class CSV_parser{
             returningAdd.push(addArray[i]);
         }
         return res.json({ success: true, adds: returningAdd, updates: returningUpdate, ignores: ignoreArray});
+        } catch(err){
+            return res.json({ success: false, error: "Catch all error"});
+        }
     }
 
     static async parseIngredientsCSV(req, res){
@@ -696,6 +704,7 @@ export default class CSV_parser{
             toReturn.costIssue = true;
             return toReturn;
         }
+        //var isValid2 = obj[Constants.csv_ingr_size]
         toReturn.success = true;
         return toReturn;
     }
@@ -786,6 +795,7 @@ export default class CSV_parser{
 
 
     static async parseUpdateIngredients(req, res){
+        try{
         var returningAdds = [];
         var returningUpdates = [];
         console.log(req.body);
@@ -813,9 +823,13 @@ export default class CSV_parser{
         }
         return res.json({ success: true, adds: returningAdds,
                         updates: returningUpdates, ignores: ignoreArray});
+        } catch (err){
+            return res.json({ success: false, error: "Catch all error"});
+        }
     }
 
     static async parseFormulasCSV(req, res){
+        try{
         var db_formula_nums = new Set();
         var db_ingredients_num = new Set();
 
@@ -914,6 +928,9 @@ export default class CSV_parser{
             console.log(updated_formula);
         }
         return res.json({ success: true, showImport: true, adds: formulas_added, updates: formulas_to_update_new, ignores: formulas_to_ignore});
+        } catch (err){
+            return res.json({ success: false, error: "Catch all error"});
+        }
     }
 
     static async reformatFormula(newObj, oldObj, formulasMap, formulasToCommentsMap){

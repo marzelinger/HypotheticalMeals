@@ -114,7 +114,6 @@ export default class FormulaDetails extends React.Component {
             }
             curr_qty = await this.subtractTwoUnits(curr_qty, qty)
             var curr_qty_num_arr = curr_qty.match(/^(-?[0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/);
-            console.log("this is what I'm looking at " + curr_qty_num_arr[2]);
             if (Number(curr_qty_num_arr[1]) > 0) item.ingredient_quantities[ind] = curr_qty;
             else {
                 item.ingredients.splice(ind,1);
