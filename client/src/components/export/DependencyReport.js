@@ -77,7 +77,7 @@ async loadDataFromServerForReport(ingredients){
 
         console.log("this is the dataline: "+dataLine);
         var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
-          "_", curData._id, "_", currentPage, pageSize, "_");
+          "_", curData._id, "_", currentPage, pageSize, "_", "_");
         console.log("this is the res: "+res);
 
         if (!res.success) {

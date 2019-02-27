@@ -64,8 +64,7 @@ export default class ManufacturingLine extends React.Component{
               ></ManufacturingLineDetails>
             </div>
             <Button id = "manuLineScheduleButton" color="primary" onClick={(e) => this.onReportClick(e)}  > Report</Button>{' '}
-            {/* <img id ="deleteButton" onClick={() => {this.props.handleDeleteManuLine(this.props.id); }} src= {deleteButton}></img> */}
-
+            <div className = "exportbutton pdfbutton hoverable" onClick = {() => this.onReportClick()}>Preview PDF</div>
           </div>
       </div>
     )

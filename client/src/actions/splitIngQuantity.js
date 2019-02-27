@@ -1,6 +1,7 @@
 import { zIndex } from "material-ui/styles";
 
 export const splitIngQuantity = async (ing_quant) => {
+    console.log("ing_quant: "+ing_quant);
     var ingQuant;
     var ingMeas;
     var nums = "0123456789.";
@@ -16,5 +17,8 @@ export const splitIngQuantity = async (ing_quant) => {
             }
         }
     }
+    console.log("ingQuant: "+ingQuant);
+    console.log("ingMeas: "+ingMeas);
+
     return { quant: parseFloat(ingQuant), meas: ing_quant.substring(endIndex+1)}
 }

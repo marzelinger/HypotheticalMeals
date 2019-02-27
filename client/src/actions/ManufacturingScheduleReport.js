@@ -20,7 +20,7 @@ export const exportManuScheduleReport = async (manuData) => {
         console.log("allcut: "+JSON.stringify(res.data.all_cut));
         //createManuReport(manuData, res.data);
         let calculations = doCalcs(manuData, res.data.complete_activities);
-
+        console.log("this is the CALCULATIONS; "+JSON.stringify(calculations));
         return { reportData : {
             complete: res.data.complete_activities,
             beg_cut: res.data.beg_cut,
@@ -82,6 +82,8 @@ export const doCalcs = (manuData, activitites) => {
     for( var k in ingSUMmap){
         ingNames.push(k);
         ingTots.push(ingSUMmap.get(k));
+        console.log("this is the INGNAMES; "+JSON.stringify(ingNames));
+        console.log("this is the ingTOTS; "+JSON.stringify(ingTots));
     }
 
     return {summation: {

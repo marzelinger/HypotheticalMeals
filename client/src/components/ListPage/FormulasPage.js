@@ -282,6 +282,7 @@ export default class FormulasPage extends React.Component {
     }
 
     getButtons = () => {
+        
         return;
     }
 

@@ -53,7 +53,7 @@ export default class ManuGoalsCalculatorTable extends React.Component {
     }
 
     render() {
-        console.log(this.state.data)
+        //console.log(this.state.data)
         return (
             <div>
             <iframe id="ifmcontentstoprint" style={{
