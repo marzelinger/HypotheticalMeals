@@ -5,6 +5,7 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 import * as Constants from '../../resources/Constants';
+import Switch from "react-switch";
 import { 
     Button,
     Input,
@@ -90,15 +91,13 @@ export default class UserDetails extends React.Component {
         })
         await this.setState({ invalid_inputs: inv_in });
     }
-    onAdminCheckBoxClick = (value, item) => {
-        printFuncFront("the user admin has been selected.");
-        printFuncFront("the checkbox.: "+value);
-        printFuncFront("this is the item: "+JSON.stringify(item));
-        item["isAdmin"] = value;
-        this.setState({ item: item });
-        printFuncFront("this is the item: after "+JSON.stringify(item));
+    onAdminCheckBoxClick = () => {
 
-
+        var new_item = this.state.item
+        new_item["isAdmin"] = !this.state.item.isAdmin;
+        this.setState({
+            item: new_item
+        })
     };
 
 
@@ -113,7 +112,7 @@ export default class UserDetails extends React.Component {
                         value={ this.props.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
                         onChange={ (e) => this.onPropChange(e.target.value, this.props.item, prop) }
-                        disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
+                        disabled = {true}
                     />
                 </FormGroup>));
         }
@@ -131,12 +130,12 @@ export default class UserDetails extends React.Component {
             </div>
             <div className= 'privilege'>
             </div>
+            
             <FormGroup>
-          <Label for="exampleCheckbox">Privileges</Label>
-          <div>
-            <CustomInput type="checkbox" id="exampleCustomSwitch" name="customSwitch" label="Admin" onChange={(e) => this.onAdminCheckBoxClick(e.target.checked, this.props.item)}/>
-          </div>
-        </FormGroup>
+                <Label>Administrator</Label>
+                <br></br>
+                <Switch onChange={() => this.onAdminCheckBoxClick()} checked={this.state.item.isAdmin} disabled = {this.state.item.username ==="admin"}/>
+            </FormGroup>
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
                     <Button 

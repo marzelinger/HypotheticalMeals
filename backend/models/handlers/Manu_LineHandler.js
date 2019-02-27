@@ -24,6 +24,9 @@ class Manu_LineHandler{
           success: false, error: 'You must provide a short name'
         });
       }
+      console.log("this is the HITTING THE CREATE MANULINE ACTION:");
+      console.log("new_short_name: "+new_short_name);
+
       let conflict = await Manu_Line.find({ short_name : new_short_name});
       if(conflict.length > 0){
         return res.json({ success: false, error:'CONFLICT, this short name is not unique'});
@@ -45,7 +48,13 @@ class Manu_LineHandler{
       var new_name = req.body.name;
       var new_short_name = req.body.short_name;
       var new_comment = req.body.comment;
+      console.log("this is the target: "+JSON.stringify(target_id));
+      console.log("new_short_name: "+new_short_name);
+
       let conflict = await Manu_Line.find({ short_name : new_short_name});
+
+      console.log("this is the target: "+JSON.stringify(target_id));
+      console.log("this is conflict: "+JSON.stringify(conflict));
       if(conflict.length > 0 && conflict[0]._id != target_id){
         return res.json({ success: false, error:'CONFLICT, this short name is not unique'});
       }

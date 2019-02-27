@@ -1,4 +1,3 @@
-
 import React from 'react'
 import PropTypes from 'prop-types';
 import CheckDigit from 'checkdigit';
@@ -32,10 +31,11 @@ export default class ManufacturingLineDetails extends React.Component {
             item_property_field_type,
             invalid_inputs: [],
             modal: false,
-            detail_view_options: [Constants.details_create, Constants.details_cancel],
+            detail_view_options: this.props.options,
             item: {skus: []},
             page_title: 'SKUs',
             data: [],
+            shortNameChanged: false
         }
         this.toggle = this.toggle.bind(this);
     }
@@ -130,7 +130,8 @@ export default class ManufacturingLineDetails extends React.Component {
             if (!this.state.item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
         })
         if(!inv_in.includes('short_name')){
-            let vsm = await this.props.validateShortName(this.state.item.short_name);
+            let vsm = await this.props.validateShortName(this.state.item.short_name, this.state.item._id);
+            console.log("vsm: "+vsm);
             if(!vsm){
                 inv_in.push('short_name');
             }
@@ -157,12 +158,14 @@ export default class ManufacturingLineDetails extends React.Component {
     toggle = async () => {
         console.log('toggling');
         try{
-            var item = await ItemStore.getEmptyItem(Constants.manu_line_page_name);
+            var item = this.props.item || await ItemStore.getEmptyItem(Constants.manu_line_page_name);
+
+            //var item = await ItemStore.getEmptyItem(Constants.manu_line_page_name);
             console.log(item);
             await this.setState({ 
                 modal: !this.state.modal,
                 item: item,
-                detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
+                //detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
             })
         } catch (e){
             console.log(e);
@@ -173,7 +176,7 @@ export default class ManufacturingLineDetails extends React.Component {
     render() {
         return (
         <div>
-        <img className = "hoverable" id = "button" src={addButton} onClick={this.toggle}></img>
+        <img className = "hoverable" id = "button" src={this.props.buttonImage} onClick={this.toggle}></img>
             <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup" className='item-details'>
             <div className='item-details'>
                 <div className='item-title'>
@@ -183,7 +186,7 @@ export default class ManufacturingLineDetails extends React.Component {
                     { this.injectProperties() }
                     <ItemSearchModifyListQuantity
                         api_route={Constants.skus_page_name}
-                        item_type={Constants.details_add_sku}
+                        item_type={Constants.details_modify_skus}
                         options={[Constants.details_add, Constants.details_remove]}
                         handleModifyList={this.onModifyList}
                         qty_disable = {true}
@@ -209,4 +212,5 @@ export default class ManufacturingLineDetails extends React.Component {
 
 ManufacturingLineDetails.propTypes = {
     handleDetailViewSubmit: PropTypes.func
+    
   };

@@ -204,7 +204,12 @@ export default class ListPage extends React.Component {
 
     async setInitPages(){
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
+        var curCount = 0;
+        if(allData!=undefined){
+            if(allData.data!=undefined){
+                 curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
+            }
+        }
         this.setState({
             currentPage: 0,
             previousPage: 0,
@@ -213,6 +218,7 @@ export default class ListPage extends React.Component {
     }
 
     onFilterValueChange = (e, value, filterType) => {
+        console.log(this.state.filters)
         var filters = this.state.filters;
         if(filterType == 'keyword'){
             filters[filterType] = value;
@@ -230,12 +236,10 @@ export default class ListPage extends React.Component {
 
     onFilterValueSelection (vals, e, type)  {
         var filters = this.state.filters;
+        filters[type] = []
         vals.map((item) => {
-            if (!filters[type].includes(item.value._id)){
-                filters[type].push(item.value._id);
-            }
+            filters[type].push(item.value._id);
         })
-        console.log(filters)
         this.setState({
             filters: filters,
             filterChange: true
@@ -266,6 +270,10 @@ export default class ListPage extends React.Component {
     }
 
     onTableOptionSelection = async(e, opt) => {
+        if (this.state.selected_items.length === 0) {
+            alert('You must select items to use these features!')
+            return
+        }
         switch (opt){
             case Constants.create_item:
                 this.onCreateNewItem();
@@ -330,6 +338,7 @@ export default class ListPage extends React.Component {
 
      onDetailViewSelect = async (event, item) => {
         let formula_item = await SubmitRequest.submitGetFormulaByID(item.formula._id);
+        console.log("this is the ondetailview: "+JSON.stringify(formula_item));
         this.setState({
             detail_view_item: item,
             detail_view_formula_item: formula_item.data[0]
@@ -350,6 +359,7 @@ export default class ListPage extends React.Component {
     };
 
     async onDetailViewSubmit(event, item, formula_item, option) {
+        console.log("made it to the ondetailviewsubmit");
         // var res = {};
         var resItem = {};
         var resFormula = {};
@@ -361,7 +371,9 @@ export default class ListPage extends React.Component {
                 newData.push(item);
                 //need to create the new formula and get the id of the newly created formula and then put that in the 
                 //item equal to the formula section of item.
+                console.log("this is the formula_item: "+JSON.stringify(formula_item));
                 resFormula = await SubmitRequest.submitCreateItem(Constants.formulas_page_name, formula_item);
+
                 // var newSKUitem = this.formatNewSKUFormula(item, resFormula);
                 console.log(resFormula)
                 if(resFormula.success){
@@ -418,12 +430,12 @@ export default class ListPage extends React.Component {
     getButtons = () => {
         return (
         <div className = "ingbuttons"> 
-            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || this.state.selected_items.length === 0 ? null : 
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) ? null : 
                             (<div className = "manugoalbutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}
                             primary={true}
                             > {Constants.add_to_manu_goals} </div>)}
-            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || !currentUserIsAdmin().isValid || this.state.selected_items.length === 0 ? null : 
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || !currentUserIsAdmin().isValid ? null : 
                             (<div className = "manulinebutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.edit_manu_lines)}
                             primary={true}

@@ -2,7 +2,6 @@
 // Maddie
 
 import User from '../databases/User';
-import isAdmin from '../../validation/isAdmin';
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
@@ -36,7 +35,7 @@ class UserHandler{
       const newUser = new User({
           username: req.body.username,
           password: req.body.password,
-          privileges : req.body.privileges,
+          //privileges : req.body.privileges,
           admin_creator: req.body.admin_creator,
           isAdmin: req.body.isAdmin,
           isNetIDLogin: req.body.isNetIDLogin,
@@ -134,7 +133,6 @@ class UserHandler{
             const payload = {
               id: newuser.id,
               username: newuser.username,
-              //admin: isAdmin(newuser).isValid
               admin: newuser.isAdmin
             };
   

@@ -6,9 +6,13 @@ import * as Constants from '../../resources/Constants';
 import '../../style/ManufacturingGoalsStyle.css';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import { Modal } from 'reactstrap';
+import ManuLineDetails from './Lines/ManufacturingLineDetails';
+
 import ManufacturingScheduleReportDetails from './ManufacturingScheduleReportDetails';
 import { exportManuScheduleReport} from "../../actions/ManufacturingScheduleReport";
 const jwt_decode = require('jwt-decode');
+const currentUserIsAdmin = require("../../components/auth/currentUserIsAdmin");
+
 
 
 export default class ManufacturingLinePage extends React.Component {
@@ -46,7 +50,9 @@ export default class ManufacturingLinePage extends React.Component {
 
 
         selected_manu_line: {},
-        manu_report_modal: false
+        manu_report_modal: false,
+        details_modal: false
+
 
     };
     if(localStorage != null){
@@ -55,7 +61,7 @@ export default class ManufacturingLinePage extends React.Component {
         }
     }
     this.toggle = this.toggle.bind(this);
-    this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
+    // this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
     // this.setInitPages();
   }
 
@@ -65,6 +71,9 @@ export default class ManufacturingLinePage extends React.Component {
             this.setState({manu_report_modal: !this.state.manu_report_modal})
             console.log("the toggle of manu_report_modal is: "+this.state.manu_report_modal);
             break;
+        // case Constants.details_modal:
+        //     this.setState({details_modal: !this.state.details_modal})
+        //     break;
     }
   } 
 
@@ -85,17 +94,18 @@ export default class ManufacturingLinePage extends React.Component {
     this.toggle(Constants.manu_report_modal);
   }
 
-  async onDetailViewSubmit(event, reportData, option) {
+  onDetailViewSubmitReport= async (event, reportData, option) => {
     console.log("this is the item  state."+ JSON.stringify(reportData));
 
     switch (option) {
         case Constants.details_export:
             exportManuScheduleReport(reportData);
             break;
-        case Constants.details_cancel:
-            break;
-    }
-        this.setState({ 
+        // case Constants.details_cancel:
+        //     break;
+        };
+
+        await this.setState({ 
             selected_manu_line: null,
             detail_view_options: [],
             detail_view_action: ''
@@ -109,8 +119,6 @@ export default class ManufacturingLinePage extends React.Component {
       <div>
         <GeneralNavBar></GeneralNavBar>
         <ManufacturingLineBox
-        //handleSelect={this.onSelect}
-        //handleDetailViewSelect={this.onDetailViewSelect}
         handleManuScheduleReportSelect = {this.onManuReportSelect}
         ></ManufacturingLineBox>
         <Modal isOpen={this.state.manu_report_modal} toggle={this.toggle} id="popup" className='manu-report-details'>
@@ -118,7 +126,7 @@ export default class ManufacturingLinePage extends React.Component {
                             manu_line={this.state.selected_manu_line}
                             detail_view_options={this.state.detail_view_options}
                             detail_view_action = {this.state.detail_view_action}
-                            handleDetailViewSubmit={this.onDetailViewSubmit}
+                            handleDetailViewSubmit={this.onDetailViewSubmitReport}
                         />
         </Modal>
       </div>

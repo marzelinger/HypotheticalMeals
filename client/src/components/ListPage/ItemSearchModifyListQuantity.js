@@ -87,16 +87,11 @@ export default class ItemSearchModifyListQuantity extends React.Component {
     }
 
     async onFilterValueSelection (name, value, e) {
-        console.log(value);
         this.setState({value: value});
     }
 
     determineButtonDisplay(state, option) {
         var satisfiesRegex = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/.test(this.state.qty);
-        console.log(state.value)
-        console.log(state.qty)
-        console.log(this.props.qty_disable)
-        console.log(this.props.item_type)
         switch (option) {
             case Constants.details_add:
                 return (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient && 

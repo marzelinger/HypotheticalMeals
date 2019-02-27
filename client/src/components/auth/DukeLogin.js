@@ -70,7 +70,7 @@ async getNetIDIdentity(){
 
     const userData = {
       username: this.state.username,
-      admin_creator: 'Duke University',
+      admin_creator: "Duke University",
       isNetIDLogin: true
     };
     await this.props.loginDukeUser(userData);

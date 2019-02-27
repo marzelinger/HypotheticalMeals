@@ -120,7 +120,7 @@ class ProductLinesBox extends Component {
   async loadSkusforLines(all_prod_lines) {
     var prod_lines = [];
     for( const prod_line of all_prod_lines ){ 
-      let res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, '_', '_', '_', '_', '_', prod_line._id);
+      let res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, '_', '_', '_', '_', '_', prod_line._id, '_');
       if (!res.success) {
         this.setState({ error: res.error});
       }

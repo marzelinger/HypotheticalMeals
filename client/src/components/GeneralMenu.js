@@ -3,7 +3,7 @@ import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, NavLink } from 'r
 import { Link } from "react-router-dom";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Register from "./auth/Register";
-import AdminRegister from "./auth/AdminRegister";
+// import AdminRegister from "./auth/AdminRegister";
 import RaisedButton from 'material-ui/RaisedButton';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
@@ -39,9 +39,15 @@ export default class GeneralMenu extends React.Component {
         <Link to="/manu_lines" >
           <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Manufacturing Lines'}></MenuItem>
         </Link>
-        <Link to="/manu_schedule" >
-          <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Manufacturing Schedule'}></MenuItem>
-        </Link>
+        {
+          currentUserIsAdmin().isValid ? 
+          (
+            <Link to="/manu_schedule" >
+              <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Manufacturing Schedule'}></MenuItem>
+            </Link>
+          )
+          : (<div></div>)
+        }
         <Link to="/ingredients" >
         <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Ingredients'}></MenuItem>
         </Link>

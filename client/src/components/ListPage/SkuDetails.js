@@ -18,6 +18,8 @@ import ItemSearchModifyListQuantity from './ItemSearchModifyListQuantity';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import ModifyManuLines from './ModifyManuLines';
 import SkuFormulaDetails from './SkuFormulaDetails';
+import ItemStore from '../../helpers/ItemStore';
+
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
 
@@ -32,6 +34,8 @@ export default class SKUDetails extends React.Component {
             item_property_patterns,
             item_property_field_type } = DataStore.getSkuData();
 
+            let formProps = DataStore.getFormulaData();
+
         this.state = {
             item: Object.assign({}, props.item),
             formula_item: Object.assign({}, props.formula_item),
@@ -39,6 +43,7 @@ export default class SKUDetails extends React.Component {
             item_property_labels,
             item_property_patterns,
             item_property_field_type,
+            formProps,
             invalid_inputs: [],
             assisted_search_results: [],
             prod_line_item: {},
@@ -140,6 +145,10 @@ export default class SKUDetails extends React.Component {
     }
 
     onPropChange = (value, item, prop) => {
+        if (item.manu_lines.length > 0 && prop === 'manu_rate') {
+            alert('Once Manufacturing Lines are set, you cannot change Manufacturing Rate!')
+            return
+        }
         item[prop] = value
         this.setState({ item: item });
     };
@@ -168,6 +177,11 @@ export default class SKUDetails extends React.Component {
     };
 
     onModifyList = (option, value, qty) => {
+        console.log("in on modify list: "+ JSON.stringify(option));
+        console.log("in on modify list: val "+ JSON.stringify(value));
+        console.log("in on modify list qty: "+ JSON.stringify(qty));
+
+
         if(currentUserIsAdmin().isValid){
             var formula_item = Object.assign({}, this.state.formula_item);
             console.log("this is the current formula"+ JSON.stringify(formula_item));
@@ -214,7 +228,7 @@ export default class SKUDetails extends React.Component {
 
     addIngredient(formula_item, value, qty) {
         let ind = -1;
-        qty = parseInt(qty);
+        //qty = parseInt(qty);
         formula_item.ingredients.map((ing, index) => {
             if (ing._id === value._id)
                 ind = index;
@@ -229,18 +243,27 @@ export default class SKUDetails extends React.Component {
             formula_item.ingredients.push(value);
             formula_item.ingredient_quantities.push(qty);
         }
+        //THIS IS WHERE THE VALIDATION NEEDS TO HAPPEN FOR 
+
         this.setState({ formula_item: formula_item })
     }
 
     async handleSubmit(e, opt) {
+        console.log("this is the handlesubmit");
+        console.log("this is the prev formula:  "+ JSON.stringify(this.state.formula_item));
+        //var formulaItemToSubmit = await this.formatFormulaItem();
+        var formulaItemToSubmit = this.state.formula_item;
+
         if (![Constants.details_save, Constants.details_create].includes(opt)) {
-            this.props.handleDetailViewSubmit(e, this.state.item, this.state.formula_item, opt);
+            this.props.handleDetailViewSubmit(e, this.state.item, formulaItemToSubmit, opt);
             return;
         }
         await this.validateInputs();
         let alert_string = 'Invalid Fields';
         let inv = this.state.invalid_inputs;
-        if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.state.item, this.state.formula_item, opt)
+        console.log("made is the invalid fields: "+JSON.stringify(inv));
+
+        if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.state.item, formulaItemToSubmit, opt)
         else {
             if (inv.includes('case_upc') && this.state.item['case_upc'].length > 11)
                 alert_string += '\nTry Case UPC: ' + CheckDigit.apply(this.state.item['case_upc'].slice(0,11));
@@ -249,6 +272,28 @@ export default class SKUDetails extends React.Component {
             alert(alert_string);
         } 
     }
+
+    formatFormulaItem = async () => {
+        var formItem = await ItemStore.getEmptyItem(Constants.formulas_page_name);
+        if(this.state.formula_item!=undefined) {
+            if(this.state.formula_item.ingredients!=undefined){
+                var numIngs = this.state.formula_item.ingredients.length;
+                formItem['name']=this.state.formula_item.name;
+                formItem['num']=this.state.formula_item.num;
+                formItem['comment']=this.state.formula_item.comment;
+                for(let i = 0; i<numIngs;i++){
+                    formItem['ingredients'].push(this.state.formula_item.ingredients[i]._id);
+                    formItem['ingredient_quantities'].push(this.state.formula_item.ingredient_quantities[i]);
+
+                }
+
+            }
+        }
+
+        return formItem;
+
+    }
+
 
     async validateInputs() { 
         var inv_in = [];
@@ -259,12 +304,18 @@ export default class SKUDetails extends React.Component {
         if (!CheckDigit.isValid(this.state.item['case_upc'])) inv_in.push('case_upc');
         if (!CheckDigit.isValid(this.state.item['unit_upc'])) inv_in.push('unit_upc');
         console.log(inv_in)
+
+        this.state.formProps.item_properties.map(prop => {
+            if (!this.state.formula_item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
+        })
+        if (this.state.formula_item['name'].length > 32) inv_in.push('name');
+
         await this.setState({ invalid_inputs: inv_in });
     }
 
     injectProperties = () => {
         if (this.state.item){
-            return (this.state.item_properties.map(prop => 
+            return this.state.item_properties.map(prop => 
                 <FormGroup key={prop}>
                     <Label>{this.getPropertyLabel(prop)}</Label>
                     <Input 
@@ -272,9 +323,10 @@ export default class SKUDetails extends React.Component {
                         value={ this.state.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
                         onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
-                        disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
+                        disabled = {(currentUserIsAdmin().isValid) ? "" : "disabled"}
                    />
-                </FormGroup>));
+                </FormGroup>
+            )
         }
         return;
     }
@@ -293,14 +345,14 @@ export default class SKUDetails extends React.Component {
                     item={this.state.item}
                     label={Constants.modify_manu_lines_label}
                     handleModifyManuLines={this.onModifyManuLines}
-                    disabled = {currentUserIsAdmin().isValid ? false : true}
+                    disabled = {!currentUserIsAdmin().isValid}
                 />
                 <ItemSearchInput
                     curr_item={this.state.prod_line_item}
                     item_type={Constants.prod_line_label}
                     invalid_inputs={this.state.invalid_inputs}
                     handleSelectItem={this.onSelectProductLine}
-                    disabled = {currentUserIsAdmin().isValid ? false : true}
+                    disabled = {!currentUserIsAdmin().isValid}
                 />
                 <SkuFormulaDetails
                     item = {this.state.item}

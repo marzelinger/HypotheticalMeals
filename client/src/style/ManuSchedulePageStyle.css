@@ -4,6 +4,16 @@
     box-shadow:         3px 3px 5px 6px #ccc;
 }
 
+.detailButtons {
+    background-color: rgb(0, 188, 212) !important;
+    border-color: #212529;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    color: #f8f9fa;
+}
+
 .palette-container, .errors-container{
     width: 100%;
     padding: 10px;
@@ -72,12 +82,12 @@ div.vis-item.vis-selected {
     background-color: rgb(158, 158, 158);
     border-color: rgb(158, 158, 158);
 }
-.vis-item.over_deadline {
-    border-color: red;
+div.vis-item.over_deadline {
+    border: 2px solid red;
 }
 .vis-item.overwritten {
-    background-color: orange;
-    border-color: orange;
+    background-color: rgb(255, 185, 55);
+    border-color: rgb(255, 185, 55);
 }
 
 .vis-item {
@@ -112,4 +122,8 @@ td, tr {
 .belowTimeline {
     display: grid;
     grid-template-columns: 6fr 5fr;
+}
+
+.noFocus:focus {
+    outline: none;
 }

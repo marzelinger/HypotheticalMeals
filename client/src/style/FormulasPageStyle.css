@@ -7,10 +7,6 @@
     justify-items: center;
 }
 
-.hoverable {
-    cursor: pointer;
-}
-
 #simple{
     display:none;
 }
@@ -139,4 +135,3 @@ Button {
     width: 200px;
     cursor: pointer;
 }
-

@@ -57,7 +57,7 @@ export default class SubmitRequest{
 
   static submitUpdateItem = (route, item) => {
     try {
-      // printFuncFront("this is the route: "+'/api/'+route+item._id);
+      printFuncFront("this is the route: "+'/api/'+route+item._id);
       // printFuncFront("this is item "+item);
       // printFuncFront("this is string item "+JSON.stringify(item));
 
@@ -251,14 +251,11 @@ export default class SubmitRequest{
 
   static submitGetFilterData = (route, sort_field, filter_value, keyword, currentPage, pageSize, prod_line, formula) => {
     var path = '/api/' + route + '/' + sort_field + '/' + filter_value + '/' + keyword + '/' + currentPage +'/' + pageSize;
-    path += (prod_line === undefined) ? '/_' : ('/' + prod_line);
-    path += (formula === undefined) ? '/_' : ('/' + formula);
+    path += (prod_line === undefined) ? '' : ('/' + prod_line);
+    path += (formula === undefined) ? '' : ('/' + formula);
     //printFuncFront("this is path in submitGetFilterData"+path);
     return fetch(path, { method: 'GET' })
-      .then(data => {
-        console.log(data)
-        return data.json()
-      })
+      .then(data => data.json())
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error };
         else return ({ 
@@ -359,10 +356,10 @@ export default class SubmitRequest{
   }
 
 
-  static async submitGetManufacturingActivitiesForReport(manu_line_id,start_date,end_date) {
+  static async submitGetManufacturingActivitiesForReport(reportData) {
     try {
       console.log("here in the submitrequest for report");
-      return fetch(`/api/manuactivities/${manu_line_id}/${start_date}/${end_date}`)
+      return fetch(`/api/manuactivities/${reportData.manu_line._id}/${reportData.start_date}/${reportData.end_date}/${reportData.duration}`)
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error };

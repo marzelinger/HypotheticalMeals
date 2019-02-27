@@ -180,7 +180,12 @@ export default class IngredientsPage extends React.Component {
 
     async setInitPages(){
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
+        var curCount = 0;
+        if(allData!=undefined){
+            if(allData.data!=undefined){
+                 curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
+            }
+        }        
         this.setState({
             currentPage: 0,
             previousPage: 0,
@@ -211,6 +216,7 @@ export default class IngredientsPage extends React.Component {
         filters[type] = vals.map((item) => {
             return item.value._id
         })
+        console.log(filters[type])
         
         this.setState({
             filters: filters,

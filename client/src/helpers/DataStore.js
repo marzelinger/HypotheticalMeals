@@ -58,8 +58,10 @@ export default class DataStore{
           page_name: Constants.users_page_name,
           page_title: 'Users',
           filter_options: [Constants.keyword_label],
-          table_columns: ['Username', 'Admin', 'Created By', 'Comment'],
-          table_properties: ['username', 'isAdmin', 'admin_creator', 'comment'],
+          table_columns: ['Username', 'Admin', 'Created By'],
+          table_properties: ['username', 'isAdmin', 'admin_creator'],
+          // table_columns: ['Username', 'Admin', 'Created By', 'Comment'],
+          // table_properties: ['username', 'isAdmin', 'admin_creator', 'comment'],
           table_options: [Constants.add_keyword_filter],
           //table_options: [Constants.create_user, Constants.add_keyword_filter],
 
@@ -100,6 +102,8 @@ export default class DataStore{
       formula_item_property_field_type: ['text', 'text'],
     };
   }
+
+  
 
 
     static getSkuDataSimple() {
