@@ -221,6 +221,10 @@ export default class ManuSchedulePage extends Component {
                 if ((i.start < item.end && i.start > item.start) ||
                     (i.end > item.start && i.end < item.end) ||
                     (i.start <= item.start && i.end >= item.end)){
+                        console.log(item.start)
+                        console.log(item.end)
+                        console.log(i.start)
+                        console.log(i.end)
                         alert("Activities can't overlap!");
                         callback(null)
                         toReturn = false
@@ -233,7 +237,7 @@ export default class ManuSchedulePage extends Component {
     async onAdd(item, callback) {
         if (this.state.activity_to_schedule) {
             let activity = this.state.activity_to_schedule;
-            let start = new Date(activity.start)
+            let start = new Date(item.start)
             let end = new Date()
             let duration = Math.round(activity.duration)
             end.setTime(start.getTime() + duration*60*60*1000)
