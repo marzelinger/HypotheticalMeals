@@ -231,7 +231,7 @@ export default class UnitConversion {
 
     static getConversionFunction(unit_string) {
         console.log(unit_string)
-        let match = unit_string.match('^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|ounce|lb|pound|ton|g|gram|kg|kilogram|' + 
+        let match = unit_string.match('^([0-9]+(?:[\.][0-9]{0,10})?|\.[0-9]{1,10}) (oz|ounce|lb|pound|ton|g|gram|kg|kilogram|' + 
                                       'floz|fluidounce|pt|pint|qt|quart|gal|gallon|ml|milliliter|l|liter|ct|count)$')
         if (match === null) {
             return { success: false, error: 'Incorrect String Format'}
@@ -282,16 +282,13 @@ export default class UnitConversion {
     }
 
     static getCleanUnitForm(unit_string) {
-        let reg = unit_string.match('^([0-9]*[\.]?[0-9]{1,2}) ?(.*)')
+        let reg = unit_string.match('^([0-9]+(?:[\.][0-9]{0,10})?|\.[0-9]{1,10}) ?(.*)')
         let num = reg[1]
         unit_string = reg[2]
         unit_string = unit_string.replace(/ /g, '')
-        console.log(unit_string)
         unit_string = unit_string.replace(/\./g, '')
-        console.log(unit_string)
         unit_string = unit_string.toLowerCase();
         if (unit_string.substr(unit_string.length - 1) === 's'){
-            console.log('found an s')
             unit_string = unit_string.substr(0, unit_string.length - 1)
         }
         let possible_units = ['oz', 'ounce', 'lb', 'pound', 'ton', 'g', 'gram', 'kg', 'kilogram', 'floz', 
