@@ -34,6 +34,40 @@ export const exportSKUS = (dataIN, fileTitle)  => {
     fileDownload(csvContent, fileTitle+'.csv');
 }
 
+export const exportFormulas = (dataIN, fileTitle)  => {
+    var count = dataIN.length;
+    const rows = [];
+    var label = [];
+    label.push("SKU#");
+    label.push("Name");
+    label.push("Case UPC");
+    label.push("Unit UPC");
+    label.push("Unit size");
+    label.push("Count per case");
+    label.push("Product Line Name");
+    label.push("Comment");
+    rows.push(label);
+    for(let i = 0; i<count ; i++){
+        var curData = dataIN[i];
+        var dataLine = [];
+        dataLine.push(curData.num);
+        dataLine.push(curData.name);
+        dataLine.push(curData.case_upc);
+        dataLine.push(curData.unit_upc);
+        dataLine.push(curData.unit_size);
+        dataLine.push(curData.cpc);
+        dataLine.push(curData.prod_line.name);
+        dataLine.push(curData.comment);
+        rows.push(dataLine);
+    }    
+    let csvContent = "";
+    rows.forEach(function(rowArray){
+        let row = rowArray.join(",");
+        csvContent += row + "\r\n";
+     }); 
+    fileDownload(csvContent, fileTitle+'.csv');
+}
+
 export const exportIngredients = (dataIN, fileTitle)  => {
     var count = dataIN.length;
     const rows = [];
