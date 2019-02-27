@@ -21,11 +21,16 @@ export default class TableActions extends React.Component {
   }
 
   render() {
+    var iconsize = {
+      width: 10,
+      height: 10,
+    }
+  
     return (
       <div id={this.state.simple ? "simple" : "complex"}>
       {(this.state.page_name != Constants.users_page_name)? 
       (<div>
-      <SearchIcon style = {{width: '50px', height: '50px'}}></SearchIcon>
+      <SearchIcon style = {{width: '20px', height: '20px'}}></SearchIcon>
       
       <TextField
         hintText="Keyword Search"
@@ -48,7 +53,7 @@ export default class TableActions extends React.Component {
         )})
       }
       {(currentUserIsAdmin().isValid && (this.state.page_name != Constants.users_page_name))? 
-      (<AddIcon id = "addnewitem"  onClick = {() => {this.props.onTableOptionSelection(null, Constants.create_item)}}></AddIcon>)
+      (<AddIcon style = {{width: '50px', height: '50px'}} onClick = {() => {this.props.onTableOptionSelection(null, Constants.create_item)}}></AddIcon>)
       :(<div/>)}
       </div>
     );

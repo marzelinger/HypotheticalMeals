@@ -19,18 +19,7 @@ import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
 import PropTypes from 'prop-types';
 import TableActions from './TableActions';
-import '../../style/TableStyle.css'
-
-const styles = {
-  propContainer: {
-    width: 200,
-    overflow: 'hidden',
-    margin: '20px auto 0',
-  },
-  propToggleHeader: {
-    margin: '20px auto 10px',
-  },
-};
+// import '../../style/TableStyle.css'
 
 /**
  * A more complex example, allowing the table height to be set, and key boolean properties to be toggled.
@@ -93,7 +82,7 @@ export default class PageTable extends Component {
 
   getDetailsCol = () => {
     {if(this.state.showDetails){
-      return (<TableHeaderColumn style={{ height: 'auto !important', cursor: "default" }}> See More Details </TableHeaderColumn>);
+      return (<TableHeaderColumn> See More Details </TableHeaderColumn>);
       }
     }
   }
@@ -101,12 +90,12 @@ export default class PageTable extends Component {
   getColumnComponent = (prop) => {
     if(this.props.sortable != undefined && this.props.sortable){
       return (                  
-        <TableHeaderColumn style={{ height: 'auto !important', cursor: "pointer" }} tooltip = {"Sort By " + this.getPropertyLabel(prop)} className = "hoverable" key={prop}>
+        <TableHeaderColumn tooltip = {"Sort By " + this.getPropertyLabel(prop)} className = "hoverable" key={prop}>
           <div onClick={e => this.props.handleSort(e, prop)}>{this.getPropertyLabel(prop)}</div>
         </TableHeaderColumn>
       )
     }
-    return (<TableHeaderColumn style={{ height: 'auto !important', cursor: "default" }} >{this.getPropertyLabel(prop)}</TableHeaderColumn>);
+    return (<TableHeaderColumn  >{this.getPropertyLabel(prop)}</TableHeaderColumn>);
   }
 
   getTableSuperHeader = () => {
@@ -140,7 +129,7 @@ export default class PageTable extends Component {
 
   render() {
     return (
-      <div>
+      <div className = "table-container">
         <Table
           height={!this.state.selectable ? null : '413px'}
           fixedHeader={this.state.fixedHeader}
@@ -174,7 +163,6 @@ export default class PageTable extends Component {
                     <TableRowColumn
                       key={prop}
                       onClick={e => this.props.handleSelect(e, item)}
-                      style={{ height: 'auto !important' }}
                     >
                       {this.displayValue(item, prop)}
                     </TableRowColumn>

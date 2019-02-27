@@ -23,9 +23,6 @@ class ProductLineForm extends React.Component{
     return (
       <div>
           {currentUserIsAdmin().isValid ? (<img className = "hoverable" id = "button" src={addButton} onClick={this.toggle}></img>):(<div/>)}
-        
-        
-        
         <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup" className={this.props.className}>
           <ModalHeader toggle={this.toggle}>Create New Product Line</ModalHeader>
           <form onSubmit={this.props.handleSubmit}>

@@ -18,6 +18,7 @@ import SkuDetails from './SkuDetails';
 import GeneralNavBar from '../GeneralNavBar';
 
 import '../../style/SkusPage.css'
+import '../../style/SkuTableStyle.css'
 import BulkEditManuLines from './BulkEditManuLines';
 const jwt_decode = require('jwt-decode');
 
