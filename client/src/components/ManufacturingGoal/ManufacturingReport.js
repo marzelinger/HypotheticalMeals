@@ -3,7 +3,7 @@ import React from 'react';
 import ExportSimple from '../export/ExportSimple';
 import PropTypes from 'prop-types';
 import {
-    Table,
+    // Table,
     TableBody,
     TableFooter,
     TableHeader,
@@ -11,6 +11,8 @@ import {
     TableRow,
     TableRowColumn,
   } from 'material-ui/Table';
+  import { Table } from 'reactstrap';
+
 import { Button, ModalBody, ModalFooter } from 'reactstrap';
 import '../../style/printing.css'
 const html2canvas = require('html2canvas');
@@ -58,9 +60,26 @@ export default class ManufacturingReport extends React.Component {
 
 
     masterHeader = () => {
-        var head = `Manufacturing Schedule Report for ${new Date(this.state.start_date)} to ${new Date(this.state.end_date)} (Duration ${this.state.duration}hour(s)) on Manufacturing Line: ${this.state.manu_line.short_name}`;
+        // var start = 
+        // var end = 
+        var curStart = new Date(this.props.manuData.start_date);
+        var curEnd = new Date(this.props.manuData.end_date);
+        var strStart = (""+curStart).split(" ");
+        var start = strStart[0]+" "+strStart[1]+" "+strStart[2]+" "+strStart[3]+" "+strStart[4];
+        var strEnd = (""+curEnd).split(" ");
+        var end = strEnd[0]+" "+strEnd[1]+" "+strEnd[2]+" "+strEnd[3]+" "+strEnd[4];
+        var head = `Manufacturing Schedule Report for ${start} to ${end}`;
+        var head2 = `(Duration ${this.props.manuData.duration} hour(s)) on Manufacturing Line: ${this.props.manuData.manu_line.short_name}`;
+
         return (
-            <div>{head}</div>
+            <div>
+            <h5>
+            {head}
+            </h5>
+            <h6>
+            {head2}
+            </h6>
+            </div>
         );
     }
 
@@ -68,7 +87,10 @@ export default class ManufacturingReport extends React.Component {
     formatSKUTable = (sku) => {
         console.log("this is the sku: "+JSON.stringify(sku));
         if(sku!=undefined){
+            console.log('sku yes');
+
         return (
+            <div>
         <Table>
         <thead>
           <tr>
@@ -80,13 +102,14 @@ export default class ManufacturingReport extends React.Component {
         </thead>
         <tbody>
           <tr>
-            <th scope="row">{sku.num}</th>
+            <td>{sku.num}</td>
             <td>{sku.name}</td>
             <td>{sku.formula.name}</td>
             <td>{sku.scale_factor}</td>
           </tr>
         </tbody>
       </Table>
+      </div>
         );
         }
         else {
@@ -96,8 +119,10 @@ export default class ManufacturingReport extends React.Component {
 
     formatIngTable = (sku) => {
         if(sku!=undefined){
+            console.log('ingtable yes');
         return (
-        <Table>
+            <div>
+                <Table>
         <thead>
           <tr>
             <th>Ingr#</th>
@@ -105,14 +130,15 @@ export default class ManufacturingReport extends React.Component {
           </tr>
         </thead>
         <tbody>
-            {sku.formula.ingredients.map(i =>
+            {sku.formula.ingredients.map((item, index) =>
                 <tr>
-                    <th>{sku.formula.ingredients[i]}</th>
-                    <th>{sku.formula.ingredient_quantities[i]}</th>
+                    <td>{sku.formula.ingredients[index].name}</td>
+                    <td>{sku.formula.ingredient_quantities[index]}</td>
                 </tr>
             )}
         </tbody>
       </Table>
+      </div>
         );
             }
             else{
@@ -120,13 +146,23 @@ export default class ManufacturingReport extends React.Component {
             }
     }
 
+    
     formatActivity = (curAct) => {
         console.log("these are the cur: "+JSON.stringify(curAct));
 
             var curStart = new Date(curAct.start);
             var curEnd = new Date(curAct.start);
             curEnd.setMilliseconds(curEnd.getMilliseconds() + Math.floor(curAct.duration/10)*24*60*60*1000 + (curAct.duration%10 * 60 * 60 * 1000));
-            var header = `Manufacturing Activity from ${curStart} to ${curEnd} with Duration of ${curAct.duration} hour(s) to produce ${curAct.quantity} case(s).`;
+            //Sat Feb 23 2019 08:00:00
+            //Wed Feb 20 2019 03:00:00 GMT-0500 (Eastern Standard Time)
+            var strStart = (""+curStart).split(" ");
+            var start = strStart[0]+" "+strStart[1]+" "+strStart[2]+" "+strStart[3]+" "+strStart[4];
+            var strEnd = (""+curEnd).split(" ");
+            var end = strEnd[0]+" "+strEnd[1]+" "+strEnd[2]+" "+strEnd[3]+" "+strEnd[4];
+            // var strStart = curStart.getUTCFullYear()+"-"+curStart.getUTCMonth()+"-"+curStart.getUTCDate()+"  "+curStart.getHours();
+            // var strEnd = curEnd.getUTCFullYear()+"-"+curEnd.getUTCMonth()+"-"+curEnd.getUTCDate()+"  "+curEnd.getHours();
+            var header = `Manufacturing Activity from ${start} to ${end} with Duration of ${curAct.duration} hour(s) to produce ${curAct.quantity} case(s).`;
+            console.log("this is the header: "+header);
             return (
                 <div>
                     {header}
@@ -136,21 +172,40 @@ export default class ManufacturingReport extends React.Component {
 
             );
     }
+    
+    badActivity = (curAct) => {
 
-    formatCompleteActivities = () => {
-        console.log("these are the complete: "+JSON.stringify(this.state.data.complete));
-        return(
-            <div>
-                {this.state.data.complete.map((item, key) =>
-                    {this.formatActivity(item)})}
-                {/* {this.state.data.complete.map( function(index){
-                    return (this.formatActivity(this.state.data.complete[index]));}}
-            </div> */}
-            </div>
+            var curStart = new Date(curAct.start);
+            var curEnd = new Date(curAct.start);
+            curEnd.setMilliseconds(curEnd.getMilliseconds() + Math.floor(curAct.duration/10)*24*60*60*1000 + (curAct.duration%10 * 60 * 60 * 1000));
+            var strStart = (""+curStart).split(" ");
+            var start = strStart[0]+" "+strStart[1]+" "+strStart[2]+" "+strStart[3]+" "+strStart[4];
+            var strEnd = (""+curEnd).split(" ");
+            var end = strEnd[0]+" "+strEnd[1]+" "+strEnd[2]+" "+strEnd[3]+" "+strEnd[4];
+            var header = `Manufacturing Activity from ${start} to ${end} with Duration of ${curAct.duration} hour(s) to produce ${curAct.quantity} case(s).`;
+            console.log("this is the header: "+header);
+            return (
+                <div>
+                    {header}
+                </div>
 
-        );            
+            );
     }
     
+
+
+
+    // {this.props.list_items.map((item, index) => 
+    //     <TableRow className = {`myrow ${this.state.showCheckboxes ? " trselect":""}`} selected = {this.determineSelected(index)} key={index}>
+    //       {this.props.table_properties.map(prop => 
+    //         <TableRowColumn
+    //           key={prop}
+    //           onClick={e => this.props.handleSelect(e, item)}
+    //           style={{ height: 'auto !important' }}
+    //         >
+    //           {this.displayValue(item, prop)}
+    //         </TableRowColumn>
+    //       )}
     summationTable = () => {
         return (
             <div></div>
@@ -158,6 +213,7 @@ export default class ManufacturingReport extends React.Component {
     }
 
     badActivities = (type, data) => {
+
         return (
             <div></div>
         );
@@ -165,23 +221,74 @@ export default class ManufacturingReport extends React.Component {
 
 
     render() {
-        console.log(this.state.data)
+        console.log("propsdata "+JSON.stringify(this.props.data));
         return (
             <div>
-            <iframe id="ifmcontentstoprint" style={{
-                        height: '0px',
-                        width: '0px',
-                        position: 'absolute'
-                    }}></iframe>  
+            <iframe id="ifmcontentstoprint" 
+            // style={{
+            //             height: '0px',
+            //             width: '0px',
+            //             position: 'absolute'
+            //         }}
+                    ></iframe>  
             <ModalBody id = "printarea">
                 {this.masterHeader()}
-                {this.formatCompleteActivities()}
-                {/* {this.summationTable()}
-                {this.badActivities("all", this.props.data.all_cut)}
-                {this.badActivities("beg", this.props.data.beg_cut)}
-                {this.badActivities("end",this.props.data.end_cut)} */}
+                <div>
+                {this.props.data.complete.map((item, index) =>
+                    <div key = {index} >
+                    {this.formatActivity(item)}
+                    </div>)}
+                </div>
+                <div>
+                    SUMMATION
+                </div>
+                <div>
+                {(this.props.data.all_cut !=undefined) ? 
+                    (this.props.data.all_cut.length>0 ?
+                        <div>
+                        <h6>The Following Activitities Began Before the Timespan and End After the Timespan.</h6>
+                        {this.props.data.all_cut.map((item, index) =>
+                            <div key = {index} >
+                            {this.badActivity(item)}
+                            </div>)}
+                            </div>
+                        : <div></div>
+                )
+                : <div></div>
+                }
+                </div>
+                <div>
+                {(this.props.data.end_cut !=undefined) ? 
+                    (this.props.data.end_cut.length>0 ?
+                        <div>
+                    <h6>The Following Activitities Began During the Timespan and End After the Timespan.</h6>
+                        {this.props.data.end_cut.map((item, index) =>
+                            <div key = {index} >
+                            {this.badActivity(item)}
+                            </div>)}
+                            </div>
+                        : <div></div>
+                )
+                : <div></div>
+                }
+                </div>
+                <div>
+                {(this.props.data.beg_cut !=undefined) ? 
+                    (this.props.data.beg_cut.length>0 ?
+                        <div>
+                        <h6>The Following Activitities Began Before the Timespan and End During the Timespan.</h6>
+                        {this.props.data.beg_cut.map((item, index) =>
+                            <div key = {index} >
+                            {this.badActivity(item)}
+                            </div>)}
+                            </div>
+                        : <div></div>
+                )
+                : <div></div>
+                }
+                </div>
 
-                
+            
             </ModalBody>
             <ModalFooter>
                 {/* <ExportSimple name = {'Export'} data = {this.state.data} fileTitle = {this.state.page_title}/> */}
