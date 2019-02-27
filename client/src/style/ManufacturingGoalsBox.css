@@ -64,6 +64,10 @@
     width: 100%;
   }
 
+  .modal-content {
+    overflow-wrap: break-word; 
+  }
+
   .singleGoalContent {
     border:solid rgb(230, 230, 230) thin;
     box-shadow: 1px 1px 5px #646464;
