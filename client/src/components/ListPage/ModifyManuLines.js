@@ -8,6 +8,7 @@ import {
 import * as Constants from '../../resources/Constants';
 import SubmitRequest from './../../helpers/SubmitRequest'
 import Filter from './Filter'
+import { EditorMultilineChart } from 'material-ui/svg-icons';
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
 
@@ -46,18 +47,24 @@ export default class ModifyManuLines extends React.Component {
     }
 
     async injectManuLines() { 
-        let to_return = await this.props.item['manu_lines'].map(async (id) => {
-            let mLine = await SubmitRequest.submitGetManufacturingLineByID(id)
-            return await {
-                label: mLine.data[0].short_name,
-                value: {_id : mLine.data[0]._id}
-            }
-        })
-        let mLines = await Promise.all(to_return);
-        this.setState({
-            currLines: mLines,
-            num_lines: mLines.length
-        })
+        console.log(this.props.item)
+        if(this.props.item['manu_lines']){
+            let to_return = await this.props.item['manu_lines'].map(async (id) => {
+                let mLine = await SubmitRequest.submitGetManufacturingLineByID(id)
+                console.log(mLine);
+                if(mLine.success){
+                    return await {
+                        label: mLine.data[0].short_name,
+                        value: {_id : mLine.data[0]._id}
+                    }
+                }
+            })
+            let mLines = await Promise.all(to_return);
+            this.setState({
+                currLines: mLines,
+                num_lines: mLines.length
+            })
+        }
     }
 
     render() {

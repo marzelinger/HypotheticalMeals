@@ -36,7 +36,14 @@
       flex-direction: row;
   }
 
-  #editform #button {
+  .editform #button {
+    border-radius: 0%;
+    width: 30px;
+    height: 30px;
+    margin: 10px;
+  }
+
+  .editform #buttonline {
     border-radius: 0%;
     width: 30px;
     height: 30px;
@@ -116,6 +123,15 @@
   .form {
     width: 100%;
     padding: 10px 5%;
+  }
+
+  .form #buttonline {
+    height: 40px;
+    width: 40px;
+    padding: 0px;
+    border-radius: 50%;
+    float: right;
+    cursor: pointer;
   }
   
   .form #button {

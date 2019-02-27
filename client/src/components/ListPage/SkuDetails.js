@@ -138,6 +138,7 @@ export default class SKUDetails extends React.Component {
     onModifyManuLines = (list) => {
         if(currentUserIsAdmin().isValid){
             var newItem = Object.assign({}, this.state.item);
+            console.log(newItem);
             newItem['manu_lines'] = list;
             this.setState({
                 item: newItem

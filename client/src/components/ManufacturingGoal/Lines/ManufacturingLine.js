@@ -52,7 +52,7 @@ export default class ManufacturingLine extends React.Component{
         </div>
         <div className="singleGoalButtons">
             {/* <img className = "hoverable" id ="deleteButton" onClick={() => {this.handleDeleteGoal()}} src= {deleteButton}></img> */}
-            <div id = "editform" className="form">
+            <div className = "editform" className="form">
               <ManufacturingLineDetails
               onEnabled = {this.onEnabled}
               // enabled = {this.props.goal.enabled}
@@ -61,13 +61,10 @@ export default class ManufacturingLine extends React.Component{
               handleDetailViewSubmit = {this.props.handleDetailViewSubmit}
               options = {[Constants.details_save, Constants.details_delete, Constants.details_cancel]}
               validateShortName = {this.props.validateShortName} 
-
               ></ManufacturingLineDetails>
-            {/* <a onClick={() => { props.handleUpdateGoal(props.id); }}>update</a> */}
-            {/* <Button classname = "exportbutton pdfbutton hoverable" id = "manuLineScheduleButton" onClick={(e) => this.onReportClick(e)}  > Report</Button> */}
+            </div>
+            <Button id = "manuLineScheduleButton" color="primary" onClick={(e) => this.onReportClick(e)}  > Report</Button>{' '}
             <div className = "exportbutton pdfbutton hoverable" onClick = {() => this.onReportClick()}>Preview PDF</div>
-            <img id ="deleteButton" onClick={() => {this.props.handleDeleteManuLine(this.props.id); }} src= {deleteButton}></img>
-          </div>
           </div>
       </div>
     )

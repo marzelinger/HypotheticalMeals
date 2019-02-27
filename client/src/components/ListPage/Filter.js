@@ -94,7 +94,10 @@ export default class Filter extends React.Component {
         const customStyles = {
             control: (base, state) => ({
                 ...base,
-                borderColor: this.props.invalid ? 'red' : '#ddd'
+                borderColor: this.props.invalid ? 'red' : '#ddd',
+                height: '40px',
+                'min-height': '34px',
+                width: '250px'
             })
         }
         return (
