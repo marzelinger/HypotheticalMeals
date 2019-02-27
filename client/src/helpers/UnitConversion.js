@@ -1,3 +1,5 @@
+import { bool } from "prop-types";
+
 // Unit conversion for Ingredients units
 
 export default class UnitConversion {
@@ -228,6 +230,10 @@ export default class UnitConversion {
         }
         return 'invalid unit'
     }
+    /*
+    let t = getconv()
+    t = { success: bool, func: f}
+    t.func(val)*/
 
     static getConversionFunction(unit_string) {
         console.log(unit_string)
