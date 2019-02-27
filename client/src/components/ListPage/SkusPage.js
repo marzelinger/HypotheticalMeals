@@ -270,11 +270,8 @@ export default class ListPage extends React.Component {
     }
 
     onTableOptionSelection = async(e, opt) => {
-<<<<<<< HEAD
-        if (this.state.selected_items.length === 0 && opt!=Constants.create_item) {
-=======
         if (this.state.selected_items.length === 0&& opt!=Constants.create_item) {
->>>>>>> 2167a0fff893eb1b4c691cd8ffcdeebe1acc2f3f
+            
             alert('You must select items to use these features!')
             return
         }
