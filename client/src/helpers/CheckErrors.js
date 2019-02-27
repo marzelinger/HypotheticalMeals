@@ -16,6 +16,8 @@ export default class CheckErrors{
         }
         console.log(new_activity)
         let response =  await SubmitRequest.submitUpdateItem('manuactivities', new_activity);
+        console.log(response);
+        return response.data;
     }
 
     static checkOrphaned(goal, activity){

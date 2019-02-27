@@ -129,3 +129,15 @@ td, tr {
 .noFocus:focus {
     outline: none;
 }
+
+.report-sku-table tr {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+    grid-template-columns:  minmax(100px, 2fr) minmax(100px,2fr) minmax(100px,2fr) minmax(100px,2fr);
+}
+
+.report-ing-table tr {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+    grid-template-columns:  minmax(100px, 2fr) minmax(100px,2fr);
+}

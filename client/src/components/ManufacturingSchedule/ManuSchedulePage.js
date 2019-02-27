@@ -53,16 +53,23 @@ export default class ManuSchedulePage extends Component {
     }
 
     async componentDidMount() {
+        console.log("mounting")
         await this.loadScheduleData();
     }
 
     async loadScheduleData() {
         items.length = 0;
         groups.length = 0;
-        let activities = await SubmitRequest.submitGetData(Constants.manu_activity_page_name);
-        await activities.data.forEach(async(activity) => await CheckErrors.updateActivityErrors(activity))
+        let initial_activities = await SubmitRequest.submitGetData(Constants.manu_activity_page_name);
+        console.log(initial_activities);
+        let activities = []
+        for(var i = 0; i < initial_activities.data.length; i ++){
+            let activity = initial_activities.data[i];
+            activities.push(await CheckErrors.updateActivityErrors(activity))
+        }
+        console.log(activities);
         let goals = await SubmitRequest.submitGetManuGoalsByFilter('_', '_', '_');
-        activities.data.map(act => {
+        activities.map(act => {
             this.scheduleOrPalette(act, goals);
         });
         let unscheduled_goals = goals.data.filter(goal => {
@@ -78,7 +85,7 @@ export default class ManuSchedulePage extends Component {
             groups.push({ id: line._id, content: line.name });
         });
         await this.setState({
-            activities: activities.data,
+            activities: activities,
             lines: lines.data,
             unscheduled_goals: unscheduled_goals,
             loaded: true
@@ -87,6 +94,7 @@ export default class ManuSchedulePage extends Component {
 
     scheduleOrPalette(act, goals) {
         if (act.scheduled) {
+            console.log("in scheduled action");
             if (items.find(i => i._id === act._id) === undefined) {
                 let start = new Date(act.start);
                 let end = new Date(start.getTime() + Math.floor(act.duration/10)*24*60*60*1000 + (act.duration%10 * 60 * 60 * 1000));
@@ -109,10 +117,11 @@ export default class ManuSchedulePage extends Component {
                     content: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity,
                     title: 'Goal: ' + assoc_goal.name + '<br>Deadline: ' + (parseInt(dl.getMonth())+1) + '/' + dl.getDate() + '/' + 
                         dl.getFullYear() + ' ' + dl.getHours() + ':' + (dl.getMinutes()<10 ? ('0'+dl.getMinutes()) : dl.getMinutes()),
-                    group: act.manu_line._id,
+                    group: act.manu_line,
                     className: cName,
                     _id: act._id
                 });
+                console.log(items)
             }
         }
     }

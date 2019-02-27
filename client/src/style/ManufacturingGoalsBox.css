@@ -60,6 +60,7 @@
   .singleGoalContent:hover{
     border: solid grey thin;
   }
+  
   .textContent {
     width: 100%;
   }
@@ -79,15 +80,15 @@
     cursor: pointer;
     width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: start;
     align-content: center;
   }
 
   
-  .singleGoalContent > input {
+  .singleGoalContent > h3 {
     font-size: 20px;
     color: #424242;
-    cursor: text;
+    cursor: pointer;
     border: none !important;
     padding: 5px !important;
   }
@@ -126,7 +127,7 @@
     cursor: pointer;
   }
   
-  #popup input {
+  #popup h3 {
     height: 30px;
     padding-left: 10px;
     margin-right: 10px;
