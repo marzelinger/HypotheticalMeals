@@ -57,7 +57,7 @@ export default class SubmitRequest{
 
   static submitUpdateItem = (route, item) => {
     try {
-      // printFuncFront("this is the route: "+'/api/'+route+item._id);
+      printFuncFront("this is the route: "+'/api/'+route+item._id);
       // printFuncFront("this is item "+item);
       // printFuncFront("this is string item "+JSON.stringify(item));
 
@@ -356,10 +356,10 @@ export default class SubmitRequest{
   }
 
 
-  static async submitGetManufacturingActivitiesForReport(manu_line_id,start_date,end_date) {
+  static async submitGetManufacturingActivitiesForReport(reportData) {
     try {
       console.log("here in the submitrequest for report");
-      return fetch(`/api/manuactivities/${manu_line_id}/${start_date}/${end_date}`)
+      return fetch(`/api/manuactivities/${reportData.manu_line._id}/${reportData.start_date}/${reportData.end_date}/${reportData.duration}`)
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error };

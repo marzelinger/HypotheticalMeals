@@ -203,7 +203,12 @@ export default class ListPage extends React.Component {
 
     async setInitPages(){
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        var curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
+        var curCount = 0;
+        if(allData!=undefined){
+            if(allData.data!=undefined){
+                 curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
+            }
+        }
         this.setState({
             currentPage: 0,
             previousPage: 0,
@@ -332,6 +337,7 @@ export default class ListPage extends React.Component {
 
      onDetailViewSelect = async (event, item) => {
         let formula_item = await SubmitRequest.submitGetFormulaByID(item.formula._id);
+        console.log("this is the ondetailview: "+JSON.stringify(formula_item));
         this.setState({
             detail_view_item: item,
             detail_view_formula_item: formula_item.data[0]
@@ -352,6 +358,7 @@ export default class ListPage extends React.Component {
     };
 
     async onDetailViewSubmit(event, item, formula_item, option) {
+        console.log("made it to the ondetailviewsubmit");
         // var res = {};
         var resItem = {};
         var resFormula = {};
@@ -363,7 +370,9 @@ export default class ListPage extends React.Component {
                 newData.push(item);
                 //need to create the new formula and get the id of the newly created formula and then put that in the 
                 //item equal to the formula section of item.
+                console.log("this is the formula_item: "+JSON.stringify(formula_item));
                 resFormula = await SubmitRequest.submitCreateItem(Constants.formulas_page_name, formula_item);
+
                 // var newSKUitem = this.formatNewSKUFormula(item, resFormula);
                 console.log(resFormula)
                 if(resFormula.success){

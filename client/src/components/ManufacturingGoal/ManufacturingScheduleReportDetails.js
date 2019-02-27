@@ -14,7 +14,10 @@ import {
 import {Form, FormText } from 'reactstrap';
 
 import SubmitRequest from '../../helpers/SubmitRequest';
+import TextField from '@material-ui/core/TextField';
+
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
+
 
 
 
@@ -39,8 +42,8 @@ export default class ManufacturingScheduleReportDetails extends React.Component 
             to_undo: {},
             start_date:'',
             duration: '',
+            end_date: '',
             errors: {}
-
         }
     }
 
@@ -120,18 +123,41 @@ export default class ManufacturingScheduleReportDetails extends React.Component 
         this.setState({ formula_item: formula_item })
     }
 
+    formatData = async () =>{
+        
+        var total = Number(this.state.duration)*10;
+        //var start_date_string=this.state.start_date+"T08:00:00.000Z"; //8am first date
+
+        var start = new Date(this.state.start_date);
+        start.setHours(start.getHours() + 8);
+        var end_date = new Date(start)
+        end_date.setDate(end_date.getDate() + Number(this.state.duration));
+        await this.setState({
+            start_date: start.toISOString(),
+            duration: total,
+            end_date: end_date.toISOString()
+        })
+
+
+    }
+
     async handleSubmit(e, opt) {
-        let reportData = {
-            manu_line: this.state.manu_line,
-            duration: this.state.duration,
-            start_date: this.state.start_date
-        }
-        
-        
+        var reportData = {};
         if (![Constants.details_save, Constants.details_export, Constants.details_create].includes(opt)) {
             this.props.handleDetailViewSubmit(e, reportData, opt);
             return;
         }
+
+        await this.formatData();
+        reportData = {
+            manu_line: this.state.manu_line,
+            duration: this.state.duration,
+            start_date: this.state.start_date,
+            end_date: this.state.end_date
+        }
+        
+        
+
         await this.validateInputs();
         let alert_string = 'Invalid Field for duration or start date';
         let inv = this.state.invalid_inputs;
@@ -146,20 +172,46 @@ export default class ManufacturingScheduleReportDetails extends React.Component 
         var inv_in = [];
         if (this.state.start_date === undefined) inv_in.push('start_date');
         if((this.state.duration === undefined) || this.state.duration < 1 ) inv_in.push('duration');
+        //TODO CHECK THE LENGTH OF THE DATE.
         await this.setState({ invalid_inputs: inv_in });
     }
     onStartChange = async (value) => {
+        //format the string
         await this.setState({ start_date: value });
         console.log("this is the state of the date; "+this.state.start_date);
+
+        // if(item.deadline != " "){
+        //     var deadline = new Date(item.deadline)
+        //     var localDate = deadline
+        //     var day = localDate.getDate();
+        //     var month = localDate.getMonth(); 
+        //     var year = localDate.getFullYear();
+        //     var yyyymmdd = this.pad(year, 4) +  "-" + this.pad(month + 1, 2) + "-" + this.pad(day, 2);
+        //     var hours = this.pad(''+localDate.getHours(), 2);
+        //     var minutes = this.pad(''+localDate.getMinutes(), 2);
+        //     var dateString = `${yyyymmdd}T${hours}:${minutes}`
+        //     item.deadline = dateString;
+        //     console.log(item.deadline)
+        // }
 
     };
 
     onDurChange = async (value) => {
+
+        //TODO CONVERT TO HOURS
+        
         await this.setState({ duration: value });
         console.log("this is the state of the duration; "+this.state.duration);
 
     };
 
+
+    onPropChange = (value) => {
+        console.log("props changing");
+        console.log(value)
+        // item[prop] = value
+        this.setState({ start_date: value });
+    };
 
     render() {
         return (
@@ -167,6 +219,7 @@ export default class ManufacturingScheduleReportDetails extends React.Component 
             <div className='item-title'>
                 <h1>{ this.state.manu_line  ? this.state.manu_line.name : Constants.undefined }</h1>
             </div>
+            <div>The report will begin at the 8am on the day selected and include the 10 hours per day for the duration of days selected.</div>
             <div>Manufacturing Report Schedule Start Date</div> 
             <FormGroup>
                 <Label for="startDate">Start Date</Label>
@@ -182,6 +235,22 @@ export default class ManufacturingScheduleReportDetails extends React.Component 
                     error={this.state.errors.start_date}
                 />
             </FormGroup>
+            {/* <FormGroup>
+                    <Label>Deadline</Label>
+                    <br></br>
+                    <TextField
+                        id="datetime-local"
+                        type="datetime-local"
+                        value = {this.state.start_date}
+                        //className={`text ${this.state.invalid_inputs.includes('deadline') ? 'is-invalid form-control' : ''}`}
+                        onClick = {(event) => this.onPropChange(event.target.value)}
+                        onKeyPress = {(event) => this.onPropChange(event.target.value)}
+                        onChange = {(event) => this.onPropChange((event.target.value))}
+                        InputLabelProps={{
+                        shrink: true,
+                        }}
+                    />
+                    </FormGroup> */}
             <FormGroup>
           <Label for="numberDuration">Report Duration in Days</Label>
           <Input

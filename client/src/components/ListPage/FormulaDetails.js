@@ -39,6 +39,7 @@ export default class FormulaDetails extends React.Component {
             assisted_search_results: [],
             to_undo: {}
         }
+        console.log("this is the formula object: "+JSON.stringify(this.state.item));
     }
 
     async componentDidMount(){
@@ -136,6 +137,7 @@ export default class FormulaDetails extends React.Component {
     }
 
     async handleSubmit(e, opt) {
+        console.log("fomrdetails; "+ JSON.stringify(this.state.item));
         if (![Constants.details_save, Constants.details_create].includes(opt)) {
             this.props.handleDetailViewSubmit(e, this.state.item, opt);
             return;

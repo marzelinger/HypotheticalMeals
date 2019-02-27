@@ -12,7 +12,7 @@ class Manu_GoalHandler{
             var new_activities = req.body.activities;
             var new_user = req.body.user || "default_user";
             var new_deadline = req.body.deadline;
-            console.log(new_deadline);
+            //console.log(new_deadline);
             if(!new_name || !new_user){
                 return res.json({
                     success: false, error: 'You must provide a name'

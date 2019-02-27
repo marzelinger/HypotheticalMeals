@@ -64,7 +64,7 @@ export default class ItemStore{
             _id: 'unassigned',
             username: '',
             password: '',
-            privileges: [],
+            // privileges: [],
             admin_creator: '',
             comment: '',
             isAdmin: false,

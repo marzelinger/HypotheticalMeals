@@ -2,7 +2,7 @@ import React from 'react';
 import FlatButton from 'material-ui/FlatButton';
 import Person from 'material-ui/svg-icons/social/person-outline';
 import Register from "./auth/Register";
-import AdminRegister from "./auth/AdminRegister";
+// import AdminRegister from "./auth/AdminRegister";
 import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';

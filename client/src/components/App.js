@@ -5,7 +5,7 @@ import SkusPage from "./ListPage/SkusPage";
 import FormulasPage from "./ListPage/FormulasPage";
 import Landing from "./layout/Landing";
 import Register from "./auth/Register";
-import AdminRegister from "./auth/AdminRegister";
+// import AdminRegister from "./auth/AdminRegister";
 import Login from "./auth/Login";
 import DukeLogin from "./auth/DukeLogin";
 import PrivateRoute from "./private-route/PrivateRoute";
@@ -19,7 +19,7 @@ import ManufacturingPage from "./ManufacturingGoal/ManufacturingPage";
 import ManufacturingLinePage from "./ManufacturingGoal/ManufacturingLinePage";
 import ImportPage from "./ImportPage";
 import IngredientsPage from "./ListPage/IngredientsPage";
-import UserPage from "./ListPage/UsersPage";
+import UserPage from "./ListPage/UserPage";
 import ProductLinePage from "./ProductLine/ProductLinePage";
 import * as Constants from '../resources/Constants';
 import Logout from '../components/auth/Logout';
@@ -107,7 +107,7 @@ class App extends React.Component{
                 <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
                 <AdminPrivateRoute exact path="/register" component={Register} />
                 <PrivateRoute exact path="/" component={Dashboard} />
-                <PrivateRoute exact path="/manu_schedule" component={ManuSchedulePage} />
+                <AdminPrivateRoute exact path="/manu_schedule" component={ManuSchedulePage} />
                 <PrivateRoute exact path="/skus" component={SkusPage} />
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingPage} />
                 <PrivateRoute exact path="/manu_lines" component={ManufacturingLinePage} />

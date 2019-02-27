@@ -57,7 +57,7 @@ class SkuHandler{
             sku.manu_lines = new_manu_lines
             sku.manu_rate = new_manu_rate
             let new_sku = await sku.save();
-            console.log('Sku added to database');
+            // console.log('Sku added to database');
             return res.json({ success: true, data: new_sku});
         }
         catch (err) {
@@ -77,12 +77,12 @@ class SkuHandler{
 
     static async updateSkuByID(req, res){
         try{
-            console.log('trying to update')
+            // console.log('trying to update')
             var target_id = req.params.sku_id;
             if (!target_id) {
                 return res.json({ success: false, error: 'No sku id provided' });
             }
-            console.log('here')
+            // console.log('here')
             var new_name = req.body.name;
             var new_sku_num = req.body.num;
             var new_case_upc = req.body.case_upc;
@@ -137,10 +137,10 @@ class SkuHandler{
     static async getSkuByID(req, res){
         try {
             var target_id = req.params.sku_id;
-            console.log("this is the targetid: "+target_id);
+            // console.log("this is the targetid: "+target_id);
 
             let to_return = await SKU.find({ _id : target_id });
-            console.log("this is the to_return: "+to_return);
+            // console.log("this is the to_return: "+to_return);
             if(to_return.length == 0) return res.json({ success: false, error: '404'});
             return res.json({ success: true, data: to_return});
         } catch (err) {
@@ -178,7 +178,7 @@ class SkuHandler{
                 populate: { path: 'ingredients' }
               });
             let sku = response[0];
-            console.log(response);
+            // console.log(response);
             return res.json({ success: true, data: sku});
         }
         catch (err) {
