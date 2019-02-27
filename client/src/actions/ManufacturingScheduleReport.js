@@ -7,6 +7,7 @@ var fileDownload = require('js-file-download');
 
 
 export const exportManuScheduleReport = async (reportData) => {
+    console.log("making the manu report in export manu schedule report: ");
     let res = await SubmitRequest.submitGetManufacturingActivitiesForReport(reportData);
     if(res.success){
 
@@ -42,11 +43,14 @@ export const createManuReport = (reportData, data) => {
         console.log("this is the curAct: "+JSON.stringify(curAct));
 
         var curStart = new Date(curAct.start);
-        var curEnd = getEndTime(curStart, curAct.duration);
+        //var curEnd = getEndTime(curStart, curAct.duration);
+        var curEnd = new Date(curAct.start);
+        curEnd.setMilliseconds(curEnd.getMilliseconds() + Math.floor(curAct.duration/10)*24*60*60*1000 + (curAct.duration%10 * 60 * 60 * 1000));
+
         console.log("this is the curstart and end: "+ curStart +"    "+curEnd);
-        var iLab = act+1;
+        var manuIndex = act+1;
         rows.push(["\r\n"]);
-        manulabel.push("("+iLab+") Manufacturing Activity from "+ curStart+" to "+curEnd+" with Duration of "+curAct.duration+ " hour(s) to produce "+curAct.quantity+" case(s).");
+        manulabel.push("("+manuIndex+") Manufacturing Activity from "+ curStart+" to "+curEnd+" with Duration of "+curAct.duration+ " hour(s) to produce "+curAct.quantity+" case(s).");
         rows.push(manulabel);
         rows.push(skuHeader());
         var skuline = [];
@@ -122,6 +126,29 @@ export const createManuReport = (reportData, data) => {
         rows.push(ingLabel);
     }
 
+
+    if(all_cut.length>0){
+        rows.push(["\r\n"]);
+        rows.push(["The Following Activities Began Before the Timespan and Ended After the Timespan"]);
+        rows.push(getBadActivities(all_cut));
+    }
+
+    if(beg_cut.length>0){
+        rows.push(["\r\n"]);
+        rows.push(["The Following Activities Began Before the Timespan and Ended During the Timespan"]);
+        rows.push(getBadActivities(beg_cut));
+    }
+
+    if(end_cut.length>0){
+        rows.push(["\r\n"]);
+        rows.push(["The Following Activities Began During the Timespan and Ended After the Timespan"]);
+        rows.push(getBadActivities(end_cut));
+    }
+
+    
+   
+
+
     let csvContent = "";
     rows.forEach(function(rowArray){
         let row = rowArray.join(",");
@@ -131,32 +158,27 @@ export const createManuReport = (reportData, data) => {
 
 }
 
-// getSummationData = (data, reportData) =>{
 
+export const getBadActivities = (data) =>{
+    var rows = [];
+    var numActs = data.length;
 
-// }
+    for(let act = 0; act<numActs; act++){
+        var manulabel= [];
+        var curAct = data[act];
 
-export const getEndTime = (start, dur) => {
-    var curEnd = new Date(start);
-    // var startHour = curEnd.getHours();
-    // var firstDay = 18-startHour; //how much can be accomplished in first day.
-    // if (firstDay>dur){
-    //     return curEnd.setHours(curEnd.getHours+dur);
-    // }
-    // //can't finish all in first day.
-    // var new_dur = dur-firstDay;
-    // curEnd.setHours(curEnd.getHours()+firstDay+6+8);
-    // var numDays = Math.floor(new_dur/10);
-    // var extraHours = new_dur%10;
-    var numDays = Math.floor(dur/10);
-    var extraHours = dur%10;
+        var curStart = new Date(curAct.start);
+        var curEnd = new Date(curAct.start);
+        curEnd.setMilliseconds(curEnd.getMilliseconds() + Math.floor(curAct.duration/10)*24*60*60*1000 + (curAct.duration%10 * 60 * 60 * 1000));
+        var manuIndex = act+1;
+        rows.push(["\r\n"]);
+        manulabel.push("("+manuIndex+") Manufacturing Activity from "+ curStart+" to "+curEnd+" with Duration of "+curAct.duration+ " hour(s) to produce "+curAct.quantity+" case(s).");
+        rows.push(manulabel);
+    }
 
-    curEnd.setDate(curEnd.getDate() + numDays);
-    curEnd.setHours(curEnd.getHours() + extraHours);
-    return curEnd;
+    return rows;
 
 }
-
 
 export const skuHeader = () => {
     var label = [];
