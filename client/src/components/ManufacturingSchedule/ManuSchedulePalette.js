@@ -51,7 +51,7 @@ export default class ManuSchedulePalette extends Component {
             <tr>
                 {this.state.item_properties.map(prop => {
                 if (prop === 'sku'){
-                    return (<td>{act[prop].name}</td>)
+                    return (<td>{act[prop].name + ': ' + act[prop].unit_size + ' * ' + act.quantity}</td>)
                 }
                 if (prop === 'add_to_schedule'){
                     return (
