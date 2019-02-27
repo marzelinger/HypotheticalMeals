@@ -7,6 +7,7 @@ import {Table} from 'reactstrap';
 import PropTypes from 'prop-types';
 import './SideBySideBox.css';
 
+
 export class ImportReport extends React.Component{
     constructor(props){
         super(props);
@@ -76,11 +77,11 @@ export class ImportReport extends React.Component{
         console.log(this.state.table_properties);
         return (
             <div className = "ImportReport">
-                <div className="paddedDiv import-table">
+                <div className="paddedDiv">
                     {this.state.added_items.length} records were added.
-                    <Table>
+                    <Table className = 'import-table'>
                         <thead>
-                            <tr>
+                            <tr style ={{gridTemplateColumns: `repeat( ${this.state.table_properties.length}, minmax(100px, 1fr))` }}>
                                 {this.state.table_properties.map(prop =>
                                     <th key={prop}>
                                         {this.getPropertyLabel(prop)}
@@ -91,6 +92,7 @@ export class ImportReport extends React.Component{
                         <tbody>
                             {this.state.added_items.map(item =>
                                 <tr
+                                style ={{gridTemplateColumns: `repeat( ${this.state.table_properties.length}, minmax(100px, 1fr))` }}
                                     key={this.props.label === "Product Line" ? item.name : item.num}
                                 >
                                     {this.state.table_properties.map(prop =>
@@ -107,9 +109,9 @@ export class ImportReport extends React.Component{
                     </Table>
 
                     {this.state.updated_items.length} records were updated.
-                    <Table>
+                    <Table className = 'import-table'>
                         <thead>
-                            <tr>
+                            <tr style = {{gridTemplateColumns: `repeat( ${this.state.table_properties.length}, minmax(100px, 1fr))` }}>
                                 {this.state.table_properties.map(prop =>
                                     <th key={prop}>
                                         {this.getPropertyLabel(prop)}
@@ -120,6 +122,7 @@ export class ImportReport extends React.Component{
                         <tbody>
                             {this.state.updated_items.map(item =>
                                 <tr
+                                    style ={{gridTemplateColumns: `repeat( ${this.state.table_properties.length}, minmax(100px, 1fr))` }}
                                     key={this.props.label === "Product Line" ? item.name : item.num}
                                 >
                                     {this.state.table_properties.map(prop =>
@@ -135,9 +138,9 @@ export class ImportReport extends React.Component{
                     </Table>
 
                     {this.state.ignored_items.length} records were ignored.
-                    <Table>
+                    <Table className = 'import-table'>
                         <thead>
-                            <tr>
+                            <tr style ={{gridTemplateColumns: `repeat( ${this.state.table_properties.length}, minmax(100px, 1fr))` }}>
                                 {this.state.table_properties.map(prop =>
                                     <th key={prop}>
                                         {this.getPropertyLabel(prop)}
@@ -148,6 +151,7 @@ export class ImportReport extends React.Component{
                         <tbody>
                             {this.state.ignored_items.map(item =>
                                 <tr
+                                style ={{gridTemplateColumns: `repeat( ${this.state.table_properties.length}, minmax(100px, 1fr))` }}
                                     key={this.props.label === "Product Line" ? item.name : item.num}
                                 >
                                     {this.state.table_properties.map(prop =>
