@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ExportSimple from '../export/ExportSimple';
 import PropTypes from 'prop-types';
@@ -225,11 +224,11 @@ export default class ManufacturingReport extends React.Component {
         return (
             <div>
             <iframe id="ifmcontentstoprint" 
-            // style={{
-            //             height: '0px',
-            //             width: '0px',
-            //             position: 'absolute'
-            //         }}
+            style={{
+                        height: '0px',
+                        width: '0px',
+                        position: 'absolute'
+                    }}
                     ></iframe>  
             <ModalBody id = "printarea">
                 {this.masterHeader()}
