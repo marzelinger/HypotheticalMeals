@@ -123,7 +123,7 @@ export default class DataStore{
     static getActivityData() {
       return {
         item_properties: ['sku', 'duration', 'add_to_schedule'],
-        item_property_labels: ['Unscheduled Manufacturing Activity', 'Duration', 'Add to Schedule']
+        item_property_labels: ['Activity SKU', 'Duration', 'Add to Schedule']
       };
     }
   }

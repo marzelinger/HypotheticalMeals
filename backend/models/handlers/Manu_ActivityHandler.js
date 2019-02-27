@@ -72,6 +72,7 @@ class Manu_ActivityHandler{
             if(!target_id){
                 return res.json({ success: false, error: 'No manufacturing actvity named provided'});
             }
+            console.log("here");
             var new_sku = req.body.sku;
             var new_quantity = req.body.quantity;
             var new_scheduled = req.body.scheduled || false

@@ -60,11 +60,12 @@ div.info-modal-button:hover {
     border-radius: 20%;
     width: 20px;
     height: 20px;
-    margin: auto;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    align-self: center;
+    margin: auto;
 }
 
 .goal-button {
@@ -121,7 +122,8 @@ td, tr {
 
 .belowTimeline {
     display: grid;
-    grid-template-columns: 6fr 5fr;
+    grid-template-columns: 6fr 6fr;
+    min-height: 50vh;
 }
 
 .noFocus:focus {

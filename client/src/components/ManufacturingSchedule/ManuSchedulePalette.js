@@ -83,7 +83,7 @@ export default class ManuSchedulePalette extends Component {
                                 <ManuSchedulePaletteGoal goal={goal} />
                             </AccordionItemTitle>
                             <AccordionItemBody>
-                                <Table borderless size="sm" className='accordian-table'>
+                                <Table borderless size="sm" className='accordian-table goal-table'>
                                     <thead>
                                     <tr>
                                         {this.state.item_properties.map(prop =>

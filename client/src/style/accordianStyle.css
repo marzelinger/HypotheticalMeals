@@ -2,6 +2,14 @@
     font-size: .8rem;
 }
 
+.accordian-table td, .accordian-table th{
+    justify-content: center !important;
+}
+
+.accordian-table tr {
+    grid-template-columns:  minmax(50px, 3fr) minmax(50px, 2fr) minmax(50px, 3fr);
+}
+
 .u-position-absolute {
     position: absolute;
 }
