@@ -195,6 +195,7 @@ export default class CSV_parser{
                 var dataValidationObj = await this.validateDataSKUs(obj, all_skus);
                 if(dataValidationObj.success == false){
                     console.log('fails here 1');
+                    console.log(dataValidationObj);
                     return await this.indicateSKUDataFailure(res, dataValidationObj, i+2);
                 }
                 
@@ -614,6 +615,7 @@ export default class CSV_parser{
 
                 var collisionObj = await this.searchForIngrCollision(obj, ingrs_to_add_nums, ingrs_to_add_names, db_ingredients_name, db_ingredients_nums, ingrs_to_update, ingrs_to_ignore);
                 if(collisionObj.success == false){
+                    console.log(collisionObj);
                     return await this.indicateIngrCollisionFailure(res, collisionObj, i+2);
                 }  
             }
@@ -717,6 +719,8 @@ export default class CSV_parser{
         else if(db_ingredients_name.has(obj[Constants.csv_ingr_name]) && !db_ingredients_nums.has(obj[Constants.csv_ingr_num])){
             toReturn.ambiguousCollision = true;
             toReturn.success = false;
+            console.log(obj[Constants.csv_ingr_name]);
+            console.log('1 collsion');
             return toReturn;
         // Check for a collision based on the primary key
         } else if(db_ingredients_nums.has(obj[Constants.csv_ingr_num])) {
@@ -734,6 +738,7 @@ export default class CSV_parser{
             else if(db_ingredients_nums.get(obj[Constants.csv_ingr_num]) != obj[Constants.csv_ingr_name] && db_ingredients_name.has(obj[Constants.csv_ingr_name])) {
                 toReturn.ambiguousCollision = true;
                 toReturn.success = false;
+                console.log('2 collsion');
                 return toReturn;
             } // If it is neither, indicate that it will be updated, its added to *_to_add_* to indicate it exists in the file
             else {
@@ -957,6 +962,9 @@ export default class CSV_parser{
             toReturn.formulaIngrIssue = true;
             return toReturn;
         }
+
+        this.convertUnits(obj[Constants.csv_formula_quantity]);
+
         var isUnitNum = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/.test(obj[Constants.csv_formula_quantity]);
         var ingr = await Ingredient.find({ num: obj[Constants.csv_formula_ingr] });
 
@@ -975,10 +983,15 @@ export default class CSV_parser{
         return toReturn;
     }
 
+    static async convertUnits(toConvert){
+        var quantity = toConvert[Constants.csv_formula_quantity];
+        
+    }
+
     static async findUnit(ingredient_pkg_size){
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg)$/.test(ingredient_pkg_size)) return 1;
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (fl.oz.|pt.|qt.|gal.|mL|L)$/.test(ingredient_pkg_size)) return 2;
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count)$/.test(ingredient_pkg_size)) return 3;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|oz|ounce|lb.|lb|pound|ton|g|gram|kg|kilogram)$/.test(ingredient_pkg_size)) return 1;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (floz|fluidounce|fl.oz.|pt|pint|pt.|qt.|qt|quart|gal.|gal|gallon|mL|milliliter|liter|L)$/.test(ingredient_pkg_size)) return 2;
+        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count||ct)$/.test(ingredient_pkg_size)) return 3;
     }
 
     static async indicateFormulaDataValidationFailure(res, dataValidationObj, row){
