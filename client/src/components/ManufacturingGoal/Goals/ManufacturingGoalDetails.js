@@ -62,8 +62,6 @@ export default class ManufacturingGoalDetails extends React.Component {
     }
 
     onPropChange = (value, item, prop) => {
-        console.log("props changing");
-        console.log(value)
         item[prop] = value
         this.setState({ item: item });
     };
@@ -143,7 +141,6 @@ export default class ManufacturingGoalDetails extends React.Component {
             var item = this.state.item;
             item.deadline = new Date(item.deadline)
             var return_val = await this.props.handleDetailViewSubmit(e, item, opt)
-            console.log(return_val);
             if(return_val.success){
                 this.setState({modal: false, errorText: ''})
             }
@@ -158,7 +155,6 @@ export default class ManufacturingGoalDetails extends React.Component {
     }
 
     async validateInputs() { 
-        console.log("validating")
         var inv_in = [];
         var error_text = '';
         this.state.item_properties.forEach(prop => {
@@ -241,10 +237,8 @@ export default class ManufacturingGoalDetails extends React.Component {
     }
 
     pad(n, length) {
-        console.log(n);
         let s = '' + n;
         while(s.length < length){
-            console.log(s);
             s = '0' + s;
         }
         return s;
@@ -264,7 +258,6 @@ export default class ManufacturingGoalDetails extends React.Component {
                 var minutes = this.pad(''+localDate.getMinutes(), 2);
                 var dateString = `${yyyymmdd}T${hours}:${minutes}`
                 item.deadline = dateString;
-                console.log(item.deadline)
             }
             await this.setState({ 
                 modal: !this.state.modal,
@@ -289,7 +282,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                     { this.injectProperties() }
                     <ItemSearchModifyListQuantity
                         api_route={Constants.skus_page_name}
-                        item_type={Constants.details_add_sku}
+                        item_type={Constants.details_modify_skus}
                         options={[Constants.details_add, Constants.details_remove]}
                         handleModifyList={this.onModifyList}
                     />
