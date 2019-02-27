@@ -132,6 +132,7 @@ class Landing extends Component {
   loginLocalComp(){
       return (
         <div className="col s6">
+        
           <Link
             to="/login"
             style={{
@@ -139,7 +140,7 @@ class Landing extends Component {
               borderRadius: "3px",
               letterSpacing: "1.5px"
             }}
-            className="btn btn-large btn-flat waves-effect white black-text"
+            className="btn btn-large btn-flat waves-effect hoverable white black-text"
           >
           Log In Local User
           </Link>
@@ -157,7 +158,7 @@ class Landing extends Component {
             borderRadius: "3px",
             letterSpacing: "1.5px"
           }}
-          className="btn btn-large btn-flat waves-effect white black-text"
+          className="btn btn-large btn-flat waves-effect hoverable white black-text"
         >
         Log In With NetID
         </Link>
@@ -210,11 +211,8 @@ class Landing extends Component {
         <div className="row">
           <div className="col s12 center-align">
             <h4>
-              <b>blah</b> blahhhhhhhh
+              <b>Meta</b> Alligators
             </h4>
-            <p className="flow-text grey-text text-darken-1">
-              Blah Blah Blah Blah Food Yum
-            </p>
             <br />
             {/* {this.switchLanding(adminHasInit().isValid)}     */}
             {this.loginLocalComp()}
