@@ -163,6 +163,10 @@ export default class ManuSchedulePage extends Component {
         let act = await SubmitRequest.submitGetManufacturingActivityByID(item._id)
         let end = new Date(item.end)
         let start = new Date(item.start)
+        if (!this.checkWithinHoursAndOverlap(item, callback) || 
+            !this.checkManuLineIsValid(item, act.data[0].sku.manu_lines, callback)) {
+            return
+        }
         let duration = parseInt(act.data[0].duration);
         let hour_difference = (end.getTime()-start.getTime())/(60*60*1000);
         if (hour_difference !== duration && (hour_difference !== Math.floor(duration/10)*24 + (duration%10))) {
@@ -180,10 +184,6 @@ export default class ManuSchedulePage extends Component {
                 callback(null)
                 return
             }
-        }
-        if (!this.checkWithinHoursAndOverlap(item, callback) || 
-            !this.checkManuLineIsValid(item, act.data[0].sku.manu_lines, callback)) {
-            return
         }
         act.data[0].start = item.start;
         act.data[0].manu_line = { _id: item.group };
