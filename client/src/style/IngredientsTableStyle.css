@@ -13,6 +13,6 @@
     grid-template-columns: 1fr 11fr;
 }
 
-.details-ingredients-table .ingredients-table tr{
-    grid-template-columns: minmax(100px, 4fr) minmax(100px,4fr) minmax(100px, 4fr)
+.details-ingredients-table tr{
+    grid-template-columns: minmax(100px, 4fr) minmax(100px,4fr)  0 minmax(100px, 4fr);
 }

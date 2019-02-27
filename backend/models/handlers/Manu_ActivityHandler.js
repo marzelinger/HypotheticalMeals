@@ -72,9 +72,10 @@ class Manu_ActivityHandler{
             if(!target_id){
                 return res.json({ success: false, error: 'No manufacturing actvity named provided'});
             }
+            console.log("here");
             var new_sku = req.body.sku;
             var new_quantity = req.body.quantity;
-            var new_scheduled = req.body.scheduled || false
+            var new_scheduled = req.body.scheduled;
             var new_start = req.body.start
             var new_overwritten = req.body.overwritten
             if (new_overwritten) var new_duration = req.body.duration;

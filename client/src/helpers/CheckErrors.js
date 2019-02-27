@@ -14,7 +14,10 @@ export default class CheckErrors{
             unscheduled_enabled, 
             over_deadline
         }
+        console.log(new_activity)
         let response =  await SubmitRequest.submitUpdateItem('manuactivities', new_activity);
+        console.log(response);
+        return response.data;
     }
 
     static checkOrphaned(goal, activity){
@@ -45,9 +48,10 @@ export default class CheckErrors{
 
     static async getErrorMessages(activity){
         var error_messages = [];
+        console.log(activity);
         var { data } = await SubmitRequest.submitQueryString(`/api/manugoals_activity/${activity._id}`);
         var name = `Activity [Manufacturing Goal:${data[0].name}, SKU: ${activity.sku.name}:${activity.sku.unit_size}*${activity.sku.cpc}]`
-        if(activity.over_written){
+        if(activity.overwritten){
             var message = 'Activity duration has been overridden by an admin.'
             error_messages.push({key:'over_ridden', message});
         }

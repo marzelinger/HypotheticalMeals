@@ -1,0 +1,24 @@
+.error_messages{
+    height: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    overflow: scroll;
+    border-bottom: solid thin #d7fbfd;
+    border-top: solid thin #d7fbfd;
+    box-shadow: inset 0px 8px 8px -10px #CCC,
+                inset 0px -8px 8px -10px #CCC; 
+}
+
+.activityname {
+    font-size: 1rem;
+}
+
+.activityerror {
+    font-size: .8rem;
+    width: 100%;
+}
+
+.activityerror > p {
+    margin: 0px;
+    line-height: 15px;
+}

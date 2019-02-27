@@ -43,7 +43,6 @@ export class ProductLineSkuTable extends React.Component{
         };
        
         return (<Select  className = "select" defaultValue = {defaultValue} onChange = {(newval, {action}) => this.props.onProdLineChange(newval, index, action) } options={options} />);
-        // return <Input onChange = {(e) => this.props.onProdLineChange(e, index)} placeholder={item['prod_line']} type="String" />
     }
     
     render() {
