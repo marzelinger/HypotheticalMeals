@@ -140,6 +140,7 @@ class FilterHandler{
             return res.json({ success: true, data: results});
         }
         catch (err) {
+            console.log(err)
             return res.json({ success: false, error: err});
         }
 
