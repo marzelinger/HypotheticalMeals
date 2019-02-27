@@ -135,11 +135,11 @@ export default class ImportPage extends React.Component {
                 //.then(data => data.json())
                 .then((res) => {
                     console.log(res);
-                    if(typeof res.data.manu_line_error != 'undefined'){
+                    if(typeof res.data.manu_line_name != 'undefined'){
                         this.setState({
                             manu_line_error: true,
                             rowIssue: res.data.row,
-                            manu_line_name: res.data.prod_line_name
+                            manu_line_name: res.data.manu_line_name,
                         })
                     }
                     if(typeof res.data.sku_formula_num != 'undefined'){
