@@ -132,7 +132,7 @@ export default class CSV_parser{
     }
 
     static async parseSKUCSV(req, res){
-        try{ 
+     //   try{ 
             // Extracts all skus from the database
             var db_skus = new Map();
             var db_caseUPCs = new Set();
@@ -222,6 +222,7 @@ export default class CSV_parser{
             var skus_to_update_old = [];
             var skus_to_ignore_arr = []
             for(var i =0; i < jsonArray.length; i++){
+                console.log(i);
                 var obj = jsonArray[i];
                 if(skus_to_update.has(obj[Constants.csv_sku_num])){
                     updated = updated + 1;
@@ -244,8 +245,8 @@ export default class CSV_parser{
 
                     old_sku_to_show.manu_lines = old_sku[0].manu_lines;
                     var manu_lines_to_show_string = "";
-                    for(var i = 0; i < old_sku[0].manu_lines.length; i++){
-                        var manu_line = await Manu_Line.find({ _id: old_sku[0].manu_lines[i] });
+                    for(var j = 0; j < old_sku[0].manu_lines.length; j++){
+                        var manu_line = await Manu_Line.find({ _id: old_sku[0].manu_lines[j] });
                         manu_lines_to_show_string = manu_lines_to_show_string + manu_line.short_name + ",";
                     }
                     old_sku_to_show.manu_lines_to_show = manu_lines_to_show_string;
@@ -254,6 +255,7 @@ export default class CSV_parser{
                     old_sku_to_show.comment = old_sku[0].comment;
 
                     var newObj = {};
+                    console.log('her23e');
                     var reformattedSKUS = await this.reformatSKU(newObj, obj);
                     skus_to_update_new.push(reformattedSKUS[0]);
                     skus_to_update_old.push(old_sku_to_show);
@@ -270,6 +272,7 @@ export default class CSV_parser{
                 else {
                     ignored = ignored + 1;
                     var newObj = {};
+                    console.log('her23weee');
                     var reformattedSKUS = await this.reformatSKU(newObj, obj);
                     skus_to_ignore_arr.push(reformattedSKUS[0]);
                 }
@@ -297,17 +300,15 @@ export default class CSV_parser{
                     console.log('gets here');
 
                     let new_sku = await sku.save();
-                    console.log('')
                     skus_added.push(toShow);
                 }
                 return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: skus_added, showImport: true, new_data: skus_to_update_new, ignored_data: skus_to_ignore_arr});
             } else{
                 return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: intermediate_skus_added, old_data: skus_to_update_old, new_data: skus_to_update_new, ignored_data: skus_to_ignore_arr});
             }
-        }
-        catch (err) {
-            return res.json({ success: false, error: 'Catch all error'});
-        }
+   //     catch (err) {
+   //         return res.json({ success: false, error: 'Catch all error'});
+   //     }
     }
 
     static async indicateSKUDataFailure(res, dataValidationObj, row){
@@ -497,6 +498,7 @@ export default class CSV_parser{
     }
 
     static async reformatSKU(objNew, objOld){
+        console.log("objOld is " + objOld);
         console.log("objNew is " + objNew);
         objNew.name = objOld.Name;
         objNew.num = objOld[Constants.csv_sku_num];
