@@ -14,7 +14,7 @@ const fs = require('fs');
 export default class CSV_parser{
 
     static async parseProdLineCSV (req, res){
-      //  try{
+        try{
             // Extracts all prod lines from database
             var db_prod_lines = new Set();
             let all_prod_lines = await Prod_Line.find()
@@ -74,6 +74,9 @@ export default class CSV_parser{
             return res.json({ success: true, added: added, ignored: ignored, 
                             data: prod_lines_added, showImport: true,
                             ignored_data: prod_lines_ignored});
+        } catch(err){
+            return res.json({ success: false, error: 'Catch all error'});
+        }
     }
 
     static async checkColumns(obj, correctColumnNames, correctColumnNum){
@@ -128,7 +131,7 @@ export default class CSV_parser{
     }
 
     static async parseSKUCSV(req, res){
- //       try{ 
+        try{ 
             // Extracts all skus from the database
             var db_skus = new Map();
             var db_caseUPCs = new Set();
@@ -297,12 +300,10 @@ export default class CSV_parser{
             } else{
                 return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: intermediate_skus_added, old_data: skus_to_update_old, new_data: skus_to_update_new, ignored_data: skus_to_ignore_arr});
             }
-      //  }
-      /*
+        }
         catch (err) {
-            fs.unlinkSync(req.file.path);
             return res.json({ success: false, error: 'Catch all error'});
-        }*/
+        }
     }
 
     static async indicateSKUDataFailure(res, dataValidationObj, row){
@@ -547,7 +548,8 @@ export default class CSV_parser{
             let updated_sku = await SKU.findOneAndUpdate({ num : updateArray[i].num},
                 {$set: {name : updateArray[i].name, case_upc : updateArray[i].case_upc, unit_upc : updateArray[i].unit_upc,
                         unit_size : updateArray[i].unit_size, cpc: updateArray[i].cpc, prod_line: updateArray[i].prod_line,
-                        comment : updateArray[i].comment}}, {upsert : true, new : true});
+                        formula: updateArray[i].formula, scale_factor: updateArray[i].scale_factor,
+                        manu_lines: updateArray[i].manu_lines, manu_rate: updateArray[i].manu_rate, comment : updateArray[i].comment}}, {upsert : true, new : true});
                         returningUpdate.push(updateArray[i]);
         }
         for(var i = 0; i < addArray.length; i++){
@@ -559,6 +561,10 @@ export default class CSV_parser{
             sku.unit_size = addArray[i].unit_size;
             sku.cpc = addArray[i].cpc;
             sku.prod_line = addArray[i].prod_line;
+            sku.formula = addArray[i].formula;
+            sku.scale_factor = addArray[i].scale_factor;
+            sku.manu_lines = addArray[i].manu_lines;
+            sku.manu_rate = addArray[i].manu_rate;
             sku.comment = addArray[i].comment;
             let new_sku = await sku.save();
             console.log("add array is: ");
@@ -569,7 +575,7 @@ export default class CSV_parser{
     }
 
     static async parseIngredientsCSV(req, res){
-    //    try {
+        try {
             //Extract the primary key (num) & unique identifier(case_upc) for each entry
             var db_ingredients_nums = new Map();
             var db_ingredients_name = new Set();
@@ -664,11 +670,10 @@ export default class CSV_parser{
                     data: intermediate_ingrs_added, old_data: ingrs_to_update_old,
                     new_data: ingrs_to_update_new, ignored_data: ingrs_to_ignore_arr});
             }
-     //   }
-   /*     catch (err) {
-            fs.unlinkSync(req.file.path);
-            return res.json({ success: false, error : err});
-        }*/
+        }
+        catch (err) {
+            return res.json({ success: false, error : "Catch all error"});
+        }
     }
 
     static async validateDataIngredients(obj, all_ingredients){
