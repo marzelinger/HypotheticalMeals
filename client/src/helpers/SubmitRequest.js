@@ -57,7 +57,7 @@ export default class SubmitRequest{
 
   static submitUpdateItem = (route, item) => {
     try {
-      // printFuncFront("this is the route: "+'/api/'+route+item._id);
+      printFuncFront("this is the route: "+'/api/'+route+item._id);
       // printFuncFront("this is item "+item);
       // printFuncFront("this is string item "+JSON.stringify(item));
 

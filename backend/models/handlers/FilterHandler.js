@@ -58,7 +58,7 @@ class FilterHandler{
             var ids = [];
             var sort_field = req.params.sort_field;
             var ingredient_ids = req.params.ingredient_ids;
-            console.log(ingredient_ids);
+            //console.log(ingredient_ids);
             if (ingredient_ids !== undefined && ingredient_ids !== "_"){
                 ingredient_ids = ingredient_ids.replace(/\s/g, "").split(',');
                 let formulas = await Formula.find({ ingredients : {$in : ingredient_ids } });
@@ -66,13 +66,13 @@ class FilterHandler{
 
                 for(var i = 0; i < formulas.length; i++){
                     var obj = formulas[i]
-                    console.log(obj._id);
+                    //console.log(obj._id);
                     formula_string = formula_string + obj._id + ",";
                 }
                 formula_string = formula_string.substring(0,formula_string.length-1);
-                console.log(formula_string);
+                //log(formula_string);
                 let skus = await SKU.find({ formula : {$in : formula_string } });
-                console.log(skus.length);
+                //console.log(skus.length);
                 skus.map(sku => ids.push(sku._id));
                 and_query.push( {_id: { $in: ids } } );
             }

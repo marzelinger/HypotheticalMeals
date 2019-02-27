@@ -114,24 +114,6 @@ export default class ManufacturingLinePage extends React.Component {
     
   }
 
-  // async onDetailViewSubmit(event, manu_line, option) {
-  //   switch (option) {
-  //       case Constants.details_save:
-  //           break;
-  //       case Constants.details_delete:
-  //         //
-  //         break;
-  //       case Constants.details_cancel:
-  //           break;
-  //   }
-  //       this.setState({ 
-  //           selected_manu_line: null,
-  //           detail_view_options: [],
-  //           detail_view_action: ''
-  //       });
-  //       //this.toggle(Constants.details_modal);
-  // }
-
   render() {
     return (
       <div>

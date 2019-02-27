@@ -14,6 +14,8 @@ const ManufacturingLineList = (props) => {
       handleDeleteManuLine={props.handleDeleteManuLine}
       handleReportSelect={props.handleReportSelect}
       handleDetailViewSelect = {props.handleDetailViewSelect}
+      handleDetailViewSubmit = {props.handleDetailViewSubmit}
+      validateShortName = {props.validateShortName}
     >
       { line.name}
     </ManufacturingLine>
@@ -33,7 +35,8 @@ ManufacturingLineList.propTypes = {
   handleDeleteManuLine: PropTypes.func,
   handleUpdateManuLine: PropTypes.func,
   handleReportSelect: PropTypes.func,
-  handleDetailViewSelect: PropTypes.func
+  handleDetailViewSelect: PropTypes.func,
+  handleDetailViewSubmit: PropTypes.func
 };
 
 ManufacturingLineList.defaultProps = {

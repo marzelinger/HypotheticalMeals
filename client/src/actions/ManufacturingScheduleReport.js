@@ -1,4 +1,5 @@
 import SubmitRequest from '../helpers/SubmitRequest';
+import { splitIngQuantity} from "./splitIngQuantity";
 
 var fileDownload = require('js-file-download');
 //The former should be fine: name, number, and quantity/unit for ingredients.
@@ -85,19 +86,22 @@ export const createManuReport = (reportData, data) => {
             ingLine.push(skudata.formula.ingredient_quantities[ing]);
             rows.push(ingLine);
 
+            var {ingQuant, ingMeas} = splitIngQuantity(skudata.formula.ingredient_quantities[ing]);
+
             //now want to add each ing into the map
             //map is key =ing value = sum
             if(ingSUMmap.has(skudata.formula.ingredients[ing].name)){
                 //want to add the values together.
-                var tot = parseFloat(ingSUMmap.get(skudata.formula.ingredients[ing].name)) + parseFloat(skudata.formula.ingredient_quantities[ing])*curAct.quantity;
-                ingSUMmap.set(skudata.formula.ingredients[ing].name, tot);
+                var {ingFromMap, ingMeasMap} = splitIngQuantity(ingSUMmap.get(skudata.formula.ingredients[ing].name));
+                var tot = ingFromMap + ingQuant*curAct.quantity;
+                ingSUMmap.set(skudata.formula.ingredients[ing].name, tot+""+ingMeas);
                 console.log("in the map stuff");
                 console.log("this is the tot; "+tot);
 
             }
             else{ //TODO DOUBLE CHECK THIS SUMMATION AFTER BELAL'S STUFF
                 ingSUMmap.set(skudata.formula.ingredients[ing].name, 
-                    parseFloat(skudata.formula.ingredient_quantities[ing])*curAct.quantity);
+                    ingQuant*curAct.quantity+""+ingMeas);
                     console.log("in the map 3");
 
             }
