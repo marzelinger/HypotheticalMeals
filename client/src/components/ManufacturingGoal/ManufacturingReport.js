@@ -322,12 +322,16 @@ export default class ManufacturingReport extends React.Component {
     return  {val: val, unit: unit};
   }
 
-  formatSumTable = () => {
+  formatSumTable = async () => {
+      await this.getIngredientInfo();
+
     if(this.state.ingredients_info!=undefined){
         console.log('ingtable yes');
     return (
         <div>
-            <Table>
+            {/* <Table className = "report-sku-table"> */}
+            <Table className = "report-sum-table">
+
     <thead>
       <tr>
         <th>Ingr#</th>
