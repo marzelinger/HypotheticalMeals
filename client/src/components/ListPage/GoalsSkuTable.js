@@ -64,21 +64,22 @@ export class GoalSkuTable extends React.Component{
               selected = {this.state.selected !=undefined && this.state.selected.includes(index) && !this.state.simple}
             >
               {this.props.table_properties.map(prop => {
+                console.log(prop);
                 if(!item.sku){
                   return <TableRowColumn></TableRowColumn>
                 }
-                return <TableRowColumn key={prop}>{prop == 'quantity' ? this.createQuantityElement(item, index) : item.sku[prop]}</TableRowColumn>
+                return <TableRowColumn key={prop}>{(prop == 'quantity' || prop == 'duration') ? item[prop] : item.sku[prop]}</TableRowColumn>
                 })
               }
             </TableRow>
           ))
       return (
         <div>
-          <Table multiSelectable = {true}
+          <Table multiSelectable = {this.props.simple}
           onRowSelection = {(index) => this.handleSelectedRow(index)}
           deselect
           >
-            <TableHeader adjustForCheckbox={this.state.showCheckboxes && !this.state.simple}>
+            <TableHeader adjustForCheckbox={this.state.showCheckboxes && !this.state.simple} displaySelectAll = {false}>
               <TableRow selectable = {false} class = "cols trselect">
                 {this.props.table_properties.map(prop => 
                   <TableHeaderColumn tooltip = {this.state.simple ? null : "Sort By " + this.getPropertyLabel(prop)} className = "hoverable" key={prop}>

@@ -11,6 +11,7 @@ import {
 import DataStore from '../../../helpers/DataStore'
 import ItemStore from '../../../helpers/ItemStore';
 import addButton from '../../../resources/add.png';
+import SimpleLineTable from './SimpleLineTable';
 import ItemSearchModifyListQuantity from '../../ListPage/ItemSearchModifyListQuantity';
 
 export default class ManufacturingLineDetails extends React.Component {
@@ -196,13 +197,10 @@ export default class ManufacturingLineDetails extends React.Component {
                         item_type={Constants.details_modify_skus}
                         options={[Constants.details_add, Constants.details_remove]}
                         handleModifyList={this.onModifyList}
-                        simple = {true}
+                        qty_disable = {true}
                     />
-                    {
-                        this.state.item.skus.map(sku => {
-                            return (<h3>{sku.name}</h3>)
-                        })
-                    }
+                    <SimpleLineTable skus = {this.state.item.skus} >
+                    </SimpleLineTable>
                 </div>
                 <div className='item-options'>
                     { this.state.detail_view_options.map(opt => 

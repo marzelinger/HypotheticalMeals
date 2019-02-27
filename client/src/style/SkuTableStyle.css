@@ -1,0 +1,26 @@
+
+.sku-table tr {
+    grid-template-columns:  .5fr minmax(100px, 1fr) minmax(100px, 2fr) minmax(100px, 2fr) minmax(100px,2fr) minmax(50px,1fr) minmax(75px,1.5fr) minmax(100px,2fr) minmax(50px,1fr);
+}
+
+.sku-table table {
+    overflow: scroll;
+}
+
+.sku-table #complex {
+    grid-template-columns: minmax(150px, 1.5fr) minmax(200px , 1fr) minmax(200px, 1fr) 50px;
+    justify-items: end;
+}
+
+.sku-table #complex > *{
+    justify-self: flex-end;
+    
+}
+
+.sku-table .superrow {
+    grid-template-columns: 0fr 1fr 11fr;
+}
+
+.details-sku-table .sku-table tr {
+    grid-template-columns:  minmax(70px, 1fr) minmax(60px, 1fr) minmax(100px, 2fr) minmax(50px,2fr) minmax(50px,1fr);
+}

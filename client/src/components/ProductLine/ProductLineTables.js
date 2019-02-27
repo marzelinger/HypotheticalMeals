@@ -14,8 +14,8 @@ export default class ProductLineTables extends React.Component {
         super(props);
         this.state = {
             page_title: 'skus',
-            table_columns: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line'],
-            table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line'],
+            table_columns: ['Name', 'Number',  'Unit Size', 'Count per Case', 'Product Line'],
+            table_properties: ['name', 'num', 'unit_size', 'cpc', 'prod_line'],
             error: null
         };
     }

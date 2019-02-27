@@ -7,6 +7,7 @@ import React from 'react';
 import GoalsSkuTable from './GoalsSkuTable'
 import * as Constants from './../../resources/Constants';
 import './../../style/SkusPage.css';
+import './../../style/GoalsTableStyle.css';
 import SubmitRequest from './../../helpers/SubmitRequest';
 
 
@@ -16,8 +17,8 @@ export default class ManuGoalsTables extends React.Component {
         super(props);
         this.state = {
             page_title: 'SKUs',
-            table_columns: ['Name', 'Number', 'Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line', 'Quantity'],
-            table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', 'quantity'],
+            table_columns: ['Name', 'Number', 'Unit Size', 'Count per Case', 'Quantity', 'Manufacturing Rate', 'Duration'],
+            table_properties: ['name', 'num', 'unit_size', 'cpc', 'quantity', 'manu_rate', 'duration'],
             data: this.props.activities,
             error: null,
             onDeleteSku: props.onDeleteSku,
@@ -62,7 +63,7 @@ export default class ManuGoalsTables extends React.Component {
 
     render() {
         return (
-            <div className="list-page">
+            <div className="list-page goals-table">
                 <div>
                     <GoalsSkuTable
                         onQuantityChange = {this.props.onQuantityChange}
@@ -74,6 +75,7 @@ export default class ManuGoalsTables extends React.Component {
                         handleSelect={this.onSelect}
                         handleDetailViewSelect={this.onDetailViewSelect}
                         handleDeleteActivities = {this.props.handleDeleteActivities}
+                        simple = {true}
                     />
                 </div>              
             </div>

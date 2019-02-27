@@ -20,7 +20,7 @@ var skuTableData = {};
     }
   }
   return (
-    <div>
+    <div className = 'details-sku-table'>
       <SkusPage
         {
         ...skuTableData
