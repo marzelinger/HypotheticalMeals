@@ -107,7 +107,8 @@ export default class ManufacturingGoal extends React.Component{
       <div id="singleGoal">
         <div className={`textContent ${this.props.goal.enabled ? 'enabled' :'disabled'}`}>
           <div className="singleGoalContent hoverable" id={'goal' + this.props.id}>
-            <input onKeyPress = {(event) => this.onNameSubmit(event)} type = "text" value = {this.props.goal.name} onChange = {(event) => this.onNameChange(event)}></input>
+            <h3>{this.props.goal.name}</h3>
+            {/* <input onKeyPress = {(event) => this.onNameSubmit(event)} type = "text" value = {this.props.goal.name} onChange = {(event) => this.onNameChange(event)}></input> */}
           </div>
           <UncontrolledCollapse toggler={'#goal' + this.props.id}>
                 <Card>

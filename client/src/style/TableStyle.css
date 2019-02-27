@@ -63,13 +63,13 @@ svg {
     background-size: 10px 10px;
 }
 
-/* .filter-item > div > div > div div:nth-child(2){
+.filter-item > div > div > div div:nth-child(2){
     width: 10px
 }
 
 .filter-item > div > div > div div:first-child{
     width: 150px;
-} */
+}
 
 .css-1hwfws3 {
     width: 200px !important;
@@ -100,4 +100,29 @@ svg {
 
 .css-12jo7m5 {
     padding: 0px !important;
+}
+
+.import-table {
+    min-height: 50px;
+    max-height: 100px;
+    overflow: scroll;
+    width: 100%;
+    font-size: .8rem;
+    line-height: 1.5; 
+}
+
+.import-table td, .import-table th {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    text-align: left;
+}
+
+.import-table tr {
+    text-align: left;
+    height: 40px;
+}
+
+.rowC {
+    display: flex;
+    flex-direction: column;
 }

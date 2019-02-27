@@ -35,6 +35,7 @@ export default class ManuSchedulePage extends Component {
             loaded: false,
             modal: false,
             modal_type : '',
+            error_change: false
         }
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!= null){
@@ -52,19 +53,28 @@ export default class ManuSchedulePage extends Component {
     }
 
     async componentDidMount() {
+        console.log("mounting")
         await this.loadScheduleData();
     }
 
     async loadScheduleData() {
         items.length = 0;
         groups.length = 0;
-        let activities = await SubmitRequest.submitGetData(Constants.manu_activity_page_name);
+        let initial_activities = await SubmitRequest.submitGetData(Constants.manu_activity_page_name);
+        console.log(initial_activities);
+        let activities = []
+        for(var i = 0; i < initial_activities.data.length; i ++){
+            let activity = initial_activities.data[i];
+            activities.push(await CheckErrors.updateActivityErrors(activity))
+        }
+        console.log(activities);
         let goals = await SubmitRequest.submitGetManuGoalsByFilter('_', '_', '_');
-        activities.data.map(act => {
+        activities.map(act => {
             this.scheduleOrPalette(act, goals);
         });
         let unscheduled_goals = goals.data.filter(goal => {
-            let not_all_scheduled = false
+            let not_all_scheduled = false;
+            console.log(goal)
             goal.activities.map(act => {
                 if (act.unscheduled_enabled) not_all_scheduled = true
             })
@@ -75,7 +85,7 @@ export default class ManuSchedulePage extends Component {
             groups.push({ id: line._id, content: line.name });
         });
         await this.setState({
-            activities: activities.data,
+            activities: activities,
             lines: lines.data,
             unscheduled_goals: unscheduled_goals,
             loaded: true
@@ -84,6 +94,7 @@ export default class ManuSchedulePage extends Component {
 
     scheduleOrPalette(act, goals) {
         if (act.scheduled) {
+            console.log("in scheduled action");
             if (items.find(i => i._id === act._id) === undefined) {
                 let start = new Date(act.start);
                 let end = new Date(start.getTime() + Math.floor(act.duration/10)*24*60*60*1000 + (act.duration%10 * 60 * 60 * 1000));
@@ -106,10 +117,11 @@ export default class ManuSchedulePage extends Component {
                     content: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity,
                     title: 'Goal: ' + assoc_goal.name + '<br>Deadline: ' + (parseInt(dl.getMonth())+1) + '/' + dl.getDate() + '/' + 
                         dl.getFullYear() + ' ' + dl.getHours() + ':' + (dl.getMinutes()<10 ? ('0'+dl.getMinutes()) : dl.getMinutes()),
-                    group: act.manu_line._id,
+                    group: act.manu_line,
                     className: cName,
                     _id: act._id
                 });
+                console.log(items)
             }
         }
     }
@@ -174,9 +186,14 @@ export default class ManuSchedulePage extends Component {
                 act.data[0].start = item.start
                 act.data[0].duration = Math.floor(hour_difference/24)*10 + (hour_difference%24)
                 act.data[0].overwritten = true
+                console.log("here 1")
                 await CheckErrors.updateActivityErrors(act.data[0]);
+                console.log("here 2")
                 callback(item)
+                console.log("here 3")
                 await this.loadScheduleData();
+                console.log("here 4")
+                await this.setState({error_change: true})
                 return
             }
             else {
@@ -190,6 +207,7 @@ export default class ManuSchedulePage extends Component {
         await CheckErrors.updateActivityErrors(act.data[0]);
         callback(item)
         await this.loadScheduleData();
+        await this.setState({error_change: true})
     }
 
     checkManuLineIsValid(item, sku_manu_lines, callback) {
@@ -255,7 +273,8 @@ export default class ManuSchedulePage extends Component {
             await CheckErrors.updateActivityErrors(activity);
             await this.loadScheduleData();
             await this.setState({ 
-                activity_to_schedule: null
+                activity_to_schedule: null,
+                error_change: true
             })
         }
         else {
@@ -268,9 +287,12 @@ export default class ManuSchedulePage extends Component {
         act.data[0].start = null;
         act.data[0].scheduled = false;
         act.data[0].manu_line = null;
+
+        console.log(this.state.error_change)
         await CheckErrors.updateActivityErrors(act.data[0]);
         await this.loadScheduleData();
         callback(item)
+        await this.setState({error_change: true})
     }
 
     snap(date, scale, step) {
@@ -308,7 +330,7 @@ export default class ManuSchedulePage extends Component {
     getOptions() { 
         return {
         width: '100%',
-        maxHeight: 54 + 8*38 + 'px',
+        maxHeight: 60 + 'vh',
         stack: false,
         showMajorLabels: true,
         showCurrentTime: true,
@@ -344,6 +366,10 @@ export default class ManuSchedulePage extends Component {
         // this.setState({start: event.start})
         this.range['start'] = event.start
         this.range.end = event.end;
+    }
+
+    updatedErrors = async() => {
+        await this.setState({error_change: false})
     }
 
     render() {
@@ -385,6 +411,8 @@ export default class ManuSchedulePage extends Component {
                     <div className='errors-container'>
                         <h6 className='errors-title'>Activity Errors</h6>
                         <ManuActivityErrors 
+                            update = {this.state.error_change}
+                            onUpdate = {this.updatedErrors}
                             className = "errors" 
                             range = {this.range} 
                             activities = {this.state.activities.filter((activity) => activity.scheduled)}

@@ -8,7 +8,6 @@ import printFuncFront from '../printFuncFront';
 export default class SubmitRequest{
 
   static submitQueryString(query) {
-    console.log(query)
     return fetch(query, { method: 'GET' })
           .then(data => data.json())
           .then((res) => {
@@ -57,21 +56,11 @@ export default class SubmitRequest{
 
   static submitUpdateItem = (route, item) => {
     try {
-      printFuncFront("this is the route: "+'/api/'+route+item._id);
-      // printFuncFront("this is item "+item);
-      // printFuncFront("this is string item "+JSON.stringify(item));
-
-
       return fetch(`/api/${route}/${item._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(item),
       }).then(res => res.json()).then((res) => {
-        // printFuncFront("this is the route2: "+'/api/'+route+item._id);
-        // printFuncFront("this is the response: "+res);
-        // printFuncFront("this is the response: "+JSON.stringify(res));
-
-
         if (!res.success) return { success: res.success, error: res.error };
         else return { success: res.success, data: res.data};
       });
