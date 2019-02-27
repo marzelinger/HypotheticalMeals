@@ -3,6 +3,7 @@
 
 import Ingredient from '../databases/ingredient';
 import SKU from '../databases/sku';
+import Formula from '../databases/formula';
 
 class IngredientHandler{
 
@@ -108,6 +109,21 @@ class IngredientHandler{
     static async deleteIngredientByID(req, res){
         try{
             var target_id = req.params.ingredient_id;
+
+            let all_formulas = Formula.find();
+            console.log(all_formulas);
+            console.log("the length of all formulas is :" + all_formulas.length);
+            for(var i = 0; i < all_formulas.length; i++){
+                var curr_formula = all_formulas[i];
+                var curr_ingrs_array = curr_formula.ingredients;
+                for(var i = 0; i < curr_ingrs_array; i++){
+                    if(curr_ingrs_array[i] == target_id){
+                        console.log('this worked');
+                        return res.json({ success: false, error: "This ingredient is still tied to a formula"});
+                    }
+                }
+            }
+
             let skus = await SKU.find({ ingredients : target_id });
             skus.map(async (sku) => {
                 let ind = sku.formula.ingredients.indexOf(target_id);
@@ -117,6 +133,7 @@ class IngredientHandler{
                     {$set: {ingredients : sku.formula.ingredients, ingredient_quantities: sku.formula.ingredient_quantities}}, 
                     {upsert : true, new : true});
             })
+            
             let to_remove = await Ingredient.findOneAndDelete({ _id: target_id});
             if(!to_remove) return res.json({ success: true, error: '404'});
             return res.json({ success: true, data: to_remove });
