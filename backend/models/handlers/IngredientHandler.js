@@ -110,14 +110,15 @@ class IngredientHandler{
         try{
             var target_id = req.params.ingredient_id;
 
-            let all_formulas = Formula.find();
+            let all_formulas = await Formula.find();
             console.log(all_formulas);
             console.log("the length of all formulas is :" + all_formulas.length);
             for(var i = 0; i < all_formulas.length; i++){
                 var curr_formula = all_formulas[i];
                 var curr_ingrs_array = curr_formula.ingredients;
-                for(var i = 0; i < curr_ingrs_array; i++){
-                    if(curr_ingrs_array[i] == target_id){
+                console.log(curr_ingrs_array);
+                for(var j = 0; j < curr_ingrs_array.length; j++){
+                    if(curr_ingrs_array[j]._id == target_id){
                         console.log('this worked');
                         return res.json({ success: false, error: "This ingredient is still tied to a formula"});
                     }

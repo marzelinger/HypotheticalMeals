@@ -80,9 +80,27 @@ export default class FormulaDetails extends React.Component {
         }
     }
 
-    removeIngredient(item, value, qty) {
+    async removeIngredient(item, value, qty) {
         
         let ind = -1;
+
+        let ingr = await SubmitRequest.submitGetIngredientByID(value._id);
+        console.log(ingr);
+        console.log('gets here');
+        var ingrType = await this.findUnit(qty);
+        var ingrType2 = await this.findUnit(ingr.data[0].pkg_size);
+        if(ingrType == -1){
+            alert("Please enter one of the following units: oz., lb., ton, g, kg, fl.oz, pt., qt., gal., mL, L, count");
+            return;
+        }
+        var positive = await this.validatePositive(qty);
+        if(!positive) {
+            alert("Please enter a positive number");
+        }
+        if (ingrType != ingrType2) {
+            alert("Please enter a unit matching this ingredient's unit");
+            return;
+        }
         //qty = parseInt(qty);
         item.ingredients.map((ing, index) => {
             if (ing._id === value._id)
@@ -90,8 +108,14 @@ export default class FormulaDetails extends React.Component {
         });
         if (ind > -1) {
             let curr_qty = item.ingredient_quantities[ind];
-            curr_qty = curr_qty - qty;
-            if (curr_qty > 0) item.ingredient_quantities[ind] = curr_qty;
+            var sameUnits = await this.verifySameUnits(curr_qty, qty);
+            if(!sameUnits){
+                alert("Please enter the same exact unit of measurement for this ingredient as is already present in the formula");
+            }
+            curr_qty = await this.subtractTwoUnits(curr_qty, qty)
+            var curr_qty_num_arr = curr_qty.match(/^(-?[0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/);
+            console.log("this is what I'm looking at " + curr_qty_num_arr[2]);
+            if (Number(curr_qty_num_arr[1]) > 0) item.ingredient_quantities[ind] = curr_qty;
             else {
                 item.ingredients.splice(ind,1);
                 item.ingredient_quantities.splice(ind,1);
@@ -104,6 +128,42 @@ export default class FormulaDetails extends React.Component {
         if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg)$/.test(ingredient_pkg_size)) return 1;
         if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (fl.oz.|pt.|qt.|gal.|mL|L)$/.test(ingredient_pkg_size)) return 2;
         if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count)$/.test(ingredient_pkg_size)) return 3;
+        return -1;
+    }
+
+    validatePositive(qty){
+        var qty_arr = qty.match(/^(-?[0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/);
+        if(Number(qty_arr[1]) < 0) return false;
+        return true;
+    }
+
+    subtractTwoUnits(qty1, qty2){
+        var qty1_arr = qty1.match(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/);
+        var qty2_arr = qty2.match(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/);
+        var new_num = Number(qty1_arr[1]) - Number(qty2_arr[1]);
+        console.log(new_num);
+
+        var output = "" + new_num + " " + qty1_arr[2];
+        return output;
+    }
+
+    addTwoUnits(qty1, qty2){
+        var qty1_arr = qty1.match(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/);
+        var qty2_arr = qty2.match(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/);
+        var new_num = Number(qty1_arr[1]) + Number(qty2_arr[1]);
+        var output = "" + new_num + " " + qty1_arr[2];
+        return output;
+    }
+
+    verifySameUnits(qty1, qty2){
+        var qty1_arr = qty1.match(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/);
+        var qty2_arr = qty2.match(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/);
+        console.log(qty1);
+        console.log(qty2);
+        console.log(qty1_arr);
+        console.log(qty2_arr);
+        if(qty1_arr[2] === qty2_arr[2]) return true;
+        return false;
     }
 
     async addIngredient(item, value, qty) {
@@ -114,6 +174,17 @@ export default class FormulaDetails extends React.Component {
         console.log('gets here');
         var ingrType = await this.findUnit(qty);
         var ingrType2 = await this.findUnit(ingr.data[0].pkg_size);
+        if(ingrType == -1){
+            alert("Please enter one of the following units: oz., lb., ton, g, kg, fl.oz, pt., qt., gal., mL, L, count");
+            return;
+        }
+
+        var positive = await this.validatePositive(qty);
+        if(!positive) {
+            alert("Please enter a positive number");
+            return;
+        }
+
         if (ingrType != ingrType2) {
             alert("Please enter a unit matching this ingredient's unit");
             return;
@@ -125,13 +196,25 @@ export default class FormulaDetails extends React.Component {
                 ind = index;
         });
         if (ind > -1){
+            console.log(item.ingredient_quantities);
             let curr_qty = item.ingredient_quantities[ind];
-            curr_qty = curr_qty + qty;
-            item.ingredient_quantities[ind] = curr_qty;
+            //curr_qty = curr_qty + qty;
+            console.log(curr_qty);
+            console.log(qty);
+
+            var sameUnits = await this.verifySameUnits(curr_qty, qty);
+            if(!sameUnits){
+                alert("Please enter the same exact unit of measurement for this ingredient as is already present in the formula");
+            }
+            item.ingredient_quantities[ind] = await this.addTwoUnits(curr_qty, qty);
         }
         else {
+            console.log(item.ingredient_quantities);
+            console.log(item.ingredients);
             item.ingredients.push(value);
             item.ingredient_quantities.push(qty);
+            console.log(item.ingredient_quantities);
+            console.log(item.ingredients);
         }
         this.setState({ item: item })
     }

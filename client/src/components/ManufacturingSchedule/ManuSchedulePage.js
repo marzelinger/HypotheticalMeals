@@ -205,8 +205,13 @@ export default class ManuSchedulePage extends Component {
         if (!sku_manu_lines.includes(item.group)){
             let lines = this.state.lines.filter(l => { return sku_manu_lines.includes(l._id) } )
             lines = lines.map(l => "'" + l.name + "'");
-            let lines_str = lines.join(', ')
-            alert('This activity can only be placed on ' + lines_str)
+            if (lines.length === 0){
+                alert("This activity's SKU does not have any Manufacturing Lines!")
+            }
+            else {
+                let lines_str = lines.join(', ')
+                alert('This activity can only be placed on ' + lines_str)
+            }
             callback(null)
             return false;
         }
@@ -237,20 +242,21 @@ export default class ManuSchedulePage extends Component {
     async onAdd(item, callback) {
         if (this.state.activity_to_schedule) {
             let activity = this.state.activity_to_schedule;
-            Object.assign(activity, {
-                scheduled: true,
-                start: item.start,
-                manu_line: { _id: item.group }
-            })
             let start = new Date(activity.start)
             let end = new Date()
-            activity.duration = Math.round(activity.duration)
-            end.setTime(start.getTime() + activity.duration*60*60*1000)
+            let duration = Math.round(activity.duration)
+            end.setTime(start.getTime() + duration*60*60*1000)
             item.end = end
             if (!this.checkWithinHoursAndOverlap(item, callback) || 
                 !this.checkManuLineIsValid(item, this.state.activity_to_schedule.sku.manu_lines, callback)) {
                 return
             }
+            activity.duration = duration
+            Object.assign(activity, {
+                scheduled: true,
+                start: item.start,
+                manu_line: { _id: item.group }
+            })
             await CheckErrors.updateActivityErrors(activity);
             await this.loadScheduleData();
             await this.setState({ 
