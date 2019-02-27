@@ -56,7 +56,8 @@ export const details_add = 'Add'
 export const details_remove = 'Remove'
 export const details_modify_ingredient ="Modify Ingredient"
 export const details_modify_ingredient_quantities ="Modify Quantity"
-export const details_add_sku ="Add Ingredient"
+export const details_add_sku ="Add SKU"
+export const details_modify_skus ="Modify SKUs"
 export const details_modify_sku_quantities ="Modify Quantity"
 export const details_modify_formula ="Modify Formula"
 
@@ -96,6 +97,7 @@ export const csv_ingr_num = "Ingr#";
 export const csv_ingr_name = "Name";
 export const csv_ingr_vendor = "Vendor Info";
 export const csv_ingr_size = "Size";
+export const csv_ingr_cost = "Cost";
 export const csv_ingr_comment = "Comment";
 
 export const csv_prod_lines = "Name";

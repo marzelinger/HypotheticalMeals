@@ -87,22 +87,11 @@ export default class ItemSearchModifyListQuantity extends React.Component {
     }
 
     async onFilterValueSelection (name, value, e) {
-        console.log("this was selected: "+JSON.stringify(name)+"    "+JSON.stringify(value));
         this.setState({value: value});
     }
 
     determineButtonDisplay(state, option) {
         var satisfiesRegex = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|mL|L|count)$/.test(this.state.qty);
-        console.log(state.value)
-        console.log(state.qty)
-        console.log(this.props.qty_disable)
-        console.log("this is the option: "+ option);
-        console.log("item-type   "+JSON.stringify(this.props.item_type));
-        console.log("item-qty disable   "+JSON.stringify(this.props.qty_disable));
-        console.log("satisfiesREgex: "+JSON.stringify(satisfiesRegex));
-
-        
-        console.log(this.props.item_type)
         switch (option) {
             case Constants.details_add:
                 return (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient && 

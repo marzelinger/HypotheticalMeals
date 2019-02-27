@@ -387,7 +387,7 @@ export default class ManuSchedulePage extends Component {
                         {this.getModalElements()}                          
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="secondary" onClick={this.toggleModal}>Close</Button>
+                        <Button className='detailButtons' onClick={this.toggleModal}>Close</Button>
                     </ModalFooter>
                 </Modal>
             </div>
