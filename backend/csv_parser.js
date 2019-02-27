@@ -615,6 +615,7 @@ export default class CSV_parser{
 
                 var collisionObj = await this.searchForIngrCollision(obj, ingrs_to_add_nums, ingrs_to_add_names, db_ingredients_name, db_ingredients_nums, ingrs_to_update, ingrs_to_ignore);
                 if(collisionObj.success == false){
+                    console.log(collisionObj);
                     return await this.indicateIngrCollisionFailure(res, collisionObj, i+2);
                 }  
             }
@@ -718,6 +719,8 @@ export default class CSV_parser{
         else if(db_ingredients_name.has(obj[Constants.csv_ingr_name]) && !db_ingredients_nums.has(obj[Constants.csv_ingr_num])){
             toReturn.ambiguousCollision = true;
             toReturn.success = false;
+            console.log(obj[Constants.csv_ingr_name]);
+            console.log('1 collsion');
             return toReturn;
         // Check for a collision based on the primary key
         } else if(db_ingredients_nums.has(obj[Constants.csv_ingr_num])) {
@@ -735,6 +738,7 @@ export default class CSV_parser{
             else if(db_ingredients_nums.get(obj[Constants.csv_ingr_num]) != obj[Constants.csv_ingr_name] && db_ingredients_name.has(obj[Constants.csv_ingr_name])) {
                 toReturn.ambiguousCollision = true;
                 toReturn.success = false;
+                console.log('2 collsion');
                 return toReturn;
             } // If it is neither, indicate that it will be updated, its added to *_to_add_* to indicate it exists in the file
             else {

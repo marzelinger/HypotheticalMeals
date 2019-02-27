@@ -217,11 +217,11 @@ export default class FormulasPage extends React.Component {
     }
 
     onSelect = (rowIndexes) => {
-        var newState = [];
+        /*var newState = [];
         rowIndexes.forEach( index => {
             newState.push(this.state.data[index]);
         });
-        this.setState({ selected_items: newState, selected_indexes: rowIndexes});
+        this.setState({ selected_items: newState, selected_indexes: rowIndexes});*/
     };
 
     onDetailViewSelect = (event, item) => {
