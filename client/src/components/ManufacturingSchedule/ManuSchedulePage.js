@@ -284,9 +284,6 @@ export default class ManuSchedulePage extends Component {
                 />
             )
         }
-        else if (this.state.modal_type === 'errors') {
-            return null
-        }
     }
 
     getModalTitle() {
@@ -377,10 +374,6 @@ export default class ManuSchedulePage extends Component {
                     </div>
                     <div className='errors-container'>
                         <h6 className='errors-title'>Activity Errors</h6>
-                        <div 
-                            className = "info-modal-button" 
-                            onClick={(e) => this.toggleModal('errors')}
-                        >?</div>
                         <ManuActivityErrors 
                             className = "errors" 
                             range = {this.range} 
