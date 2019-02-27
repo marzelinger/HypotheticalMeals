@@ -76,7 +76,7 @@ export class ImportReport extends React.Component{
         console.log(this.state.table_properties);
         return (
             <div className = "ImportReport">
-                <div className="paddedDiv">
+                <div className="paddedDiv import-table">
                     {this.state.added_items.length} records were added.
                     <Table>
                         <thead>

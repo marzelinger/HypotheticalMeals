@@ -44,7 +44,7 @@ export class ImportTable extends React.Component{
     render() {
         return (
             <div className='rowC'>
-            <div className="paddedDiv">
+            <div className="paddedDiv import-table">
                 These records will be replaced.
                 <Table>
                     <thead>

@@ -90,7 +90,7 @@ export default class ManufacturingReport extends React.Component {
 
         return (
             <div>
-        <Table>
+        <Table className = "report-sku-table">
         <thead>
           <tr>
             <th>SKU#</th>
@@ -121,7 +121,7 @@ export default class ManufacturingReport extends React.Component {
             console.log('ingtable yes');
         return (
             <div>
-                <Table>
+                <Table className = "report-ing-table">
         <thead>
           <tr>
             <th>Ingr#</th>

@@ -101,3 +101,7 @@ svg {
 .css-12jo7m5 {
     padding: 0px !important;
 }
+
+.import-table tr {
+    grid-template-columns: repeat( auto-fit, minmax(50px, 1fr) );
+}
