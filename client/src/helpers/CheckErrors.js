@@ -3,6 +3,7 @@ import SubmitRequest from './SubmitRequest'
 export default class CheckErrors{
     static async updateActivityErrors(activity){
         var { data } = await SubmitRequest.submitQueryString(`/api/manugoals_activity/${activity._id}`);
+        console.log("this is the checkerrors stuff: "+JSON.stringify(data));
         var goal = data[0];
         var orphaned = CheckErrors.checkOrphaned(goal, activity)
         var unscheduled_enabled = CheckErrors.checkUnscheduledEnabled(goal,activity);
