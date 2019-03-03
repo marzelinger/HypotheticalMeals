@@ -165,16 +165,16 @@ router.get('/users', (req, res) => UserHandler.getAllUsers(req, res));
 
 
 
-// Gives constant name to long directory home page.
- const appPage = path.join(__dirname, '../client/build/index.html');
+// // Gives constant name to long directory home page.
+//  const appPage = path.join(__dirname, '../client/build/index.html');
 
-// // Allows the use of files.
- app.use(express.static('../client/build'));
+// // // Allows the use of files.
+//  app.use(express.static('../client/build'));
 
-// // SERVES STATIC HOMEPAGE at '/' URL
- app.get('*', function(req, res) {
-   res.sendFile(appPage)
- })
+// // // SERVES STATIC HOMEPAGE at '/' URL
+//  app.get('*', function(req, res) {
+//    res.sendFile(appPage)
+//  })
 
 
 /*
