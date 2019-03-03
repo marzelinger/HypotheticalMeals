@@ -4,11 +4,7 @@ export default class CheckErrors{
     static async updateActivityErrors(activity){
         console.log("this is the activity: "+JSON.stringify(activity));
         var { data } = await SubmitRequest.submitQueryString(`/api/manugoals_activity/${activity._id}`);
-<<<<<<< HEAD
-        console.log("this is the checkerrors stuff: "+JSON.stringify(data));
-=======
         console.log("this is the data:"+ JSON.stringify(data));
->>>>>>> 9c3a3e8233e1cc34476855fe60aaa7e4bd4e5fab
         var goal = data[0];
         var orphaned = CheckErrors.checkOrphaned(goal, activity)
         var unscheduled_enabled = CheckErrors.checkUnscheduledEnabled(goal,activity);
