@@ -220,5 +220,11 @@
     border-bottom: none !important;
   }
 
+  .calculator-table tr{
+      padding: 0px !important;
+      grid-template-columns:  minmax(70px, 1fr) minmax(50px, 1fr) minmax(80px, 1fr) minmax(80px, 1fr) minmax(90px, 2fr);
+  }
+
+
 
   

@@ -51,7 +51,6 @@ export default class ManufacturingGoalCalculator extends React.Component{
     //convert ingVal to be same unit as ingValpck
     var convertVal= 0;
     var convertUnit= '';
-
     let {success,func} = UnitConversion.getConversionFunction(ingredient.pkg_size);
     if(success){
       var result = func(ingredient.quantity);
@@ -60,14 +59,9 @@ export default class ManufacturingGoalCalculator extends React.Component{
       console.log("result: "+JSON.stringify(result));
       let resData = await this.parseIngUnit(result);
       var convertVal = resData['val'];
+      console.log(convertVal)
       var convertUnit = resData['unit'];
     }
-    // var res = getConversionFunction(ingredient.quantity)
-    // //give back a func
-    // //
-
-
-
     if(this.state.current_ingredient_ids.includes(ingredient._id)){
        var index =  this.state.current_ingredient_ids.indexOf(ingredient._id);
        var currentData = this.state.ingredients_info;      
@@ -79,9 +73,11 @@ export default class ManufacturingGoalCalculator extends React.Component{
        await this.setState({ingredients_info: currentData});
     }   
     else{
+      console.log('quantity')
+      console.log(quantity)
+      console.log(convertVal)
+      console.log(ingValPCK)
       // also need package quantity which is quantity * ingredient quantity (total amount of ingredients in formula units / total number of ingredient in a package in package units)
-        console.log('setting state');
-        console.log(ingredient.quantity);
         var newIngredient = {
             ...ingredient, 
             unitQuantity: (quantity * convertVal),
@@ -118,12 +114,13 @@ export default class ManufacturingGoalCalculator extends React.Component{
   }
 
   parseIngUnit = (unit_string) => {
-    console.log("unit_sting: "+unit_string);
+    
     var str = ""+unit_string;
-
-    let match = str.match('^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|ounce|lb|pound|ton|g|gram|kg|kilogram|' + 'floz|fluidounce|pt|pint|qt|quart|gal|gallon|ml|milliliter|l|liter|ct|count)$');
+    console.log("unit_sting: "+str);
+    let match = str.match(/(\d*\.?\d+)\s?(oz|ounce|lb|pound|ton|g|gram|kg|kilogram|floz|fluidounce|pt|pint|qt|quart|gal|gallon|ml|milliliter|l|liter|ct|count+)$/);
+    console.log("match " + str + " " + match)
+    console.log(match)
     if (match === null) {
-      console.log("Incorrect String Format in the parseIngUnit in Calculator");
       return {};
     }
   

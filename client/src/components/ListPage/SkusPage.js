@@ -290,6 +290,7 @@ export default class ListPage extends React.Component {
     onAddManuGoals =  async() => {
         this.toggle(Constants.manu_goals_modal);
         let res = await SubmitRequest.submitGetManuGoalsData(this.state.user);
+        console.log(res)
         this.setState({ manu_goals_data: res.data});
     }
 
