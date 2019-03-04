@@ -210,7 +210,7 @@ export default class ManufacturingGoalDetails extends React.Component {
             <FormGroup>
                 <Label>Enabled</Label>
                 <br></br>
-                <Switch onChange={this.onEnable} checked={this.state.item.enabled} />
+                <Switch onColor = '#98FB98' onChange={this.onEnable} checked={this.state.item.enabled} />
             </FormGroup> : 
             <div></div>
             return (
@@ -276,7 +276,7 @@ export default class ManufacturingGoalDetails extends React.Component {
         return (
         <div>
         <img id = "button" src={this.props.buttonImage} onClick={this.toggle}></img>
-            <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup" className='item-details'>
+            <Modal style = {{border: this.state.item.enabled ? 'solid thick #98FB98' : 'solid thick grey'}} isOpen={this.state.modal} toggle={this.toggle} id="popup" className='item-details'>
             <div className='item-details'>
                 <div className='item-title'>
                     <h1>{ this.state.item  ? this.state.item.name : Constants.undefined }</h1>
