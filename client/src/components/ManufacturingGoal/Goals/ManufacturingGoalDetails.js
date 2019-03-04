@@ -129,7 +129,9 @@ export default class ManufacturingGoalDetails extends React.Component {
 
     async handleSubmit(e, opt) {
         if (![Constants.details_save, Constants.details_create].includes(opt)) {
-            if(this.props.handleDetailViewSubmit(e, this.state.item, opt)){
+            var return_val = await this.props.handleDetailViewSubmit(e, this.state.item, opt);
+            console.log(return_val)
+            if(return_val){
                 this.setState({modal: false})
             };
             return;
@@ -141,6 +143,7 @@ export default class ManufacturingGoalDetails extends React.Component {
             var item = this.state.item;
             item.deadline = new Date(item.deadline)
             var return_val = await this.props.handleDetailViewSubmit(e, item, opt)
+            console.log(return_val)
             if(return_val.success){
                 this.setState({modal: false, errorText: ''})
             }

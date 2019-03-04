@@ -63,6 +63,11 @@ export default class ManufacturingGoal extends React.Component{
         return false;
       }
       else{
+        for(var i = 0; i < this.props.activities.length; i ++){
+          console.log('deleting activity')
+          await SubmitRequest.submitDeleteItem('manuactivities', this.props.activities[i]);
+          this.props.activities.splice(i, 1);
+        }
         this.props.handleDeleteGoal(this.props.id)
         return true;
       }
