@@ -22,8 +22,8 @@ export default class ManuGoalsCalculatorTable extends React.Component {
         this.state = {
             data: props.data,
             page_title: 'calculator',
-            table_columns: ['Name', 'Number',  'Package Size', 'Package Cost', 'Unit Quantity'],
-            table_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'unitQuantity']
+            table_columns: ['Name', 'Number',  'Package Size', 'Package Cost', 'Package Quantity','Unit Quantity'],
+            table_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'pckgQuant', 'unitQuantity']
         };
         this.print = this.print.bind(this);
     }
