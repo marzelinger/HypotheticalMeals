@@ -61,20 +61,17 @@ export default class ManuSchedulePage extends Component {
         items.length = 0;
         groups.length = 0;
         let initial_activities = await SubmitRequest.submitGetData(Constants.manu_activity_page_name);
-        console.log(initial_activities);
         let activities = []
         for(var i = 0; i < initial_activities.data.length; i ++){
             let activity = initial_activities.data[i];
             activities.push(await CheckErrors.updateActivityErrors(activity))
         }
-        console.log(activities);
         let goals = await SubmitRequest.submitGetManuGoalsByFilter('_', '_', '_');
         activities.map(act => {
             this.scheduleOrPalette(act, goals);
         });
         let unscheduled_goals = goals.data.filter(goal => {
             let not_all_scheduled = false;
-            console.log(goal)
             goal.activities.map(act => {
                 if (act.unscheduled_enabled) not_all_scheduled = true
             })
@@ -94,7 +91,6 @@ export default class ManuSchedulePage extends Component {
 
     scheduleOrPalette(act, goals) {
         if (act.scheduled) {
-            console.log("in scheduled action");
             if (items.find(i => i._id === act._id) === undefined) {
                 let start = new Date(act.start);
                 let end = new Date(start.getTime() + Math.floor(act.duration/10)*24*60*60*1000 + (act.duration%10 * 60 * 60 * 1000));
@@ -123,7 +119,6 @@ export default class ManuSchedulePage extends Component {
                         _id: act._id
                     }); 
                 }
-                console.log(items)
             }
         }
     }
@@ -139,12 +134,36 @@ export default class ManuSchedulePage extends Component {
         if (e.item !== null) {
             let clicked_item = items.filter(i => {return i.id === e.item})
             let clicked_activity = this.state.activities.filter(a => {return a._id === clicked_item[0]._id})
-            console.log(clicked_activity[0])
-            if (window.confirm('Revert the overridden duration of ' + clicked_activity[0].duration + ' hours to the calculated ' + 
-               (clicked_activity[0].sku.manu_rate*clicked_activity[0].quantity) + ' hours?')) {
-                    clicked_activity[0].overwritten = false
+            let prompt_str = 'This activity '
+            if (clicked_activity[0].overwritten) {
+                prompt_str += 'has been overriden to a duration of ' + clicked_activity[0].duration + ' hours from the calculated ' + 
+                Math.round(clicked_activity[0].sku.manu_rate*clicked_activity[0].quantity) + ' hours. ';
+            }
+            else {
+                prompt_str += 'has a calculated duration of ' + 
+                Math.round(clicked_activity[0].sku.manu_rate*clicked_activity[0].quantity) + ' hours. ';
+            }
+            prompt_str += 'Please enter an integer duration to replace the current.'
+            let val = window.prompt(prompt_str, clicked_activity[0].duration)
+            if (parseInt(val)) {
+                let start = new Date(clicked_item[0].start)
+                let end = new Date()
+                let duration = parseInt(val)
+                end.setTime(start.getTime() + (Math.floor(duration/10)*24 + (duration%10))*60*60*1000)
+                clicked_item[0].start = start
+                clicked_item[0].end = end
+                if (!this.checkWithinHoursAndOverlap(clicked_item[0])) {
+                    return
+                }
+                else {
+                    clicked_activity[0].overwritten = !(parseInt(val) === Math.round(clicked_activity[0].sku.manu_rate*clicked_activity[0].quantity))
+                    clicked_activity[0].duration = parseInt(val)
                     await CheckErrors.updateActivityErrors(clicked_activity[0]);
                     await this.loadScheduleData();
+                }
+            }
+            else if (val === NaN) {
+                alert('Duration must be an integer!')
             }
         }
     }
@@ -158,7 +177,6 @@ export default class ManuSchedulePage extends Component {
         let new_act = null
         if (this.state.activity_to_schedule === null) {
             new_act = activity
-            alert('Double click to place on the schedule!')
         }
         this.setState({
             activity_to_schedule: new_act
@@ -177,42 +195,36 @@ export default class ManuSchedulePage extends Component {
         let act = await SubmitRequest.submitGetManufacturingActivityByID(item._id)
         let end = new Date(item.end)
         let start = new Date(item.start)
-        if (!this.checkWithinHoursAndOverlap(item, callback) || 
-            !this.checkManuLineIsValid(item, act.data[0].sku.manu_lines, callback)) {
+        console.log(item)
+        if (!this.checkWithinHoursAndOverlap(item) || 
+            !this.checkManuLineIsValid(item, act.data[0].sku.manu_lines)) {
+            callback(null);
             return
         }
         let duration = parseInt(act.data[0].duration);
         let hour_difference = (end.getTime()-start.getTime())/(60*60*1000);
+        console.log('hour diff: ' + hour_difference)
         if (hour_difference !== duration && (hour_difference !== Math.floor(duration/10)*24 + (duration%10))) {
-            if (currentUserIsAdmin().isValid){
-                act.data[0].start = item.start
-                act.data[0].duration = Math.floor(hour_difference/24)*10 + (hour_difference%24)
-                act.data[0].overwritten = true
-                console.log("here 1")
-                await CheckErrors.updateActivityErrors(act.data[0]);
-                console.log("here 2")
-                callback(item)
-                console.log("here 3")
-                await this.loadScheduleData();
-                console.log("here 4")
-                await this.setState({error_change: true})
-                return
-            }
-            else {
-                alert('Only Admins can override durations!')
-                callback(null)
-                return
-            }
+            //removing drag to change duration functionality because of duration calculations
+            callback(null)
+            return 
+            act.data[0].start = item.start
+            this.determineWorkHours(start, end)
+            act.data[0].duration = Math.floor(hour_difference/24)*10 + (hour_difference%24)
+            act.data[0].overwritten = true
         }
-        act.data[0].start = item.start;
-        act.data[0].manu_line = { _id: item.group };
+        else {
+            act.data[0].start = item.start;
+            act.data[0].manu_line = { _id: item.group };
+        }
+        console.log(act.data[0])
         await CheckErrors.updateActivityErrors(act.data[0]);
         callback(item)
         await this.loadScheduleData();
         await this.setState({error_change: true})
     }
 
-    checkManuLineIsValid(item, sku_manu_lines, callback) {
+    checkManuLineIsValid(item, sku_manu_lines) {
         if (!sku_manu_lines.includes(item.group)){
             let lines = this.state.lines.filter(l => { return sku_manu_lines.includes(l._id) } )
             lines = lines.map(l => "'" + l.name + "'");
@@ -223,16 +235,14 @@ export default class ManuSchedulePage extends Component {
                 let lines_str = lines.join(', ')
                 alert('This activity can only be placed on ' + lines_str)
             }
-            callback(null)
             return false;
         }
         return true;
     }
 
-    checkWithinHoursAndOverlap(item, callback) {
+    checkWithinHoursAndOverlap(item) {
         if (item.start.getHours() < 8 || (item.end.getHours() === 18 && item.end.getMinutes() > 0) || (item.end.getHours() > 18)) {
             alert("Activities can't be scheduled outside working hours!");
-            callback(null);
             return false;
         }
         let toReturn = true
@@ -241,12 +251,7 @@ export default class ManuSchedulePage extends Component {
                 if ((i.start < item.end && i.start > item.start) ||
                     (i.end > item.start && i.end < item.end) ||
                     (i.start <= item.start && i.end >= item.end)){
-                        console.log(item.start)
-                        console.log(item.end)
-                        console.log(i.start)
-                        console.log(i.end)
                         alert("Activities can't overlap!");
-                        callback(null)
                         toReturn = false
                     }
             }
@@ -260,10 +265,11 @@ export default class ManuSchedulePage extends Component {
             let start = new Date(item.start)
             let end = new Date()
             let duration = Math.round(activity.duration)
-            end.setTime(start.getTime() + duration*60*60*1000)
+            end.setTime(start.getTime() + (Math.floor(duration/10)*24 + (duration%10))*60*60*1000)
             item.end = end
-            if (!this.checkWithinHoursAndOverlap(item, callback) || 
-                !this.checkManuLineIsValid(item, this.state.activity_to_schedule.sku.manu_lines, callback)) {
+            if (!this.checkWithinHoursAndOverlap(item) || 
+                !this.checkManuLineIsValid(item, this.state.activity_to_schedule.sku.manu_lines)) {
+                callback(null)
                 return
             }
             activity.duration = duration
@@ -290,7 +296,6 @@ export default class ManuSchedulePage extends Component {
         act.data[0].scheduled = false;
         act.data[0].manu_line = null;
 
-        console.log(this.state.error_change)
         await CheckErrors.updateActivityErrors(act.data[0]);
         await this.loadScheduleData();
         callback(item)
@@ -337,7 +342,7 @@ export default class ManuSchedulePage extends Component {
         showMajorLabels: true,
         showCurrentTime: true,
         zoomMin: 86400000,
-        zoomMax: 5256000000,
+        zoomMax: 630700000000,
         format: {
             minorLabels: {
                 minute: 'h:mma',

@@ -2,23 +2,18 @@ import SubmitRequest from './SubmitRequest'
 
 export default class CheckErrors{
     static async updateActivityErrors(activity){
-        console.log("this is the activity: "+JSON.stringify(activity));
         var { data } = await SubmitRequest.submitQueryString(`/api/manugoals_activity/${activity._id}`);
-        console.log("this is the data:"+ JSON.stringify(data));
         var goal = data[0];
         var orphaned = CheckErrors.checkOrphaned(goal, activity)
         var unscheduled_enabled = CheckErrors.checkUnscheduledEnabled(goal,activity);
         var over_deadline = CheckErrors.checkOverDeadline(goal, activity);
-        console.log(over_deadline)
         var new_activity = {
             ...activity, 
             orphaned, 
             unscheduled_enabled, 
             over_deadline
         }
-        console.log(new_activity)
         let response =  await SubmitRequest.submitUpdateItem('manuactivities', new_activity);
-        console.log(response);
         return response.data;
     }
 
@@ -36,8 +31,6 @@ export default class CheckErrors{
         }
         var end = this.getEndTime(activity);
         var deadline = new Date(goal.deadline);
-        console.log('end: ' + end)
-        console.log('deadline: ' + deadline)
         return (end.getTime() > deadline.getTime());
     }
 
@@ -50,7 +43,6 @@ export default class CheckErrors{
 
     static async getErrorMessages(activity){
         var error_messages = [];
-        console.log(activity);
         var { data } = await SubmitRequest.submitQueryString(`/api/manugoals_activity/${activity._id}`);
         var name = `Activity [Manufacturing Goal:${data[0].name}, SKU: ${activity.sku.name}:${activity.sku.unit_size}*${activity.sku.cpc}]`
         if(activity.overwritten){
