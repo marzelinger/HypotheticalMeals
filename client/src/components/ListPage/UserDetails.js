@@ -71,15 +71,25 @@ export default class UserDetails extends React.Component {
     };
 
     async handleSubmit(e, opt) {
-        if (![Constants.details_save, Constants.details_create].includes(opt)) {
+        console.log("this is the item: "+JSON.stringify(this.props.item));
+        if (![Constants.details_save, Constants.details_create, Constants.details_delete].includes(opt)) {
             this.props.handleDetailViewSubmit(e, this.props.item, opt);
             return;
         }
-        await this.validateInputs();
-        if (this.state.invalid_inputs.length === 0) {
-            this.props.handleDetailViewSubmit(e, this.props.item, opt);
+        
+        if([Constants.details_delete].includes(opt)){
+            if(window.confirm(`Are you sure you want to delete this user? Doing so will result in all manufacturing goals and activities belonging to ${this.props.item.username} being deleted.`)){
+                this.props.handleDetailViewSubmit(e, this.props.item, opt);
+                return;
+            }
         }
-        else alert('Invalid Fields');
+        else{
+            await this.validateInputs();
+            if (this.state.invalid_inputs.length === 0) {
+                this.props.handleDetailViewSubmit(e, this.props.item, opt);
+            }
+            else alert('Invalid Fields');
+        }
     }
 
     async validateInputs() { 
@@ -142,6 +152,7 @@ export default class UserDetails extends React.Component {
                         className = "detailButtons"
                         key={opt} 
                         onClick={(e) => this.handleSubmit(e, opt)}
+                        disabled = {this.state.item.username ==="admin" && opt === Constants.details_delete}
                     >{opt}</Button>
                 )}
             </div>

@@ -24,6 +24,7 @@ import ProductLinePage from "./ProductLine/ProductLinePage";
 import * as Constants from '../resources/Constants';
 import Logout from '../components/auth/Logout';
 import ManuSchedulePage from './ManufacturingSchedule/ManuSchedulePage'
+import SummaryPage from "./Summary/SummaryPage";
 
 import { setCurrentUser, logoutUser, getAllUsers } from "../actions/authActions";
 import { Provider } from "react-redux";
@@ -53,7 +54,7 @@ class App extends React.Component{
 
   determineUser = () => {
     if (localStorage.jwtToken) {
-      //if(localStorage.getItem("firstAdminCreated")){
+    //  if(localStorage.getItem("firstAdminCreated")){
         // Set auth token header auth
         const token = localStorage.jwtToken;
         setAuthToken(token);
@@ -80,7 +81,7 @@ class App extends React.Component{
           // Redirect to login
           window.location.href = "./login";
         }
-      //}
+     // }
     }
   }
 
@@ -115,6 +116,7 @@ class App extends React.Component{
                 <AdminPrivateRoute exact path="/import" component={ImportPage} />
                 <AdminPrivateRoute exact path="/users" component={UserPage}/>
                 <PrivateRoute exact path="/formulas" component={FormulasPage} />
+                <PrivateRoute exact path="/summary" component={SummaryPage} />
               </Switch>
             </div>
           </Router>

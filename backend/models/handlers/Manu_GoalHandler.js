@@ -80,8 +80,8 @@ class Manu_GoalHandler{
     static async getManufacturingGoalByUser(req, res){
         try {
             var target_id = req.params.manu_goal_id;
-            var user_id = req.params.user_id;
-            let to_return = await Manu_Goal.find({ _id : target_id, user:user_id});
+            var username = req.params.username;
+            let to_return = await Manu_Goal.find({ _id : target_id, user : username});
 
             if(to_return.length == 0) return res.json({success: false, error: '404'});
             return res.json({ success: true, data: to_return});
