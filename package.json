@@ -52,6 +52,7 @@
     "reactstrap": "^7.1.0",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
+    "tabletojson": "^1.0.4",
     "uuid": "^3.3.2",
     "validator": "^10.11.0"
   },
