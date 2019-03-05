@@ -270,18 +270,22 @@ export default class ListPage extends React.Component {
     }
 
     onTableOptionSelection = async(e, opt) => {
-        if (this.state.selected_items.length === 0) {
-            alert('You must select items to use these features!')
-            return
-        }
         switch (opt){
             case Constants.create_item:
                 this.onCreateNewItem();
                 break;
             case Constants.add_to_manu_goals:
+                if (this.state.selected_items.length === 0) {
+                    alert('You must select items to use these features!')
+                    return
+                }
                 await this.onAddManuGoals();
                 break;
             case Constants.edit_manu_lines:
+                if (this.state.selected_items.length === 0) {
+                    alert('You must select items to use these features!')
+                    return
+                }
                 this.toggle(Constants.manu_lines_modal);
                 break;
         }
