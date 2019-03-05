@@ -30,6 +30,8 @@ const SkusSchema = new Schema({
     }
   ],
   manu_rate: Number,
+  setup_cost: Number,
+  run_cpc: Number,
   comment: String
 }, { timestamps: true });
 

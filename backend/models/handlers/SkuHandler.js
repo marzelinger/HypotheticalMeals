@@ -21,8 +21,11 @@ class SkuHandler{
             var new_scale_factor = req.body.scale_factor
             var new_manu_lines = req.body.manu_lines
             var new_manu_rate = req.body.manu_rate
+            var new_setup_cost = req.body.setup_cost
+            var new_run_cpc = req.body.run_cpc
 
-            if(!new_name || !new_sku_num || !new_case_upc || !new_unit_upc || !new_unit_size || !new_cpc || !new_prod_line){
+            if(!new_name || !new_sku_num || !new_case_upc || !new_unit_upc || !new_unit_size || !new_cpc || !new_prod_line ||
+                !new_formula || !new_scale_factor || ! new_manu_rate || !new_setup_cost || !new_run_cpc){
                 return res.json({
                     success: false, error: 'You must provide all required fields'
                 });
@@ -56,6 +59,8 @@ class SkuHandler{
             sku.scale_factor = new_scale_factor
             sku.manu_lines = new_manu_lines
             sku.manu_rate = new_manu_rate
+            sku.setup_cost = new_setup_cost
+            sku.run_cpc = new_run_cpc
             let new_sku = await sku.save();
             // console.log('Sku added to database');
             return res.json({ success: true, data: new_sku});
@@ -95,6 +100,8 @@ class SkuHandler{
             var new_scale_factor = req.body.scale_factor
             var new_manu_lines = req.body.manu_lines
             var new_manu_rate = req.body.manu_rate
+            var new_setup_cost = req.body.setup_cost
+            var new_run_cpc = req.body.run_cpc
             // SkuHandler.checkForZeroQtys(new_ingredients, new_ingredient_quantities);
 
             let conflict = await SKU.find({ num: new_sku_num });
@@ -107,7 +114,8 @@ class SkuHandler{
                 {$set: {name : new_name, num : new_sku_num, case_upc : new_case_upc, unit_upc : new_unit_upc,
                         unit_size : new_unit_size, cpc: new_cpc, prod_line: new_prod_line,
                         comment : new_comment, formula : new_formula, scale_factor : new_scale_factor, 
-                        manu_lines : new_manu_lines, manu_rate : new_manu_rate}}, {upsert : true, new : true});
+                        manu_lines : new_manu_lines, manu_rate : new_manu_rate, setup_cost : new_setup_cost,
+                        run_cpc : new_run_cpc}}, {upsert : true, new : true});
             if(!updated_sku) {
                 return res.json({
                     success: true, error: 'This document does not exist'
