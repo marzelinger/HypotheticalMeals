@@ -7,6 +7,38 @@ import printFuncFront from '../printFuncFront';
 
 export default class SubmitRequest{
 
+  static async addAllCustomers() {
+    var customers = await fetch('/api/scrape_customers', { method: 'GET' })
+    .then(data => data.json())
+    .then((res) => {
+      if (!res.success) return { success: res.success, error: res.error };
+      else return{ 
+        success: res.success,
+        data: res.data
+      };
+    });
+    customers.data.forEach((customer) => {
+      SubmitRequest.submitCreateItem('customers', customer);
+    })
+  }
+
+  static async addSkuRecords(sku_num, year) {
+    console.log(sku_num, year);
+    var records = await fetch(`/api/scrape_records/${sku_num}/${year}`, { method: 'GET' })
+    .then(data => data.json())
+    .then((res) => {
+      if (!res.success) return { success: res.success, error: res.error };
+      else return{ 
+        success: res.success,
+        data: res.data
+      };
+    });
+    console.log(records)
+    records.data.forEach((record) => {
+      SubmitRequest.submitCreateItem('records', record);
+    })
+  }
+
   static submitQueryString(query) {
     return fetch(query, { method: 'GET' })
           .then(data => data.json())

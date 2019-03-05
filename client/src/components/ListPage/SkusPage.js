@@ -380,6 +380,7 @@ export default class ListPage extends React.Component {
                 if(resFormula.success){
                     item['formula']= resFormula.data._id;
                     resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item);
+                    SubmitRequest.addSkuRecords(resItem.data.num, 2019);
                 } 
                 else {
                     resItem = { success: false, error: 'Formula Quantity is not entered correctly'}
@@ -431,6 +432,10 @@ export default class ListPage extends React.Component {
     getButtons = () => {
         return (
         <div className = "ingbuttons"> 
+            <div className = "manugoalbutton hoverable"
+                            onClick={() => SubmitRequest.addAllCustomers()}
+                            primary={true}
+                            > Add Customers </div>
             {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) ? null : 
                             (<div className = "manugoalbutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}
