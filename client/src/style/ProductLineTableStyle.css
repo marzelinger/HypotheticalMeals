@@ -1,6 +1,7 @@
 
 
 .prod-line-table tr {
+    height: 40px !important;
     grid-template-columns:  minmax(50px, 1fr) minmax(100px, 2fr) minmax(50px,1fr) minmax(100px,2fr) minmax(100px,2fr);
 }
 

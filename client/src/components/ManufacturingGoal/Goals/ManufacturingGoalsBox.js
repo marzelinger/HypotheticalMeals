@@ -133,6 +133,7 @@ class ManufacturingGoalsBox extends Component {
   async submitNewGoal() {
     console.log('submitting new goal')
     const { name, activities, user, deadline } = this.state;
+    console.log(user);
     let created_activities = await this.submitNewActivity(activities);
     let res = await SubmitRequest.submitCreateItem(Constants.manugoals_page_name, { name, activities:created_activities, user, deadline });
     if (!res.success) {

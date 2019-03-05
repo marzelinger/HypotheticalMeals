@@ -9,4 +9,6 @@ module.exports = {
   
 //testing DB: mongodb://admin:test123@ds227255.mlab.com:27255/meta-meals-testing
 //prod DB: mongodb://admin:testtest123@ds056288.mlab.com:56288/meta-production
+// ev3: "mongodb://admin:testest123@ds211083.mlab.com:11083/meta-meals-ev3-testing"
+
 //mongodb://<dbuser>:<dbpassword>@ds211083.mlab.com:11083/meta-meals-ev3-testing

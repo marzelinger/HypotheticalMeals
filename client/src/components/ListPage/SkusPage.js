@@ -270,7 +270,7 @@ export default class ListPage extends React.Component {
     }
 
     onTableOptionSelection = async(e, opt) => {
-        if (this.state.selected_items.length === 0&& opt!=Constants.create_item) {
+        if (this.state.selected_items.length === 0 && opt!=Constants.create_item) {
             alert('You must select items to use these features!')
             return
         }
@@ -290,6 +290,7 @@ export default class ListPage extends React.Component {
     onAddManuGoals =  async() => {
         this.toggle(Constants.manu_goals_modal);
         let res = await SubmitRequest.submitGetManuGoalsData(this.state.user);
+        console.log(res)
         this.setState({ manu_goals_data: res.data});
     }
 
