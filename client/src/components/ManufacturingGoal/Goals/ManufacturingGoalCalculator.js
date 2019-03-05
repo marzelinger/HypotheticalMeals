@@ -136,7 +136,7 @@ export default class ManufacturingGoalCalculator extends React.Component{
     return (
       <div>
         <img id = "button" src={calculatorButton} onClick={this.toggle}></img>
-        <Modal size = {'lg'} isOpen={this.state.modal} toggle={this.toggle} id="popup">
+        <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup">
           <ModalHeader toggle={this.toggle}>Calculator Results</ModalHeader>
           <ModalBody class = "modal">
               <ManuGoalsCalculatorTable data = {this.state.ingredients_info}></ManuGoalsCalculatorTable>

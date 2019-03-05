@@ -5,6 +5,9 @@ import { UncontrolledCollapse, CardBody, Card } from 'reactstrap';
 import deleteButton from'../../resources/delete.png';
 import ProductLineTables from './ProductLineTables';
 import SubmitRequest from '../../helpers/SubmitRequest';
+import editButton from '../resources/edit.png';
+import * as Constants from '../../resources/Constants';
+import ProductLineDetails from './ProductLineDetails';
 const currentUserIsAdmin = require("../../components/auth/currentUserIsAdmin");
 
 
@@ -40,7 +43,8 @@ export default class ProductLine extends React.Component{
       <div id="singleGoal">
         <div className="textContent">
           <div className="singleGoalContent" id={'prodline' + this.props.id}>
-          <input onKeyPress = {(event) => this.onNameSubmit(event)} type = "text" value = {this.state.name} onChange = {(event) => this.onNameChange(event)}></input>
+          <h3>{this.state.name}</h3>
+          {/* <input onKeyPress = {(event) => this.onNameSubmit(event)} type = "text" value = {this.state.name} onChange = {(event) => this.onNameChange(event)}></input> */}
           </div>
           <UncontrolledCollapse toggler={'#prodline' + this.props.id}>
                 <Card>
@@ -51,6 +55,17 @@ export default class ProductLine extends React.Component{
             </UncontrolledCollapse>
         </div>
           <div className="singleGoalButtons">
+          <div className = "editform" className="form">
+              <ProductLineDetails
+              onEnabled = {this.onEnabled}
+              // enabled = {this.props.goal.enabled}
+              item = {this.props.manu_line}
+              buttonImage = {editButton}
+              handleDetailViewSubmit = {this.props.handleDetailViewSubmit}
+              options = {[Constants.details_save, Constants.details_delete, Constants.details_cancel]}
+              validateShortName = {this.props.validateShortName} 
+              ></ProductLineDetails>
+            </div>
             {/* <a onClick={() => { props.handleUpdateGoal(props.id); }}>update</a> */}
             {currentUserIsAdmin().isValid ? (<img id ="deleteButton" onClick={() => {this.props.handleDeleteProdLine(this.props.id); }} src= {deleteButton}></img>):(<div/>)}
           </div>

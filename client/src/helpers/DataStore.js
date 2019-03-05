@@ -35,6 +35,15 @@ export default class DataStore{
       }
     }
 
+    static getProductLineData() {
+      return {
+        item_properties: ['name'],
+        item_property_labels: ['Name'],
+        item_property_patterns: ['.+'],
+        item_property_field_type: ['text']  
+      };
+    }
+
     static getLineData() {
       return {
         item_properties: ['name', 'short_name', 'comment'],
