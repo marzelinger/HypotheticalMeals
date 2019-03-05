@@ -154,6 +154,8 @@ router.post("/users/register", (req, res) => UserHandler.createUser(req, res));
 // @access Public
 router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword(req,res));
 router.post("/users/loginDukeNetID", (req, res) => UserHandler.loginUserDukeNetID(req,res));
+router.delete('/users/:user_id', (req, res) => UserHandler.deleteUserByID(req, res));
+
 
 
 
