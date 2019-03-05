@@ -24,6 +24,9 @@ var multer = require('multer');
 var upload = multer(({ dest : './tmp/csv'}));
 
 const cors = require('cors');
+var path = require("path");
+
+
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -151,6 +154,8 @@ router.post("/users/register", (req, res) => UserHandler.createUser(req, res));
 // @access Public
 router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword(req,res));
 router.post("/users/loginDukeNetID", (req, res) => UserHandler.loginUserDukeNetID(req,res));
+router.delete('/users/:user_id', (req, res) => UserHandler.deleteUserByID(req, res));
+
 
 
 
@@ -162,16 +167,16 @@ router.get('/users', (req, res) => UserHandler.getAllUsers(req, res));
 
 
 
-// Gives constant name to long directory home page.
-// const appPage = path.join(__dirname, '../client/build/index.html');
+// // Gives constant name to long directory home page.
+//  const appPage = path.join(__dirname, '../client/build/index.html');
 
-// // Allows the use of files.
-// app.use(express.static('../client/build'));
+// // // Allows the use of files.
+//  app.use(express.static('../client/build'));
 
-// // SERVES STATIC HOMEPAGE at '/' URL
-// app.get('*', function(req, res) {
-//   res.sendFile(appPage)
-// })
+// // // SERVES STATIC HOMEPAGE at '/' URL
+//  app.get('*', function(req, res) {
+//    res.sendFile(appPage)
+//  })
 
 
 /*
