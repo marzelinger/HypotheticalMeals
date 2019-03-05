@@ -292,7 +292,7 @@ export default class UserPage extends React.Component {
             printFuncFront("This is the new item being saved: "+JSON.stringify(item));
             this.setState({ 
             detail_view_item: item ,
-            detail_view_options: [Constants.details_save, Constants.details_cancel]
+            detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
             });
         }
         else{

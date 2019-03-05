@@ -108,7 +108,6 @@ class FilterHandler{
 
     static async getUsersByFilter(req, res){
         try{
-            printFuncBack('in the getUsersByFilter');
             var and_query = [];
             var ids = [];
             var sort_field = req.params.sort_field;
@@ -126,7 +125,7 @@ class FilterHandler{
                 // {admin_creator: { $regex: keyword , $options: "$i"}},
                 // {comment: { $regex: keyword , $options: "$i"}}]}); 
             }
-            printFuncBack('this is the and_query: '+and_query);
+            //printFuncBack('this is the and_query: '+and_query);
 
             var currentPage = Number(req.params.currentPage);
             var pageSize = Number(req.params.pageSize);
@@ -136,7 +135,7 @@ class FilterHandler{
                                                      await User.find( {$and: and_query }).skip(currentPage*pageSize)
                                                         .limit(pageSize).populate('users')
                                                         .sort(sort_field).collation({locale: "en_US", numericOrdering: true});
-            printFuncBack('this is the results: '+results);
+            //printFuncBack('this is the results: '+results);
             return res.json({ success: true, data: results});
         }
         catch (err) {

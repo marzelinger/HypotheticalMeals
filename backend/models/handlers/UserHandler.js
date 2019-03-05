@@ -2,6 +2,8 @@
 // Maddie
 
 import User from '../databases/User';
+import Manu_Goal from '../databases/manu_goal';
+import Manu_Activity from '../databases/manu_activity';
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
@@ -223,6 +225,72 @@ class UserHandler{
             return res.json({ success: true, data: users });
           });
     }
+
+
+
+  static async deleteUserByID(req, res){
+    try{
+        var target_id = req.params.user_id;
+        let user = await User.find({ _id: target_id});
+        if (user != undefined){
+          if(user.length>0){
+          console.log("this is the user in Delete user: "+JSON.stringify(user));
+          let username = user[0].username;
+          console.log("this is the username "+username);
+          let manuGoals = await Manu_Goal.find({user: username}).populate('activities');
+          console.log("this is the manuGoals: "+JSON.stringify(manuGoals));
+          console.log("this is the manuGoals.length: "+manuGoals.length);
+
+          if(manuGoals.length>0){
+            //manuGoals associated with this username
+            //need to go through and delete each manu goal and each activity associated with it.
+            //delete the activities for a manugoal and then delete the actual manu goal, and then delete the username.
+            for(let m = 0; m<manuGoals.length; m++){
+              let curActs = manuGoals[m]['activities'];
+              console.log("this is the curActs: "+JSON.stringify(curActs));
+
+              if(curActs.length>0){
+                //activities associated with this goal. go through these activities and delete them.
+                for(let a = 0; a<curActs.length; a++){
+                  let act_id = curActs[a]._id;
+                  console.log("this is the curactid: "+JSON.stringify(act_id));
+                  let act_to_remove = await Manu_Activity.findOneAndDelete({ _id : act_id});
+                  console.log("this is the act to remove response: "+JSON.stringify(act_to_remove));
+
+                    if(!act_to_remove){
+                      return res.json({ success: false, error: '404:failed to delete activity in delete user'});
+                    }
+                }
+              }
+              //once all the activities are deleted -> delete the goal
+              let goal_id = manuGoals[m]._id;
+              let goal_to_remove = await Manu_Goal.findOneAndDelete({ _id : goal_id});  
+              console.log("this is the goal to remove response: "+JSON.stringify(goal_to_remove));
+
+              if(!goal_to_remove){
+                return res.json({ success: false, error: '404:failed to delete goal in delete user'});
+              }
+            }
+          }
+          //now delete the user
+          let user_to_remove = await User.findByIdAndDelete({_id: target_id});
+          console.log("this is the goal to remove response: "+JSON.stringify(user_to_remove));
+
+          if(!user_to_remove){
+            return res.json({ success: false, error: '404:failed to delete user in delete user'});
+          }
+          else{
+            return res.json({ success: true, data: user_to_remove });
+          }
+        }
+      }
+    } catch (err){
+        return res.json({ success: false, error: err});
+    }
+  }
+
 }
+
+
 
 export default UserHandler;
