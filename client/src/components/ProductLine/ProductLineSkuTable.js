@@ -41,8 +41,17 @@ export class ProductLineSkuTable extends React.Component{
           text: 'label',
           value: 'value',
         };
+        const customStyles = {
+          control: (base, state) => ({
+              ...base,
+              borderColor: this.props.invalid ? 'red' : '#ddd',
+              height: '30px',
+              'min-height': '30px',
+              width: '150px'
+          })
+        }
        
-        return (<Select  className = "select" defaultValue = {defaultValue} onChange = {(newval, {action}) => this.props.onProdLineChange(newval, index, action) } options={options} />);
+        return (<Select  styles={customStyles} className = "select" defaultValue = {defaultValue} onChange = {(newval, {action}) => this.props.onProdLineChange(newval, index, action) } options={options} />);
     }
     
     render() {
@@ -68,8 +77,7 @@ export class ProductLineSkuTable extends React.Component{
 
       return (
         <div className = 'prod-line-table'>
-          <Table
-          height={'200px'}>
+          <Table height = {'100px'}>
             <TableHeader displaySelectAll={this.state.showCheckboxes} adjustForCheckbox={this.state.showCheckboxes}>
               <TableRow class= "cols trselect">
                 {this.props.table_properties.map(prop => 

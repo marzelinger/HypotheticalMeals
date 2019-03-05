@@ -106,7 +106,8 @@ export const exportCalculator = (dataIN, fileTitle) => {
     label.push("Package Size");
     label.push("Package Cost");
     label.push("Comment");
-    label.push("Goal Quantity");
+    label.push("Package Quantity");
+    label.push("Unit Quantity");
     rows.push(label);
     for(let i = 0; i<count ; i++){
         var currData = dataIN[i];
@@ -117,7 +118,8 @@ export const exportCalculator = (dataIN, fileTitle) => {
         dataLine.push(currData.pkg_size);
         dataLine.push(currData.pkg_cost);
         dataLine.push(currData.comment);
-        dataLine.push(currData.goalQuantity);
+        dataLine.push(currData.pckgQuant);
+        dataLine.push(currData.unitQuantity);
         rows.push(dataLine);
     }    
     let csvContent = "";
