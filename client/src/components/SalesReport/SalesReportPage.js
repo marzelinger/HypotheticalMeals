@@ -6,7 +6,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import GeneralNavBar from '../GeneralNavBar';
 
-class SummaryPage extends React.Component {
+class SalesReportPage extends React.Component {
     state = {
         value: 0,
     };
@@ -33,6 +33,7 @@ class SummaryPage extends React.Component {
                     >
                         <Tab label="General Report" />
                         <Tab label="SKU Report" />
+                        
                     </Tabs>
                 </Paper>
                 {this.state.value ? null : null } {/* first is General, Second is SKU */}
@@ -47,8 +48,8 @@ const styles = {
     },
 };
 
-SummaryPage.propTypes = {
+SalesReportPage.propTypes = {
     // classes: PropTypes.object.isRequired,
 };
 
-export default SummaryPage; //withStyles(styles)(
+export default SalesReportPage; //withStyles(styles)(
