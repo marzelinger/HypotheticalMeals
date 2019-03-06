@@ -129,6 +129,7 @@ router.post('/customers', (req, res) => CustomerHandler.createCustomer(req, res)
 router.get('/customers', (req, res) => CustomerHandler.getAllCustomers(req, res));
 router.get('/customers_name/:name_substring', (req, res) => CustomerHandler.getCustomerByNameSubstring(req, res));
 router.get('/customers/:customer_number', (req, res) => CustomerHandler.getCustomerByNumber(req, res));
+router.get('/customers/:customer_id', (req, res) => CustomerHandler.getCustomerByID(req, res));
 
 
 // Sale Records database APIs

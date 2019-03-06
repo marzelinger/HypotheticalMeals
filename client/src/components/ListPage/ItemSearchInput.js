@@ -53,6 +53,7 @@ export default class ItemSearchInput extends React.Component {
             var res = await SubmitRequest.submitGetFormulasByNameSubstring(this.state.substr);
         }
         else if (this.props.item_type === Constants.customer_label && this.state.substr.length > 0) {
+            console.log("in the update results for hte get customer by sub");
             var res = await SubmitRequest.submitGetCustomersByNameSubstring(this.state.substr);
         }
         else {

@@ -11,6 +11,7 @@ import {
     Col,
     Label } from 'reactstrap';
 import Switch from "react-switch";
+import SubmitRequest from '../../helpers/SubmitRequest';
 
 import ItemSearchInput from '../ListPage/ItemSearchInput';
 
@@ -31,22 +32,21 @@ export default class CustomerSelectSalesReport extends React.Component {
 
 
     async componentDidMount() {
-        //await this.fillCustomerLine();
-        //await this.fillFormulaLine(); //TODO CHECK THIS
+        await this.fillCustomerLine();
     }
 
-    // async fillCustomerLine() {
-    //     var res = {};
-    //     if (this.state.item.prod_line !== null && this.state.item.prod_line !== '') {
-    //         res = await SubmitRequest.submitGetProductLineByID(this.state.item.prod_line._id);
-    //         if (res === undefined || !res.success) res.data[0] = {};
-    //     }
-    //     else {
-    //         res.data = {}
-    //         res.data[0] = {}
-    //     }
-    //     this.setState({ prod_line_item: res.data[0] });
-    // }
+    async fillCustomerLine() {
+        var res = {};
+        if (this.state.customer !== null && this.state.customer !== '') {
+            res = await SubmitRequest.submitGetCustomerByID(this.state.customer._id);
+            if (res === undefined || !res.success) res.data[0] = {};
+        }
+        else {
+            res.data = {}
+            res.data[0] = {}
+        }
+        this.setState({ customer: res.data[0] });
+    }
 
 
     onSelectCustomer = async (customer) => {

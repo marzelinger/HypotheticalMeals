@@ -79,6 +79,12 @@ export default class Filter extends React.Component {
                         this.handleResponse(response)
                     });
                     break;
+                case Constants.customers_page_name:
+                    console.log("here in the switch tree.");
+                    SubmitRequest.submitGetCustomersByNameSubstring(input).then((response) => {
+                        this.handleResponse(response)
+                    });
+                    break;
 
             }
     }

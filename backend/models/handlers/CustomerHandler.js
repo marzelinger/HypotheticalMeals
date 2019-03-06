@@ -57,9 +57,24 @@ class CustomerHandler{
     }
   }
 
+  
+
+
+  static async getCustomerByID(req, res){
+    try {
+        var target_id = req.params.customer_id;
+        let to_return = await Customer.find({ _id : target_id});
+        if(to_return.length == 0) return res.json({ success: false, error: '404'});
+        return res.json({ success: true, data: to_return});
+    } catch (err) {
+        return res.json({ success: false, error: err});
+    }
+}
+
+
   static async getCustomerByNameSubstring(req, res){
     try{
-        var search_substr = req.params.search_substr;
+        var search_substr = req.params.name_substring;
         let results = await Customer.find({ name: { $regex: search_substr, $options: 'i' } });
         if (results.length == 0) return res.json({success: false, error: '404'})
         return res.json({ success: true, data: results});

@@ -121,6 +121,27 @@ export default class SubmitRequest{
     }
   }
 
+
+  
+
+  static async submitGetCustomerByID(id) {
+    try {
+      return fetch('/api/customers/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
+
   static async submitGetFormulaByID(id) {
     try {
       return fetch('/api/formulas/' + id)
@@ -193,6 +214,7 @@ export default class SubmitRequest{
 
 
   static async submitGetCustomersByNameSubstring(substr) {
+    console.log("this is the sub here: "+substr);
     try {
       return fetch('/api/customers_name/' + substr)
       .then(data => data.json())
