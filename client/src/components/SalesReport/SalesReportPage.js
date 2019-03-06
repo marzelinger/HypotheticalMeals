@@ -49,11 +49,7 @@ class SalesReportPage extends React.Component {
                         
                     </Tabs>
                 </Paper>
-                {this.state.value === 0 ? <CustomerSelectSalesReport
-                    item = {this.state.customer}
-                    handleSelectCustomer = {this.onHandleSelectCustomer}
-                    >
-                </CustomerSelectSalesReport> : <SkuDrilldown/> } {/* first is General, Second is SKU */}
+                {this.state.value === 1 ? null : <SkuDrilldown/> } {/* first is General, Second is SKU */}
             </div>
         );
   }

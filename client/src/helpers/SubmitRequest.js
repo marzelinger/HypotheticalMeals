@@ -265,6 +265,23 @@ export default class SubmitRequest{
     }
   }
 
+  static async submitGetSkuByID(id) {
+    try {
+      return fetch('/api/skus/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
   static submitGetManuGoalsByFilter = (name_filter, username_filter, user) => {
     return fetch(`/api/manugoals_filter/${name_filter || '_'}/${username_filter || '_'}/${user}`, {method: 'GET'})
       .then(data => data.json())

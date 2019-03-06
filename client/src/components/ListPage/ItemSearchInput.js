@@ -42,7 +42,6 @@ export default class ItemSearchInput extends React.Component {
     }
 
     async updateResults() {
-        console.log("this is the item type: "+this.props.item_type);
         if (this.props.item_type === Constants.ingredient_label && this.state.substr.length > 0) {
             var res = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.substr);
         }
@@ -53,11 +52,9 @@ export default class ItemSearchInput extends React.Component {
             var res = await SubmitRequest.submitGetFormulasByNameSubstring(this.state.substr);
         }
         else if (this.props.item_type === Constants.customer_label && this.state.substr.length > 0) {
-            console.log("in the update results for hte get customer by sub");
             var res = await SubmitRequest.submitGetCustomersByNameSubstring(this.state.substr);
         }
         else if (this.props.item_type === Constants.sku_label && this.state.substr.length > 0) {
-            console.log("in the update results for hte get customer by sub");
             var res = await SubmitRequest.submitGetSkusByNameSubstring(this.state.substr);
         }
         else {
