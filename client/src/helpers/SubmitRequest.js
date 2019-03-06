@@ -34,8 +34,9 @@ export default class SubmitRequest{
       };
     });
     console.log(records)
-    records.data.forEach((record) => {
-      SubmitRequest.submitCreateItem('records', record);
+    records.data.forEach(async (record) => {
+      var response = await SubmitRequest.submitCreateItem('records', record);
+      console.log(response)
     })
   }
 

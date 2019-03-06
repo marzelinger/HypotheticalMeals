@@ -17,6 +17,10 @@ class Sale_RecordHandler{
       record.date = date
       record.sales = sales
       record.ppc = ppc
+      let conflict = await Customer.find({ cust_name, cust_num, sku_num, date, sales, ppc});
+      if(conflict.length > 0){
+        return res.json({ success: false, error:'CONFLICT'});
+      }
       let new_record = await record.save();
       return res.json({ success: true, data: new_record});
     }

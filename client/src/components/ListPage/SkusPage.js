@@ -110,7 +110,15 @@ export default class ListPage extends React.Component {
                 this.setState({manu_lines_modal: !this.state.manu_lines_modal})
                 break;
         }
-    }   
+    }
+    
+    async updateRecords() {
+        alert('update sku records')
+        var data = this.state.data;
+        data.forEach((sku) => {
+            SubmitRequest.addSkuRecords(sku.num, 2019)
+        })
+    }
 
     async componentDidMount() {
         if (this.props.default_ing_filter !== undefined){
@@ -119,6 +127,12 @@ export default class ListPage extends React.Component {
         if( this.props.default_formula_filter !== undefined){
             await this.onFilterValueSelection([{ value: { _id : this.props.default_formula_filter._id }}], null, 'formula');
         }
+        var now = new Date();
+        var millisTill10 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 14, 42, 0, 0) - now;
+        if (millisTill10 < 0) {
+            millisTill10 += 86400000; // it's after 10am, try 10am tomorrow.
+        }
+        setTimeout(() => this.updateRecords(), millisTill10);
         this.loadDataFromServer();
     }
 
