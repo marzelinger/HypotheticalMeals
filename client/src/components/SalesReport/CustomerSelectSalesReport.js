@@ -39,6 +39,7 @@ export default class CustomerSelectSalesReport extends React.Component {
         var res = {};
         if (this.state.customer !== null && this.state.customer !== '') {
             res = await SubmitRequest.submitGetCustomerByID(this.state.customer._id);
+            console.log(res)
             if (res === undefined || !res.success) res.data[0] = {};
         }
         else {

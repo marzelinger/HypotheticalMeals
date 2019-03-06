@@ -56,6 +56,10 @@ export default class ItemSearchInput extends React.Component {
             console.log("in the update results for hte get customer by sub");
             var res = await SubmitRequest.submitGetCustomersByNameSubstring(this.state.substr);
         }
+        else if (this.props.item_type === Constants.sku_label && this.state.substr.length > 0) {
+            console.log("in the update results for hte get customer by sub");
+            var res = await SubmitRequest.submitGetSkusByNameSubstring(this.state.substr);
+        }
         else {
             var res = {};
             res.data = []
@@ -80,14 +84,20 @@ export default class ItemSearchInput extends React.Component {
     }
 
     getType = () => {
-        if(this.props.item_type ===Constants.prod_line_label){
+        if(this.props.item_type ===Constants.ingredient_label){
+            return Constants.ingredients_page_name;
+        }
+        else if(this.props.item_type ===Constants.prod_line_label){
             return Constants.prod_line_page_name;
         }
-        if(this.props.item_type ===Constants.formula_label){
+        else if(this.props.item_type ===Constants.formula_label){
             return Constants.formulas_page_name;
         }
-        if(this.props.item_type ===Constants.customer_label){
+        else if(this.props.item_type ===Constants.customer_label){
             return Constants.customers_page_name;
+        }
+        else if(this.props.item_type ===Constants.sku_label){
+            return Constants.skus_page_name;
         }
 
     }
