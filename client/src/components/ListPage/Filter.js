@@ -134,7 +134,6 @@ export default class Filter extends React.Component {
 }
 
 Filter.propTypes = {
-    value: PropTypes.string,
     currItems: PropTypes.arrayOf(PropTypes.object),
     handleFilterValueChange: PropTypes.func,
     handleFilterValueSelection: PropTypes.func,
