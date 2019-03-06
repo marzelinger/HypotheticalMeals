@@ -18,6 +18,9 @@ import Manu_ActivityHandler from './models/handlers/Manu_ActivityHandler';
 import { getSecret } from './secrets';
 const passport = require("passport");
 import CSV_parser from './csv_parser';
+import CustomerHandler from './models/handlers/CustomerHandler';
+import Sale_RecordHandler from './models/handlers/Sale_RecordHandler';
+import ScraperHandler from './models/handlers/Scraper';
 var https = require('https');
 var fs = require('fs');
 var multer = require('multer');
@@ -63,6 +66,7 @@ router.post('/skus', (req, res) => SkuHandler.createSku(req, res));
 router.put('/skus/:sku_id', (req, res) => SkuHandler.updateSkuByID(req, res));
 router.get('/skus', (req, res) => SkuHandler.getAllSkus(req, res));
 router.get('/skus/:sku_id', (req, res) => SkuHandler.getSkuByID(req, res));
+router.get('/skus_num/:sku_num', (req, res) => SkuHandler.getSkusBySkuNumer(req, res));
 router.delete('/skus/:sku_id', (req, res) => SkuHandler.deleteSkuByID(req, res));
 router.get('/ingredients_by_sku/:sku_id', (req, res) => SkuHandler.getIngredientsBySkuID(req, res));
 router.get('/skus_name/:search_substr', (req, res) => SkuHandler.getSkusByNameSubstring(req, res));
@@ -120,6 +124,17 @@ router.get('/manugoals_filter/:name_substr/:user_substr/:user', (req, res) => Ma
 router.get('/manugoals_activity/:activity_id', (req, res) => Manu_GoalHandler.getManufacturingGoalByActivity(req, res));
 router.get('/manugoals_name/:name',(req, res) => Manu_GoalHandler.getManufacturingGoalByName(req, res));
 
+// Customer database APIs
+router.post('/customers', (req, res) => CustomerHandler.createCustomer(req, res));
+router.get('/customers', (req, res) => CustomerHandler.getAllCustomers(req, res));
+router.get('/customers_name/:name_substring', (req, res) => CustomerHandler.getCustomerByNameSubstring(req, res));
+router.get('/customers/:customer_number', (req, res) => CustomerHandler.getCustomerByNumber(req, res));
+
+
+// Sale Records database APIs
+router.post('/records', (req, res) => Sale_RecordHandler.createRecord(req, res));
+router.get('/records', (req, res) => Sale_RecordHandler.getAllRecords(req, res));
+
 // Multiple database APIs
 router.get('/ingredients_filter/:sort_field/:sku_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
 router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize/:prod_line_ids/:formula_id', (req, res) => FilterHandler.getSkusByFilter(req, res));
@@ -136,6 +151,11 @@ router.post('/parseUpdateSkus', (req, res) => CSV_parser.parseUpdateSKU(req, res
 router.post('/parseUpdateIngredients', (req, res) => CSV_parser.parseUpdateIngredients(req, res));
 
 router.put('/users/:user_id', (req, res) => UserHandler.updateUserByID(req, res));
+
+//scraping
+
+router.get('/scrape_customers', (req, res) => ScraperHandler.scrapeAllCustomers(req, res));
+router.get('/scrape_records/:sku_num/:year', (req, res) => ScraperHandler.scrapeSkuRecords(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);

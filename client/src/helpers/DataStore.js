@@ -35,6 +35,15 @@ export default class DataStore{
       }
     }
 
+    static getProductLineData() {
+      return {
+        item_properties: ['name'],
+        item_property_labels: ['Name'],
+        item_property_patterns: ['.+'],
+        item_property_field_type: ['text']  
+      };
+    }
+
     static getLineData() {
       return {
         item_properties: ['name', 'short_name', 'comment'],
@@ -85,10 +94,10 @@ export default class DataStore{
         table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line'],
         table_options: [Constants.create_item, Constants.add_to_manu_goals, Constants.add_keyword_filter, 
           Constants.add_ing_filter, Constants.add_prod_filter],
-        item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'comment', 'manu_rate', 'scale_factor'],
-        item_property_labels: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Comment', 'Manufacturing Rate', 'Formula Scale Factor'],
-        item_property_patterns: ['.+', '^[0-9]+$', '^[0-9]{12}$', '^[0-9]{12}$', '^[0-9]+ ?[a-z]+$', '^[0-9]+$', '.*', '^[0-9]*[\.]?[0-9]+$', '^[0-9]*[\.]?[0-9]+$'],  //^[0-9]*\.?[0-9]*$
-        item_property_field_type: ['text', 'text', 'text', 'text', 'text', 'text', 'textarea', 'text','text', 'text'],
+        item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'comment', 'manu_rate', 'scale_factor', 'setup_cost', 'run_cpc'],
+        item_property_labels: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Comment', 'Manufacturing Rate', 'Formula Scale Factor', 'Manufacturing Setup Cost (USD)', 'Manufacturing Run Cost Per Case (USD)'],
+        item_property_patterns: ['.+', '^[0-9]+$', '^[0-9]{12}$', '^[0-9]{12}$', '^[0-9]+ {0,2}[a-z.]+$', '^[0-9]+$', '.*', '^[0-9]*[\.]?[0-9]+$', '^[0-9]*[\.]?[0-9]+$', '^[0-9]*[\.]?[0-9]{1,2}$', '^[0-9]*[\.]?[0-9]{1,2}$'],  
+        item_property_field_type: ['text', 'text', 'text', 'text', 'text', 'text', 'textarea', 'text','text', 'text', 'text', 'text'],
 
 
       };

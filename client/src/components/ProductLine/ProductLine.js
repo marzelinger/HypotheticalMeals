@@ -5,6 +5,9 @@ import { UncontrolledCollapse, CardBody, Card } from 'reactstrap';
 import deleteButton from'../../resources/delete.png';
 import ProductLineTables from './ProductLineTables';
 import SubmitRequest from '../../helpers/SubmitRequest';
+import editButton from '../../resources/edit.png';
+import * as Constants from '../../resources/Constants';
+import ProductLineDetails from './ProductLineDetails';
 const currentUserIsAdmin = require("../../components/auth/currentUserIsAdmin");
 
 
@@ -40,6 +43,7 @@ export default class ProductLine extends React.Component{
       <div id="singleGoal">
         <div className="textContent">
           <div className="singleGoalContent" id={'prodline' + this.props.id}>
+          {/* <h3>{this.state.name}</h3> */}
           <input onKeyPress = {(event) => this.onNameSubmit(event)} type = "text" value = {this.state.name} onChange = {(event) => this.onNameChange(event)}></input>
           </div>
           <UncontrolledCollapse toggler={'#prodline' + this.props.id}>
@@ -51,7 +55,6 @@ export default class ProductLine extends React.Component{
             </UncontrolledCollapse>
         </div>
           <div className="singleGoalButtons">
-            {/* <a onClick={() => { props.handleUpdateGoal(props.id); }}>update</a> */}
             {currentUserIsAdmin().isValid ? (<img id ="deleteButton" onClick={() => {this.props.handleDeleteProdLine(this.props.id); }} src= {deleteButton}></img>):(<div/>)}
           </div>
       </div>

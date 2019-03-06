@@ -37,6 +37,7 @@
     "reactstrap": "^7.1.0",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
+    "tabletojson": "^1.0.4",
     "typescript": "^3.3.3333",
     "uuid": "^3.3.2",
     "vis": "^4.21.0",
@@ -60,6 +61,7 @@
   "proxy": "http://localhost:3001",
   "devDependencies": {
     "case-sensitive-paths-webpack-plugin": "^2.2.0",
+    "mocha": "^6.0.2",
     "react-to-print": "^2.0.0-alpha-6"
   }
 }
