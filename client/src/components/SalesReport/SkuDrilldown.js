@@ -33,9 +33,12 @@ export default class SkuDrilldown extends React.Component {
     }
 
     async componentDidUpdate(prevProps, prevState) {
-        if ( this.state.sku._id !== undefined && this.state.customer._id !== undefined && this.state.dateRange['startdate'] !== null && 
+        if ( this.state.sku._id !== undefined && this.state.dateRange['startdate'] !== null && 
              this.state.dateRange['enddate'] !== null && this.state.new_data){
-            console.log('fire away!')
+            var cust_str = (this.state.customer._id === undefined) ? '_' : this.state.customer._id;
+            let datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', cust_str, '_', this.state.sku._id, 
+                                this.state.dateRange['startdate'], this.state.dateRange['enddate'], '_', 0, 0)
+            console.log(datares)
         }
     }
 
