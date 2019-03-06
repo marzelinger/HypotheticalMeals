@@ -1,3 +1,5 @@
+//salesreportpage.js
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -19,8 +21,6 @@ class SalesReportPage extends React.Component {
         console.log(value)
         this.setState({ value });
     };
-
-
 
     onHandleSelectCustomer = (value) => {
         var isAll = value.selectAll;

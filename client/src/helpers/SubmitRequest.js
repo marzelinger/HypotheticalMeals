@@ -177,9 +177,9 @@ export default class SubmitRequest{
     }
   }
 
-  static async submitGetProductLinesByNameSubstring(substr) {
+  static async submitGetProductLinesByNameSubstring(substr, currentPage, pageSize) {
     try {
-      return fetch('/api/products_name/' + substr)
+      return fetch('/api/products_name/' + substr +'/'+currentPage+'/'+pageSize)
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error };

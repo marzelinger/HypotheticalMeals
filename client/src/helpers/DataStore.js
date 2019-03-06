@@ -98,10 +98,20 @@ export default class DataStore{
         item_property_labels: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Comment', 'Manufacturing Rate', 'Formula Scale Factor', 'Manufacturing Setup Cost (USD)', 'Manufacturing Run Cost Per Case (USD)'],
         item_property_patterns: ['.+', '^[0-9]+$', '^[0-9]{12}$', '^[0-9]{12}$', '^[0-9]+ {0,2}[a-z.]+$', '^[0-9]+$', '.*', '^[0-9]*[\.]?[0-9]+$', '^[0-9]*[\.]?[0-9]+$', '^[0-9]*[\.]?[0-9]{1,2}$', '^[0-9]*[\.]?[0-9]{1,2}$'],  
         item_property_field_type: ['text', 'text', 'text', 'text', 'text', 'text', 'textarea', 'text','text', 'text', 'text', 'text'],
-
-
       };
   }
+
+
+  static getProdLineReportData() {
+    return {
+      page_name: Constants.prod_line_page_name,
+      page_title: 'Product Lines',
+      filter_options: [Constants.keyword_label],
+      table_columns: ['Name'],
+      table_properties: ['name'],
+      table_options: [Constants.add_keyword_filter],
+    };
+}
 
   static getSkuFormulaDetailsData(){
     return {

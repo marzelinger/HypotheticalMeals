@@ -47,7 +47,7 @@ export default class ItemSearchInput extends React.Component {
             var res = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.substr);
         }
         else if (this.props.item_type === Constants.prod_line_label && this.state.substr.length > 0) {
-            var res = await SubmitRequest.submitGetProductLinesByNameSubstring(this.state.substr);
+            var res = await SubmitRequest.submitGetProductLinesByNameSubstring(this.state.substr,0,0);
         }
         else if (this.props.item_type === Constants.formula_label && this.state.substr.length > 0) {
             var res = await SubmitRequest.submitGetFormulasByNameSubstring(this.state.substr);

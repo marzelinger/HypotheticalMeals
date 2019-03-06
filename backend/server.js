@@ -85,7 +85,7 @@ router.put('/products/:prod_line_id', (req, res) => Prod_LineHandler.updateProdu
 router.get('/products', (req, res) => Prod_LineHandler.getAllProductLines(req, res));
 router.get('/products/:prod_line_id', (req, res) => Prod_LineHandler.getProductLineByID(req, res));
 router.delete('/products/:prod_line_id', (req, res) => Prod_LineHandler.deleteProductLineByID(req, res));
-router.get('/products_name/:search_substr', (req, res) => Prod_LineHandler.getProductLinesByNameSubstring(req, res));
+router.get('/products_name/:search_substr/:currentPage/:pageSize', (req, res) => Prod_LineHandler.getProductLinesByNameSubstring(req, res));
 
 // Manufacturing Line database APIs
 router.post('/manulines', (req, res) => Manu_LineHandler.createManufacturingLine(req, res));
