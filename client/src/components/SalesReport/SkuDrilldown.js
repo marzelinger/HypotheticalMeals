@@ -23,6 +23,8 @@ export default class SkuDrilldown extends React.Component {
         this.state = {
             sku: {},
             customer: {},
+            dateRange: { 'startdate': null, 'enddate': null},
+            new_data: false,
             invalid_inputs: []
         }
 
@@ -30,21 +32,41 @@ export default class SkuDrilldown extends React.Component {
         this.onSelectCustomer = this.onSelectCustomer.bind(this);
     }
 
-    async componentDidMount() {
+    async componentDidUpdate(prevProps, prevState) {
+        if ( this.state.sku._id !== undefined && this.state.customer._id !== undefined && this.state.dateRange['startdate'] !== null && 
+             this.state.dateRange['enddate'] !== null && this.state.new_data){
+            console.log('fire away!')
+        }
     }
 
-    onSelectSku(sku) {
+    async onSelectSku(sku) {
+        let skures = await SubmitRequest.submitGetSkuByID(sku._id)
         this.setState({
-            sku: sku
+            sku: skures.data[0],
+            new_data: true
         })
-        console.log(sku)
+        console.log(skures.data[0])
     }
 
-    onSelectCustomer(customer) {
-        this.setState({
-            customer: customer
-        })
+    async onSelectCustomer(customer) {
         console.log(customer)
+        let custres = await SubmitRequest.submitGetCustomerByID(customer._id)
+        console.log(custres.data[0])
+        this.setState({
+            customer: custres.data[0],
+            new_data: true
+        })
+        console.log(custres.data[0])
+    }
+
+    onInputChange(event, type) {
+        let newRange = Object.assign({}, this.state.dateRange)
+        newRange[type] = event.target.value
+        this.setState({
+            dateRange: newRange,
+            new_data: true
+        })
+        console.log(newRange)
     }
 
     render() {
@@ -62,6 +84,24 @@ export default class SkuDrilldown extends React.Component {
                     handleSelectItem={this.onSelectSku}
                     disabled = {false}
                 />
+                <FormGroup>
+                    <Label for="startdate">Start Date</Label>
+                    <Input
+                        type="date"
+                        name="date"
+                        id="startdate"
+                        onChange = {(e) => this.onInputChange(e, 'startdate')}
+                        // placeholder="date placeholder"
+                    />
+                    <Label for="enddate">End Date</Label>
+                    <Input
+                        type="date"
+                        name="date"
+                        id="enddate"
+                        onChange = {(e) => this.onInputChange(e, 'enddate')}
+                        // placeholder="date placeholder"
+                    />
+                </FormGroup>
             </div>
         </div>
         );
