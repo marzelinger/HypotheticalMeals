@@ -5,16 +5,31 @@ import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import GeneralNavBar from '../GeneralNavBar';
+import CustomerSelectSalesReport from './CustomerSelectSalesReport';
 
 class SalesReportPage extends React.Component {
     state = {
         value: 0,
+        customer: {},
+        allCustomers: false,
+
     };
 
     handleChange = (event, value) => {
         console.log(value)
         this.setState({ value });
     };
+
+
+
+    onHandleSelectCustomer = (value) => {
+        var isAll = value.selectAll;
+        var customer = value.customer;
+        this.setState({
+            customer: customer,
+            allCustomers: isAll
+        });
+    }
 
     render() {
         // const { classes } = this.props;
@@ -36,6 +51,12 @@ class SalesReportPage extends React.Component {
                         
                     </Tabs>
                 </Paper>
+                <div>hello</div>
+                <CustomerSelectSalesReport>
+                    item = {this.state.customer}
+                    handleSelectCustomer = {this.onHandleSelectCustomer}
+                    
+                </CustomerSelectSalesReport>
                 {this.state.value ? null : null } {/* first is General, Second is SKU */}
             </div>
         );

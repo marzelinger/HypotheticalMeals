@@ -27,6 +27,7 @@ export const manu_line_page_name = 'manulines';
 export const prod_line_page_name = 'products';
 export const manu_activity_page_name = 'manuactivities';
 export const formulas_page_name = 'formulas';
+export const customers_page_name = 'customers';
 
 export const options = 'Options'
 export const keyword_label = "Keyword"
@@ -34,6 +35,7 @@ export const sku_label = "SKU"
 export const ingredient_label = "Ingredient"
 export const user_label = "User"
 export const prod_line_label = 'Product Line'
+export const customer_label = 'Customer'
 export const formula_label = 'Formula'
 
 export const undefined = 'Undefined'

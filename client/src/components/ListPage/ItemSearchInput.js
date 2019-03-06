@@ -52,6 +52,9 @@ export default class ItemSearchInput extends React.Component {
         else if (this.props.item_type === Constants.formula_label && this.state.substr.length > 0) {
             var res = await SubmitRequest.submitGetFormulasByNameSubstring(this.state.substr);
         }
+        else if (this.props.item_type === Constants.customer_label && this.state.substr.length > 0) {
+            var res = await SubmitRequest.submitGetCustomersByNameSubstring(this.state.substr);
+        }
         else {
             var res = {};
             res.data = []
@@ -82,6 +85,10 @@ export default class ItemSearchInput extends React.Component {
         if(this.props.item_type ===Constants.formula_label){
             return Constants.formulas_page_name;
         }
+        if(this.props.item_type ===Constants.customer_label){
+            return Constants.customers_page_name;
+        }
+
     }
     onFilterValueSelection (label, value) {
         this.setState({
