@@ -52,7 +52,7 @@ export default class TableActions extends React.Component {
 
         )})
       }
-      {(currentUserIsAdmin().isValid && (this.state.page_name != Constants.users_page_name))? 
+      {(currentUserIsAdmin().isValid && (this.state.page_name != Constants.users_page_name) && !this.props.reportSelect)? 
       (<AddIcon style = {{width: '50px', height: '50px', cursor: 'pointer'}} onClick = {() => {this.props.onTableOptionSelection(null, Constants.create_item)}}></AddIcon>)
       :(<div/>)}
       </div>

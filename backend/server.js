@@ -83,6 +83,8 @@ router.get('/formulas_name/:search_substr', (req, res) => FormulaHandler.getForm
 router.post('/products', (req, res) => Prod_LineHandler.createProductLine(req, res));
 router.put('/products/:prod_line_id', (req, res) => Prod_LineHandler.updateProductLineByID(req, res));
 router.get('/products', (req, res) => Prod_LineHandler.getAllProductLines(req, res));
+router.get('/products/:currentPage/:pageSize', (req, res) => Prod_LineHandler.getAllProductLinesPag(req, res));
+
 router.get('/products/:prod_line_id', (req, res) => Prod_LineHandler.getProductLineByID(req, res));
 router.delete('/products/:prod_line_id', (req, res) => Prod_LineHandler.deleteProductLineByID(req, res));
 router.get('/products_name/:search_substr/:currentPage/:pageSize', (req, res) => Prod_LineHandler.getProductLinesByNameSubstring(req, res));

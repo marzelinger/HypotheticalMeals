@@ -5,12 +5,13 @@ import PropTypes from 'prop-types';
 import PageTable from '../ListPage/PageTable'
 import SubmitRequest from '../../helpers/SubmitRequest';
 import * as Constants from '../../resources/Constants';
-import './../../style/SkusPage.css';
 import DataStore from '../../helpers/DataStore'
 import TablePagination from '../ListPage/TablePagination'
 
 import '../../style/SkusPage.css'
+import '../../style/GeneralReportTableStyle.css'
 import '../../style/SkuTableStyle.css'
+import '../../style/GeneralReport.css'
 const jwt_decode = require('jwt-decode');
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
@@ -79,6 +80,32 @@ export default class ProductLineSelectSalesReport extends React.Component {
         this.loadDataFromServer();
     }
 
+
+    // createProductLineElement = (item, index) => {
+    //     const options = this.props.options
+    //     let defaultValue = {};
+    //     options.forEach(option => {
+    //       if(option.label == item.prod_line.name){
+    //         defaultValue = option;
+    //       }
+    //     })
+    //     let dataSourceConfig = {
+    //       text: 'label',
+    //       value: 'value',
+    //     };
+    //     const customStyles = {
+    //       control: (base, state) => ({
+    //           ...base,
+    //           borderColor: this.props.invalid ? 'red' : '#ddd',
+    //           height: '30px',
+    //           'min-height': '30px',
+    //           width: '150px'
+    //       })
+    //     }
+       
+    //     return (<Select  styles={customStyles} className = "select" defaultValue = {defaultValue} onChange = {(newval, {action}) => this.props.onProdLineChange(newval, index, action) } options={options} />);
+    // }
+
     async componentDidUpdate (prevProps, prevState) {
         if (this.state.filterChange) {
             await this.loadDataFromServer();
@@ -93,11 +120,23 @@ export default class ProductLineSelectSalesReport extends React.Component {
 
     async loadDataFromServer() {
         var final_keyword_filter = this.state.filters['keyword'];
-        //Check how the filter state is being set         
-        var resALL = await SubmitRequest.submitGetProductLinesByNameSubstring(final_keyword_filter, 0, 0);
-        await this.checkCurrentPageInBounds(resALL);  
-        var res = await SubmitRequest.submitGetProductLinesByNameSubstring(final_keyword_filter, this.state.currentPage, this.state.pageSize);
-        
+        //Check how the filter state is being set   
+        console.log("loading data from the server. substring: "+final_keyword_filter);  
+        if(final_keyword_filter != ''){
+            var resALL = await SubmitRequest.submitGetProductLinesByNameSubstring(final_keyword_filter, 0, 0);
+            console.log("loading resALL: "+JSON.stringify(resALL));  
+            await this.checkCurrentPageInBounds(resALL);  
+            var res = await SubmitRequest.submitGetProductLinesByNameSubstring(final_keyword_filter, this.state.currentPage, this.state.pageSize);
+            
+        }
+        else{
+            var resALL = await SubmitRequest.submitGetDataPaginated(Constants.prod_line_page_name, 0, 0);
+            console.log("loading in the general get: "+JSON.stringify(resALL));  
+    
+            await this.checkCurrentPageInBounds(resALL);  
+            var res = await SubmitRequest.submitGetDataPaginated(Constants.prod_line_page_name, this.state.currentPage, this.state.pageSize);
+        }
+
         if (res === undefined || !res.success) {
             res.data = [];
             resALL.data = [];
@@ -191,20 +230,12 @@ export default class ProductLineSelectSalesReport extends React.Component {
     }
 
     onTableOptionSelection = async(e, opt) => {
-        // if (this.state.selected_items.length === 0 && opt!=Constants.create_item) {
-        //     alert('You must select items to use these features!')
-        //     return
-        // }
-        // switch (opt){
-        //     case Constants.create_item:
-        //         break;
-        //     case Constants.add_to_manu_goals:
-        //         await this.onAddManuGoals();
-        //         break;
-        //     case Constants.edit_manu_lines:
-        //         break;
-        // }
     }
+
+
+    getPropertyLabel = (col) => {
+        return this.props.columns[this.props.table_properties.indexOf(col)];
+      }
 
     async onSort(event, sortKey) {
         await this.setState({sort_field: sortKey})
@@ -232,21 +263,7 @@ export default class ProductLineSelectSalesReport extends React.Component {
     };
 
      onDetailViewSelect = async (event, item) => {
-        // this.setState({
-        //     detail_view_item: item,
-        // });
-        // if(currentUserIsAdmin().isValid){
-        //     this.setState({ 
-        //     detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel],
-        //     detail_view_action: Constants.details_edit
-        //     });
-        // }
-        // else{
-        //     this.setState({ 
-        //         detail_view_options: [Constants.details_cancel],
-        //         detail_view_action: Constants.details_view
-        //         });
-        // }
+
     };
 
     getButtons = () => {
@@ -258,9 +275,29 @@ export default class ProductLineSelectSalesReport extends React.Component {
 
     render() {
 
+        // var rev_index = this.state.data.length;
+        // let tablebody = (
+        //     this.state.data.map((item, index) => {
+        //       rev_index = rev_index - 1;
+        //       return (<TableRow
+        //       key={item.num + index}
+        //     >
+        //       {this.props.table_properties.map(prop => 
+        //         <TableRowColumn style = {{overflow: prop == 'prod_line' ? 'visible' : 'hidden', zIndex: `${rev_index}`}}  key={prop}>
+        //           {prop == 'prod_line' ? this.createProductLineElement(item, index) : item[prop]}
+        //         </TableRowColumn>
+        //       )}
+        //     </TableRow>
+        //       )
+
+        //     }
+
+        //   ))
+        
+
         return (
-            <div className="prodline-select-page">
-                <div className = "prodline-table">
+            <div className="prod-line-select-page">
+                <div className = "prod-line-select-table ">
                     <PageTable 
                         columns={this.state.table_columns} 
                         table_properties={this.state.table_properties} 
@@ -270,9 +307,9 @@ export default class ProductLineSelectSalesReport extends React.Component {
                         handleSort={this.onSort}
                         handleSelect={this.onSelect}
                         handleDetailViewSelect={this.onDetailViewSelect}
-                        showDetails = {true}
-                        selectable = {this.props.simple !=undefined ? !this.props.simple : true}
-                        sortable = {this.props.simple != undefined ? !this.props.simple : true}
+                        showDetails = {false}
+                        selectable = {true}
+                        sortable = {true}
                         title = {this.state.page_title}
                         showHeader = {true}
                         simple = {this.props.simple}
@@ -284,8 +321,25 @@ export default class ProductLineSelectSalesReport extends React.Component {
                         ingredients = {this.state.ingredients}
                         products = {this.state.product_lines}
                         onTableOptionSelection = {this.onTableOptionSelection}
+                        reportSelect = {true}
                     />
-                </div>
+                </div>                
+                {/* <div className = 'prod-line-select-table'>
+          <Table height = {'100px'}>
+            <TableHeader displaySelectAll={true} adjustForCheckbox={true}>
+              <TableRow class= "cols trselect">
+                {this.state.table_properties.map(prop => 
+                  <TableHeaderColumn tooltip = {"Sort By " + this.getPropertyLabel(prop)} className = "hoverable" key={prop}>
+                    <div onClick={e => this.onSort(e, prop)}>{this.getPropertyLabel(prop)}</div>
+                  </TableHeaderColumn>
+                )}
+              </TableRow>
+            </TableHeader>
+            <TableBody displayRowCheckbox = {this.state.showCheckboxes}>
+                {tablebody}
+            </TableBody>
+          </Table>
+        </div> */}
                 <TablePagination
                     currentPage = {this.state.currentPage}
                     pagesCount = {this.state.pagesCount}
@@ -298,5 +352,6 @@ export default class ProductLineSelectSalesReport extends React.Component {
 }
 
 ProductLineSelectSalesReport.propTypes = {
-    handleSelectProdLines: PropTypes.func
+    handleSelectProdLines: PropTypes.func,
+    simple: PropTypes.bool
 }

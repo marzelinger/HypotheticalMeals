@@ -403,5 +403,29 @@ export default class SubmitRequest{
       return { success: false, error: err };
     }
   }
+
+  static submitGetDataPaginated = (page_name, currentPage, pageSize) => {
+    try {
+      return fetch('/api/' + page_name+'/'+currentPage+'/'+pageSize, { method: 'GET' })
+        .then(data => data.json())
+        .then((res) => {
+          if (!res.success) return { success: res.success, error: res.error };
+          else return ({ 
+              success: res.success,
+              data: res.data
+          });
+        });
+      }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
+
+
+
+
+
+
 }
 

@@ -97,9 +97,13 @@ class Prod_LineHandler{
 
   static async getProductLinesByNameSubstring(req, res){
     try{
+        console.log("HERE IN THE PROD HANDLER");
         var search_substr = req.params.search_substr;
         var currentPage = Number(req.params.currentPage);
         var pageSize = Number(req.params.pageSize);
+        console.log("VALUES");
+
+
         let results = await Prod_Line.find({ name: { $regex: search_substr, $options: 'i' } }).skip(currentPage*pageSize).limit(pageSize);
         if (results.length == 0) return res.json({success: false, error: '404'})
         return res.json({ success: true, data: results});
@@ -108,6 +112,19 @@ class Prod_LineHandler{
         return res.json({ success: false, error: err});
     }
 }
+
+  static async getAllProductLinesPag(req, res){
+    try {
+
+      var currentPage = Number(req.params.currentPage);
+      var pageSize = Number(req.params.pageSize);
+      let all_prod_lines = await Prod_Line.find().skip(currentPage*pageSize).limit(pageSize);
+      return res.json({ success: true, data: all_prod_lines});
+    }
+    catch (err) {
+      return res.json({ success: false, error: err});
+    }
+  }
 
 }
 

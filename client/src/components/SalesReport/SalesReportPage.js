@@ -8,7 +8,8 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import GeneralNavBar from '../GeneralNavBar';
 import CustomerSelectSalesReport from './CustomerSelectSalesReport';
-import SkuDrilldown from './SkuDrilldown'
+import SkuDrilldown from './SkuDrilldown';
+import GeneralReport from './GeneralReport';
 
 class SalesReportPage extends React.Component {
     state = {
@@ -22,14 +23,6 @@ class SalesReportPage extends React.Component {
         this.setState({ value });
     };
 
-    onHandleSelectCustomer = (value) => {
-        var isAll = value.selectAll;
-        var customer = value.customer;
-        this.setState({
-            customer: customer,
-            allCustomers: isAll
-        });
-    }
 
     render() {
         // const { classes } = this.props;
@@ -51,11 +44,8 @@ class SalesReportPage extends React.Component {
                         
                     </Tabs>
                 </Paper>
-                {this.state.value === 0 ? <CustomerSelectSalesReport
-                    item = {this.state.customer}
-                    handleSelectCustomer = {this.onHandleSelectCustomer}
-                    >
-                </CustomerSelectSalesReport> : <SkuDrilldown/> } {/* first is General, Second is SKU */}
+                {this.state.value === 0 ? <GeneralReport/> : <SkuDrilldown/> } 
+                {/* first is General, Second is SKU */}
             </div>
         );
   }
