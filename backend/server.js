@@ -130,7 +130,7 @@ router.get('/manugoals_name/:name',(req, res) => Manu_GoalHandler.getManufacturi
 router.post('/customers', (req, res) => CustomerHandler.createCustomer(req, res));
 router.get('/customers', (req, res) => CustomerHandler.getAllCustomers(req, res));
 router.get('/customers_name/:name_substring', (req, res) => CustomerHandler.getCustomerByNameSubstring(req, res));
-router.get('/customers/:customer_number', (req, res) => CustomerHandler.getCustomerByNumber(req, res));
+router.get('/customer_number/:customer_number', (req, res) => CustomerHandler.getCustomerByNumber(req, res));
 router.get('/customers/:customer_id', (req, res) => CustomerHandler.getCustomerByID(req, res));
 
 
@@ -143,6 +143,7 @@ router.get('/ingredients_filter/:sort_field/:sku_ids/:keyword/:currentPage/:page
 router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize/:prod_line_ids/:formula_id', (req, res) => FilterHandler.getSkusByFilter(req, res));
 router.get('/users_filter/:sort_field/:user_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getUsersByFilter(req, res));
 router.get('/formulas_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getFormulasbyFilter(req, res));
+router.get('/records_filter/:sort_field/:customer_id/:prod_line_ids/:sku_id/:date_range_start/:date_range_end/:currentPage/:pageSize', (req, res) => FilterHandler.getSaleRecordsbyFilter(req, res));
 
 
 // CSV Parser database APIs

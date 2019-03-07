@@ -265,8 +265,40 @@ export default class SubmitRequest{
     }
   }
 
+  static async submitGetSkuByID(id) {
+    try {
+      return fetch('/api/skus/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
   static submitGetManuGoalsByFilter = (name_filter, username_filter, user) => {
     return fetch(`/api/manugoals_filter/${name_filter || '_'}/${username_filter || '_'}/${user}`, {method: 'GET'})
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return ({ 
+            success: res.success,
+            data: res.data
+          }
+        )
+      }
+    )
+  }
+
+  static submitGetSaleRecordsByFilter = (sort_field, customer_id, prod_line_ids, sku_id, date_range_start, date_range_end, currentPage, pageSize) => {
+    return fetch('/api/records_filter/' + sort_field + '/' + customer_id + '/' + prod_line_ids + '/' + sku_id + '/' + 
+                  date_range_start + '/' + date_range_end + '/' + currentPage + '/' + pageSize, {method: 'GET'})
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error };

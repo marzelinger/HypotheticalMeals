@@ -6,6 +6,9 @@ import SKU from '../databases/sku';
 import User from '../databases/User';
 import printFuncBack from '../../printFuncBack';
 import Formula from '../databases/formula';
+import Customer from '../databases/customer';
+import SaleRecord from '../databases/sale_record';
+import moment from 'moment';
 
 class FilterHandler{
 
@@ -172,6 +175,53 @@ class FilterHandler{
                                                         .collation({locale: "en_US", numericOrdering: true}) : 
                                                      await Formula.find( {$and: and_query }).skip(currentPage*pageSize)
                                                         .limit(pageSize).populate('ingredients')
+                                                        .sort(sort_field).collation({locale: "en_US", numericOrdering: true});
+            return res.json({ success: true, data: results});
+        }
+        catch (err) {
+            return res.json({ success: false, error: err});
+        }
+    }
+
+    static async getSaleRecordsbyFilter(req, res){
+        try{
+            var and_query = [];
+            var sku_nums = [];
+            var prod_line_ids = req.params.prod_line_ids;
+            var sku_id = req.params.sku_id;
+            var customer_id = req.params.customer_id;
+            var range_start = req.params.date_range_start;
+            var range_end = req.params.date_range_end;
+            if (prod_line_ids !== undefined && prod_line_ids !== "_"){
+                prod_line_ids = prod_line_ids.replace(/\s/g, "").split(',');
+                let skus = await SKU.find({ prod_line : {$in : prod_line_ids } });
+                skus.map(sku => sku_nums.push(sku.num));
+            }
+            if (sku_id !== undefined && sku_id !== "_"){
+                let sku = await SKU.findOne({ _id : sku_id });
+                sku_nums.push(sku.num);
+            }
+            if ((prod_line_ids !== undefined && prod_line_ids !== "_") || (sku_id !== undefined && sku_id !== "_")){
+                and_query.push( {sku_num: { $in: sku_nums } } );
+            }
+            if (customer_id !== undefined && customer_id !== "_"){
+                let customer = await Customer.findOne({ _id : customer_id });
+                and_query.push({ cust_num: customer.number })
+            }
+            if (range_start !== undefined && range_start !== "_" && range_end !== undefined && range_end !== "_"){
+                let start_date = new moment(range_start)
+                let end_date = new moment(range_end)
+                and_query.push({ "date.year" : { $lte: end_date.year(), $gte: start_date.year() } })
+                and_query.push({ "date.week" : { $lte: end_date.week(), $gte: start_date.week() } })
+            }
+            var sort_field = req.params.sort_field;
+            var currentPage = Number(req.params.currentPage);
+            var pageSize = Number(req.params.pageSize);
+
+            let results = (and_query.length === 0) ? await SaleRecord.find( ).skip(currentPage*pageSize).limit(pageSize)
+                                                        .sort(sort_field).collation({locale: "en_US", numericOrdering: true}) : 
+                                                     await SaleRecord.find( {$and: and_query }).skip(currentPage*pageSize)
+                                                        .limit(pageSize)
                                                         .sort(sort_field).collation({locale: "en_US", numericOrdering: true});
             return res.json({ success: true, data: results});
         }

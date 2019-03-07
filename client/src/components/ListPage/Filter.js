@@ -48,7 +48,6 @@ export default class Filter extends React.Component {
     }
 
     getNewOptions = (input) => {
-        console.log("getting new options here.");
         if(input == ""){
             this.setState({options: []})
             return;
@@ -80,7 +79,6 @@ export default class Filter extends React.Component {
                     });
                     break;
                 case Constants.customers_page_name:
-                    console.log("here in the switch tree.");
                     SubmitRequest.submitGetCustomersByNameSubstring(input).then((response) => {
                         this.handleResponse(response)
                     });
