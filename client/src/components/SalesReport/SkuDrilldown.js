@@ -63,6 +63,8 @@ export default class SkuDrilldown extends React.Component {
     }
 
     onInputChange(event, type) {
+        console.log("this is the tyep: "+type);
+        console.log("this is the val: "+event.target.value);
         let newRange = Object.assign({}, this.state.dateRange)
         newRange[type] = event.target.value
         this.setState({

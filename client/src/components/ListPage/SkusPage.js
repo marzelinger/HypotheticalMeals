@@ -335,6 +335,8 @@ export default class ListPage extends React.Component {
             newState.push(this.state.data[index]);
         });
         await this.setState({ selected_items: newState, selected_indexes: rowIndexes});
+        console.log("this is the selected skus: "+JSON.stringify(this.state.selected_items));
+
     };
 
      onDetailViewSelect = async (event, item) => {

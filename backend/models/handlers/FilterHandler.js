@@ -209,6 +209,7 @@ class FilterHandler{
                 and_query.push({ cust_num: customer.number })
             }
             if (range_start !== undefined && range_start !== "_" && range_end !== undefined && range_end !== "_"){
+                console.log("THIS IS HOW THE START DATE COMES IN.: "+ range_start);
                 let start_date = new moment(range_start)
                 let end_date = new moment(range_end)
                 and_query.push({ "date.year" : { $lte: end_date.year(), $gte: start_date.year() } })

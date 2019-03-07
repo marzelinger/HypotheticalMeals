@@ -52,7 +52,7 @@ export default class ProductLineSelectSalesReport extends React.Component {
             user:'',
             currentPage: 0,
             previousPage: 0,
-            pageSize: props.simple ? 4 : 20,
+            pageSize: 8,
             pagesCount: 0,
             filters: {
                 'keyword': '',
@@ -79,32 +79,6 @@ export default class ProductLineSelectSalesReport extends React.Component {
         // }
         this.loadDataFromServer();
     }
-
-
-    // createProductLineElement = (item, index) => {
-    //     const options = this.props.options
-    //     let defaultValue = {};
-    //     options.forEach(option => {
-    //       if(option.label == item.prod_line.name){
-    //         defaultValue = option;
-    //       }
-    //     })
-    //     let dataSourceConfig = {
-    //       text: 'label',
-    //       value: 'value',
-    //     };
-    //     const customStyles = {
-    //       control: (base, state) => ({
-    //           ...base,
-    //           borderColor: this.props.invalid ? 'red' : '#ddd',
-    //           height: '30px',
-    //           'min-height': '30px',
-    //           width: '150px'
-    //       })
-    //     }
-       
-    //     return (<Select  styles={customStyles} className = "select" defaultValue = {defaultValue} onChange = {(newval, {action}) => this.props.onProdLineChange(newval, index, action) } options={options} />);
-    // }
 
     async componentDidUpdate (prevProps, prevState) {
         if (this.state.filterChange) {
@@ -249,6 +223,8 @@ export default class ProductLineSelectSalesReport extends React.Component {
                 indexes.push(i);
             }
             await this.setState({selected_items: this.state.data, selected_indexes: indexes});
+            console.log("this is the selected prodlines2: "+JSON.stringify(this.state.selected_items));
+            this.props.handleSelectProdLines(this.state.selected_items);
             return;
         }
         else if(rowIndexes == 'none'){
@@ -260,9 +236,14 @@ export default class ProductLineSelectSalesReport extends React.Component {
             newState.push(this.state.data[index]);
         });
         await this.setState({ selected_items: newState, selected_indexes: rowIndexes});
+        this.props.handleSelectProdLines(this.state.selected_items);
+        console.log("this is the selected prodlines: "+JSON.stringify(this.state.selected_items));
     };
 
-     onDetailViewSelect = async (event, item) => {
+
+
+    onDetailViewSelect = async (event, item) => {
+    
 
     };
 
@@ -274,27 +255,6 @@ export default class ProductLineSelectSalesReport extends React.Component {
     }
 
     render() {
-
-        // var rev_index = this.state.data.length;
-        // let tablebody = (
-        //     this.state.data.map((item, index) => {
-        //       rev_index = rev_index - 1;
-        //       return (<TableRow
-        //       key={item.num + index}
-        //     >
-        //       {this.props.table_properties.map(prop => 
-        //         <TableRowColumn style = {{overflow: prop == 'prod_line' ? 'visible' : 'hidden', zIndex: `${rev_index}`}}  key={prop}>
-        //           {prop == 'prod_line' ? this.createProductLineElement(item, index) : item[prop]}
-        //         </TableRowColumn>
-        //       )}
-        //     </TableRow>
-        //       )
-
-        //     }
-
-        //   ))
-        
-
         return (
             <div className="prod-line-select-page">
                 <div className = "prod-line-select-table ">
@@ -324,22 +284,6 @@ export default class ProductLineSelectSalesReport extends React.Component {
                         reportSelect = {true}
                     />
                 </div>                
-                {/* <div className = 'prod-line-select-table'>
-          <Table height = {'100px'}>
-            <TableHeader displaySelectAll={true} adjustForCheckbox={true}>
-              <TableRow class= "cols trselect">
-                {this.state.table_properties.map(prop => 
-                  <TableHeaderColumn tooltip = {"Sort By " + this.getPropertyLabel(prop)} className = "hoverable" key={prop}>
-                    <div onClick={e => this.onSort(e, prop)}>{this.getPropertyLabel(prop)}</div>
-                  </TableHeaderColumn>
-                )}
-              </TableRow>
-            </TableHeader>
-            <TableBody displayRowCheckbox = {this.state.showCheckboxes}>
-                {tablebody}
-            </TableBody>
-          </Table>
-        </div> */}
                 <TablePagination
                     currentPage = {this.state.currentPage}
                     pagesCount = {this.state.pagesCount}

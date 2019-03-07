@@ -121,7 +121,22 @@ export default class SubmitRequest{
     }
   }
 
-
+  static async submitGetSkusByProductLineID(id) {
+    try {
+      return fetch('/api/skus/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
   
 
   static async submitGetCustomerByID(id) {
