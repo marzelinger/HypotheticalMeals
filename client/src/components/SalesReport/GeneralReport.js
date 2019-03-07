@@ -14,6 +14,7 @@ import SubmitRequest from '../../helpers/SubmitRequest';
 import CustomerSelectSalesReport from './CustomerSelectSalesReport'
 import ProductLineSelectSalesReport from './ProductLineSelectSalesReport'
 import Calculations from './Calculations'
+import { Table } from 'reactstrap';
 import ItemSearchInput from '../ListPage/ItemSearchInput'
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
@@ -41,7 +42,11 @@ export default class GeneralReport extends React.Component {
                 { 'startdate': "2019-01-01", 'enddate': "2019-12-31"}
                 //end jan1 2019
             ],
-            total_years: 10
+            total_years: 10,
+            // tenYRdata: {}
+            tenYRdata:{
+                prodLines: []
+                }
         }
 
         this.onSelectProductLine = this.onSelectProductLine.bind(this);
@@ -62,42 +67,57 @@ export default class GeneralReport extends React.Component {
         if(this.state.prod_lines.length>0){
             for(let pl = 0; pl<this.state.prod_lines.length; pl++){
                 //there are product lines to generate data for.
-                var skus_res = SubmitRequest.submitGetSkusByProductLineID(this.state.prod_lines[pl]._id);
+                var skus_res = await SubmitRequest.submitGetSkusByProductLineID(this.state.prod_lines[pl]._id);
+                console.log("these are the SKUS: "+JSON.stringify(skus_res));
                 if(skus_res.success){
                     var skus = skus_res.data;
-                    if (skus.length>0){
-                        for (let s = 0; s<skus.length; s++){
-                            // //need to go through all the prodlines. and then through all the skus.
-                            for(let yr = 0; yr<this.dateRanges.length; yr++){
-                                let datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', cust_str, '_', skus[s]._id, 
-                                this.state.dateRanges[yr]['startdate'], this.state.dateRanges[yr]['enddate'], 0, 0);
-                                if(datares.success){
-                                    //console.log("this is the dateres: "+JSON.stringify(datares));
-                                    var curRowData = await Calculations.getSalesTotalPerYear(datares.data);
-                                    console.log("this is the curRowData: "+JSON.stringify(curRowData));
-                                }
-                            }
-                        }
-                    }
+                    //this will be the data for each sku in this prod line for the ten years
+                    //want to then use that to make a table
+                    var {tenYRSKUsdata} = Calculations.getTenYRSalesData(skus, cust_str);
+                    console.log("this is the tenYRSKUdata: "+JSON.stringify(tenYRSKUsdata));
+                    var new_ten_yr_data = this.state.tenYRdata;
+                    new_ten_yr_data.prodLines.push(tenYRSKUsdata);
+                    await this.setState({tenYRdata: new_ten_yr_data});
+                    this.updateReportTables();
                 }
             }
         }
+        await this.setState({new_data: false});
     }
 
-    onSelectProductLine(prodlines) {
-        this.setState({
+    updateReportTables = async () => {
+
+        if(this.state.tenYRdata.length>0){
+            for(let pl = 0; pl<this.state.tenYRdata.length; pl++){
+                //for each product Line we want to go through the skus data and make
+                //a table for each sku.
+                //make a super table for each prod line?
+
+                //there are product lines to generate data for.
+
+
+            
+            }
+        }
+        await this.setState({new_data: false});
+    }
+
+    async onSelectProductLine(prodlines) {
+        await this.setState({
             prod_lines: prodlines,
             new_data: true
         })
         console.log(prodlines)
+        this.updateReportData();
     }
 
-    onSelectCustomer(customer) {
-        this.setState({
+    async onSelectCustomer(customer) {
+        await this.setState({
             customer: customer,
             new_data: true
         })
         console.log(customer)
+        this.updateReportData();
     }
 
     render() {

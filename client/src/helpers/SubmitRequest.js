@@ -123,6 +123,7 @@ export default class SubmitRequest{
 
   static async submitGetSkusByProductLineID(id) {
     try {
+      console.log("this is the id in request: "+id);
       return fetch('/api/skus/' + id)
       .then(data => data.json())
       .then((res) => {
@@ -312,6 +313,8 @@ export default class SubmitRequest{
   }
 
   static submitGetSaleRecordsByFilter = (sort_field, customer_id, prod_line_ids, sku_id, date_range_start, date_range_end, currentPage, pageSize) => {
+    console.log("path is: "+ sort_field + '/' + customer_id + '/' + prod_line_ids + '/' + sku_id + '/' + 
+    date_range_start + '/' + date_range_end + '/' + currentPage + '/' + pageSize);
     return fetch('/api/records_filter/' + sort_field + '/' + customer_id + '/' + prod_line_ids + '/' + sku_id + '/' + 
                   date_range_start + '/' + date_range_end + '/' + currentPage + '/' + pageSize, {method: 'GET'})
       .then(data => data.json())

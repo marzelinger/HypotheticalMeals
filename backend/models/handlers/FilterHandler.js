@@ -224,6 +224,7 @@ class FilterHandler{
                                                      await SaleRecord.find( {$and: and_query }).skip(currentPage*pageSize)
                                                         .limit(pageSize)
                                                         .sort(sort_field).collation({locale: "en_US", numericOrdering: true});
+            console.log("THESE ARE RESULTS: "+JSON.stringify(results));
             return res.json({ success: true, data: results});
         }
         catch (err) {
