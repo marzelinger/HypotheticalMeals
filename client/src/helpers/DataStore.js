@@ -135,4 +135,11 @@ export default class DataStore{
         item_property_labels: ['Activity SKU', 'Duration', 'Add to Schedule']
       };
     }
+
+    static getSkuSaleReportData() {
+      return {
+        item_properties: ['year', 'week', 'cust_name', 'cust_num', 'sale', 'ppc', 'revenue'],
+        item_property_labels: ['Year', 'Week', 'Customer Name', 'Customer Number', 'Number of Sales', 'Price per Case', 'Revenue']
+      };
+    }
   }
