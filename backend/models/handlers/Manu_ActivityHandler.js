@@ -136,6 +136,21 @@ class Manu_ActivityHandler{
         }
     }
 
+    static async getManufacturingActivitiesBySKU(req, res){
+        try {
+            var target_sku_id = req.params.sku_id;
+            let to_return = await Manu_Activity.find({ sku : target_sku_id}).populate('sku').populate('manu_line').populate({
+                path: 'sku',
+                populate: { path: 'ingredients' }
+              });
+
+            if(to_return.length == 0) return res.json({success: false, error: '404'});
+            return res.json({ success: true, data: to_return});
+        } catch (err){
+            return res.json({ success: false, error: err});
+        }
+    }
+
     static async getManufacturingActivitiesForReport(req, res){
         try{
             console.log("here in the submitrequest for back report");

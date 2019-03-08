@@ -13,6 +13,8 @@ import {
 import SubmitRequest from '../../helpers/SubmitRequest';
 import CustomerSelectSalesReport from './CustomerSelectSalesReport'
 import ItemSearchInput from '../ListPage/ItemSearchInput'
+import Calculations from './Calculations'
+
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
@@ -25,7 +27,8 @@ export default class SkuDrilldown extends React.Component {
             customer: {},
             dateRange: { 'startdate': null, 'enddate': null},
             new_data: false,
-            invalid_inputs: []
+            invalid_inputs: [],
+            totalRowData: {}
         }
 
         this.onSelectSku = this.onSelectSku.bind(this);
@@ -38,7 +41,22 @@ export default class SkuDrilldown extends React.Component {
             var cust_str = (this.state.customer._id === undefined) ? '_' : this.state.customer._id;
             let datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', cust_str, '_', this.state.sku._id, 
                                 this.state.dateRange['startdate'], this.state.dateRange['enddate'], '_', 0, 0)
+            
             console.log(datares)
+            if(datares.success){
+                await this.getTotalRowData(datares.data);
+            }
+        }
+    }
+
+    async getTotalRowData(records){
+        var recordsCalcs = Calculations.getSalesTotals(records);
+        if(recordsCalcs != undefined){
+            var total_data = Calculations.calcTotalData(this.state.sku, recordsCalcs.revenue, recordsCalcs.sales, recordsCalcs.avg_rev_per_case);
+            await this.setState({
+                totalRowData : total_data
+            });
+
         }
     }
 

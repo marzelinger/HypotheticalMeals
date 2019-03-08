@@ -45,13 +45,18 @@ export default class CustomerSelectSalesReport extends React.Component {
         if (this.state.customer !== null && this.state.customer !== '') {
             res = await SubmitRequest.submitGetCustomerByID(this.state.customer._id);
             console.log(res);
-            if (res === undefined || !res.success) res.data[0] = {};
+            if (res === undefined || !res.success) {
+                await this.setState({ customer: '' });
+            }
+            else{
+                await this.setState({ customer: res.data[0] });
+            }
         }
         else {
             res.data = {}
             res.data[0] = {}
+            await this.setState({ customer: res.data[0] });
         }
-        this.setState({ customer: res.data[0] });
     }
 
 
