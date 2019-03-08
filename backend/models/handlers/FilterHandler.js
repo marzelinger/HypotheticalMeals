@@ -211,9 +211,35 @@ class FilterHandler{
             if (range_start !== undefined && range_start !== "_" && range_end !== undefined && range_end !== "_"){
                 let start_date = new moment(range_start)
                 let end_date = new moment(range_end)
-                and_query.push({ "date.year" : { $lte: end_date.year(), $gte: start_date.year() } })
-                and_query.push({ "date.week" : { $lte: end_date.week(), $gte: start_date.week() } })
+                let start_week = (start_date.month() === 11 && start_date.week() === 1) ? 52 : start_date.week()
+                let end_week = (end_date.month() === 11 && end_date.week() === 1) ? 52 : end_date.week()
+                if (end_date.year() === start_date.year()) {
+                    and_query.push({ "date.year" : { $lte: end_date.year(), $gte: start_date.year() } })
+                    and_query.push({ "date.week" : { $lte: end_week, $gte: start_week } })
+                }
+                else if (end_date.year() > start_date.year()) {
+                    let or_query = []
+                    or_query.push({ "date.year" : { $lt: end_date.year(), $gt: start_date.year() } })
+                    or_query.push({
+                        $and : [
+                            { "date.year" : end_date.year() },
+                            { "date.week" : { $lte: end_week } }
+                        ]
+                    })
+                    or_query.push({
+                        $and : [
+                            { "date.year" : start_date.year() },
+                            { "date.week" : { $gte: start_week } }
+                        ]
+                    })
+                    console.log(or_query)
+                    and_query.push({ $or : or_query })
+                }
+                else {
+                    throw 'Invalid Date Range'
+                }
             }
+            console.log(and_query)
             var sort_field = req.params.sort_field;
             var currentPage = Number(req.params.currentPage);
             var pageSize = Number(req.params.pageSize);

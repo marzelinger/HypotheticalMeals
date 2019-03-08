@@ -7,12 +7,14 @@ import {
     Button,
     Input,
     FormGroup,
-    Row,
-    Col,
+    Table,
     Label } from 'reactstrap';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import CustomerSelectSalesReport from './CustomerSelectSalesReport'
 import ItemSearchInput from '../ListPage/ItemSearchInput'
+import DataStore from '../../helpers/DataStore';
+import CanvasJSReact from '../../assets/canvasjs.react';
+var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
@@ -20,11 +22,25 @@ export default class SkuDrilldown extends React.Component {
     constructor(props) {
         super(props);
 
+        let {
+            item_properties, 
+            item_property_labels} = DataStore.getSkuSaleReportData();
+        
+        let today = new Date()
+        let last_year = new Date()
+        last_year.setFullYear(today.getFullYear() - 1 )
+
         this.state = {
+            today: today.toISOString().substr(0,10),
+            last_year: last_year.toISOString().substr(0,10),
             sku: {},
             customer: {},
-            dateRange: { 'startdate': null, 'enddate': null},
+            dateRange: { 'startdate': last_year.toISOString().substr(0,10), 'enddate': today.toISOString().substr(0,10)},
             new_data: false,
+            data: [],
+            dataPoints: [],
+            item_properties,
+            item_property_labels,
             invalid_inputs: []
         }
 
@@ -37,9 +53,62 @@ export default class SkuDrilldown extends React.Component {
              this.state.dateRange['enddate'] !== null && this.state.new_data){
             var cust_str = (this.state.customer._id === undefined) ? '_' : this.state.customer._id;
             let datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', cust_str, '_', this.state.sku._id, 
-                                this.state.dateRange['startdate'], this.state.dateRange['enddate'], '_', 0, 0)
-            console.log(datares)
+                                this.state.dateRange['startdate'], this.state.dateRange['enddate'], 0, 0)
+            console.log(datares.data)
+            let newDataPoints = await this.processDataPoints(datares);
+            await this.setState({ 
+                data: datares.data,
+                dataPoints: newDataPoints,
+                new_data: false
+            })
+            // this.chart.options.data[0].dataPoints = dataPoints
+            this.chart.render()
         }
+    }
+
+    getPropertyLabel = (prop) => {
+        return this.state.item_property_labels[this.state.item_properties.indexOf(prop)];
+    }
+
+    async processDataPoints(datares) {
+        let dataPoints = [];
+        await datares.data.map(rec => {
+            let key = 'Wk ' + rec.date.week + ' ' + rec.date.year;
+            let rev = 0;
+            let ind = dataPoints.findIndex(r => r.label === key);
+            if (ind !== -1) {
+                rev = dataPoints[ind].y;
+                dataPoints.splice(ind, 1);
+            }
+            rev += parseInt(rec.sales) * parseFloat(rec.ppc);
+            dataPoints.push({ label: key, y: rev });
+        });
+        console.log(dataPoints);
+        let cnt = dataPoints[0].label.match('Wk ([0-9]{1,2}) ([0-9]{4})');
+        let wk_cnt = parseInt(cnt[1]);
+        let yr_cnt = parseInt(cnt[2]);
+        var newDataPoints = [];
+        for (var i = 0; i < dataPoints.length - 1; i++) {
+            newDataPoints.push(dataPoints[i]);
+            if (wk_cnt === 52) {
+                wk_cnt = 1;
+                yr_cnt += 1;
+            }
+            else
+                wk_cnt++;
+            while (dataPoints[i + 1].label !== 'Wk ' + wk_cnt + ' ' + yr_cnt) {
+                newDataPoints.push({ label: 'Wk ' + wk_cnt + ' ' + yr_cnt, y: 0 });
+                if (wk_cnt === 52) {
+                    wk_cnt = 1;
+                    yr_cnt += 1;
+                }
+                else
+                    wk_cnt++;
+            }
+        }
+        newDataPoints.push(dataPoints[dataPoints.length - 1]);
+        console.log(newDataPoints);
+        return newDataPoints;
     }
 
     async onSelectSku(sku) {
@@ -72,10 +141,62 @@ export default class SkuDrilldown extends React.Component {
         console.log(newRange)
     }
 
+    getOptions() {
+        let options = {
+            animationEnabled: true,
+            title: {
+                text: this.state.sku.name + ' Sales Report'
+            },
+            data: [{				
+                type: "line",
+                dataPoints: this.state.dataPoints
+             }]
+        }
+        console.log(options)
+        return options
+    }
+
+    injectTable() {
+        return this.state.data.map( rec => {
+            let rec_return = this.state.item_properties.map( prop => {
+                if (prop === 'year' || prop === 'week') {
+                    var prop_return = rec.date[prop]
+                }
+                else if (prop === 'revenue') {
+                    var prop_return =  parseInt(rec.sales) * parseFloat(rec.ppc)
+                }
+                else {
+                    var prop_return =  rec[prop]
+                }
+                return (<td>{prop_return}</td>)
+            })
+            return (<tr>{rec_return}</tr>)
+        })
+    }
+
+    injectReportPreview() {
+        return (
+            <div className='report-container'>
+                <Table>
+                    <thead>
+                        <tr>
+                            {this.state.item_property_labels.map(lab => <th>{lab}</th>)}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {this.injectTable()}
+                    </tbody>
+                </Table> 
+                <CanvasJSChart options = {this.getOptions()}
+                    onRef = {ref => this.chart = ref}
+                />
+            </div>)
+    }
+
     render() {
         return (
-        <div className='item-details'>
-            <div className='item-properties'>
+        <div className='sku-drilldown'>
+            <div className='filter-container'>
                 <CustomerSelectSalesReport
                     item = {this.state.customer}
                     handleSelectCustomer = {this.onSelectCustomer}
@@ -93,19 +214,20 @@ export default class SkuDrilldown extends React.Component {
                         type="date"
                         name="date"
                         id="startdate"
+                        defaultValue={this.state.last_year}
                         onChange = {(e) => this.onInputChange(e, 'startdate')}
-                        // placeholder="date placeholder"
                     />
                     <Label for="enddate">End Date</Label>
                     <Input
                         type="date"
                         name="date"
                         id="enddate"
+                        defaultValue={this.state.today}
                         onChange = {(e) => this.onInputChange(e, 'enddate')}
-                        // placeholder="date placeholder"
                     />
                 </FormGroup>
             </div>
+            {this.state.data.length > 0 ? this.injectReportPreview() : null}
         </div>
         );
     }
@@ -114,4 +236,4 @@ export default class SkuDrilldown extends React.Component {
 SkuDrilldown.propTypes = {
     customer: PropTypes.object,
     handleSelectCustomer: PropTypes.func
-  };
+};
