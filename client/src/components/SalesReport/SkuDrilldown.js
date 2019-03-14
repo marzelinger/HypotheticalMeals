@@ -8,7 +8,8 @@ import {
     Input,
     FormGroup,
     Table,
-    Label } from 'reactstrap';
+    Label,
+    Alert } from 'reactstrap';
 // import { 
 //         Table,
 //         TableHeader,
@@ -50,7 +51,8 @@ export default class SkuDrilldown extends React.Component {
             item_properties,
             item_property_labels,
             invalid_inputs: [],
-            page_name: 'salesReport_sku'
+            page_name: 'salesReport_sku',
+            message: (<Alert color='primary'>Please Select a SKU</Alert>)
         }
 
         this.onSelectSku = this.onSelectSku.bind(this);
@@ -64,14 +66,16 @@ export default class SkuDrilldown extends React.Component {
             let datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', cust_str, '_', this.state.sku._id, 
                                 this.state.dateRange['startdate'], this.state.dateRange['enddate'], 0, 0)
             console.log(datares.data)
-            let newDataPoints = await this.processDataPoints(datares);
+            let newDataPoints = (datares.data.length > 0) ? await this.processDataPoints(datares) : []
+            let newMessage = (datares.data.length > 0) ? (<Alert color='primary'>Please Select a SKU</Alert>) : 
+                                                         (<Alert color='secondary'>No Results...</Alert>)
             await this.setState({ 
                 data: datares.data,
                 dataPoints: newDataPoints,
-                new_data: false
+                message: newMessage,
+                new_data: false,
             })
-            // this.chart.options.data[0].dataPoints = dataPoints
-            this.chart.render()
+            if (datares.data.length > 0) this.chart.render()
         }
     }
 
@@ -131,7 +135,7 @@ export default class SkuDrilldown extends React.Component {
 
     async onSelectCustomer(customer) {
         console.log(customer)
-        let custres = await SubmitRequest.submitGetCustomerByID(customer._id)
+        let custres = customer._id !== undefined ? await SubmitRequest.submitGetCustomerByID(customer._id) : {data: [{}]}
         console.log(custres.data[0])
         this.setState({
             customer: custres.data[0],
@@ -186,19 +190,25 @@ export default class SkuDrilldown extends React.Component {
     injectReportPreview() {
         return (
             <div className='report-container'>
-                <Table>
-                    <thead>
-                        <tr>
-                            {this.state.item_property_labels.map(lab => <th>{lab}</th>)}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {this.injectTable()}
-                    </tbody>
-                </Table> 
+                <div class="table-wrapper-scroll-y my-custom-scrollbar">
+                    <Table>
+                        <thead>
+                            <tr>
+                                {this.state.item_property_labels.map(lab => <th>{lab}</th>)}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.injectTable()}
+                        </tbody>
+                    </Table> 
+                </div>
                 <CanvasJSChart options = {this.getOptions()}
                     onRef = {ref => this.chart = ref}
                 />
+                <ExportSimple 
+                    data = {this.state.data} 
+                    fileTitle = {this.state.page_name}
+                /> 
             </div>)
     }
 
@@ -226,6 +236,8 @@ export default class SkuDrilldown extends React.Component {
                         defaultValue={this.state.last_year}
                         onChange = {(e) => this.onInputChange(e, 'startdate')}
                     />
+                <FormGroup>
+                </FormGroup>
                     <Label for="enddate">End Date</Label>
                     <Input
                         type="date"
@@ -236,11 +248,7 @@ export default class SkuDrilldown extends React.Component {
                     />
                 </FormGroup>
             </div>
-            {this.state.data.length > 0 ? this.injectReportPreview() : null}
-            <ExportSimple 
-                data = {this.state.data} 
-                fileTitle = {this.state.page_name}
-            /> 
+            {this.state.data.length > 0 ? this.injectReportPreview() : this.state.message}
         </div>
         );
     }

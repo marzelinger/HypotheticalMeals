@@ -64,6 +64,8 @@ export default class CustomerSelectSalesReport extends React.Component {
     }
 
     onSelectAllCustomers = () => {
+        console.log(this.state.customer)
+        this.props.handleSelectCustomer(this.state.allCustomers ? this.state.customer : {});
         this.setState({
             allCustomers: !this.state.allCustomers
         })
