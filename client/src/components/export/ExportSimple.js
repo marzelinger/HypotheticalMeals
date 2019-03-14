@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import Constants from '../../resources/Constants'
 
-import { exportSKUS, exportIngredients, exportProdLines, exportCalculator, exportFormulas } from "../../actions/exportActions";
+import { exportSKUS, exportIngredients, exportProdLines, exportCalculator, exportFormulas, exportSalesReport } from "../../actions/exportActions";
 class ExportSimple extends Component {
 
   constructor() {
@@ -36,6 +37,9 @@ class ExportSimple extends Component {
         break;
       case ("formulas"):
         exportFormulas(this.props.data, this.props.fileTitle);
+        break;
+      case ("salesReport_sku"):
+        exportSalesReport(this.props.data, this.props.fileTitle);
         break;
     }
 
