@@ -9,14 +9,21 @@ import {
     FormGroup,
     Table,
     Label } from 'reactstrap';
+// import { 
+//         Table,
+//         TableHeader,
+//         TableRow,
+//         TableRowColumn,
+//         TableBody,
+//         TableHeaderColumn } from 'material-ui/Table';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import CustomerSelectSalesReport from './CustomerSelectSalesReport'
 import ItemSearchInput from '../ListPage/ItemSearchInput'
 import DataStore from '../../helpers/DataStore';
 import CanvasJSReact from '../../assets/canvasjs.react';
+import ExportSimple from '../export/ExportSimple'
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
 export default class SkuDrilldown extends React.Component {
     constructor(props) {
@@ -27,8 +34,9 @@ export default class SkuDrilldown extends React.Component {
             item_property_labels} = DataStore.getSkuSaleReportData();
         
         let today = new Date()
-        let last_year = new Date()
-        last_year.setFullYear(today.getFullYear() - 1 )
+        today.setTime(today.getTime() - 300*60*1000)
+        let last_year = new Date(today.getTime() - 300*60*1000)
+        last_year.setFullYear(today.getFullYear() - 1)
 
         this.state = {
             today: today.toISOString().substr(0,10),
@@ -41,7 +49,8 @@ export default class SkuDrilldown extends React.Component {
             dataPoints: [],
             item_properties,
             item_property_labels,
-            invalid_inputs: []
+            invalid_inputs: [],
+            page_name: 'salesReport_sku'
         }
 
         this.onSelectSku = this.onSelectSku.bind(this);
@@ -228,6 +237,10 @@ export default class SkuDrilldown extends React.Component {
                 </FormGroup>
             </div>
             {this.state.data.length > 0 ? this.injectReportPreview() : null}
+            <ExportSimple 
+                data = {this.state.data} 
+                fileTitle = {this.state.page_name}
+            /> 
         </div>
         );
     }

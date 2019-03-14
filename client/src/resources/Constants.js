@@ -28,6 +28,7 @@ export const prod_line_page_name = 'products';
 export const manu_activity_page_name = 'manuactivities';
 export const formulas_page_name = 'formulas';
 export const customers_page_name = 'customers';
+export const sku_drilldown_page_name = 'customers_sku';
 
 export const options = 'Options'
 export const keyword_label = "Keyword"

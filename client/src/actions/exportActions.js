@@ -1,3 +1,4 @@
+import DataStore from '../helpers/DataStore'
 var fileDownload = require('js-file-download');
 
 export const exportSKUS = (dataIN, fileTitle)  => {
@@ -511,3 +512,33 @@ export const exportImportReport = (added_items, updated_items, ignored_items, fi
         fileDownload(csvContent, fileTitle+'.csv');
 }
 
+export const exportSalesReport = (dataIN, fileTitle) => {
+    console.log('yo')
+    var count = dataIN.length;
+    const rows = [];
+    var label = [];
+    let { item_properties, item_property_labels } = DataStore.getSkuSaleReportData()
+    label.push(item_property_labels);
+    rows.push(label);
+    for(let i = 0; i<count ; i++){
+        var curData = dataIN[i];
+        var dataLine = [];
+        for (let j = 0; j < item_properties.length; j++) {
+            if (item_properties[j] === 'year' || item_properties[j] === 'week'){
+                dataLine.push(curData['date'][item_properties[j]])
+            }
+            else if (item_properties[j] === 'revenue') {
+                dataLine.push(parseInt(curData.sales) * parseFloat(curData.ppc))
+            }
+            else dataLine.push(curData[item_properties[j]])
+        }
+        rows.push(dataLine);
+    }    
+    let csvContent = "";
+    rows.forEach(function(rowArray){
+        let row = rowArray.join(",");
+        csvContent += row + "\r\n";
+     }); 
+    fileDownload(csvContent, fileTitle+'.csv');
+
+}

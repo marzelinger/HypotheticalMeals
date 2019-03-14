@@ -7,6 +7,7 @@ import Tab from '@material-ui/core/Tab';
 import GeneralNavBar from '../GeneralNavBar';
 import CustomerSelectSalesReport from './CustomerSelectSalesReport';
 import SkuDrilldown from './SkuDrilldown'
+import '../../style/SalesReportPageStyle.css'
 
 class SalesReportPage extends React.Component {
     state = {
