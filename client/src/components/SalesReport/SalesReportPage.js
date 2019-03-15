@@ -5,16 +5,30 @@ import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import GeneralNavBar from '../GeneralNavBar';
+import CustomerSelectSalesReport from './CustomerSelectSalesReport';
+import SkuDrilldown from './SkuDrilldown'
+import '../../style/SalesReportPageStyle.css'
 
-class SummaryPage extends React.Component {
+class SalesReportPage extends React.Component {
     state = {
         value: 0,
+        customer: {},
+        allCustomers: false,
     };
 
     handleChange = (event, value) => {
         console.log(value)
         this.setState({ value });
     };
+
+    onHandleSelectCustomer = (value) => {
+        var isAll = value.selectAll;
+        var customer = value.customer;
+        this.setState({
+            customer: customer,
+            allCustomers: isAll
+        });
+    }
 
     render() {
         // const { classes } = this.props;
@@ -33,9 +47,10 @@ class SummaryPage extends React.Component {
                     >
                         <Tab label="General Report" />
                         <Tab label="SKU Report" />
+                        
                     </Tabs>
                 </Paper>
-                {this.state.value ? null : null } {/* first is General, Second is SKU */}
+                {this.state.value === 0 ? null : <SkuDrilldown/> } {/* first is General, Second is SKU */}
             </div>
         );
   }
@@ -47,8 +62,8 @@ const styles = {
     },
 };
 
-SummaryPage.propTypes = {
+SalesReportPage.propTypes = {
     // classes: PropTypes.object.isRequired,
 };
 
-export default SummaryPage; //withStyles(styles)(
+export default SalesReportPage; //withStyles(styles)(

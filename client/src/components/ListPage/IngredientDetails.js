@@ -29,7 +29,7 @@ export default class IngredientDetails extends React.Component {
             item_property_field_type } = DataStore.getIngredientData();
 
         this.state = {
-            item: props.item,
+            item: Object.assign({}, props.item),
             item_properties,
             item_property_labels,
             item_property_patterns,

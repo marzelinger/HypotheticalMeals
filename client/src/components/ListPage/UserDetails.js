@@ -152,7 +152,7 @@ export default class UserDetails extends React.Component {
                         className = "detailButtons"
                         key={opt} 
                         onClick={(e) => this.handleSubmit(e, opt)}
-                        disabled = {this.state.item.username ==="admin" && opt === Constants.details_delete}
+                        disabled = {(this.state.item.username ==="admin" && opt === Constants.details_delete) || (this.state.item.isNetIDLogin && opt ===Constants.details_delete) }
                     >{opt}</Button>
                 )}
             </div>
