@@ -1,7 +1,11 @@
 .report-container tr {
-    display: flex;
-    grid-template-columns:  minmax(50px, 1fr) minmax(50px, 1fr) minmax(100px, 2fr) minmax(50px,1fr) minmax(50px,1fr) minmax(50px,1fr) minmax(50px,1fr);
+    grid-template-columns:  minmax(50px, .5fr) minmax(50px, .5fr) minmax(150px, 2fr) minmax(150px,2fr) minmax(150px,2fr) minmax(150px,2fr) minmax(50px,1fr);
     text-align: center;
+}
+
+.report-container td, .report-container th {
+    display: flex;
+    justify-content: center;
 }
 
 .filter-container{

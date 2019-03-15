@@ -110,6 +110,7 @@ export default class SkuDrilldown extends React.Component {
             else
                 wk_cnt++;
             while (dataPoints[i + 1].label !== 'Wk ' + wk_cnt + ' ' + yr_cnt) {
+                console.log('in while')
                 newDataPoints.push({ label: 'Wk ' + wk_cnt + ' ' + yr_cnt, y: 0 });
                 if (wk_cnt === 52) {
                     wk_cnt = 1;

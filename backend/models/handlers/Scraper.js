@@ -5,9 +5,9 @@ export default class ScraperHandler{
 
     static  async scrapeSkuRecords(req, res){
         var target_num = req.params.sku_num;
-        var target_year = req.params.sku_num;
+        var target_year = req.params.year;
         return tabletojson.convertUrl(
-            `http://hypomeals-sales.colab.duke.edu:8080/?sku=${target_num}&year=2019`,
+            `http://hypomeals-sales.colab.duke.edu:8080/?sku=${target_num}&year=${target_year}`,
             function(tablesAsJson) {
                 var data = tablesAsJson[0];
                 var clean_data = data.map((record) => {

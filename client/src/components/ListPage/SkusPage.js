@@ -112,12 +112,30 @@ export default class ListPage extends React.Component {
         }
     }
     
-    async updateRecords() {
-        alert('update sku records')
+    async updateRecords(index) {
+        console.log('update sku records')
         var data = this.state.data;
-        data.forEach((sku) => {
-            SubmitRequest.addSkuRecords(sku.num, 2019)
-        })
+        var sku = data[index];
+        SubmitRequest.addSkuRecords(sku.num, 2019)
+        if(index < data.length  - 1){
+            setTimeout( () => {
+            var next_index = index + 1;
+            this.updateRecords(next_index)
+            }, 2000)
+        }
+    }
+
+    async getAllRecords(index) {
+        // alert('update sku records ')
+        var data = this.state.data;
+        var sku = data[index];
+        console.log('updating sku ' + sku.name);
+        SubmitRequest.addAllSkuRecords(sku.num)
+        if(index < data.length - 1){
+            setTimeout( () => {
+            var next_index = index + 1;
+            this.getAllRecords(next_index)
+        }, 21000)}
     }
 
     async componentDidMount() {
@@ -127,12 +145,12 @@ export default class ListPage extends React.Component {
         if( this.props.default_formula_filter !== undefined){
             await this.onFilterValueSelection([{ value: { _id : this.props.default_formula_filter._id }}], null, 'formula');
         }
-        var now = new Date();
-        var millisTill10 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 14, 42, 0, 0) - now;
-        if (millisTill10 < 0) {
-            millisTill10 += 86400000; // it's after 10am, try 10am tomorrow.
-        }
-        setTimeout(() => this.updateRecords(), millisTill10);
+        // var now = new Date();
+        // var millisTill10 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16, 19, 0, 0) - now;
+        // if (millisTill10 < 0) {
+        //     millisTill10 += 86400000; // it's after 10am, try 10am tomorrow.
+        // }
+        // setTimeout(() => this.updateRecords(), millisTill10);
         this.loadDataFromServer();
     }
 
@@ -450,6 +468,14 @@ export default class ListPage extends React.Component {
                             onClick={() => SubmitRequest.addAllCustomers()}
                             primary={true}
                             > Add Customers </div>
+            <div className = "manugoalbutton hoverable"
+                            onClick={() => this.updateRecords(0)}
+                            primary={true}
+                            > Add Records </div>
+            <div className = "manugoalbutton hoverable"
+                            onClick={() => this.getAllRecords(0)}
+                            primary={true}
+                            > Add All Records </div>
             {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) ? null : 
                             (<div className = "manugoalbutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}

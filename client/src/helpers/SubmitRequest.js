@@ -22,8 +22,19 @@ export default class SubmitRequest{
     })
   }
 
+  // TODO: make this understand time limits
+  static async addAllSkuRecords(sku_num) {
+    for(var index = 0; index <= 20; index ++){
+        let year = 1999 + index;
+        setTimeout( () => {
+        this.addSkuRecords(sku_num, year);
+        }, 1000 * index + 1);
+    }
+    
+  }
+
   static async addSkuRecords(sku_num, year) {
-    console.log(sku_num, year);
+    console.log(sku_num + ':' + year);
     var records = await fetch(`/api/scrape_records/${sku_num}/${year}`, { method: 'GET' })
     .then(data => data.json())
     .then((res) => {
@@ -33,10 +44,10 @@ export default class SubmitRequest{
         data: res.data
       };
     });
-    console.log(records)
+    // console.log(records)
     records.data.forEach(async (record) => {
       var response = await SubmitRequest.submitCreateItem('records', record);
-      console.log(response)
+      // console.log(response)
     })
   }
 
