@@ -168,7 +168,7 @@ export default class SubmitRequest{
   static async submitGetSkusByProductLineID(id) {
     try {
       //console.log("this is the id in request: "+id);
-      return fetch('/api/skus/' + id)
+      return fetch('/api/skus/prodline/' + id)
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error };

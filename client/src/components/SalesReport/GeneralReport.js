@@ -64,24 +64,15 @@ export default class GeneralReport extends React.Component {
         var cust_str = (this.state.customer._id === undefined) ? '_' : this.state.customer._id;
         
         if(this.state.prod_lines.length>0){
-            // console.log("this is the prolength : "+this.state.prod_lines.length);
             for(let pl = 0; pl<this.state.prod_lines.length; pl++){
                 //there are product lines to generate data for.
                 var skus_res = await SubmitRequest.submitGetSkusByProductLineID(this.state.prod_lines[pl]._id);
-                // console.log("these are the SKUS: "+JSON.stringify(skus_res));
                 if(skus_res.success){
                     var skus = skus_res.data;
                     //this will be the data for each sku in this prod line for the ten years
                     //want to then use that to make a table
-                    console.log("this is the skus: "+JSON.stringify(skus));
-                    console.log("this is the customer: "+cust_str);
                     var tenYRSKUsdata = await Calculations.getTenYRSalesData(skus, cust_str);
-                    console.log("this is the tenYRSKUdata: "+JSON.stringify(tenYRSKUsdata));
-                    console.log("this is the prodline in data: "+JSON.stringify(new_ten_yr_data.prodLines));
-
                     new_ten_yr_data.prodLines.push({prod_line: this.state.prod_lines[pl], tenYRSKUdata: tenYRSKUsdata});
-                    console.log("this is ten in data: "+JSON.stringify(new_ten_yr_data.prodLines));
-
                     await this.setState({tenYRdata: new_ten_yr_data});
                     console.log("this is the tenyr: "+JSON.stringify(this.state.tenYRdata));
                 }
@@ -111,7 +102,6 @@ export default class GeneralReport extends React.Component {
     //then for each set of skus for the prodline, put the sku header, the sku rows, the sku total
 
     getSKUTotals = (cur_sku) => {
-        console.log("this is the skuTotal: "+JSON.stringify(cur_sku));
         return ( 
             <div>
                  <TableRow  class= "cols trselect">
@@ -206,9 +196,7 @@ export default class GeneralReport extends React.Component {
 
 
     generalReportTables = () => {
-        console.log("this is the tenYRdata: "+JSON.stringify(this.state.tenYRdata));
         if(this.state.tenYRdata.prodLines!= undefined){
-            console.log("this is the prodLength: "+JSON.stringify(this.state.tenYRdata.prodLines.length));
 
             if (this.state.tenYRdata.prodLines.length>0){
                 return (this.state.tenYRdata.prodLines.map(pl_row => 
@@ -256,7 +244,6 @@ export default class GeneralReport extends React.Component {
             prod_lines: prodlines,
             new_data: true
         })
-        //console.log("this is the prodline selected: "+JSON.stringify(prodlines));
         this.updateReportData();
     }
 
@@ -265,7 +252,6 @@ export default class GeneralReport extends React.Component {
             customer: customer,
             new_data: true
         })
-        //console.log("this is the customer selected: "+JSON.stringify(customer));
         this.updateReportData();
     }
 

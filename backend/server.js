@@ -65,7 +65,7 @@ router.get('/', (req, res) => {
 router.post('/skus', (req, res) => SkuHandler.createSku(req, res));
 router.put('/skus/:sku_id', (req, res) => SkuHandler.updateSkuByID(req, res));
 router.get('/skus', (req, res) => SkuHandler.getAllSkus(req, res));
-router.get('/skus/:prod_line_id', (req, res) => SkuHandler.getSkusByProdLine(req, res));
+router.get('/skus/prodline/:prod_line_id', (req, res) => SkuHandler.getSkusByProdLine(req, res));
 
 router.get('/skus/:sku_id', (req, res) => SkuHandler.getSkuByID(req, res));
 router.get('/skus_num/:sku_num', (req, res) => SkuHandler.getSkusBySkuNumer(req, res));

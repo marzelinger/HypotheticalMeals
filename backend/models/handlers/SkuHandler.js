@@ -165,7 +165,10 @@ class SkuHandler{
             var target_prod = req.params.prod_line_id;
              console.log("this is the targetprod: "+target_prod);
 
-            let to_return = await SKU.find({ prod_line : target_prod });
+            let to_return = await SKU.find({ prod_line : target_prod }).populate('formula').populate({
+                path: 'formula',
+                populate: { path: 'ingredients' }
+              }).populate('prod_line');
              console.log("this is the to_return: "+to_return);
             if(to_return.length == 0) return res.json({ success: false, error: '404'});
             return res.json({ success: true, data: to_return});
