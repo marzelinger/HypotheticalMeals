@@ -40,10 +40,7 @@ export default class GeneralReport extends React.Component {
             invalid_inputs: [],
             new_data: false,
             total_years: 10,
-            // tenYRdata: {}
-            tenYRdata:{
-                prodLines: []
-                }
+            tenYRdata: {}
         }
 
         this.onSelectProductLine = this.onSelectProductLine.bind(this);
@@ -59,14 +56,15 @@ export default class GeneralReport extends React.Component {
         }
     }
 
-    //THIS IS FOR WHEN PRODUCT LINES ARE BEING ADDED.... RIGHT NOW WILL JUST RECALCULATE ALL
     updateReportData = async () => {
-        var new_ten_yr_data = this.state.tenYRdata;
-        new_ten_yr_data.prodLines = await []; //TODO. this might be doing it too slowly.
-         console.log("this is the prodline in data1111: "+JSON.stringify(new_ten_yr_data.prodLines));
+        var new_ten_yr_data = {
+                 prodLines: []
+                 };
+
         var cust_str = (this.state.customer._id === undefined) ? '_' : this.state.customer._id;
+        
         if(this.state.prod_lines.length>0){
-            console.log("this is the prolength : "+this.state.prod_lines.length);
+            // console.log("this is the prolength : "+this.state.prod_lines.length);
             for(let pl = 0; pl<this.state.prod_lines.length; pl++){
                 //there are product lines to generate data for.
                 var skus_res = await SubmitRequest.submitGetSkusByProductLineID(this.state.prod_lines[pl]._id);
@@ -75,7 +73,9 @@ export default class GeneralReport extends React.Component {
                     var skus = skus_res.data;
                     //this will be the data for each sku in this prod line for the ten years
                     //want to then use that to make a table
-                    var {tenYRSKUsdata} = Calculations.getTenYRSalesData(skus, cust_str);
+                    console.log("this is the skus: "+JSON.stringify(skus));
+                    console.log("this is the customer: "+cust_str);
+                    var tenYRSKUsdata = await Calculations.getTenYRSalesData(skus, cust_str);
                     console.log("this is the tenYRSKUdata: "+JSON.stringify(tenYRSKUsdata));
                     console.log("this is the prodline in data: "+JSON.stringify(new_ten_yr_data.prodLines));
 
@@ -109,98 +109,143 @@ export default class GeneralReport extends React.Component {
     //need to go through all prod lines and make a new table for each
     //for each prod line go through and create the header
     //then for each set of skus for the prodline, put the sku header, the sku rows, the sku total
+
+    getSKUTotals = (cur_sku) => {
+        return ( 
+            <div>
+                 <TableRow>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.sum_yearly_rev}
+                                    </TableRowColumn>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.avg_manu_run_size}
+                                    </TableRowColumn>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.ingr_cost_per_case}
+                                    </TableRowColumn>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.avg_manu_setup_cost_per_case}
+                                    </TableRowColumn>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.manu_run_cost_per_case}
+                                    </TableRowColumn>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.total_COGS_per_case}
+                                    </TableRowColumn>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.avg_rev_per_case}
+                                    </TableRowColumn>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.avg_profit_per_case}
+                                    </TableRowColumn>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.profit_marg}
+                                    </TableRowColumn>
+                                </TableRow>
+
+            </div>
+        );
+
+    }
+
+    getSKUTable = (cur_sku) => {
+        return (
+            <div>
+                {cur_sku.skuData.map((skuData, ind) =>
+                                    // need to show the val in the sku data here.
+                                    //here we have the yr, sales data, and the sku# stuff
+                                    <TableRow>
+                                        <TableRowColumn onClick={e => this.handleSelect(e, skuData)}>
+                                            {cur_sku.skuData[ind].yr}
+                                        </TableRowColumn>
+                                        <TableRowColumn onClick={e => this.handleSelect(e, skuData)}>
+                                        {cur_sku.sku._id}
+                                        </TableRowColumn>
+                                        <TableRowColumn onClick={e => this.handleSelect(e, skuData)}>
+                                        {cur_sku.skuData[ind].salesData.revenue}
+                                        </TableRowColumn>
+                                        <TableRowColumn onClick={e => this.handleSelect(e, skuData)}>
+                                        {cur_sku.skuData[ind].salesData.avg_rev_per_case}
+                                        </TableRowColumn>
+                                    </TableRow>
+                                )} 
+
+            </div>
+
+        );
+
+    }
+
+    prodLineHeader = (pl_row) => {
+        return (
+            <TableRow class= "cols trselect">
+                <TableHeaderColumn>Product Line: {pl_row.prod_line.name}</TableHeaderColumn>
+            </TableRow>
+
+        );
+    }
+
+    skuLabelHeader = (index) => {
+        return (
+            <TableRow class= "cols trselect" selectable = {false} >
+                {this.state.sku_yr_table_properties.map(prop => 
+                    <TableHeaderColumn>{prop+"  "+index}</TableHeaderColumn>
+                )}
+            </TableRow>
+        );
+    }
+    skuTotalsHeader = () => {
+        return (
+                <TableRow className = "cols" selectable = {false} >
+                    {this.state.sku_totals_properties.map(prop => 
+                        <TableHeaderColumn>{prop}</TableHeaderColumn>
+                    )}
+                </TableRow>
+        );
+    }
+
+
     generalReportTables = () => {
-        //console.log("this is the tenYRdata: "+JSON.stringify(this.state.tenYRdata));
-        //console.log("this is the prodLength: "+JSON.stringify(this.state.tenYRdata.prodLines.length));
+        console.log("this is the tenYRdata: "+JSON.stringify(this.state.tenYRdata));
+        if(this.state.tenYRdata.prodLines!= undefined){
+            console.log("this is the prodLength: "+JSON.stringify(this.state.tenYRdata.prodLines.length));
 
-        if (this.state.tenYRdata.prodLines.length>0){
-            return (this.state.tenYRdata.prodLines.map(pl_row => 
-                <Table
-                   height={'413px'}
-                //   fixedHeader={true}
-                //   fixedFooter={this.state.fixedFooter}
-                //   selectable={this.state.selectable}
-                //   multiSelectable={this.state.multiSelectable}
-                //   onRowSelection = {(res) => this.handleRowSelect(res)}
->
-                    <TableHeader>
-                        <TableRow >
-                            <TableHeaderColumn>Product Line: {pl_row.prod_line.name}</TableHeaderColumn>
-                        </TableRow>
-                    </TableHeader>
-                    {/* {pl_row.tenYRSKUdata.skus.map(cur_sku =>
-                        <div>
-                        <TableHeader>
-                            <TableRow className = "cols" selectable = {false} >
-                                {this.state.sku_yr_table_properties.map(prop => 
-                                    <TableHeaderColumn>{prop}</TableHeaderColumn>
+            if (this.state.tenYRdata.prodLines.length>0){
+                return (this.state.tenYRdata.prodLines.map(pl_row => 
+                    <div className = 'prod-line-table'>
+                        <h5>Product Line: {pl_row.prod_line.name}</h5>
+
+                            {pl_row.tenYRSKUdata.skus.map((cur_sku,index) =>
+                                <div>
+                                <Table
+                                height={'413px'}>
+                            {/* <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+                                {this.prodLineHeader(pl_row)}
+                            </TableHeader> */}
+                                <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+                                    {this.skuLabelHeader(index)}
+                                </TableHeader>
+                                <TableBody displayRowCheckbox = {false} stripedRows={this.state.stripedRows}>
+                                    <TableRow class= "cols trselect">
+                                        {index}
+                                    </TableRow>
+                                    {/*this.getSKUTable(cur_sku)*/}
+                                </TableBody>
+                                <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+                                {this.skuTotalsHeader()}
+                                </TableHeader>
+                                <TableBody>
+                                    {//this.getSKUTotals(cur_sku)
+                                    }
+                                </TableBody>
+                                </Table>
+
+                                    </div>
+
                                 )}
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody stripedRows={this.state.stripedRows}>
-
-                            {cur_sku.skuData.map((skuData, ind) =>
-                                // need to show the val in the sku data here.
-                                //here we have the yr, sales data, and the sku# stuff
-                                <TableRow>
-                                    <TableRowColumn onClick={e => this.handleSelect(e, skuData)}>
-                                        {cur_sku.skuData[ind].yr}
-                                    </TableRowColumn>
-                                    <TableRowColumn onClick={e => this.handleSelect(e, skuData)}>
-                                    {cur_sku.sku._id}
-                                    </TableRowColumn>
-                                    <TableRowColumn onClick={e => this.handleSelect(e, skuData)}>
-                                    {cur_sku.skuData[ind].salesData.revenue}
-                                    </TableRowColumn>
-                                    <TableRowColumn onClick={e => this.handleSelect(e, skuData)}>
-                                    {cur_sku.skuData[ind].salesData.avg_rev_per_case}
-                                    </TableRowColumn>
-                                </TableRow>
-                            )}
-                            </TableBody>
-                            <TableHeader>
-                                <TableRow className = "cols" selectable = {false} >
-                                    {this.state.sku_totals_properties.map(prop => 
-                                        <TableHeaderColumn>{prop}</TableHeaderColumn>
-                                    )}
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                            <TableRow>
-                                <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
-                                    {cur_sku.totalData.sum_yearly_rev}
-                                </TableRowColumn>
-                                <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
-                                    {cur_sku.totalData.avg_manu_run_size}
-                                </TableRowColumn>
-                                <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
-                                    {cur_sku.totalData.ingr_cost_per_case}
-                                </TableRowColumn>
-                                <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
-                                    {cur_sku.totalData.avg_manu_setup_cost_per_case}
-                                </TableRowColumn>
-                                <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
-                                    {cur_sku.totalData.manu_run_cost_per_case}
-                                </TableRowColumn>
-                                <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
-                                    {cur_sku.totalData.total_COGS_per_case}
-                                </TableRowColumn>
-                                <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
-                                    {cur_sku.totalData.avg_rev_per_case}
-                                </TableRowColumn>
-                                <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
-                                    {cur_sku.totalData.avg_profit_per_case}
-                                </TableRowColumn>
-                                <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
-                                    {cur_sku.totalData.profit_marg}
-                                </TableRowColumn>
-                             </TableRow>
-                        </TableBody>
-                        </div>
-                        )} */}
-
-                </Table>
+                    </div>
                 ));
+            }
         }
         return;
     }
@@ -244,8 +289,6 @@ export default class GeneralReport extends React.Component {
                 </div>
                 <h3>General Sales Report Summary</h3>
                 {this.generalReportTables()}
-
-
             </div>
         </div>
         );

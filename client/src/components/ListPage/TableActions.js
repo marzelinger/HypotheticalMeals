@@ -12,12 +12,10 @@ const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 export default class TableActions extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props)
     this.state = {
       simple: props.simple,
       page_name: this.props.page_name
     };
-    console.log("this is the tableactions props: "+JSON.stringify(this.props));
   }
 
   render() {

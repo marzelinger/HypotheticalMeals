@@ -49,7 +49,7 @@ export default class SkuDrilldown extends React.Component {
             dateRange: { 'startdate': last_year.toISOString().substr(0,10), 'enddate': today.toISOString().substr(0,10)},
             new_data: false,
             invalid_inputs: [],
-            totalRowData: {}
+            totalRowData: {},
             data: [],
             dataPoints: [],
             item_properties,

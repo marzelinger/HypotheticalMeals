@@ -95,17 +95,17 @@ export default class ProductLineSelectSalesReport extends React.Component {
     async loadDataFromServer() {
         var final_keyword_filter = this.state.filters['keyword'];
         //Check how the filter state is being set   
-        console.log("loading data from the server. substring: "+final_keyword_filter);  
+        // console.log("loading data from the server. substring: "+final_keyword_filter);  
         if(final_keyword_filter != ''){
             var resALL = await SubmitRequest.submitGetProductLinesByNameSubstring(final_keyword_filter, 0, 0);
-            console.log("loading resALL: "+JSON.stringify(resALL));  
+            // console.log("loading resALL: "+JSON.stringify(resALL));  
             await this.checkCurrentPageInBounds(resALL);  
             var res = await SubmitRequest.submitGetProductLinesByNameSubstring(final_keyword_filter, this.state.currentPage, this.state.pageSize);
             
         }
         else{
             var resALL = await SubmitRequest.submitGetDataPaginated(Constants.prod_line_page_name, 0, 0);
-            console.log("loading in the general get: "+JSON.stringify(resALL));  
+            // console.log("loading in the general get: "+JSON.stringify(resALL));  
     
             await this.checkCurrentPageInBounds(resALL);  
             var res = await SubmitRequest.submitGetDataPaginated(Constants.prod_line_page_name, this.state.currentPage, this.state.pageSize);
@@ -175,7 +175,7 @@ export default class ProductLineSelectSalesReport extends React.Component {
     }
 
     onFilterValueChange = (e, value, filterType) => {
-        console.log(this.state.filters)
+        // console.log(this.state.filters)
         var filters = this.state.filters;
         if(filterType == 'keyword'){
             filters[filterType] = value;
@@ -223,21 +223,21 @@ export default class ProductLineSelectSalesReport extends React.Component {
                 indexes.push(i);
             }
             await this.setState({selected_items: this.state.data, selected_indexes: indexes});
-            console.log("this is the selected prodlines2: "+JSON.stringify(this.state.selected_items));
+            // console.log("this is the selected prodlines2: "+JSON.stringify(this.state.selected_items));
             this.props.handleSelectProdLines(this.state.selected_items);
             return;
         }
         else if(rowIndexes == 'none'){
             rowIndexes = [];
         }
-        console.log(rowIndexes);
+        // console.log(rowIndexes);
         var newState = [];
         rowIndexes.forEach( index => {
             newState.push(this.state.data[index]);
         });
         await this.setState({ selected_items: newState, selected_indexes: rowIndexes});
         this.props.handleSelectProdLines(this.state.selected_items);
-        console.log("this is the selected prodlines: "+JSON.stringify(this.state.selected_items));
+        // console.log("this is the selected prodlines: "+JSON.stringify(this.state.selected_items));
     };
 
 

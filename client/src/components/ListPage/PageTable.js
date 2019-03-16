@@ -84,7 +84,6 @@ export default class PageTable extends Component {
   }
 
   getDetailsCol = () => {
-    console.log("this is the show details state; "+this.state.showDetails);
     {if(this.state.showDetails){
       return (<TableHeaderColumn> {this.props.simple? 'Details' : 'See More Details'} </TableHeaderColumn>);
       }

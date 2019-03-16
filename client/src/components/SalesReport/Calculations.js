@@ -26,6 +26,7 @@ export default class Calculations{
     //sales = #cases sold
     //price = price per case
     static async getTenYRSalesData(skus, cust_str){
+        console.log("in calcs: skus are: "+JSON.stringify(skus));
         let tenYRSKUsdata = {
             skus: []
         }
@@ -37,21 +38,27 @@ export default class Calculations{
                 var cur_ten_yr_sales = 0;
                 var cur_ten_yr_avg_case = 0;
                 for(let yr = 0; yr<dateRanges.length; yr++){
+                    console.log("in calcs: yr: "+JSON.stringify(yr));
+
                     let datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', cust_str, '_', skus[s]._id, 
                     dateRanges[yr]['startdate'], dateRanges[yr]['enddate'], 0, 0);
                     if(datares.success){
                         console.log("this is the dateres: "+JSON.stringify(datares));
                         var curRowData = await this.getSalesTotals(datares.data);
-                        console.log("this is the curRowData: "+JSON.stringify(curRowData));
                         cur_ten_yr_rev += curRowData.revenue;
                         cur_ten_yr_sales += curRowData.sales;
                         cur_ten_yr_avg_case += curRowData.avg_rev_per_case;
-                        curSkuData.push({ yr: yr, salesData: curRowData });
+                        await curSkuData.push({ yr: yr, salesData: curRowData });
+                        console.log("this is the curSKUDATA: "+JSON.stringify(curSkuData));
+
                     }
 
                 }
                 cur_ten_yr_avg_case = cur_ten_yr_avg_case/10;
-                var {skuTotalData} = this.calcTotalData(skus[s], cur_ten_yr_rev, cur_ten_yr_sales, cur_ten_yr_avg_case);
+                //var {skuTotalData} = await this.calcTotalData(skus[s], cur_ten_yr_rev, cur_ten_yr_sales, cur_ten_yr_avg_case);
+                var skuTotalData = {};
+                console.log("cur skuTotal : "+ JSON.stringify(skuTotalData));
+
                 tenYRSKUsdata.skus.push({sku: skus[s], skuData: curSkuData, totalData: skuTotalData});
 
                 console.log("cur ten yr: "+ JSON.stringify(tenYRSKUsdata));
@@ -83,11 +90,11 @@ export default class Calculations{
         return {cur_ten_yr_rev: cur_ten_yr_rev, cur_ten_yr_sales: cur_ten_yr_sales, cur_ten_yr_avg_case : cur_ten_yr_avg_case};
     }
 
-    static getSalesTotals(records) {
+    static async getSalesTotals(records) {
         var total_rev = 0;
         var total_cases = 0;
         var avg_rev_per_case = 0;
-        console.log("records in calcs "+JSON.stringify(records));
+        // console.log("records in calcs "+JSON.stringify(records));
         for (let rec = 0; rec<records.length; rec++){
             total_cases +=records[rec].sales;
             total_rev += (records[rec].sales * records[rec].ppc);
@@ -151,15 +158,16 @@ export default class Calculations{
 
        
         var sum_yearly_rev = totalTimeRev;
-        var avg_manu_run_size = this.getAvgManuRunSize(sku); //find the run size for all the activities for this sku and then divide by the number of activities
-        var ingr_cost_per_case = this.getIngrCostPerCase(sku);
+        var avg_manu_run_size = await this.getAvgManuRunSize(sku); //find the run size for all the activities for this sku and then divide by the number of activities
+        var ingr_cost_per_case = await this.getIngrCostPerCase(sku);
         var avg_manu_setup_cost_per_case = sku.setup_cost/avg_manu_run_size;//manufacturing setup cost/avg_manu_runsize
         var manu_run_cost_per_case = sku.run_cpc; //isn't this already given to us?
         var total_COGS_per_case = ingr_cost_per_case+avg_manu_setup_cost_per_case+manu_run_cost_per_case; // sum of ingredient cost, manufacturing setup cost, manufacturing run cost for sku divided to give a cost per case
         var avg_rev_per_case = sum_yearly_rev/totalTimeSales; // = revenue sum / numsales 
         var avg_profit_per_case = avg_rev_per_case - total_COGS_per_case; // = avg_rev - cogs
         var profit_marg = (avg_rev_per_case/total_COGS_per_case)-1;
-
+        console.log("these are the values; "+ sum_yearly_rev +"  "+ avg_manu_run_size+ "  "+ingr_cost_per_case+"  "
+        +avg_manu_setup_cost_per_case);
         return {
             sum_yearly_rev : sum_yearly_rev,
             avg_manu_run_size : avg_manu_run_size,
