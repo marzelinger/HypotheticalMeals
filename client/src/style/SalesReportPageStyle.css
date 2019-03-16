@@ -1,0 +1,31 @@
+.report-container tr {
+    grid-template-columns:  minmax(50px, .5fr) minmax(50px, .5fr) minmax(150px, 2fr) minmax(150px,2fr) minmax(150px,2fr) minmax(150px,2fr) minmax(50px,1fr);
+    text-align: center;
+}
+
+.report-container td, .report-container th {
+    display: flex;
+    justify-content: center;
+}
+
+.filter-container{
+    display:flex; 
+    flex-direction:row; 
+    flex-wrap: nowrap;
+    /* align-items: center; */
+    justify-items: center;
+}
+
+.my-custom-scrollbar {
+    position: relative;
+    height: 400px;
+    overflow: auto;
+}
+.table-wrapper-scroll-y {
+    display: block;
+}
+
+.alert {
+    width: 75%;
+    margin: auto;
+}

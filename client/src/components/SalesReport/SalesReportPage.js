@@ -10,6 +10,7 @@ import GeneralNavBar from '../GeneralNavBar';
 import CustomerSelectSalesReport from './CustomerSelectSalesReport';
 import SkuDrilldown from './SkuDrilldown';
 import GeneralReport from './GeneralReport';
+import '../../style/SalesReportPageStyle.css'
 
 class SalesReportPage extends React.Component {
     state = {
@@ -43,8 +44,12 @@ class SalesReportPage extends React.Component {
                         
                     </Tabs>
                 </Paper>
+<<<<<<< HEAD
                 {this.state.value === 0 ? <GeneralReport/> : <SkuDrilldown/> } 
                 {/* first is General, Second is SKU */}
+=======
+                {this.state.value === 0 ? null : <SkuDrilldown/> } {/* first is General, Second is SKU */}
+>>>>>>> 0387e3440c74c0b27a34b7a6952ab25275062a88
             </div>
         );
   }

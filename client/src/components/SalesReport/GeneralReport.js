@@ -62,7 +62,7 @@ export default class GeneralReport extends React.Component {
     //THIS IS FOR WHEN PRODUCT LINES ARE BEING ADDED.... RIGHT NOW WILL JUST RECALCULATE ALL
     updateReportData = async () => {
         var new_ten_yr_data = this.state.tenYRdata;
-        new_ten_yr_data.prodLines = []; //TODO. this might be doing it too slowly.
+        new_ten_yr_data.prodLines = await []; //TODO. this might be doing it too slowly.
          console.log("this is the prodline in data1111: "+JSON.stringify(new_ten_yr_data.prodLines));
         var cust_str = (this.state.customer._id === undefined) ? '_' : this.state.customer._id;
         if(this.state.prod_lines.length>0){
