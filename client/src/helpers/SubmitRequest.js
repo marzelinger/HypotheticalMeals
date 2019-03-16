@@ -34,7 +34,7 @@ export default class SubmitRequest{
   }
 
   static async addSkuRecords(sku_num, year) {
-    console.log(sku_num + ':' + year);
+    //console.log(sku_num + ':' + year);
     var records = await fetch(`/api/scrape_records/${sku_num}/${year}`, { method: 'GET' })
     .then(data => data.json())
     .then((res) => {
@@ -121,7 +121,7 @@ export default class SubmitRequest{
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
       }).then(res => res.json()).then((res) => {
-        console.log(res);
+        //console.log(res);
         if (!res.success) return { success: res.success, error: res.error };
         else return { success: res.success, data: res.data};
       });
@@ -167,7 +167,7 @@ export default class SubmitRequest{
 
   static async submitGetSkusByProductLineID(id) {
     try {
-      console.log("this is the id in request: "+id);
+      //console.log("this is the id in request: "+id);
       return fetch('/api/skus/' + id)
       .then(data => data.json())
       .then((res) => {
@@ -274,7 +274,7 @@ export default class SubmitRequest{
 
 
   static async submitGetCustomersByNameSubstring(substr) {
-    console.log("this is the sub here: "+substr);
+    //console.log("this is the sub here: "+substr);
     try {
       return fetch('/api/customers_name/' + substr)
       .then(data => data.json())
@@ -357,8 +357,8 @@ export default class SubmitRequest{
   }
 
   static submitGetSaleRecordsByFilter = (sort_field, customer_id, prod_line_ids, sku_id, date_range_start, date_range_end, currentPage, pageSize) => {
-    console.log("path is: "+ sort_field + '/' + customer_id + '/' + prod_line_ids + '/' + sku_id + '/' + 
-    date_range_start + '/' + date_range_end + '/' + currentPage + '/' + pageSize);
+    //console.log("path is: "+ sort_field + '/' + customer_id + '/' + prod_line_ids + '/' + sku_id + '/' + 
+    //date_range_start + '/' + date_range_end + '/' + currentPage + '/' + pageSize);
     return fetch('/api/records_filter/' + sort_field + '/' + customer_id + '/' + prod_line_ids + '/' + sku_id + '/' + 
                   date_range_start + '/' + date_range_end + '/' + currentPage + '/' + pageSize, {method: 'GET'})
       .then(data => data.json())
@@ -499,7 +499,7 @@ export default class SubmitRequest{
 
   static async submitGetManufacturingActivitiesForReport(reportData) {
     try {
-      console.log("here in the submitrequest for report");
+      //console.log("here in the submitrequest for report");
       return fetch(`/api/manuactivities/${reportData.manu_line._id}/${reportData.start_date}/${reportData.end_date}/${reportData.duration}`)
       .then(data => data.json())
       .then((res) => {

@@ -51,7 +51,7 @@ class FilterHandler{
             return res.json({ success: true, data: results});
         }
         catch (err) {
-            console.log(err)
+            //console.log(err)
             return res.json({ success: false, error: err});
         }
     }
@@ -66,9 +66,9 @@ class FilterHandler{
             if (ingredient_ids !== undefined && ingredient_ids !== "_"){
                 ingredient_ids = ingredient_ids.replace(/\s/g, "").split(',');
                 let formulas = await Formula.find({ ingredients : {$in : ingredient_ids } });
-                console.log(formulas)
+                //console.log(formulas)
                 let skus = await SKU.find({ formula : {$in : formulas } });
-                console.log(skus.length);
+                //console.log(skus.length);
                 skus.map(sku => ids.push(sku._id));
                 and_query.push( {_id: { $in: ids } } );
             }
@@ -142,7 +142,7 @@ class FilterHandler{
             return res.json({ success: true, data: results});
         }
         catch (err) {
-            console.log(err)
+            //console.log(err)
             return res.json({ success: false, error: err});
         }
 
@@ -209,7 +209,7 @@ class FilterHandler{
                 and_query.push({ cust_num: customer.number })
             }
             if (range_start !== undefined && range_start !== "_" && range_end !== undefined && range_end !== "_"){
-                console.log("THIS IS HOW THE START DATE COMES IN.: "+ range_start);
+                //console.log("THIS IS HOW THE START DATE COMES IN.: "+ range_start);
                 let start_date = new moment(range_start)
                 let end_date = new moment(range_end)
                 let start_week = (start_date.month() === 11 && start_date.week() === 1) ? 52 : start_date.week()
@@ -233,14 +233,14 @@ class FilterHandler{
                             { "date.week" : { $gte: start_week } }
                         ]
                     })
-                    console.log(or_query)
+                    //console.log(or_query)
                     and_query.push({ $or : or_query })
                 }
                 else {
                     throw 'Invalid Date Range'
                 }
             }
-            console.log(and_query)
+            //console.log(and_query)
             var sort_field = req.params.sort_field;
             var currentPage = Number(req.params.currentPage);
             var pageSize = Number(req.params.pageSize);
@@ -250,7 +250,7 @@ class FilterHandler{
                                                      await SaleRecord.find( {$and: and_query }).skip(currentPage*pageSize)
                                                         .limit(pageSize)
                                                         .sort(sort_field).collation({locale: "en_US", numericOrdering: true});
-            console.log("THESE ARE RESULTS: "+JSON.stringify(results));
+            //console.log("THESE ARE RESULTS: "+JSON.stringify(results));
             return res.json({ success: true, data: results});
         }
         catch (err) {

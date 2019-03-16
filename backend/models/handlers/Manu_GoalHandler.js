@@ -67,9 +67,7 @@ class Manu_GoalHandler{
     static async getAllManufacturingGoals(req, res){
         try {
             var user_id = req.params.user_id;
-            console.log(user_id)
             let all_manu_goals = await Manu_Goal.find({user: user_id}).populate('activities').populate({path: 'activities', populate: { path: 'sku' }});
-            console.log(all_manu_goals)
             return res.json({ success: true, data: all_manu_goals});
         }
         catch (err) {

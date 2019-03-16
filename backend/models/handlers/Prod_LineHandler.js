@@ -97,11 +97,9 @@ class Prod_LineHandler{
 
   static async getProductLinesByNameSubstring(req, res){
     try{
-        console.log("HERE IN THE PROD HANDLER");
         var search_substr = req.params.search_substr;
         var currentPage = Number(req.params.currentPage);
         var pageSize = Number(req.params.pageSize);
-        console.log("VALUES");
 
 
         let results = await Prod_Line.find({ name: { $regex: search_substr, $options: 'i' } }).skip(currentPage*pageSize).limit(pageSize);

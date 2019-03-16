@@ -55,8 +55,8 @@ export default class Calculations{
 
                 }
                 cur_ten_yr_avg_case = cur_ten_yr_avg_case/10;
-                //var {skuTotalData} = await this.calcTotalData(skus[s], cur_ten_yr_rev, cur_ten_yr_sales, cur_ten_yr_avg_case);
-                var skuTotalData = {};
+                var skuTotalData = await this.calcTotalData(skus[s], cur_ten_yr_rev, cur_ten_yr_sales, cur_ten_yr_avg_case);
+                //var skuTotalData = {};
                 console.log("cur skuTotal : "+ JSON.stringify(skuTotalData));
 
                 tenYRSKUsdata.skus.push({sku: skus[s], skuData: curSkuData, totalData: skuTotalData});
@@ -146,7 +146,7 @@ export default class Calculations{
         if(sku.formula.ingredients!=undefined){
             for(let ing = 0; ing<sku.formula.ingredients.length; ing++){
                 var ing_cost = sku.formula.ingredients[ing].pkg_cost;
-                var {ing_pkg_size, unit} = this.parseUnitVal(sku.formula.ingredients[ing].pkg_size)
+                var {ing_pkg_size, unit} = this.parseUnitVal(sku.formula.ingredients[ing].pkg_size);
                 var {form_quant, unit} = this.parseUnitVal(sku.formula.ingredient_quantities[ing]);
                 ingr_cost_per_case +=(ing_cost/ing_pkg_size) * form_quant;
             }

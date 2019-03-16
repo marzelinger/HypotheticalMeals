@@ -80,8 +80,8 @@ class FormulaHandler{
 
             for(var i = 0; i < new_formula_ingredients.length; i++){
                 var curr_ingredient_quantity = new_ingredient_quantities[i];
-                console.log(curr_ingredient_quantity);
-                console.log(" ");
+                //console.log(curr_ingredient_quantity);
+                //console.log(" ");
                 var satisfiesRegex = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|ml|l|count)$/.test(curr_ingredient_quantity);
                 if(!satisfiesRegex) return res.json({ success: false, error: 'Please provide a quantity with the appropriate units'});
                 
@@ -154,7 +154,7 @@ class FormulaHandler{
                     {upsert : true, new : true});
             })*/
             if(skus.length > 1) return res.json({ success: false, error: 'Formula still tied to at least one SKU'});
-            console.log(target_id);
+            //console.log(target_id);
             let to_remove = await Formula.findOneAndDelete({ _id: target_id});
             if(!to_remove) return res.json({ success: true, error: '404'});
             return res.json({ success: true, data: to_remove });
