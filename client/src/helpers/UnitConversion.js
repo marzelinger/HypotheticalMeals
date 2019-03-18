@@ -237,7 +237,7 @@ export default class UnitConversion {
 
     static getConversionFunction(unit_string) {
         console.log(unit_string)
-        let match = unit_string.match('^([0-9]+(?:[\.][0-9]{0,10})?|\.[0-9]{1,10}) (oz|ounce|lb|pound|ton|g|gram|kg|kilogram|' + 
+        let match = unit_string.match('^([0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|lb|pound|ton|g|gram|kg|kilogram|' + 
                                       'floz|fluidounce|pt|pint|qt|quart|gal|gallon|ml|milliliter|l|liter|ct|count)$')
         if (match === null) {
             return { success: false, error: 'Incorrect String Format'}
@@ -285,6 +285,13 @@ export default class UnitConversion {
                 return { success: false, error: 'Incorrect String Format, code fault too'}
         
         }
+    }
+
+    static getUnitType(unit_string){
+        if(/^([0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg)$/.test(unit_string)) return 1;
+        if(/^([0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (floz|fluidounce|pint|pt|quart|qt|gallon|gal|ml|milliliter|liter|l)$/.test(unit_string)) return 2;
+        if(/^([0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (ct|count)$/.test(unit_string)) return 3;
+        return -1;
     }
 
     static getCleanUnitForm(unit_string) {
