@@ -208,7 +208,7 @@ export default class FormulasPage extends React.Component {
             data: newData,
             exportData: newExportData,
             detail_view_item: item,
-            detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
+            detail_view_options: [Constants.details_create, Constants.details_cancel]
         })
         this.toggle(Constants.details_modal);
         this.loadDataFromServer();
@@ -241,7 +241,7 @@ export default class FormulasPage extends React.Component {
         else{
             this.setState({ 
                 detail_view_item: item ,
-                detail_view_options: [Constants.details_cancel]
+                detail_view_options: [Constants.details_exit]
                 });
         }
         this.toggle(Constants.details_modal);
@@ -266,6 +266,9 @@ export default class FormulasPage extends React.Component {
                 res = await SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
                 break;
             case Constants.details_cancel:
+                res = {success: true}
+                break;
+            case Constants.details_exit:
                 res = {success: true}
                 break;
         }

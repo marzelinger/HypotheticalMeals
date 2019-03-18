@@ -293,7 +293,7 @@ export default class ListPage extends React.Component {
             exportData: newExportData,
             detail_view_item: new_item,
             detail_view_formula_item: new_formula_item,
-            detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel],
+            detail_view_options: [Constants.details_create, Constants.details_cancel],
             detail_view_action: Constants.details_create
         })
         this.toggle(Constants.details_modal);
@@ -386,7 +386,7 @@ export default class ListPage extends React.Component {
         }
         else{
             this.setState({ 
-                detail_view_options: [Constants.details_cancel],
+                detail_view_options: [Constants.details_exit],
                 detail_view_action: Constants.details_view
                 });
         }
@@ -403,7 +403,6 @@ export default class ListPage extends React.Component {
 
         switch (option) {
             case Constants.details_create:
-                newData.push(item);
                 //need to create the new formula and get the id of the newly created formula and then put that in the 
                 //item equal to the formula section of item.
                 console.log("this is the formula_item: "+JSON.stringify(formula_item));
@@ -419,7 +418,7 @@ export default class ListPage extends React.Component {
                 else {
                     resItem = { success: false, error: 'Formula Quantity is not entered correctly'}
                 }
-
+                newData.push(item);
                 break;
             case Constants.details_save:
                 let toSave = newData.findIndex(obj => {return obj._id === item._id});
@@ -445,6 +444,9 @@ export default class ListPage extends React.Component {
                 // })
                 break;
             case Constants.details_cancel:
+                resItem = {success: true}
+                break;
+            case Constants.details_exit:
                 resItem = {success: true}
                 break;
         }
