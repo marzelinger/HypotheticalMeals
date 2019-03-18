@@ -78,7 +78,7 @@ class FormulaHandler{
                 var curr_ingredient_quantity = new_ingredient_quantities[i];
 
                 var sanitized_quantity = UnitConversion.getCleanUnitForm(curr_ingredient_quantity);
-                if(sanitized_quantity.success == false) return res.json({ success: false, error: "Please check the units of ingredient " + i + " of this formula. Options are: oz, ounce, lb, pound, ton, g, gram, kg, kilogram, floz, fluidounce, pt, pint, qt, quart, gal, gallon, ml, milliliter, l, liter, ct, count"});
+                if(sanitized_quantity.success == false) return res.json({ success: false, error: "Pl2ease check the units of ingredient " + i + " of this formula. Options are: oz, ounce, lb, pound, ton, g, gram, kg, kilogram, floz, fluidounce, pt, pint, qt, quart, gal, gallon, ml, milliliter, l, liter, ct, count"});
 
                 var curr_ingredient_id = new_formula_ingredients[i];
                 var curr_ingredient_arr = await Ingredient.find({ _id: curr_ingredient_id });

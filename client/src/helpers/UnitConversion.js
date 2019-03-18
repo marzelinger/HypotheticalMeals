@@ -295,7 +295,9 @@ export default class UnitConversion {
     }
 
     static getCleanUnitForm(unit_string) {
-        let reg = unit_string.match('^([0-9]+(?:[\.][0-9]{0,10})?|\.[0-9]{1,10}) ?(.*)')
+        let reg = unit_string.match('^([0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) ?(.*)')
+        console.log(reg[1]);
+        console.log(reg[2]);
         let num = reg[1]
         unit_string = reg[2]
         unit_string = unit_string.replace(/ /g, '')
