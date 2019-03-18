@@ -116,7 +116,7 @@ export default class FormulaDetails extends React.Component {
                 alert("Please enter the same exact unit of measurement for this ingredient as is already present in the formula");
             }
             curr_qty = await this.subtractTwoUnits(curr_qty, qty)
-            var curr_qty_num_arr = curr_qty.match(/^(-?[0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$/);
+            var curr_qty_num_arr = curr_qty.match(/^(-?[0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg|floz|fluidounce|pint|pt|quart|qt|gallon|gal|milliliter|ml|liter|l|ct|count)$/);
             if (Number(curr_qty_num_arr[1]) > 0) item.ingredient_quantities[ind] = curr_qty;
             else {
                 item.ingredients.splice(ind,1);
@@ -127,17 +127,32 @@ export default class FormulaDetails extends React.Component {
     }
 
     validatePositive(qty){
-        var qty_arr = qty.match(/^(-?[0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg|floz|fluidounce|pint|pt|quart|qt|gallon|gal|milliliter|ml|liter|l|ct|count)$/);
+        var qty_arr = qty.match(/^(-?[0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg|floz|fluidounce|pint|pt|quart|qt|gallon|gal|milliliter|ml|liter|l|ct|count)$/);
         if(Number(qty_arr[1]) < 0) return false;
         return true;
     }
 
     subtractTwoUnits(qty1, qty2){
-        var qty1_arr = qty1.match(/^(-?[0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg|floz|fluidounce|pint|pt|quart|qt|gallon|gal|milliliter|ml|liter|l|ct|count)$/);
-        var qty2_arr = qty2.match(/^(-?[0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg|floz|fluidounce|pint|pt|quart|qt|gallon|gal|milliliter|ml|liter|l|ct|count)$/);
-        var new_num = Number(qty1_arr[1]) - Number(qty2_arr[1]);
-        console.log(new_num);
+        var qty1_type = UnitConversion.getUnitType(qty1);
+        var qty2_type = UnitConversion.getUnitType(qty2);
 
+        if(qty1_type != qty2_type || qty1_type == -1 || qty2_type == -2) return { success: false, error: "One or more provided ingredient type is invalid"};
+
+        var conversionFuncObj = UnitConversion.getConversionFunction(qty1);
+        var convertedToAdd = conversionFuncObj.func(qty2);
+        console.log(convertedToAdd);
+
+        var qty1_arr = qty1.match(/^(-?[0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg|floz|fluidounce|pint|pt|quart|qt|gallon|gal|milliliter|ml|liter|l|ct|count)$/);
+        var qty2_arr = convertedToAdd.match(/^(-?[0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg|floz|fluidounce|pint|pt|quart|qt|gallon|gal|milliliter|ml|liter|l|ct|count)$/);
+        
+        
+        var split_array = qty2_arr[1].split(".");
+        console.log(split_array);
+        if(split_array.length > 1 && split_array[1].length > 5){
+            qty2_arr[1] = Number(qty2_arr[1]).toFixed(5) + "";
+        }
+        
+        var new_num = Number(qty1_arr[1]) - Number(qty2_arr[1]);
         var output = "" + new_num + " " + qty1_arr[2];
         return output;
     }
@@ -155,8 +170,14 @@ export default class FormulaDetails extends React.Component {
 
         var qty1_arr = qty1.match(/^(-?[0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg|floz|fluidounce|pint|pt|quart|qt|gallon|gal|milliliter|ml|liter|l|ct|count)$/);
         var qty2_arr = convertedToAdd.match(/^(-?[0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg|floz|fluidounce|pint|pt|quart|qt|gallon|gal|milliliter|ml|liter|l|ct|count)$/);
-        console.log(qty2_arr[0]);
-        console.log(qty2_arr[1]);
+        
+        
+        var split_array = qty2_arr[1].split(".");
+        console.log(split_array);
+        if(split_array.length > 1 && split_array[1].length > 5){
+            qty2_arr[1] = Number(qty2_arr[1]).toFixed(5) + "";
+        }
+        
         var new_num = Number(qty1_arr[1]) + Number(qty2_arr[1]);
         var output = "" + new_num + " " + qty1_arr[2];
         return output;
