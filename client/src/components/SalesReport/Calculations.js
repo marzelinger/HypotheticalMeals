@@ -14,7 +14,7 @@ const dateRanges =  [
     { 'startdate': "2017-01-01", 'enddate': "2017-12-31"},
     { 'startdate': "2018-01-01", 'enddate': "2018-12-31"},
     { 'startdate': "2019-01-01", 'enddate': "2019-12-31"}
-    //end jan1 2019
+    //end dec 31 2019
 ];
 
 
@@ -113,12 +113,14 @@ export default class Calculations{
     }
 
     static async parseUnitVal(unit_string){
+        console.log("this is the unit_string: "+unit_string);
         var str = ""+unit_string;
         let match = str.match('^([0-9]+(?:[\.][0-9]{0,10})?|\.[0-9]{1,10}) (oz|ounce|lb|pound|ton|g|gram|kg|kilogram|' + 
                                       'floz|fluidounce|pt|pint|qt|quart|gal|gallon|ml|milliliter|l|liter|ct|count)$')
         if (match === null) {
             return { success: false, error: 'Incorrect String Format'}
         }
+        console.log("this is the match: "+ match);
         let val = match[1]
         let unit = match[2]
         return {val: val, unit: unit};
@@ -133,12 +135,12 @@ export default class Calculations{
                 console.log("ing quant; "+sku.formula.ingredients[ing].pkg_size);
                 console.log("form ing quant; "+sku.formula.ingredient_quantities[ing]);
 
-                var ingr_parse = this.parseUnitVal(sku.formula.ingredients[ing].pkg_size);
+                var ingr_parse = await this.parseUnitVal(sku.formula.ingredients[ing].pkg_size);
                 //var {ing_pkg_size, unit} = this.parseUnitVal(sku.formula.ingredients[ing].pkg_size);
                 var ing_pkg_size = ingr_parse.val;
                 console.log('this is the ingr-parse; '+JSON.stringify(ingr_parse));
                 console.log("ingpackage: "+ing_pkg_size);
-                var form_parse = this.parseUnitVal(sku.formula.ingredient_quantities[ing]);
+                var form_parse = await this.parseUnitVal(sku.formula.ingredient_quantities[ing]);
                 //var {form_quant, unit} = this.parseUnitVal(sku.formula.ingredient_quantities[ing]);
                 var form_quant = form_parse.val;
                 console.log('this is the formparse; '+JSON.stringify(form_parse));
