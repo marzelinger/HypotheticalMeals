@@ -110,7 +110,33 @@ export default class ListPage extends React.Component {
                 this.setState({manu_lines_modal: !this.state.manu_lines_modal})
                 break;
         }
-    }   
+    }
+    
+    async updateRecords(index) {
+        console.log('update sku records')
+        var data = this.state.data;
+        var sku = data[index];
+        SubmitRequest.addSkuRecords(sku.num, 2019)
+        if(index < data.length  - 1){
+            setTimeout( () => {
+            var next_index = index + 1;
+            this.updateRecords(next_index)
+            }, 2000)
+        }
+    }
+
+    async getAllRecords(index) {
+        // alert('update sku records ')
+        var data = this.state.data;
+        var sku = data[index];
+        console.log('updating sku ' + sku.name);
+        SubmitRequest.addAllSkuRecords(sku.num)
+        if(index < data.length - 1){
+            setTimeout( () => {
+            var next_index = index + 1;
+            this.getAllRecords(next_index)
+        }, 21000)}
+    }
 
     async componentDidMount() {
         if (this.props.default_ing_filter !== undefined){
@@ -119,6 +145,12 @@ export default class ListPage extends React.Component {
         if( this.props.default_formula_filter !== undefined){
             await this.onFilterValueSelection([{ value: { _id : this.props.default_formula_filter._id }}], null, 'formula');
         }
+        // var now = new Date();
+        // var millisTill10 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16, 19, 0, 0) - now;
+        // if (millisTill10 < 0) {
+        //     millisTill10 += 86400000; // it's after 10am, try 10am tomorrow.
+        // }
+        // setTimeout(() => this.updateRecords(), millisTill10);
         this.loadDataFromServer();
     }
 
@@ -261,7 +293,7 @@ export default class ListPage extends React.Component {
             exportData: newExportData,
             detail_view_item: new_item,
             detail_view_formula_item: new_formula_item,
-            detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel],
+            detail_view_options: [Constants.details_create, Constants.details_cancel],
             detail_view_action: Constants.details_create
         })
         this.toggle(Constants.details_modal);
@@ -335,6 +367,8 @@ export default class ListPage extends React.Component {
             newState.push(this.state.data[index]);
         });
         await this.setState({ selected_items: newState, selected_indexes: rowIndexes});
+        console.log("this is the selected skus: "+JSON.stringify(this.state.selected_items));
+
     };
 
      onDetailViewSelect = async (event, item) => {
@@ -352,7 +386,7 @@ export default class ListPage extends React.Component {
         }
         else{
             this.setState({ 
-                detail_view_options: [Constants.details_cancel],
+                detail_view_options: [Constants.details_exit],
                 detail_view_action: Constants.details_view
                 });
         }
@@ -369,7 +403,6 @@ export default class ListPage extends React.Component {
 
         switch (option) {
             case Constants.details_create:
-                newData.push(item);
                 //need to create the new formula and get the id of the newly created formula and then put that in the 
                 //item equal to the formula section of item.
                 console.log("this is the formula_item: "+JSON.stringify(formula_item));
@@ -380,11 +413,12 @@ export default class ListPage extends React.Component {
                 if(resFormula.success){
                     item['formula']= resFormula.data._id;
                     resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item);
+                    SubmitRequest.addSkuRecords(resItem.data.num, 2019);
                 } 
                 else {
                     resItem = { success: false, error: 'Formula Quantity is not entered correctly'}
                 }
-
+                newData.push(item);
                 break;
             case Constants.details_save:
                 let toSave = newData.findIndex(obj => {return obj._id === item._id});
@@ -412,6 +446,9 @@ export default class ListPage extends React.Component {
             case Constants.details_cancel:
                 resItem = {success: true}
                 break;
+            case Constants.details_exit:
+                resItem = {success: true}
+                break;
         }
         console.log(resItem)
         if (!resItem.success) alert(resItem.error);
@@ -431,6 +468,18 @@ export default class ListPage extends React.Component {
     getButtons = () => {
         return (
         <div className = "ingbuttons"> 
+            <div className = "manugoalbutton hoverable"
+                            onClick={() => SubmitRequest.addAllCustomers()}
+                            primary={true}
+                            > Add Customers </div>
+            <div className = "manugoalbutton hoverable"
+                            onClick={() => this.updateRecords(0)}
+                            primary={true}
+                            > Add Records </div>
+            <div className = "manugoalbutton hoverable"
+                            onClick={() => this.getAllRecords(0)}
+                            primary={true}
+                            > Add All Records </div>
             {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) ? null : 
                             (<div className = "manugoalbutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}

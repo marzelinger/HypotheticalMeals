@@ -72,7 +72,6 @@ class Manu_ActivityHandler{
             if(!target_id){
                 return res.json({ success: false, error: 'No manufacturing actvity named provided'});
             }
-            console.log("here");
             var new_sku = req.body.sku;
             var new_quantity = req.body.quantity;
             var new_scheduled = req.body.scheduled;
@@ -92,7 +91,6 @@ class Manu_ActivityHandler{
                         path: 'sku',
                         populate: { path: 'formula' }
                       });
-            console.log(updated_manu_activity)
             if(!updated_manu_activity){
                 return res.json({
                     success: true, error: 'This document does not exist'
@@ -136,22 +134,31 @@ class Manu_ActivityHandler{
         }
     }
 
+    static async getManufacturingActivitiesBySKU(req, res){
+        try {
+            var target_sku_id = req.params.sku_id;
+            let to_return = await Manu_Activity.find({ sku : target_sku_id}).populate('sku').populate('manu_line').populate({
+                path: 'sku',
+                populate: { path: 'ingredients' }
+              });
+
+            if(to_return.length == 0) return res.json({success: false, error: '404'});
+            return res.json({ success: true, data: to_return});
+        } catch (err){
+            return res.json({ success: false, error: err});
+        }
+    }
+
     static async getManufacturingActivitiesForReport(req, res){
         try{
-            console.log("here in the submitrequest for back report");
 
             var target_manu_line_id = req.params.manu_line_id;
-            console.log("here in the getManuREport. id is: "+(target_manu_line_id));
             // var manu_target = {
             //     _id: 
             // }
             var target_start_date = req.params.start_date;
             var target_end_date = req.params.end_date;
             var target_duration = req.params.duration;
-            console.log("start_date: "+target_start_date);
-            console.log("target_end_date: "+target_end_date);
-            // console.log("target manu line id: "+target)
-
             // let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id , scheduled: true, start: {$gte: target_start_date, $lt: target_end_date}})
             let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id , scheduled: true})
             .populate('sku').populate('manu_line').populate({
@@ -183,15 +190,12 @@ class Manu_ActivityHandler{
                     // var end_act = new Date(endAct);
                     var diffStart = startAct-startRep; //should be positive
                     var diffEnd = endRep-endAct; //the endRep should be greater than end of activity so should be positive
-                    console.log("startAct: "+startAct);
-                    console.log("endact: "+endAct);
 
                     if(diffEnd>=0 && diffStart>=0){
                         //this is a valid activity.
                         //the start is greater than the rep
                         //the end is less than the rep
                         complete_activities.push(curAct);
-                        console.log("complete: "+complete_activities.length);
 
                         continue;
                     }
