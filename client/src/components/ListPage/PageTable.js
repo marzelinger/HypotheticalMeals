@@ -20,6 +20,8 @@ import Toggle from 'material-ui/Toggle';
 import PropTypes from 'prop-types';
 import TableActions from './TableActions';
 import '../../style/TableStyle.css'
+const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
+
 
 /**
  * A more complex example, allowing the table height to be set, and key boolean properties to be toggled.
@@ -85,7 +87,14 @@ export default class PageTable extends Component {
 
   getDetailsCol = () => {
     {if(this.state.showDetails){
-      return (<TableHeaderColumn> {this.props.simple? 'Details' : 'See More Details'} </TableHeaderColumn>);
+      return (
+      <TableHeaderColumn> 
+          {this.props.simple? 'Details' : 
+          (currentUserIsAdmin().isValid ?
+          'Edit Details' :
+          'See More Details')
+          } 
+      </TableHeaderColumn>);
       }
     }
   }
@@ -99,6 +108,17 @@ export default class PageTable extends Component {
       )
     }
     return (<TableHeaderColumn  >{this.getPropertyLabel(prop)}</TableHeaderColumn>);
+  }
+
+  getTableFinalColumn = () => {
+    return (
+      <div>
+      { ([undefined,null].includes(this.props.quantities))
+        ? <div></div>:<div></div>
+      }
+      </div>
+    );
+
   }
 
   getTableSuperHeader = () => {
@@ -121,6 +141,7 @@ export default class PageTable extends Component {
                 id = "tableactions"
                 onTableOptionSelection = {this.props.onTableOptionSelection}
                 page_name = {this.state.page_name}
+                reportSelect = {this.props.reportSelect}
               >
               </TableActions>
             
@@ -129,6 +150,8 @@ export default class PageTable extends Component {
         );
       }
   }
+
+
 
   render() {
     return (
@@ -171,11 +194,17 @@ export default class PageTable extends Component {
                     </TableRowColumn>
                   )}
                   {([undefined,null].includes(this.props.quantities)) ? 
-                    (<TableRowColumn>
+                    <div>
+                      {this.props.reportSelect ?
+                      <div></div>:
+                      (<TableRowColumn>
                       <IconButton onClick={(e) => this.props.handleDetailViewSelect(e, item) }>
                         <Details></Details>
                       </IconButton>
-                    </TableRowColumn>) : 
+                    </TableRowColumn>)
+                      }
+                    </div>
+                    : 
                     (<TableRowColumn>
                       <Input 
                         onChange = {(e) => this.props.handleQuantityChange(e, index)} 

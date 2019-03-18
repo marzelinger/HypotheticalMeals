@@ -344,7 +344,7 @@ export default class UserPage extends React.Component {
         return (
         <div className = "usersbuttons">     
             {/* <DependencyReport data = {this.state.exportData} /> */}
-            <ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> 
+            {/* <ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/>  */}
         </div>
         );
     }

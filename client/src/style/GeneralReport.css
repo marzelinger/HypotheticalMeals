@@ -1,0 +1,73 @@
+
+.options-container{
+    display:flex; 
+    flex-direction:row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-items: center;
+}
+
+.hoverable {
+    cursor: pointer;
+}
+
+#simple{
+    display:none;
+}
+
+#inputGroup{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: 70%;
+    margin-bottom: 0px;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.table-options{
+    float:right;
+    padding: 0px;
+    
+}
+
+#displaytable{
+    margin-bottom: 0px;
+}
+
+.pagination-wrapper > *{
+    background-color: #f8f9fa !important;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+li {
+    background-color: #f8f9fa !important;
+    padding-bottom: -50px;
+}
+
+.page-item.active .page-link {
+    background-color: rgb(0, 188, 212) !important;
+    border-color: #212529;
+}
+
+.pagination li a{
+    display: block;
+}
+
+.create_sum_report_button, .manulinebutton{
+    background-color: rgb(0, 188, 212) !important;
+    border-color: #212529;
+    height: 40px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    margin-left: 20px;
+}

@@ -65,7 +65,6 @@ class IngredientHandler{
             var new_ingredient_num = req.body.num;
             var new_vendor_info = req.body.vendor_info;
             var new_pkg_size = req.body.pkg_size;
-            console.log(new_pkg_size);
             if(await this.findUnit(new_pkg_size) == -1) return res.json({ success: false, error: "Please enter one of the following units: oz, lb, ton, g, kg, floz, pt, qt, gal, mL, L, count"});
             var new_pkg_cost = req.body.pkg_cost;
             var new_sku_count = req.body.sku_count
@@ -121,15 +120,11 @@ class IngredientHandler{
             var target_id = req.params.ingredient_id;
 
             let all_formulas = await Formula.find();
-            console.log(all_formulas);
-            console.log("the length of all formulas is :" + all_formulas.length);
             for(var i = 0; i < all_formulas.length; i++){
                 var curr_formula = all_formulas[i];
                 var curr_ingrs_array = curr_formula.ingredients;
-                console.log(curr_ingrs_array);
                 for(var j = 0; j < curr_ingrs_array.length; j++){
                     if(curr_ingrs_array[j]._id == target_id){
-                        console.log('this worked');
                         return res.json({ success: false, error: "This ingredient is still tied to a formula"});
                     }
                 }

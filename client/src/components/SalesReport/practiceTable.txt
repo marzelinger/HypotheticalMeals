@@ -1,0 +1,97 @@
+generalReportTables = () => {
+        console.log("this is the tenYRdata: "+JSON.stringify(this.state.tenYRdata));
+        if(this.state.tenYRdata.prodLines!= undefined){
+            console.log("this is the prodLength: "+JSON.stringify(this.state.tenYRdata.prodLines.length));
+
+            if (this.state.tenYRdata.prodLines.length>0){
+                return (this.state.tenYRdata.prodLines.map(pl_row => 
+                    <Table
+                    height={'413px'}
+                    //   fixedHeader={true}
+                    //   fixedFooter={this.state.fixedFooter}
+                    //   selectable={this.state.selectable}
+                    //   multiSelectable={this.state.multiSelectable}
+                    //   onRowSelection = {(res) => this.handleRowSelect(res)}
+    >
+                        <TableHeader>
+                            <TableRow >
+                                <TableHeaderColumn>Product Line: {pl_row.prod_line.name}</TableHeaderColumn>
+                            </TableRow>
+                        </TableHeader>
+                        {/* {pl_row.tenYRSKUdata.skus.map(cur_sku =>
+                            <div>
+                            <TableHeader>
+                                <TableRow className = "cols" selectable = {false} >
+                                    {this.state.sku_yr_table_properties.map(prop => 
+                                        <TableHeaderColumn>{prop}</TableHeaderColumn>
+                                    )}
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody stripedRows={this.state.stripedRows}>
+
+                                {cur_sku.skuData.map((skuData, ind) =>
+                                    // need to show the val in the sku data here.
+                                    //here we have the yr, sales data, and the sku# stuff
+                                    <TableRow>
+                                        <TableRowColumn onClick={e => this.handleSelect(e, skuData)}>
+                                            {cur_sku.skuData[ind].yr}
+                                        </TableRowColumn>
+                                        <TableRowColumn onClick={e => this.handleSelect(e, skuData)}>
+                                        {cur_sku.sku._id}
+                                        </TableRowColumn>
+                                        <TableRowColumn onClick={e => this.handleSelect(e, skuData)}>
+                                        {cur_sku.skuData[ind].salesData.revenue}
+                                        </TableRowColumn>
+                                        <TableRowColumn onClick={e => this.handleSelect(e, skuData)}>
+                                        {cur_sku.skuData[ind].salesData.avg_rev_per_case}
+                                        </TableRowColumn>
+                                    </TableRow>
+                                )}
+                                </TableBody>
+                                <TableHeader>
+                                    <TableRow className = "cols" selectable = {false} >
+                                        {this.state.sku_totals_properties.map(prop => 
+                                            <TableHeaderColumn>{prop}</TableHeaderColumn>
+                                        )}
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                <TableRow>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.sum_yearly_rev}
+                                    </TableRowColumn>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.avg_manu_run_size}
+                                    </TableRowColumn>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.ingr_cost_per_case}
+                                    </TableRowColumn>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.avg_manu_setup_cost_per_case}
+                                    </TableRowColumn>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.manu_run_cost_per_case}
+                                    </TableRowColumn>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.total_COGS_per_case}
+                                    </TableRowColumn>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.avg_rev_per_case}
+                                    </TableRowColumn>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.avg_profit_per_case}
+                                    </TableRowColumn>
+                                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                                        {cur_sku.totalData.profit_marg}
+                                    </TableRowColumn>
+                                </TableRow>
+                            </TableBody>
+                            </div>
+                            )} */}
+
+                    </Table>
+                    ));
+            }
+        }
+        return;
+    }

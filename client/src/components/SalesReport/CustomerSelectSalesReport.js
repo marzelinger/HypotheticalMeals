@@ -6,11 +6,15 @@ import * as Constants from '../../resources/Constants';
 import { 
     Button,
     Input,
+    Form,
     FormGroup,
     Row,
     Col,
+    CustomInput,
     Label } from 'reactstrap';
 import Switch from "react-switch";
+import Checkbox from '@material-ui/core/Checkbox';
+
 import SubmitRequest from '../../helpers/SubmitRequest';
 
 import ItemSearchInput from '../ListPage/ItemSearchInput';
@@ -23,7 +27,8 @@ export default class CustomerSelectSalesReport extends React.Component {
 
         this.state = {
             customer: Object.assign({}, props.customer),
-            allCustomers: false,
+            allCustomers: true,
+            singleCustomer: false,
             invalid_inputs: [],
             assisted_search_results: [],
             to_undo: {},
@@ -40,14 +45,19 @@ export default class CustomerSelectSalesReport extends React.Component {
         if (this.state.customer !== null && this.state.customer !== '' && this.state.customer._id !== undefined) {
             console.log(this.state.customer)
             res = await SubmitRequest.submitGetCustomerByID(this.state.customer._id);
-            console.log(res)
-            if (res === undefined || !res.success) res.data[0] = {};
+            console.log(res);
+            if (res === undefined || !res.success) {
+                await this.setState({ customer: '' });
+            }
+            else{
+                await this.setState({ customer: res.data[0] });
+            }
         }
         else {
             res.data = {}
             res.data[0] = {}
+            await this.setState({ customer: res.data[0] });
         }
-        this.setState({ customer: res.data[0] });
     }
 
 
@@ -67,7 +77,8 @@ export default class CustomerSelectSalesReport extends React.Component {
         console.log(this.state.customer)
         this.props.handleSelectCustomer(this.state.allCustomers ? this.state.customer : {});
         this.setState({
-            allCustomers: !this.state.allCustomers
+            allCustomers: !this.state.allCustomers,
+            singleCustomer: !this.state.singleCustomer
         })
     };
 
@@ -78,13 +89,19 @@ export default class CustomerSelectSalesReport extends React.Component {
             <div className='item-properties'>
             {/* <Row>
                 <Col> */}
+                <Form>
+            
             <FormGroup>
-                <Label>Select All Customers</Label>
-                <br></br>
-                <Switch onChange={() => this.onSelectAllCustomers()} checked={this.state.allCustomers}/>
-            </FormGroup>
+          <Label for="all-customers">Select Customers</Label>
+          <div>
+            <CustomInput type="checkbox" id="exampleswitch" name="customSwitch" label="All Customers" onChange={() => this.onSelectAllCustomers()} checked={this.state.allCustomers}/>
+          </div>
+        </FormGroup>
+
+        </Form>
             {/* </Col>
             <Col> */}
+            {this.state.singleCustomer ? 
                 <ItemSearchInput
                     curr_item={this.state.customer}
                     item_type={Constants.customer_label}
@@ -92,8 +109,8 @@ export default class CustomerSelectSalesReport extends React.Component {
                     handleSelectItem={this.onSelectCustomer}
                     disabled = {this.state.allCustomers}
                 />
-                {/* </Col>
-                </Row> */}
+                : <div/>
+            }
             </div>
         </div>
         );
