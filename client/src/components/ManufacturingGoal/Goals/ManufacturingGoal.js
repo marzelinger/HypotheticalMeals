@@ -63,6 +63,11 @@ export default class ManufacturingGoal extends React.Component{
         return false;
       }
       else{
+        for(var i = 0; i < this.props.activities.length; i ++){
+          console.log('deleting activity')
+          await SubmitRequest.submitDeleteItem('manuactivities', this.props.activities[i]);
+          this.props.activities.splice(i, 1);
+        }
         this.props.handleDeleteGoal(this.props.id)
         return true;
       }
@@ -120,7 +125,7 @@ export default class ManufacturingGoal extends React.Component{
         </div>
           <div className="singleGoalButtons">
             {/* <img className = "hoverable" id ="deleteButton" onClick={() => {this.handleDeleteGoal()}} src= {deleteButton}></img> */}
-            <div id = "editform" className="form">
+            <div className = "editform" className="form">
               <ManufacturingGoalDetails
               onEnabled = {this.onEnabled}
               enabled = {this.props.goal.enabled}

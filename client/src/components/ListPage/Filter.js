@@ -48,7 +48,6 @@ export default class Filter extends React.Component {
     }
 
     getNewOptions = (input) => {
-        console.log("getting new options here.");
         if(input == ""){
             this.setState({options: []})
             return;
@@ -79,6 +78,11 @@ export default class Filter extends React.Component {
                         this.handleResponse(response)
                     });
                     break;
+                case Constants.customers_page_name:
+                    SubmitRequest.submitGetCustomersByNameSubstring(input).then((response) => {
+                        this.handleResponse(response)
+                    });
+                    break;
 
             }
     }
@@ -94,7 +98,10 @@ export default class Filter extends React.Component {
         const customStyles = {
             control: (base, state) => ({
                 ...base,
-                borderColor: this.props.invalid ? 'red' : '#ddd'
+                borderColor: this.props.invalid ? 'red' : '#ddd',
+                height: '40px',
+                'min-height': '34px',
+                width: '250px'
             })
         }
         return (
@@ -125,7 +132,6 @@ export default class Filter extends React.Component {
 }
 
 Filter.propTypes = {
-    value: PropTypes.string,
     currItems: PropTypes.arrayOf(PropTypes.object),
     handleFilterValueChange: PropTypes.func,
     handleFilterValueSelection: PropTypes.func,

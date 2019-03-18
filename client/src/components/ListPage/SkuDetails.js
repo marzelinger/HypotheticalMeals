@@ -138,6 +138,7 @@ export default class SKUDetails extends React.Component {
     onModifyManuLines = (list) => {
         if(currentUserIsAdmin().isValid){
             var newItem = Object.assign({}, this.state.item);
+            console.log(newItem);
             newItem['manu_lines'] = list;
             this.setState({
                 item: newItem
@@ -160,7 +161,7 @@ export default class SKUDetails extends React.Component {
         console.log("this is the formula_item: "+JSON.stringify(formula_item));
         console.log("this is the prop: "+prop);
         console.log("PROPS BEING CHANGED IN FORMULA SKUDETAILS");
-        formula_item[prop] = value
+        formula_item[prop] = value;
         this.setState({ formula_item: formula_item });
 
         var curItem = this.state.item;

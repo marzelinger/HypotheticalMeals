@@ -110,7 +110,33 @@ export default class ListPage extends React.Component {
                 this.setState({manu_lines_modal: !this.state.manu_lines_modal})
                 break;
         }
-    }   
+    }
+    
+    async updateRecords(index) {
+        console.log('update sku records')
+        var data = this.state.data;
+        var sku = data[index];
+        SubmitRequest.addSkuRecords(sku.num, 2019)
+        if(index < data.length  - 1){
+            setTimeout( () => {
+            var next_index = index + 1;
+            this.updateRecords(next_index)
+            }, 2000)
+        }
+    }
+
+    async getAllRecords(index) {
+        // alert('update sku records ')
+        var data = this.state.data;
+        var sku = data[index];
+        console.log('updating sku ' + sku.name);
+        SubmitRequest.addAllSkuRecords(sku.num)
+        if(index < data.length - 1){
+            setTimeout( () => {
+            var next_index = index + 1;
+            this.getAllRecords(next_index)
+        }, 21000)}
+    }
 
     async componentDidMount() {
         if (this.props.default_ing_filter !== undefined){
@@ -119,6 +145,12 @@ export default class ListPage extends React.Component {
         if( this.props.default_formula_filter !== undefined){
             await this.onFilterValueSelection([{ value: { _id : this.props.default_formula_filter._id }}], null, 'formula');
         }
+        // var now = new Date();
+        // var millisTill10 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16, 19, 0, 0) - now;
+        // if (millisTill10 < 0) {
+        //     millisTill10 += 86400000; // it's after 10am, try 10am tomorrow.
+        // }
+        // setTimeout(() => this.updateRecords(), millisTill10);
         this.loadDataFromServer();
     }
 
@@ -270,7 +302,7 @@ export default class ListPage extends React.Component {
     }
 
     onTableOptionSelection = async(e, opt) => {
-        if (this.state.selected_items.length === 0) {
+        if (this.state.selected_items.length === 0 && opt!=Constants.create_item) {
             alert('You must select items to use these features!')
             return
         }
@@ -290,6 +322,7 @@ export default class ListPage extends React.Component {
     onAddManuGoals =  async() => {
         this.toggle(Constants.manu_goals_modal);
         let res = await SubmitRequest.submitGetManuGoalsData(this.state.user);
+        console.log(res)
         this.setState({ manu_goals_data: res.data});
     }
 
@@ -379,6 +412,7 @@ export default class ListPage extends React.Component {
                 if(resFormula.success){
                     item['formula']= resFormula.data._id;
                     resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item);
+                    SubmitRequest.addSkuRecords(resItem.data.num, 2019);
                 } 
                 else {
                     resItem = { success: false, error: 'Formula Quantity is not entered correctly'}
@@ -430,6 +464,18 @@ export default class ListPage extends React.Component {
     getButtons = () => {
         return (
         <div className = "ingbuttons"> 
+            <div className = "manugoalbutton hoverable"
+                            onClick={() => SubmitRequest.addAllCustomers()}
+                            primary={true}
+                            > Add Customers </div>
+            <div className = "manugoalbutton hoverable"
+                            onClick={() => this.updateRecords(0)}
+                            primary={true}
+                            > Add Records </div>
+            <div className = "manugoalbutton hoverable"
+                            onClick={() => this.getAllRecords(0)}
+                            primary={true}
+                            > Add All Records </div>
             {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) ? null : 
                             (<div className = "manugoalbutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}

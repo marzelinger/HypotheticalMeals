@@ -48,7 +48,7 @@ export class ImportTable extends React.Component{
                 These records will be replaced.
                 <Table>
                     <thead>
-                        <tr>
+                        <tr style ={{gridTemplateColumns: `repeat( ${this.state.table_properties.length}, minmax(100px, 1fr))` }}>
                             {this.state.table_properties.map(prop =>
                                 <th key={prop}>
                                     {this.getPropertyLabel(prop)}
@@ -58,7 +58,8 @@ export class ImportTable extends React.Component{
                     </thead>
                     <tbody>
                         {this.state.list_items.map(item =>
-                            <tr
+                            <tr 
+                                style ={{gridTemplateColumns: `repeat( ${this.state.table_properties.length}, minmax(100px, 1fr))` }}
                                 key={item.num}
                             >
                                 {this.state.table_properties.map(prop =>
@@ -73,11 +74,11 @@ export class ImportTable extends React.Component{
                     </tbody>
                 </Table>
             </div>
-            <div className="paddedDiv">
+            <div className="paddedDiv import-table">
                 These records will replace the others.
                 <Table>
                     <thead>
-                        <tr>
+                        <tr style ={{gridTemplateColumns: `repeat( ${this.state.table_properties.length}, minmax(100px, 1fr))` }}    >
                             {this.state.table_properties.map(prop =>
                                 <th key={prop}>
                                     {this.getPropertyLabel(prop)}
@@ -88,6 +89,7 @@ export class ImportTable extends React.Component{
                     <tbody>
                         {this.state.new_list_items.map(item =>
                             <tr
+                                style ={{gridTemplateColumns: `repeat( ${this.state.table_properties.length}, minmax(100px, 1fr))` }}
                                 key={item.num}
                             >
                                 {this.state.table_properties.map(prop =>

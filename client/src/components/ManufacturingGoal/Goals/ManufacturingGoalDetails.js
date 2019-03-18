@@ -129,7 +129,9 @@ export default class ManufacturingGoalDetails extends React.Component {
 
     async handleSubmit(e, opt) {
         if (![Constants.details_save, Constants.details_create].includes(opt)) {
-            if(this.props.handleDetailViewSubmit(e, this.state.item, opt)){
+            var return_val = await this.props.handleDetailViewSubmit(e, this.state.item, opt);
+            console.log(return_val)
+            if(return_val){
                 this.setState({modal: false})
             };
             return;
@@ -141,6 +143,7 @@ export default class ManufacturingGoalDetails extends React.Component {
             var item = this.state.item;
             item.deadline = new Date(item.deadline)
             var return_val = await this.props.handleDetailViewSubmit(e, item, opt)
+            console.log(return_val)
             if(return_val.success){
                 this.setState({modal: false, errorText: ''})
             }
@@ -207,7 +210,7 @@ export default class ManufacturingGoalDetails extends React.Component {
             <FormGroup>
                 <Label>Enabled</Label>
                 <br></br>
-                <Switch onChange={this.onEnable} checked={this.state.item.enabled} />
+                <Switch onColor = '#98FB98' onChange={this.onEnable} checked={this.state.item.enabled} />
             </FormGroup> : 
             <div></div>
             return (
@@ -273,7 +276,7 @@ export default class ManufacturingGoalDetails extends React.Component {
         return (
         <div>
         <img id = "button" src={this.props.buttonImage} onClick={this.toggle}></img>
-            <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup" className='item-details'>
+            <Modal style = {{border: this.state.item.enabled ? 'solid thick #98FB98' : 'solid thick grey'}} isOpen={this.state.modal} toggle={this.toggle} id="popup" className='item-details'>
             <div className='item-details'>
                 <div className='item-title'>
                     <h1>{ this.state.item  ? this.state.item.name : Constants.undefined }</h1>

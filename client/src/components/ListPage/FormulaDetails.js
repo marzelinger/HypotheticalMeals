@@ -89,6 +89,8 @@ export default class FormulaDetails extends React.Component {
         console.log('gets here');
         var ingrType = await this.findUnit(qty);
         var ingrType2 = await this.findUnit(ingr.data[0].pkg_size);
+        console.log("here" + ingrType)
+        console.log("here" + ingrType2)
         if(ingrType == -1){
             alert("Please enter one of the following units: oz, lb, ton, g, kg, floz, pt, qt, gal, mL, L, count");
             return;
@@ -98,7 +100,7 @@ export default class FormulaDetails extends React.Component {
             alert("Please enter a positive number");
         }
         if (ingrType != ingrType2) {
-            alert("Please enter a unit matching this ingredient's unit");
+            alert(`Please enter a unit matching this ingredient's unit. ${qty} and ${ingr.data[0].pkg_size} do not have the same unit type.`);
             return;
         }
         //qty = parseInt(qty);
@@ -124,6 +126,7 @@ export default class FormulaDetails extends React.Component {
     }
 
     findUnit(ingredient_pkg_size){
+        console.log(ingredient_pkg_size)
         if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg)$/.test(ingredient_pkg_size)) return 1;
         if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (floz|pt|qt|gal|ml|l)$/.test(ingredient_pkg_size)) return 2;
         if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count)$/.test(ingredient_pkg_size)) return 3;
@@ -173,6 +176,8 @@ export default class FormulaDetails extends React.Component {
         console.log('gets here');
         var ingrType = await this.findUnit(qty);
         var ingrType2 = await this.findUnit(ingr.data[0].pkg_size);
+        console.log("here" + ingrType)
+        console.log("here" + ingrType2)
         if(ingrType == -1){
             alert("Please enter one of the following units: oz, lb, ton, g, kg, floz, pt, qt, gal, mL, L, count");
             return;
@@ -185,7 +190,7 @@ export default class FormulaDetails extends React.Component {
         }
 
         if (ingrType != ingrType2) {
-            alert("Please enter a unit matching this ingredient's unit");
+            alert(`Please enter a unit matching this ingredient's unit. ${qty} and ${ingr.data[0].pkg_size} do not have the same unit type.`);
             return;
         }
 

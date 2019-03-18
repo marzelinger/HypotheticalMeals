@@ -1,3 +1,4 @@
+import DataStore from '../helpers/DataStore'
 var fileDownload = require('js-file-download');
 
 export const exportSKUS = (dataIN, fileTitle)  => {
@@ -24,6 +25,37 @@ export const exportSKUS = (dataIN, fileTitle)  => {
         dataLine.push(curData.cpc);
         dataLine.push(curData.prod_line.name);
         dataLine.push(curData.comment);
+        rows.push(dataLine);
+    }    
+    let csvContent = "";
+    rows.forEach(function(rowArray){
+        let row = rowArray.join(",");
+        csvContent += row + "\r\n";
+     }); 
+    fileDownload(csvContent, fileTitle+'.csv');
+}
+
+export const exportFormulas = (dataIN, fileTitle)  => {
+    var count = dataIN.length;
+    const rows = [];
+    var label = [];
+    label.push("Formula #");
+    label.push("Name");
+    label.push("Ingr#");
+    label.push("Quantity");
+    label.push("Comment");
+    rows.push(label);
+
+    for(let i = 0; i<count ; i++){
+        var curData = dataIN[i];
+        var dataLine = [];
+        dataLine.push(curData.num);
+        dataLine.push(curData.name);
+        dataLine.push(curData.ingredients[i]['num']);
+        dataLine.push(curData.ingredient_quantities[i]);
+        if(i==0){
+        dataLine.push(curData.comment);
+        }
         rows.push(dataLine);
     }    
     let csvContent = "";
@@ -75,7 +107,8 @@ export const exportCalculator = (dataIN, fileTitle) => {
     label.push("Package Size");
     label.push("Package Cost");
     label.push("Comment");
-    label.push("Goal Quantity");
+    label.push("Package Quantity");
+    label.push("Unit Quantity");
     rows.push(label);
     for(let i = 0; i<count ; i++){
         var currData = dataIN[i];
@@ -86,7 +119,8 @@ export const exportCalculator = (dataIN, fileTitle) => {
         dataLine.push(currData.pkg_size);
         dataLine.push(currData.pkg_cost);
         dataLine.push(currData.comment);
-        dataLine.push(currData.goalQuantity);
+        dataLine.push(currData.pckgQuant);
+        dataLine.push(currData.unitQuantity);
         rows.push(dataLine);
     }    
     let csvContent = "";
@@ -478,3 +512,33 @@ export const exportImportReport = (added_items, updated_items, ignored_items, fi
         fileDownload(csvContent, fileTitle+'.csv');
 }
 
+export const exportSalesReport = (dataIN, fileTitle) => {
+    console.log('yo')
+    var count = dataIN.length;
+    const rows = [];
+    var label = [];
+    let { item_properties, item_property_labels } = DataStore.getSkuSaleReportData()
+    label.push(item_property_labels);
+    rows.push(label);
+    for(let i = 0; i<count ; i++){
+        var curData = dataIN[i];
+        var dataLine = [];
+        for (let j = 0; j < item_properties.length; j++) {
+            if (item_properties[j] === 'year' || item_properties[j] === 'week'){
+                dataLine.push(curData['date'][item_properties[j]])
+            }
+            else if (item_properties[j] === 'revenue') {
+                dataLine.push(parseInt(curData.sales) * parseFloat(curData.ppc))
+            }
+            else dataLine.push(curData[item_properties[j]])
+        }
+        rows.push(dataLine);
+    }    
+    let csvContent = "";
+    rows.forEach(function(rowArray){
+        let row = rowArray.join(",");
+        csvContent += row + "\r\n";
+     }); 
+    fileDownload(csvContent, fileTitle+'.csv');
+
+}

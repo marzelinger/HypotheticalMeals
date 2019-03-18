@@ -138,6 +138,8 @@ export default class ManufacturingLinePage extends React.Component {
                 manuData: manuData
               });
             console.log("this is the reportData: "+JSON.stringify(this.state.reportData));
+            console.log("this is the summ: "+JSON.stringify(this.state.reportData));
+
             this.toggle(Constants.manu_report_data_modal);
             break;
         };

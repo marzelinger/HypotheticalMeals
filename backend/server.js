@@ -18,12 +18,18 @@ import Manu_ActivityHandler from './models/handlers/Manu_ActivityHandler';
 import { getSecret } from './secrets';
 const passport = require("passport");
 import CSV_parser from './csv_parser';
+import CustomerHandler from './models/handlers/CustomerHandler';
+import Sale_RecordHandler from './models/handlers/Sale_RecordHandler';
+import ScraperHandler from './models/handlers/Scraper';
 var https = require('https');
 var fs = require('fs');
 var multer = require('multer');
 var upload = multer(({ dest : './tmp/csv'}));
 
 const cors = require('cors');
+var path = require("path");
+
+
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -60,6 +66,7 @@ router.post('/skus', (req, res) => SkuHandler.createSku(req, res));
 router.put('/skus/:sku_id', (req, res) => SkuHandler.updateSkuByID(req, res));
 router.get('/skus', (req, res) => SkuHandler.getAllSkus(req, res));
 router.get('/skus/:sku_id', (req, res) => SkuHandler.getSkuByID(req, res));
+router.get('/skus_num/:sku_num', (req, res) => SkuHandler.getSkusBySkuNumer(req, res));
 router.delete('/skus/:sku_id', (req, res) => SkuHandler.deleteSkuByID(req, res));
 router.get('/ingredients_by_sku/:sku_id', (req, res) => SkuHandler.getIngredientsBySkuID(req, res));
 router.get('/skus_name/:search_substr', (req, res) => SkuHandler.getSkusByNameSubstring(req, res));
@@ -117,11 +124,24 @@ router.get('/manugoals_filter/:name_substr/:user_substr/:user', (req, res) => Ma
 router.get('/manugoals_activity/:activity_id', (req, res) => Manu_GoalHandler.getManufacturingGoalByActivity(req, res));
 router.get('/manugoals_name/:name',(req, res) => Manu_GoalHandler.getManufacturingGoalByName(req, res));
 
+// Customer database APIs
+router.post('/customers', (req, res) => CustomerHandler.createCustomer(req, res));
+router.get('/customers', (req, res) => CustomerHandler.getAllCustomers(req, res));
+router.get('/customers_name/:name_substring', (req, res) => CustomerHandler.getCustomerByNameSubstring(req, res));
+router.get('/customer_number/:customer_number', (req, res) => CustomerHandler.getCustomerByNumber(req, res));
+router.get('/customers/:customer_id', (req, res) => CustomerHandler.getCustomerByID(req, res));
+
+
+// Sale Records database APIs
+router.post('/records', (req, res) => Sale_RecordHandler.createRecord(req, res));
+router.get('/records', (req, res) => Sale_RecordHandler.getAllRecords(req, res));
+
 // Multiple database APIs
 router.get('/ingredients_filter/:sort_field/:sku_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getIngredientsByFilter(req, res));
 router.get('/skus_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize/:prod_line_ids/:formula_id', (req, res) => FilterHandler.getSkusByFilter(req, res));
 router.get('/users_filter/:sort_field/:user_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getUsersByFilter(req, res));
 router.get('/formulas_filter/:sort_field/:ingredient_ids/:keyword/:currentPage/:pageSize', (req, res) => FilterHandler.getFormulasbyFilter(req, res));
+router.get('/records_filter/:sort_field/:customer_id/:prod_line_ids/:sku_id/:date_range_start/:date_range_end/:currentPage/:pageSize', (req, res) => FilterHandler.getSaleRecordsbyFilter(req, res));
 
 
 // CSV Parser database APIs
@@ -133,6 +153,11 @@ router.post('/parseUpdateSkus', (req, res) => CSV_parser.parseUpdateSKU(req, res
 router.post('/parseUpdateIngredients', (req, res) => CSV_parser.parseUpdateIngredients(req, res));
 
 router.put('/users/:user_id', (req, res) => UserHandler.updateUserByID(req, res));
+
+//scraping
+
+router.get('/scrape_customers', (req, res) => ScraperHandler.scrapeAllCustomers(req, res));
+router.get('/scrape_records/:sku_num/:year', (req, res) => ScraperHandler.scrapeSkuRecords(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);
@@ -151,6 +176,8 @@ router.post("/users/register", (req, res) => UserHandler.createUser(req, res));
 // @access Public
 router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword(req,res));
 router.post("/users/loginDukeNetID", (req, res) => UserHandler.loginUserDukeNetID(req,res));
+router.delete('/users/:user_id', (req, res) => UserHandler.deleteUserByID(req, res));
+
 
 
 
@@ -162,16 +189,16 @@ router.get('/users', (req, res) => UserHandler.getAllUsers(req, res));
 
 
 
-// Gives constant name to long directory home page.
-// const appPage = path.join(__dirname, '../client/build/index.html');
+// // Gives constant name to long directory home page.
+//  const appPage = path.join(__dirname, '../client/build/index.html');
 
-// // Allows the use of files.
-// app.use(express.static('../client/build'));
+// // // Allows the use of files.
+//  app.use(express.static('../client/build'));
 
-// // SERVES STATIC HOMEPAGE at '/' URL
-// app.get('*', function(req, res) {
-//   res.sendFile(appPage)
-// })
+// // // SERVES STATIC HOMEPAGE at '/' URL
+//  app.get('*', function(req, res) {
+//    res.sendFile(appPage)
+//  })
 
 
 /*
