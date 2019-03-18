@@ -20,6 +20,8 @@ import {
 import SubmitRequest from '../../helpers/SubmitRequest';
 import CustomerSelectSalesReport from './CustomerSelectSalesReport'
 import ItemSearchInput from '../ListPage/ItemSearchInput'
+import Calculations from './Calculations'
+
 import DataStore from '../../helpers/DataStore';
 import CanvasJSReact from '../../assets/canvasjs.react';
 import ExportSimple from '../export/ExportSimple'
@@ -46,6 +48,8 @@ export default class SkuDrilldown extends React.Component {
             customer: {},
             dateRange: { 'startdate': last_year.toISOString().substr(0,10), 'enddate': today.toISOString().substr(0,10)},
             new_data: false,
+            invalid_inputs: [],
+            totalRowData: {},
             data: [],
             dataPoints: [],
             item_properties,
@@ -64,8 +68,12 @@ export default class SkuDrilldown extends React.Component {
              this.state.dateRange['enddate'] !== null && this.state.new_data){
             var cust_str = (this.state.customer._id === undefined) ? '_' : this.state.customer._id;
             let datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', cust_str, '_', this.state.sku._id, 
+
                                 this.state.dateRange['startdate'], this.state.dateRange['enddate'], 0, 0)
             console.log(datares.data)
+            if(datares.success){
+                await this.getTotalRowData(datares.data);
+            }
             let newDataPoints = (datares.data.length > 0) ? await this.processDataPoints(datares) : []
             let newMessage = (datares.data.length > 0) ? (<Alert color='primary'>Please Select a SKU</Alert>) : 
                                                          (<Alert color='secondary'>No Results...</Alert>)
@@ -76,6 +84,16 @@ export default class SkuDrilldown extends React.Component {
                 new_data: false,
             })
             if (datares.data.length > 0) this.chart.render()
+        }
+    }
+
+    async getTotalRowData(records){
+        var recordsCalcs = Calculations.getSalesTotals(records);
+        if(recordsCalcs != undefined){
+            var total_data = Calculations.calcTotalData(this.state.sku, recordsCalcs.revenue, recordsCalcs.sales, recordsCalcs.avg_rev_per_case);
+            await this.setState({
+                totalRowData : total_data
+            });
         }
     }
 
@@ -146,6 +164,8 @@ export default class SkuDrilldown extends React.Component {
     }
 
     onInputChange(event, type) {
+        console.log("this is the tyep: "+type);
+        console.log("this is the val: "+event.target.value);
         let newRange = Object.assign({}, this.state.dateRange)
         newRange[type] = event.target.value
         this.setState({

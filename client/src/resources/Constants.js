@@ -81,6 +81,7 @@ export const edit_manu_lines = 'Bulk Edit Manufacturing Lines'
 export const manu_lines_modal = 'manu_lines'
 export const details_modal = 'details'
 export const manu_report_data_modal = 'manu_report'
+export const create_sum_sales_report = 'Create Summary Sales Report'
 
 
 // CSV parsing constants
