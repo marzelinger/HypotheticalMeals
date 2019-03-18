@@ -24,6 +24,7 @@ import DataStore from '../../helpers/DataStore';
 import CanvasJSReact from '../../assets/canvasjs.react';
 import ExportSimple from '../export/ExportSimple'
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
+var moment = require('moment');
 
 
 export default class SkuDrilldown extends React.Component {
@@ -84,42 +85,51 @@ export default class SkuDrilldown extends React.Component {
     }
 
     async processDataPoints(datares) {
-        let dataPoints = [];
+        let dataPoints = []
         await datares.data.map(rec => {
-            let key = 'Wk ' + rec.date.week + ' ' + rec.date.year;
+            let date = moment().year(rec.date.year).week(rec.date.week).startOf('isoweek').toDate();
             let rev = 0;
-            let ind = dataPoints.findIndex(r => r.label === key);
+            let ind = dataPoints.findIndex(r => {
+                let rx = new Date(r.x)
+                let dd = new Date(date)
+                return Math.abs(rx.getTime() - dd.getTime()) < 1
+            });
             if (ind !== -1) {
                 rev = dataPoints[ind].y;
                 dataPoints.splice(ind, 1);
             }
             rev += parseInt(rec.sales) * parseFloat(rec.ppc);
-            dataPoints.push({ label: key, y: rev });
-        });
-        console.log(dataPoints);
-        let cnt = dataPoints[0].label.match('Wk ([0-9]{1,2}) ([0-9]{4})');
-        let wk_cnt = parseInt(cnt[1]);
-        let yr_cnt = parseInt(cnt[2]);
-        var newDataPoints = [];
-        for (var i = 0; i < dataPoints.length - 1; i++) {
-            newDataPoints.push(dataPoints[i]);
-            if (wk_cnt === 52) {
-                wk_cnt = 0;
-                yr_cnt += 1;
+            dataPoints.push({ x: date, y: rev });
+        })
+        dataPoints.sort(function(a,b){
+            return new Date(a.x) - new Date(b.x);
+        })
+        console.log(dataPoints)
+        let newPoints = []
+        let last = dataPoints[0]
+        dataPoints.map(dp => {
+            let lastDate = new Date(last.x)
+            let nextDate = new Date(dp.x)
+            let diff = nextDate.getTime() - lastDate.getTime()
+            console.log(diff)
+            while (diff >= 2*604800000) {
+                let newDate = lastDate
+                newDate.setTime(lastDate.getTime() + 604800000)
+                var newPoint = { x: newDate, y: 0}
+                diff = diff - 604800000
+                newPoints.push(newPoint)
+                console.log(newPoint)
             }
-            else wk_cnt++;
-            while (dataPoints[i + 1].label !== 'Wk ' + wk_cnt + ' ' + yr_cnt) {
-                newDataPoints.push({ label: 'Wk ' + wk_cnt + ' ' + yr_cnt, y: 0 });
-                if (wk_cnt === 52) {
-                    wk_cnt = 0;
-                    yr_cnt += 1;
-                }
-                else wk_cnt++;
-            }
-        }
-        newDataPoints.push(dataPoints[dataPoints.length - 1]);
-        console.log(newDataPoints);
-        return newDataPoints;
+            last = dp
+        })
+        console.log(dataPoints)
+        newPoints.map(dp => dataPoints.push(dp))
+        dataPoints.sort(function(a,b){
+            return new Date(a.x) - new Date(b.x);
+        })
+        console.log(newPoints)
+        console.log(dataPoints)
+        return dataPoints;
     }
 
     async onSelectSku(sku) {
@@ -203,7 +213,8 @@ export default class SkuDrilldown extends React.Component {
                         </tbody>
                     </div>
                 </Table> 
-                <CanvasJSChart options = {this.getOptions()}
+                <CanvasJSChart 
+                    options = {this.getOptions()}
                     onRef = {ref => this.chart = ref}
                 />
                 <ExportSimple 
