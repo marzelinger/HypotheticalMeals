@@ -36,7 +36,7 @@ class SalesReportPage extends React.Component {
         return (
             <div>
                 <GeneralNavBar></GeneralNavBar>
-                <Paper >
+                <Paper className='report-picker-container'>
                     {/* className={classes.root}> */}
                     <Tabs
                         value={this.state.value}

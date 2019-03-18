@@ -1,6 +1,10 @@
+.report-picker-container {
+    /* margin-top: 40px; */
+}
+
 .report-container tr {
     display: flex;
-    grid-template-columns:  minmax(50px, 1fr) minmax(50px, 1fr) minmax(100px, 2fr) minmax(50px,1fr) minmax(50px,1fr) minmax(50px,1fr) minmax(50px,1fr);
+    /* grid-template-columns:  minmax(50px, 1fr) minmax(50px, 1fr) minmax(100px, 2fr) minmax(50px,1fr) minmax(50px,1fr) minmax(50px,1fr) minmax(50px,1fr); */
     text-align: center;
 }
 
@@ -23,5 +27,7 @@
 
 .alert {
     width: 75%;
-    margin: auto;
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 50px;
 }

@@ -52,7 +52,7 @@ export default class SkuDrilldown extends React.Component {
             item_property_labels,
             invalid_inputs: [],
             page_name: 'salesReport_sku',
-            message: (<Alert color='primary'>Please Select a SKU</Alert>)
+            message: (<Alert color='primary'>Please select a SKU</Alert>)
         }
 
         this.onSelectSku = this.onSelectSku.bind(this);
@@ -67,8 +67,8 @@ export default class SkuDrilldown extends React.Component {
                                 this.state.dateRange['startdate'], this.state.dateRange['enddate'], 0, 0)
             console.log(datares.data)
             let newDataPoints = (datares.data.length > 0) ? await this.processDataPoints(datares) : []
-            let newMessage = (datares.data.length > 0) ? (<Alert color='primary'>Please Select a SKU</Alert>) : 
-                                                         (<Alert color='secondary'>No Results...</Alert>)
+            let newMessage = (datares.data.length > 0) ? (<Alert color='primary'>Please select a SKU</Alert>) : 
+                                                         (<Alert color='secondary'>No results...</Alert>)
             await this.setState({ 
                 data: datares.data,
                 dataPoints: newDataPoints,
@@ -104,19 +104,17 @@ export default class SkuDrilldown extends React.Component {
         for (var i = 0; i < dataPoints.length - 1; i++) {
             newDataPoints.push(dataPoints[i]);
             if (wk_cnt === 52) {
-                wk_cnt = 1;
+                wk_cnt = 0;
                 yr_cnt += 1;
             }
-            else
-                wk_cnt++;
+            else wk_cnt++;
             while (dataPoints[i + 1].label !== 'Wk ' + wk_cnt + ' ' + yr_cnt) {
                 newDataPoints.push({ label: 'Wk ' + wk_cnt + ' ' + yr_cnt, y: 0 });
                 if (wk_cnt === 52) {
-                    wk_cnt = 1;
+                    wk_cnt = 0;
                     yr_cnt += 1;
                 }
-                else
-                    wk_cnt++;
+                else wk_cnt++;
             }
         }
         newDataPoints.push(dataPoints[dataPoints.length - 1]);
@@ -176,7 +174,10 @@ export default class SkuDrilldown extends React.Component {
                     var prop_return = rec.date[prop]
                 }
                 else if (prop === 'revenue') {
-                    var prop_return =  parseInt(rec.sales) * parseFloat(rec.ppc)
+                    var prop_return =  '$' + parseInt(rec.sales) * parseFloat(rec.ppc)
+                }
+                else if (prop === 'ppc') {
+                    var prop_return =  '$' + rec[prop]
                 }
                 else {
                     var prop_return =  rec[prop]
@@ -190,18 +191,18 @@ export default class SkuDrilldown extends React.Component {
     injectReportPreview() {
         return (
             <div className='report-container'>
-                <div class="table-wrapper-scroll-y my-custom-scrollbar">
-                    <Table>
-                        <thead>
-                            <tr>
-                                {this.state.item_property_labels.map(lab => <th>{lab}</th>)}
-                            </tr>
-                        </thead>
+                <Table>
+                    <thead>
+                        <tr>
+                            {this.state.item_property_labels.map(lab => <th>{lab}</th>)}
+                        </tr>
+                    </thead>
+                    <div class="table-wrapper-scroll-y my-custom-scrollbar">
                         <tbody>
                             {this.injectTable()}
                         </tbody>
-                    </Table> 
-                </div>
+                    </div>
+                </Table> 
                 <CanvasJSChart options = {this.getOptions()}
                     onRef = {ref => this.chart = ref}
                 />
@@ -216,16 +217,16 @@ export default class SkuDrilldown extends React.Component {
         return (
         <div className='sku-drilldown'>
             <div className='filter-container'>
-                <CustomerSelectSalesReport
-                    item = {this.state.customer}
-                    handleSelectCustomer = {this.onSelectCustomer}
-                />
                 <ItemSearchInput
                     curr_item={this.state.sku}
                     item_type={Constants.sku_label}
                     invalid_inputs={this.state.invalid_inputs}
                     handleSelectItem={this.onSelectSku}
                     disabled = {false}
+                />
+                <CustomerSelectSalesReport
+                    item = {this.state.customer}
+                    handleSelectCustomer = {this.onSelectCustomer}
                 />
                 <FormGroup>
                     <Label for="startdate">Start Date</Label>

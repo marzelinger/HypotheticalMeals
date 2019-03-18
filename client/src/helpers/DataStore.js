@@ -139,7 +139,7 @@ export default class DataStore{
     static getSkuSaleReportData() {
       return {
         item_properties: ['year', 'week', 'cust_name', 'cust_num', 'sales', 'ppc', 'revenue'],
-        item_property_labels: ['Year', 'Week', 'Customer Name', 'Customer Number', 'Number of Sales', 'Price per Case', 'Revenue']
+        item_property_labels: ['Year', 'Week', 'Customer Name', 'Customer Number', 'Number of Sales', 'Price per Case (USD)', 'Revenue (USD)']
       };
     }
   }
