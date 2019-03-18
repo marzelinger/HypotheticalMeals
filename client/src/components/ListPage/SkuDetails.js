@@ -245,7 +245,7 @@ export default class SKUDetails extends React.Component {
                 item.ingredient_quantities.splice(ind,1);
             }
         }
-        this.setState({ item: item })
+        this.setState({ formula_item: item })
     }
 
     subtractTwoUnits(qty1, qty2){
@@ -349,7 +349,7 @@ export default class SKUDetails extends React.Component {
             console.log(item.ingredient_quantities);
             console.log(item.ingredients);
         }
-        this.setState({ item: item })
+        this.setState({ formula_item: item })
     }
 
     validatePositive(qty){
@@ -408,6 +408,9 @@ export default class SKUDetails extends React.Component {
     async validateInputs() { 
         var inv_in = [];
         this.state.item_properties.map(prop => {
+            console.log(this.state.item);
+            console.log(prop);
+            console.log(this.state.item[prop]);
             if (!this.state.item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
         })
         if (this.state.prod_line_item.name === undefined) inv_in.push('prod_line');
