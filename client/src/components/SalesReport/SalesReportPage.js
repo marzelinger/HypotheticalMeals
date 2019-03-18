@@ -17,6 +17,7 @@ class SalesReportPage extends React.Component {
         value: 0,
         customer: {},
         allCustomers: false,
+        selected_sku: {}
     };
 
     handleChange = (event, value) => {
@@ -24,6 +25,9 @@ class SalesReportPage extends React.Component {
         this.setState({ value });
     };
 
+    onSelectSku = async (sku) => {
+        await this.setState({ selected_sku: sku })
+    };
 
     render() {
 
@@ -44,11 +48,17 @@ class SalesReportPage extends React.Component {
                         
                     </Tabs>
                 </Paper>
-                {this.state.value === 0 ? <GeneralReport/> : <SkuDrilldown/> } 
+                {this.state.value === 0 ? 
+                    <GeneralReport/> : 
+                    <SkuDrilldown 
+                        sku={this.state.selected_sku}
+                        handleSelectSku={this.onSelectSku}
+                    /> 
+                } 
                 {/* first is General, Second is SKU */}
             </div>
         );
-  }
+    }
 }
 
 const styles = {

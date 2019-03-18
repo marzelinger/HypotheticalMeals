@@ -45,7 +45,6 @@ export default class SkuDrilldown extends React.Component {
         this.state = {
             today: today.toISOString().substr(0,10),
             last_year: last_year.toISOString().substr(0,10),
-            sku: {},
             customer: {},
             dateRange: { 'startdate': last_year.toISOString().substr(0,10), 'enddate': today.toISOString().substr(0,10)},
             new_data: false,
@@ -65,10 +64,10 @@ export default class SkuDrilldown extends React.Component {
     }
 
     async componentDidUpdate(prevProps, prevState) {
-        if ( this.state.sku._id !== undefined && this.state.dateRange['startdate'] !== null && 
+        if ( this.props.sku._id !== undefined && this.state.dateRange['startdate'] !== null && 
              this.state.dateRange['enddate'] !== null && this.state.new_data){
             var cust_str = (this.state.customer._id === undefined) ? '_' : this.state.customer._id;
-            let datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', cust_str, '_', this.state.sku._id, 
+            let datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', cust_str, '_', this.props.sku._id, 
 
                                 this.state.dateRange['startdate'], this.state.dateRange['enddate'], 0, 0)
             console.log(datares.data)
@@ -91,7 +90,7 @@ export default class SkuDrilldown extends React.Component {
     async getTotalRowData(records){
         var recordsCalcs = Calculations.getSalesTotals(records);
         if(recordsCalcs != undefined){
-            var total_data = Calculations.calcTotalData(this.state.sku, recordsCalcs.revenue, recordsCalcs.sales, recordsCalcs.avg_rev_per_case);
+            var total_data = Calculations.calcTotalData(this.props.sku, recordsCalcs.revenue, recordsCalcs.sales, recordsCalcs.avg_rev_per_case);
             await this.setState({
                 totalRowData : total_data
             });
@@ -122,78 +121,65 @@ export default class SkuDrilldown extends React.Component {
         dataPoints.sort(function(a,b){
             return new Date(a.x) - new Date(b.x);
         })
-        console.log(dataPoints)
         let newPoints = []
         let last = dataPoints[0]
         dataPoints.map(dp => {
             let lastDate = new Date(last.x)
             let nextDate = new Date(dp.x)
             let diff = nextDate.getTime() - lastDate.getTime()
-            console.log(diff)
             while (diff >= 2*604800000) {
                 let newDate = lastDate
                 newDate.setTime(lastDate.getTime() + 604800000)
                 var newPoint = { x: newDate, y: 0}
                 diff = diff - 604800000
                 newPoints.push(newPoint)
-                console.log(newPoint)
             }
             last = dp
         })
-        console.log(dataPoints)
         newPoints.map(dp => dataPoints.push(dp))
         dataPoints.sort(function(a,b){
             return new Date(a.x) - new Date(b.x);
         })
-        console.log(newPoints)
-        console.log(dataPoints)
         return dataPoints;
     }
 
     async onSelectSku(sku) {
         let skures = await SubmitRequest.submitGetSkuByID(sku._id)
+        await this.props.handleSelectSku(skures.data[0])
         this.setState({
-            sku: skures.data[0],
             new_data: true
         })
-        console.log(skures.data[0])
     }
 
     async onSelectCustomer(customer) {
-        console.log(customer)
         let custres = customer._id !== undefined ? await SubmitRequest.submitGetCustomerByID(customer._id) : {data: [{}]}
-        console.log(custres.data[0])
         this.setState({
             customer: custres.data[0],
             new_data: true
         })
-        console.log(custres.data[0])
     }
 
     onInputChange(event, type) {
-        console.log("this is the tyep: "+type);
-        console.log("this is the val: "+event.target.value);
         let newRange = Object.assign({}, this.state.dateRange)
         newRange[type] = event.target.value
         this.setState({
             dateRange: newRange,
             new_data: true
         })
-        console.log(newRange)
     }
 
     getOptions() {
         let options = {
             animationEnabled: true,
+            theme: "light2",
             title: {
-                text: this.state.sku.name + ' Sales Report'
+                text: this.props.sku.name + ' Sales Report'
             },
             data: [{				
                 type: "line",
                 dataPoints: this.state.dataPoints
              }]
         }
-        console.log(options)
         return options
     }
 
@@ -249,7 +235,7 @@ export default class SkuDrilldown extends React.Component {
         <div className='sku-drilldown'>
             <div className='filter-container'>
                 <ItemSearchInput
-                    curr_item={this.state.sku}
+                    curr_item={this.props.sku}
                     item_type={Constants.sku_label}
                     invalid_inputs={this.state.invalid_inputs}
                     handleSelectItem={this.onSelectSku}
@@ -287,6 +273,6 @@ export default class SkuDrilldown extends React.Component {
 }
 
 SkuDrilldown.propTypes = {
-    customer: PropTypes.object,
-    handleSelectCustomer: PropTypes.func
+    sku: PropTypes.object,
+    handleSelectSku: PropTypes.func
 };

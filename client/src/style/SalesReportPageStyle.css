@@ -2,9 +2,15 @@
     /* margin-top: 40px; */
 }
 
+.report-container {    
+    width: 95%;
+    margin: auto;
+}
+
 .report-container tr {
-    grid-template-columns:  minmax(50px, .5fr) minmax(50px, .5fr) minmax(150px, 2fr) minmax(150px,2fr) minmax(150px,2fr) minmax(150px,2fr) minmax(50px,1fr);
+    grid-template-columns:  minmax(50px, .5fr) minmax(50px, .5fr) minmax(200px, 2.5fr) minmax(100px,1.5fr) minmax(100px,1.5fr) minmax(150px,2fr) minmax(100px,1.5fr);
     text-align: center;
+    overflow: hidden;
 }
 
 .report-container td, .report-container th {
