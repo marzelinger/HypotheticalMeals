@@ -58,7 +58,6 @@ class App extends React.Component{
         //check user still exists
         const decoded = jwt_decode(token);
         var user_id = decoded.id;
-        var response = await SubmitRequest.submitGetUserByID(user_id);
         setAuthToken(token);
         
         // Decode token and get user info and exp
@@ -72,6 +71,8 @@ class App extends React.Component{
         store.dispatch(setCurrentUser(decoded));
         // Check for expired token
         const currentTime = Date.now() / 1000; // to get in milliseconds
+        var response = await SubmitRequest.submitGetUserByID(user_id);
+
         if (decoded.exp < currentTime || !response.success) {
           // Logout user
           store.dispatch(logoutUser());

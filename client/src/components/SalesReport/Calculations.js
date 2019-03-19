@@ -2,20 +2,20 @@
 
 import SubmitRequest from '../../helpers/SubmitRequest';
 
-const dateRanges =  [
-    //start jan 1 2010
-    { 'startdate': "2010-01-01", 'enddate': "2010-12-31"},
-    { 'startdate': "2011-01-01", 'enddate': "2011-12-31"},
-    { 'startdate': "2012-01-01", 'enddate': "2012-12-31"},
-    { 'startdate': "2013-01-01", 'enddate': "2013-12-31"},
-    { 'startdate': "2014-01-01", 'enddate': "2014-12-31"},
-    { 'startdate': "2015-01-01", 'enddate': "2015-12-31"},
-    { 'startdate': "2016-01-01", 'enddate': "2016-12-31"},
-    { 'startdate': "2017-01-01", 'enddate': "2017-12-31"},
-    { 'startdate': "2018-01-01", 'enddate': "2018-12-31"},
-    { 'startdate': "2019-01-01", 'enddate': "2019-12-31"}
-    //end jan1 2019
-];
+// const dateRanges =  [
+//     //start jan 1 2010
+//     { 'startdate': "2010-01-01", 'enddate': "2010-12-31"},
+//     { 'startdate': "2011-01-01", 'enddate': "2011-12-31"},
+//     { 'startdate': "2012-01-01", 'enddate': "2012-12-31"},
+//     { 'startdate': "2013-01-01", 'enddate': "2013-12-31"},
+//     { 'startdate': "2014-01-01", 'enddate': "2014-12-31"},
+//     { 'startdate': "2015-01-01", 'enddate': "2015-12-31"},
+//     { 'startdate': "2016-01-01", 'enddate': "2016-12-31"},
+//     { 'startdate': "2017-01-01", 'enddate': "2017-12-31"},
+//     { 'startdate': "2018-01-01", 'enddate': "2018-12-31"},
+//     { 'startdate': "2019-01-01", 'enddate': "2019-12-31"}
+//     //end dec 31 2019
+// ];
 
 
 export default class Calculations{
@@ -25,7 +25,7 @@ export default class Calculations{
     //total revenue/num cases
     //sales = #cases sold
     //price = price per case
-    static async getTenYRSalesData(skus, cust_str){
+    static async getTenYRSalesData(skus, cust_str, dateRanges, years){
         let tenYRSKUsdata = {
             skus: []
         }
@@ -45,7 +45,7 @@ export default class Calculations{
                         cur_ten_yr_rev += curRowData.revenue;
                         cur_ten_yr_sales += curRowData.sales;
                         cur_ten_yr_avg_case += curRowData.avg_rev_per_case;
-                        await curSkuData.push({ yr: yr, salesData: curRowData });
+                        await curSkuData.push({ yr: years[yr], salesData: curRowData });
                     }
 
                 }
@@ -57,26 +57,26 @@ export default class Calculations{
         return tenYRSKUsdata;
     }
 
-    static async getSimpleSKUData(sku, cust_str){
-        var curSkuData = [];
-        var cur_ten_yr_rev = 0;
-        var cur_ten_yr_sales = 0;
-        var cur_ten_yr_avg_case = 0;
-        for(let yr = 0; yr<dateRanges.length; yr++){
-            let datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', cust_str, '_', sku._id, 
-                dateRanges[yr]['startdate'], dateRanges[yr]['enddate'], 0, 0);
-            if(datares.success){
-                var curRowData = await this.getSalesTotals(datares.data);
-                cur_ten_yr_rev += curRowData.revenue;
-                cur_ten_yr_sales += curRowData.sales;
-                cur_ten_yr_avg_case += curRowData.avg_rev_per_case;
-                curSkuData.push({ yr: yr, salesData: curRowData });
-            }
+    // static async getSimpleSKUData(sku, cust_str){
+    //     var curSkuData = [];
+    //     var cur_ten_yr_rev = 0;
+    //     var cur_ten_yr_sales = 0;
+    //     var cur_ten_yr_avg_case = 0;
+    //     for(let yr = 0; yr<dateRanges.length; yr++){
+    //         let datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', cust_str, '_', sku._id, 
+    //             dateRanges[yr]['startdate'], dateRanges[yr]['enddate'], 0, 0);
+    //         if(datares.success){
+    //             var curRowData = await this.getSalesTotals(datares.data);
+    //             cur_ten_yr_rev += curRowData.revenue;
+    //             cur_ten_yr_sales += curRowData.sales;
+    //             cur_ten_yr_avg_case += curRowData.avg_rev_per_case;
+    //             curSkuData.push({ yr: yr, salesData: curRowData });
+    //         }
 
-        }
-        cur_ten_yr_avg_case = cur_ten_yr_avg_case/10;
-        return {cur_ten_yr_rev: cur_ten_yr_rev, cur_ten_yr_sales: cur_ten_yr_sales, cur_ten_yr_avg_case : cur_ten_yr_avg_case};
-    }
+    //     }
+    //     cur_ten_yr_avg_case = cur_ten_yr_avg_case/10;
+    //     return {cur_ten_yr_rev: cur_ten_yr_rev, cur_ten_yr_sales: cur_ten_yr_sales, cur_ten_yr_avg_case : cur_ten_yr_avg_case};
+    // }
 
     static async getSalesTotals(records) {
         var total_rev = 0;
@@ -113,12 +113,14 @@ export default class Calculations{
     }
 
     static async parseUnitVal(unit_string){
+        console.log("this is the unit_string: "+unit_string);
         var str = ""+unit_string;
         let match = str.match('^([0-9]+(?:[\.][0-9]{0,10})?|\.[0-9]{1,10}) (oz|ounce|lb|pound|ton|g|gram|kg|kilogram|' + 
                                       'floz|fluidounce|pt|pint|qt|quart|gal|gallon|ml|milliliter|l|liter|ct|count)$')
         if (match === null) {
             return { success: false, error: 'Incorrect String Format'}
         }
+        console.log("this is the match: "+ match);
         let val = match[1]
         let unit = match[2]
         return {val: val, unit: unit};
@@ -133,12 +135,12 @@ export default class Calculations{
                 console.log("ing quant; "+sku.formula.ingredients[ing].pkg_size);
                 console.log("form ing quant; "+sku.formula.ingredient_quantities[ing]);
 
-                var ingr_parse = this.parseUnitVal(sku.formula.ingredients[ing].pkg_size);
+                var ingr_parse = await this.parseUnitVal(sku.formula.ingredients[ing].pkg_size);
                 //var {ing_pkg_size, unit} = this.parseUnitVal(sku.formula.ingredients[ing].pkg_size);
                 var ing_pkg_size = ingr_parse.val;
                 console.log('this is the ingr-parse; '+JSON.stringify(ingr_parse));
                 console.log("ingpackage: "+ing_pkg_size);
-                var form_parse = this.parseUnitVal(sku.formula.ingredient_quantities[ing]);
+                var form_parse = await this.parseUnitVal(sku.formula.ingredient_quantities[ing]);
                 //var {form_quant, unit} = this.parseUnitVal(sku.formula.ingredient_quantities[ing]);
                 var form_quant = form_parse.val;
                 console.log('this is the formparse; '+JSON.stringify(form_parse));

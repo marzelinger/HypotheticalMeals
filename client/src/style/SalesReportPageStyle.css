@@ -18,6 +18,61 @@
     justify-content: center;
 }
 
+.report-container-general {    
+    width: 95%;
+    margin: auto;
+}
+
+.report-container-general-records {    
+    width: 95%;
+    margin: auto;
+}
+
+.report-container-general-records tr {
+    grid-template-columns: minmax(50px, 1fr) minmax(50px,1fr) minmax(50px,2fr);
+    text-align: center;
+    overflow: hidden;
+}
+
+.report-container-general-records td, .report-container-general-records th {
+    display: flex;
+    justify-content: center;
+}
+
+.report-container-general-total {    
+    width: 95%;
+    margin: auto;
+}
+
+.report-container-general-total tr {
+    grid-template-columns:  minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr);
+    text-align: center;
+    overflow: hidden;
+}
+
+.report-container-general-total td, .report-container-general-total th {
+    display: flex;
+    justify-content: center;
+}
+
+.report-container-general-sku {    
+    width: 95%;
+    margin: auto;
+}
+
+.report-container-general-sku tr {
+    grid-template-columns:  minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr);
+    text-align: center;
+    overflow: hidden;
+}
+
+.report-container-general-sku td, .report-container-general-sku th {
+    display: flex;
+    justify-content: center;
+}
+
+
+
 .filter-container{
     display:flex; 
     flex-direction:row; 
