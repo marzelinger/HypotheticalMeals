@@ -264,7 +264,7 @@ export default class ManufacturingLinesBox extends Component {
   render() {
     return (
       <div className="goalsbox">
-            <h1 id = "manufacturing_goals_title">{Constants.manu_line_title}</h1>
+            <h1 id = "manufacturing_goals_title">{''}</h1>
         <div className="goals">
           <ManufacturingLineList
             data={this.state.data}

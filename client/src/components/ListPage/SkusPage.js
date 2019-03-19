@@ -499,7 +499,7 @@ export default class ListPage extends React.Component {
 
         return (
             <div className="list-page">
-            {this.props.default_ing_filter === undefined && this.props.default_formula_filter === undefined ? <GeneralNavBar></GeneralNavBar> : null}
+            {this.props.default_ing_filter === undefined && this.props.default_formula_filter === undefined ? <GeneralNavBar title={Constants.SkuTitle}></GeneralNavBar> : null}
                 <div className = "sku-table">
                     <PageTable 
                         columns={this.state.table_columns} 

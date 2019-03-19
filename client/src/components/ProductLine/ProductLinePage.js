@@ -9,7 +9,7 @@ export default class ProductLinePage extends React.Component {
   render() {
     return (
       <div>
-        <GeneralNavBar></GeneralNavBar>
+        <GeneralNavBar title={Constants.ProductLineTitle}></GeneralNavBar>
         <ProductLineBox></ProductLineBox>
         
       </div>

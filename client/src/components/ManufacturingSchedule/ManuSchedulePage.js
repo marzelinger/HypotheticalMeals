@@ -382,7 +382,7 @@ export default class ManuSchedulePage extends Component {
     render() {
         return (
         <div>
-            <GeneralNavBar></GeneralNavBar>
+            <GeneralNavBar title = {Constants.ManuScheduleTitle}></GeneralNavBar>
             <div className={'scheduler-container'} style={this.getContainerStyle()}>
                 <div className='timeline-container'>
                     {this.state.loaded ? (

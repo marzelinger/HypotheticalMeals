@@ -92,13 +92,6 @@ class App extends React.Component{
         <Provider store={store}>
           <Router>
             <div className="App">
-                {/* <div>
-                  {(this.state.user)? (
-                    <GeneralNavBar></GeneralNavBar>
-                    ) : (
-                    <div></div>
-                    )}
-                </div> */}
                <Route exact path="/login" component={Login} />
                {/* <Route exact path="/adminregister" component={AdminRegister} />   */}
                <Route exact path= "/" component={Landing} />

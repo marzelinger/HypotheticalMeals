@@ -156,7 +156,7 @@ export default class ManufacturingLinePage extends React.Component {
   render() {
     return (
       <div>
-        <GeneralNavBar></GeneralNavBar>
+        <GeneralNavBar title={Constants.ManuLineTitle}></GeneralNavBar>
         <ManufacturingLineBox
         handleManuScheduleReportSelect = {this.onManuReportSelect}
         ></ManufacturingLineBox>

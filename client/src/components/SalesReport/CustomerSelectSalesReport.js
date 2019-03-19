@@ -85,32 +85,18 @@ export default class CustomerSelectSalesReport extends React.Component {
 
     render() {
         return (
-        <div className='item-details'>
-            <div className='item-properties'>
-            {/* <Row>
-                <Col> */}
-                <Form>
-            
-            <FormGroup>
-          <Label for="all-customers">Select Customers</Label>
-          <div>
-            <CustomInput type="checkbox" id="exampleswitch" name="customSwitch" label="All Customers" onChange={() => this.onSelectAllCustomers()} checked={this.state.allCustomers}/>
-          </div>
-        </FormGroup>
-
-        </Form>
-            {/* </Col>
-            <Col> */}
-            {this.state.singleCustomer ? 
+        <div className='sales-item-details'>
+            <Label for="all-customers">Select Customers</Label>
+            <div className='sales-item-properties'>
+                <CustomInput type="checkbox" id="exampleswitch" name="customSwitch" onChange={() => this.onSelectAllCustomers()} checked={this.state.allCustomers}/>
                 <ItemSearchInput
-                    curr_item={this.state.customer}
+                    curr_item={this.state.allCustomers ? {name: 'All Customers'} :this.state.customer}
                     item_type={Constants.customer_label}
                     invalid_inputs={this.state.invalid_inputs}
                     handleSelectItem={this.onSelectCustomer}
                     disabled = {this.state.allCustomers}
+                    hide_label = {true}
                 />
-                : <div/>
-            }
             </div>
         </div>
         );
