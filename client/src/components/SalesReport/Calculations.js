@@ -2,20 +2,20 @@
 
 import SubmitRequest from '../../helpers/SubmitRequest';
 
-const dateRanges =  [
-    //start jan 1 2010
-    { 'startdate': "2010-01-01", 'enddate': "2010-12-31"},
-    { 'startdate': "2011-01-01", 'enddate': "2011-12-31"},
-    { 'startdate': "2012-01-01", 'enddate': "2012-12-31"},
-    { 'startdate': "2013-01-01", 'enddate': "2013-12-31"},
-    { 'startdate': "2014-01-01", 'enddate': "2014-12-31"},
-    { 'startdate': "2015-01-01", 'enddate': "2015-12-31"},
-    { 'startdate': "2016-01-01", 'enddate': "2016-12-31"},
-    { 'startdate': "2017-01-01", 'enddate': "2017-12-31"},
-    { 'startdate': "2018-01-01", 'enddate': "2018-12-31"},
-    { 'startdate': "2019-01-01", 'enddate': "2019-12-31"}
-    //end dec 31 2019
-];
+// const dateRanges =  [
+//     //start jan 1 2010
+//     { 'startdate': "2010-01-01", 'enddate': "2010-12-31"},
+//     { 'startdate': "2011-01-01", 'enddate': "2011-12-31"},
+//     { 'startdate': "2012-01-01", 'enddate': "2012-12-31"},
+//     { 'startdate': "2013-01-01", 'enddate': "2013-12-31"},
+//     { 'startdate': "2014-01-01", 'enddate': "2014-12-31"},
+//     { 'startdate': "2015-01-01", 'enddate': "2015-12-31"},
+//     { 'startdate': "2016-01-01", 'enddate': "2016-12-31"},
+//     { 'startdate': "2017-01-01", 'enddate': "2017-12-31"},
+//     { 'startdate': "2018-01-01", 'enddate': "2018-12-31"},
+//     { 'startdate': "2019-01-01", 'enddate': "2019-12-31"}
+//     //end dec 31 2019
+// ];
 
 
 export default class Calculations{
@@ -25,7 +25,7 @@ export default class Calculations{
     //total revenue/num cases
     //sales = #cases sold
     //price = price per case
-    static async getTenYRSalesData(skus, cust_str){
+    static async getTenYRSalesData(skus, cust_str, dateRanges, years){
         let tenYRSKUsdata = {
             skus: []
         }
@@ -45,7 +45,7 @@ export default class Calculations{
                         cur_ten_yr_rev += curRowData.revenue;
                         cur_ten_yr_sales += curRowData.sales;
                         cur_ten_yr_avg_case += curRowData.avg_rev_per_case;
-                        await curSkuData.push({ yr: yr, salesData: curRowData });
+                        await curSkuData.push({ yr: years[yr], salesData: curRowData });
                     }
 
                 }
@@ -57,26 +57,26 @@ export default class Calculations{
         return tenYRSKUsdata;
     }
 
-    static async getSimpleSKUData(sku, cust_str){
-        var curSkuData = [];
-        var cur_ten_yr_rev = 0;
-        var cur_ten_yr_sales = 0;
-        var cur_ten_yr_avg_case = 0;
-        for(let yr = 0; yr<dateRanges.length; yr++){
-            let datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', cust_str, '_', sku._id, 
-                dateRanges[yr]['startdate'], dateRanges[yr]['enddate'], 0, 0);
-            if(datares.success){
-                var curRowData = await this.getSalesTotals(datares.data);
-                cur_ten_yr_rev += curRowData.revenue;
-                cur_ten_yr_sales += curRowData.sales;
-                cur_ten_yr_avg_case += curRowData.avg_rev_per_case;
-                curSkuData.push({ yr: yr, salesData: curRowData });
-            }
+    // static async getSimpleSKUData(sku, cust_str){
+    //     var curSkuData = [];
+    //     var cur_ten_yr_rev = 0;
+    //     var cur_ten_yr_sales = 0;
+    //     var cur_ten_yr_avg_case = 0;
+    //     for(let yr = 0; yr<dateRanges.length; yr++){
+    //         let datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', cust_str, '_', sku._id, 
+    //             dateRanges[yr]['startdate'], dateRanges[yr]['enddate'], 0, 0);
+    //         if(datares.success){
+    //             var curRowData = await this.getSalesTotals(datares.data);
+    //             cur_ten_yr_rev += curRowData.revenue;
+    //             cur_ten_yr_sales += curRowData.sales;
+    //             cur_ten_yr_avg_case += curRowData.avg_rev_per_case;
+    //             curSkuData.push({ yr: yr, salesData: curRowData });
+    //         }
 
-        }
-        cur_ten_yr_avg_case = cur_ten_yr_avg_case/10;
-        return {cur_ten_yr_rev: cur_ten_yr_rev, cur_ten_yr_sales: cur_ten_yr_sales, cur_ten_yr_avg_case : cur_ten_yr_avg_case};
-    }
+    //     }
+    //     cur_ten_yr_avg_case = cur_ten_yr_avg_case/10;
+    //     return {cur_ten_yr_rev: cur_ten_yr_rev, cur_ten_yr_sales: cur_ten_yr_sales, cur_ten_yr_avg_case : cur_ten_yr_avg_case};
+    // }
 
     static async getSalesTotals(records) {
         var total_rev = 0;
