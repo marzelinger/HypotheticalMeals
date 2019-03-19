@@ -63,6 +63,12 @@ export default class SkuDrilldown extends React.Component {
         this.onSelectCustomer = this.onSelectCustomer.bind(this);
     }
 
+    componentDidMount() {
+        if (this.props.sku._id !== undefined) {
+            this.onSelectSku(this.props.sku)
+        }
+    }
+
     async componentDidUpdate(prevProps, prevState) {
         if ( this.props.sku._id !== undefined && this.state.dateRange['startdate'] !== null && 
              this.state.dateRange['enddate'] !== null && this.state.new_data){
@@ -130,9 +136,10 @@ export default class SkuDrilldown extends React.Component {
             while (diff >= 2*604800000) {
                 let newDate = lastDate
                 newDate.setTime(lastDate.getTime() + 604800000)
-                var newPoint = { x: newDate, y: 0}
+                let newPoint = { x: new Date(newDate), y: 0}
                 diff = diff - 604800000
                 newPoints.push(newPoint)
+                lastDate = newDate
             }
             last = dp
         })
@@ -140,6 +147,8 @@ export default class SkuDrilldown extends React.Component {
         dataPoints.sort(function(a,b){
             return new Date(a.x) - new Date(b.x);
         })
+        console.log(newPoints)
+        console.log(dataPoints)
         return dataPoints;
     }
 
@@ -171,9 +180,20 @@ export default class SkuDrilldown extends React.Component {
     getOptions() {
         let options = {
             animationEnabled: true,
+            zoomEnabled: true,
+            interactivityEnabled: true,
             theme: "light2",
             title: {
                 text: this.props.sku.name + ' Sales Report'
+            },
+            axisX:{
+                title: "Date",
+            },
+            axisY:{
+                title: "Revenue (USD)",
+                labelFormatter: function ( e ) {
+                    return "$" + e.value;  
+                }  
             },
             data: [{				
                 type: "line",
@@ -219,14 +239,18 @@ export default class SkuDrilldown extends React.Component {
                         </tbody>
                     </div>
                 </Table> 
+                <div className='export-button'>
+                    <ExportSimple 
+                        data = {this.state.data} 
+                        fileTitle = {this.state.page_name}
+                        name = {'Export Table'}
+                        className = 'sku-drilldown-export'
+                    /> 
+                </div>
                 <CanvasJSChart 
                     options = {this.getOptions()}
                     onRef = {ref => this.chart = ref}
                 />
-                <ExportSimple 
-                    data = {this.state.data} 
-                    fileTitle = {this.state.page_name}
-                /> 
             </div>)
     }
 
@@ -240,12 +264,14 @@ export default class SkuDrilldown extends React.Component {
                     invalid_inputs={this.state.invalid_inputs}
                     handleSelectItem={this.onSelectSku}
                     disabled = {false}
+                    className='sku-drilldown-filter'
                 />
                 <CustomerSelectSalesReport
                     item = {this.state.customer}
                     handleSelectCustomer = {this.onSelectCustomer}
+                    className='sku-drilldown-filter'
                 />
-                <FormGroup>
+                <FormGroup className='sku-drilldown-filter'>
                     <Label for="startdate">Start Date</Label>
                     <Input
                         type="date"
@@ -254,8 +280,8 @@ export default class SkuDrilldown extends React.Component {
                         defaultValue={this.state.last_year}
                         onChange = {(e) => this.onInputChange(e, 'startdate')}
                     />
-                <FormGroup>
                 </FormGroup>
+                <FormGroup className='sku-drilldown-filter'>
                     <Label for="enddate">End Date</Label>
                     <Input
                         type="date"

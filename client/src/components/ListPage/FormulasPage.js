@@ -293,7 +293,7 @@ export default class FormulasPage extends React.Component {
     render(){
         return(
             <div className="list-page">
-            <GeneralNavBar></GeneralNavBar>
+            <GeneralNavBar title={Constants.FormulaTitle}></GeneralNavBar>
                 <div className = 'formula-table'>
                     <PageTable
                         columns={this.state.table_columns} 

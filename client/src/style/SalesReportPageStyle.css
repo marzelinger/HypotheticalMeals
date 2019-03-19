@@ -78,7 +78,34 @@
     flex-direction:row; 
     flex-wrap: nowrap;
     /* align-items: center; */
-    justify-items: center;
+    justify-content: center;
+    width: 80%;
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 40px;
+}
+
+.filter-container .sku-drilldown-filter {
+    margin: 5px;
+    align-content: center;
+}
+
+.sku-drilldown-export {
+    align-self: right;
+}
+
+.report-container .export-button .exportbutton {
+    margin-left: auto;
+    margin-right: 20px;
+    margin-top: -10px;
+    width: 110px;
+}
+
+.sales-item-details .sales-item-properties {
+    display: flex; 
+    width: 350px;
+    margin: auto;
+    align-items: left;
 }
 
 .my-custom-scrollbar {

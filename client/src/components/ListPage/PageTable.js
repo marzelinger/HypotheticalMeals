@@ -125,7 +125,7 @@ export default class PageTable extends Component {
       if(this.props.showHeader) {
         return (
           <TableRow className = "superrow">
-            <TableHeaderColumn id = "pagetitle" className = "super" colSpan = {2}>{`${this.props.title} Table`}</TableHeaderColumn>
+            <TableHeaderColumn id = "pagetitle" className = "super" colSpan = {2}>{''}</TableHeaderColumn>
             <TableHeaderColumn className = "super" colSpan = {this.determineColumns() - 2}>
               <TableActions
                 simple = {this.props.simple}

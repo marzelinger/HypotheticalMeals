@@ -111,7 +111,7 @@ export default class ItemSearchInput extends React.Component {
         return (
         <div className='filter-item detailsfilter' style={{width: this.state.width + '%'}}>
             <FormGroup>
-                <Label>{this.props.item_type}</Label>
+                {this.props.hide_label ? null : <Label>{this.props.item_type}</Label>}
                 <Filter
                     handleFilterValueSelection = {(opt, e) => this.onFilterValueSelection(opt.label, opt.value._id)}
                     type = {this.getType()}
@@ -131,5 +131,6 @@ ItemSearchInput.propTypes = {
     item_type: PropTypes.string,
     invalid_inputs: PropTypes.arrayOf(PropTypes.string),
     handleSelectItem: PropTypes.func,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    hide_label: PropTypes.bool
   };

@@ -9,7 +9,6 @@ const PrivateRoute = ({ component: Component, auth, ...rest }) => (
     {...rest}
     render={props =>
       <div>
-      {/* <GeneralNavBar></GeneralNavBar> */}
       {
        ((auth.isAuthenticated === true))? (
         <Component {...props} />

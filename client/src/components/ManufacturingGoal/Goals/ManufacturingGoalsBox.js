@@ -238,7 +238,7 @@ class ManufacturingGoalsBox extends Component {
   render() {
     return (
       <div className = "goalsbox">
-      <h1 id = "manufacturing_goals_title">{Constants.MANUFACTURING_TITLE}</h1>
+      <h1 id = "manufacturing_goals_title">{''}</h1>
       <div className = "searches">
       {this.state.isAdmin ? 
       (<div className = "searchfield">

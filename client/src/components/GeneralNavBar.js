@@ -28,7 +28,10 @@ export default class GeneralNavBar extends React.Component {
   render() {
     return (
       <Navbar id = "bar" color="light" light expand="md">
-        <GeneralMenu></GeneralMenu>
+        <div id='menu-title'>
+          <GeneralMenu></GeneralMenu>
+          <div id='page-title'>{this.props.title}</div>
+        </div>
         <NavbarBrand id = "title" href="/">{Constants.TITLE}</NavbarBrand>
         <PrivateRoute exact path="/register" component={Register} />
         <Logout id="usermenu"></Logout>
@@ -36,3 +39,7 @@ export default class GeneralNavBar extends React.Component {
     );
   }
 }
+
+GeneralNavBar.propTypes = {
+  title: PropTypes.string
+};

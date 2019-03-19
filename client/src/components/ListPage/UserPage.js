@@ -352,7 +352,7 @@ export default class UserPage extends React.Component {
     render() {
         return (
             <div className="list-page">
-                        <GeneralNavBar></GeneralNavBar>
+                        <GeneralNavBar title={Constants.UserTitle}></GeneralNavBar>
 
                 <div className = 'user-table'>
                     <PageTable 

@@ -11,9 +11,15 @@ export const manu_line_title="Manufacturing Lines"
 
 //List Pages
 export const IngTitle = "INGREDIENTS"
-export const SkuTitle = "SKUs"
+export const SkuTitle = "SKUS"
 export const ManuGoalTitle = "MANUFACTURING GOALS"
 export const FormulaTitle = "FORMULAS"
+export const SalesReportTitle = 'SALES REPORTS'
+export const ImportTitle = 'IMPORT'
+export const UserTitle = 'USERS'
+export const ManuLineTitle = 'MANUFACTURING LINES'
+export const ManuScheduleTitle = 'MANUFACTURING SCHEDULE'
+export const ProductLineTitle = 'PRODUCT LINES'
 
 export const ingredients_page_name = 'ingredients';
 export const users_page_name = 'users';

@@ -340,7 +340,7 @@ export default class IngredientsPage extends React.Component {
     render() {
         return (
             <div className="list-page">
-                <GeneralNavBar></GeneralNavBar>
+                <GeneralNavBar title={Constants.IngTitle}></GeneralNavBar>
                 <div className = "ingredients-table">
                     <PageTable 
                         columns={this.state.table_columns} 

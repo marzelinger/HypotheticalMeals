@@ -151,7 +151,7 @@ class ProductLinesBox extends Component {
   render() {
     return (
       <div className="goalsbox">
-            <h1 id = "manufacturing_goals_title">{Constants.product_line_title}</h1>
+            <h1 id = "manufacturing_goals_title">{''}</h1>
         <div className="goals">
           <ProductLineList
             data={this.state.data}

@@ -7,6 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import GeneralNavBar from '../GeneralNavBar';
+import * as Constants from '../../resources/Constants';
 import CustomerSelectSalesReport from './CustomerSelectSalesReport';
 import SkuDrilldown from './SkuDrilldown';
 import GeneralReport from './GeneralReport';
@@ -33,7 +34,7 @@ class SalesReportPage extends React.Component {
 
         return (
             <div>
-                <GeneralNavBar></GeneralNavBar>
+                <GeneralNavBar title = {Constants.SalesReportTitle}></GeneralNavBar>
                 <Paper className='report-picker-container'>
                     {/* className={classes.root}> */}
                     <Tabs
