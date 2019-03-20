@@ -24,6 +24,7 @@ import SubmitRequest from '../../helpers/SubmitRequest';
 import CustomerSelectSalesReport from './CustomerSelectSalesReport'
 import ProductLineSelectSalesReport from './ProductLineSelectSalesReport'
 import Calculations from './Calculations'
+import ExportSimple from '../export/ExportSimple';
 // import { Table } from 'reactstrap';
 import ItemSearchInput from '../ListPage/ItemSearchInput'
 
@@ -36,7 +37,7 @@ export default class GeneralReport extends React.Component {
         this.state = {
             sku_yr_table_properties: ['Year', 'Total Revenue (USD)', 'Average Revenue Per Case (USD)'],
             sku_totals_properties: ['Sum of Yearly Rev. (USD)', 'Avg. Manu. Run Size', 'Ingr. CPC (USD)', 'Avg. Manu. Setup CPC (USD)', 'Manu. Run CPC (USD)', 'COGS PC (USD)', 'Avg. Rev. PC (USD)', 'Avg. Profit PC (USD)', 'Profit Margin (%)'],
-            sku_header_table_properties: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'CPC (USD)', 'Setup Cost (USD)', 'Run CPC (USD)'],
+            sku_header_table_properties: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count Per Case', 'Setup Cost (USD)', 'Run CPC (USD)'],
             // prod_lines: Object.assign({}, props.general_prod_lines),
             // customer: Object.assign({}, props.general_customers),
             prod_lines: [],
@@ -49,7 +50,8 @@ export default class GeneralReport extends React.Component {
             tenYRdata: {},
             dataRanges: [],
             years: [],
-            loading: false
+            loading: false,
+            page_name: Constants.general_report_page_name
         }
 
         this.calculateYears = this.calculateYears.bind(this);
@@ -112,6 +114,14 @@ export default class GeneralReport extends React.Component {
         if ( this.state.prod_lines.length !== 0 && this.state.new_data){
             //await this.updateReportData();
         }
+    }
+
+    getButtons = () => {
+        return (
+        <div className = "ingbuttons">     
+            <ExportSimple data = {this.state.tenYRdata} fileTitle = {this.state.page_name}/> 
+        </div>
+        );
     }
 
     updateReportData = async () => {
@@ -251,7 +261,7 @@ export default class GeneralReport extends React.Component {
                     {cur_sku.sku.unit_size}
                     </TableRowColumn>
                     <TableRowColumn>
-                    {'$'+cur_sku.sku.cpc}
+                    {cur_sku.sku.cpc}
                     </TableRowColumn>
                     <TableRowColumn>
                     {'$'+cur_sku.sku.setup_cost}
@@ -415,6 +425,7 @@ export default class GeneralReport extends React.Component {
                             > 
                     {Constants.create_sum_sales_report} 
                 </div>
+                {this.getButtons()}
                  
                 <LoadingOverlay
                 active={this.state.loading}
