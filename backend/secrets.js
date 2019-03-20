@@ -1,6 +1,6 @@
 // secrets.js
 const secrets = {    
-    dbUri: "mongodb://admin:testest123@ds211083.mlab.com:11083/meta-meals-ev3-testing",
+    dbUri: "mongodb://admin:testtest123@ds211083.mlab.com:11083/meta-meals-ev3-testing",
     secretOrKey: "secret",
     client_secret: "zHMB4Sl*o*Awu*mjZv$VEa+fX=QACLIWuRNWyNe@kNtTYLd*4E"
   };
