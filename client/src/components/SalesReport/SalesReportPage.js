@@ -16,9 +16,9 @@ import '../../style/SalesReportPageStyle.css'
 class SalesReportPage extends React.Component {
     state = {
         value: 0,
-        customer: {},
         allCustomers: false,
-        selected_sku: {}
+        selected_sku: {},
+        selected_customer: {}
     };
 
     handleChange = (event, value) => {
@@ -28,6 +28,10 @@ class SalesReportPage extends React.Component {
 
     onSelectSku = async (sku) => {
         await this.setState({ selected_sku: sku })
+    };
+
+    onSelectCustomer = async (customer) => {
+        await this.setState({ selected_customer: customer })
     };
 
     render() {
@@ -53,7 +57,9 @@ class SalesReportPage extends React.Component {
                     <GeneralReport/> : 
                     <SkuDrilldown 
                         sku={this.state.selected_sku}
+                        customer={this.state.selected_customer}
                         handleSelectSku={this.onSelectSku}
+                        handleSelectCustomer={this.onSelectCustomer}
                     /> 
                 } 
                 {/* first is General, Second is SKU */}

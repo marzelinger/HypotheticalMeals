@@ -14,7 +14,7 @@ import {
 //         Table,
 //         TableHeader,
 //         TableRow,
-//         TableRowColumn,
+//         th,
 //         TableBody,
 //         TableHeaderColumn } from 'material-ui/Table';
 import SubmitRequest from '../../helpers/SubmitRequest';
@@ -43,6 +43,8 @@ export default class SkuDrilldown extends React.Component {
         last_year.setFullYear(today.getFullYear() - 1)
 
         this.state = {
+            sku_totals_labels: ['Sum of Yearly Rev.', 'Avg. Manu. Run Size', 'Ingr. CPC', 'Avg. Manu. Setup CPC', 'Manu. Run CPC', 'COGS PC', 'Avg. Rev. PC', 'Avg. Profit PC', 'Profit Margin (%)'],
+            sku_totals_props: ['sum_yearly_rev', 'avg_manu_run_size', 'ingr_cost_per_case', 'avg_manu_setup_cost_per_case', 'manu_run_cost_per_case', 'total_COGS_per_case', 'avg_rev_per_case', 'avg_profit_per_case', 'profit_marg'],
             today: today.toISOString().substr(0,10),
             last_year: last_year.toISOString().substr(0,10),
             customer: {},
@@ -52,12 +54,13 @@ export default class SkuDrilldown extends React.Component {
             totalRowData: {},
             data: [],
             dataPoints: [],
+            totalRowData: {},
             item_properties,
             item_property_labels,
             invalid_inputs: [],
             page_name: 'salesReport_sku',
-            message: (<Alert color='primary'>Please select a SKU</Alert>)
-        }
+            message: (<Alert color='primary'>Please select a SKU</Alert>),
+            }
 
         this.onSelectSku = this.onSelectSku.bind(this);
         this.onSelectCustomer = this.onSelectCustomer.bind(this);
@@ -72,7 +75,7 @@ export default class SkuDrilldown extends React.Component {
     async componentDidUpdate(prevProps, prevState) {
         if ( this.props.sku._id !== undefined && this.state.dateRange['startdate'] !== null && 
              this.state.dateRange['enddate'] !== null && this.state.new_data){
-            var cust_str = (this.state.customer._id === undefined) ? '_' : this.state.customer._id;
+            var cust_str = (this.props.customer._id === undefined) ? '_' : this.props.customer._id;
             let datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', cust_str, '_', this.props.sku._id, 
 
                                 this.state.dateRange['startdate'], this.state.dateRange['enddate'], 0, 0)
@@ -89,14 +92,17 @@ export default class SkuDrilldown extends React.Component {
                 message: newMessage,
                 new_data: false,
             })
-            if (datares.data.length > 0) this.chart.render()
+            if (datares.data.length > 0) {
+                this.chart.render()
+                await this.getTotalRowData(datares.data)
+            }
         }
     }
 
     async getTotalRowData(records){
         var recordsCalcs = Calculations.getSalesTotals(records);
         if(recordsCalcs != undefined){
-            var total_data = Calculations.calcTotalData(this.props.sku, recordsCalcs.revenue, recordsCalcs.sales, recordsCalcs.avg_rev_per_case);
+            var total_data = await Calculations.calcTotalData(this.props.sku, recordsCalcs.revenue, recordsCalcs.sales, recordsCalcs.avg_rev_per_case);
             await this.setState({
                 totalRowData : total_data
             });
@@ -147,8 +153,6 @@ export default class SkuDrilldown extends React.Component {
         dataPoints.sort(function(a,b){
             return new Date(a.x) - new Date(b.x);
         })
-        console.log(newPoints)
-        console.log(dataPoints)
         return dataPoints;
     }
 
@@ -162,8 +166,8 @@ export default class SkuDrilldown extends React.Component {
 
     async onSelectCustomer(customer) {
         let custres = customer._id !== undefined ? await SubmitRequest.submitGetCustomerByID(customer._id) : {data: [{}]}
+        await this.props.handleSelectCustomer(custres.data[0])
         this.setState({
-            customer: custres.data[0],
             new_data: true
         })
     }
@@ -175,6 +179,25 @@ export default class SkuDrilldown extends React.Component {
             dateRange: newRange,
             new_data: true
         })
+    }
+
+    getSKUTotals = () => {
+        return ( 
+            <div>
+                 <tr >
+                    {this.state.sku_totals_props.map(prop => {
+                        return (
+                            <th>
+                                {this.state.totalRowData[prop]}
+                            </th>
+                        )
+                    }
+                    )}
+                    </tr>
+
+            </div>
+        );
+
     }
 
     getOptions() {
@@ -247,6 +270,20 @@ export default class SkuDrilldown extends React.Component {
                         className = 'sku-drilldown-export'
                     /> 
                 </div>
+                <div className = "report-container-general-total">
+                    <Table>
+                        <thead>
+                            <tr className = "" selectable = {false} >
+                                {this.state.sku_totals_labels.map(prop => 
+                                    <th>{prop}</th>
+                                )}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.getSKUTotals(this.state.totalRowData)}
+                        </tbody>
+                    </Table>
+                </div>
                 <CanvasJSChart 
                     options = {this.getOptions()}
                     onRef = {ref => this.chart = ref}
@@ -255,6 +292,7 @@ export default class SkuDrilldown extends React.Component {
     }
 
     render() {
+        console.log(this.props.customer)
         return (
         <div className='sku-drilldown'>
             <div className='filter-container'>
@@ -267,7 +305,7 @@ export default class SkuDrilldown extends React.Component {
                     className='sku-drilldown-filter'
                 />
                 <CustomerSelectSalesReport
-                    item = {this.state.customer}
+                    item = {this.props.customer}
                     handleSelectCustomer = {this.onSelectCustomer}
                     className='sku-drilldown-filter'
                 />
@@ -300,5 +338,7 @@ export default class SkuDrilldown extends React.Component {
 
 SkuDrilldown.propTypes = {
     sku: PropTypes.object,
-    handleSelectSku: PropTypes.func
+    customer: PropTypes.object,
+    handleSelectSku: PropTypes.func,
+    handleSelectCustomer: PropTypes.func
 };
