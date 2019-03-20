@@ -138,6 +138,7 @@ export default class GeneralReport extends React.Component {
                     //console.log("this is the tenyr: "+JSON.stringify(this.state.tenYRdata));
                 }
                 else {
+                    new_ten_yr_data.prodLines.push({prod_line: this.state.prod_lines[pl], tenYRSKUdata: { skus: []}});
                     await this.setState({tenYRdata: new_ten_yr_data});
                     await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer);
                 }
@@ -305,27 +306,7 @@ export default class GeneralReport extends React.Component {
     generalReportTables = () => {
         console.log("DATA IS: "+ JSON.stringify(this.state.tenYRdata));
         console.log("report button "+ this.state.report_button);
-
-
-        // if(this.state.tenYRdata.prodLines == undefined && this.state.report_button){
-        //     return (
-        //         <div className = "report-container-general"> 
-        //             <h2 width>General Sales Report Summary</h2>
-        //             <h4 width>There are no associated SKUs for the selected Product Line(s).</h4>
-        //         </div>
-        //     );
-        // }
-        // else 
         if(this.state.tenYRdata.prodLines!= undefined){
-            console.log("this one.");
-            if(this.state.tenYRdata.prodLines.length==0 && !this.state.loading && this.state.report_button){
-                return (
-                    <div className = "report-container-general"> 
-                        <h2 width>General Sales Report Summary</h2>
-                        <h4 width>There are no associated SKUs for the selected Product Line(s).</h4>
-                    </div>
-                );
-            }
             if (this.state.tenYRdata.prodLines.length>0){
                 // console.log("DATA IS: "+ JSON.stringify(this.state.tenYRdata));
                 // console.log("DATA SKU LENGTH: "+ JSON.stringify(this.state.tenYRdata.prodLines[0].skus.length));
@@ -337,9 +318,9 @@ export default class GeneralReport extends React.Component {
                     {this.state.tenYRdata.prodLines.map(pl_row => 
                     <div className = "report-container-general"> 
                         <h5>Product Line: {pl_row.prod_line.name}</h5>
-                            {/* {pl_row.tenYRSKUdata != undefined ? 
-                            <div className = "report-container-general"> */}
-                            {pl_row.tenYRSKUdata.skus.map((cur_sku,index) =>
+                            {pl_row.tenYRSKUdata.skus.length != 0 ? 
+                              <div className = "report-container-general">
+                                {pl_row.tenYRSKUdata.skus.map((cur_sku,index) =>
                                 <div>
                                     <h7 className = "hoverable" onClick={() => this.props.handleSkuSelect(cur_sku.sku, this.state.tenYRdata, this.state.prod_lines, this.state.customer)}>
                                     SKU Name: {cur_sku.sku.name}
@@ -377,10 +358,10 @@ export default class GeneralReport extends React.Component {
                                     </div>
                                 </div>
                                 )}
-                                {/* </div>
+                                </div>
                                 :
-                                <div> This Product Line has no SKUs associated with it </div>
-                            } */}
+                                <h6> {pl_row.prod_line.name} has no SKUs associated with it. </h6>
+                            }
                     </div>
                 )}
                 </div>);
