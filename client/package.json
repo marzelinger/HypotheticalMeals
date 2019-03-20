@@ -26,6 +26,7 @@
     "react": "^16.8.2",
     "react-accessible-accordion": "^2.4.5",
     "react-dom": "^16.8.2",
+    "react-loading-overlay": "^1.0.1",
     "react-markdown": "^4.0.6",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",

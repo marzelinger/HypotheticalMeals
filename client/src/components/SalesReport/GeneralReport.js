@@ -3,6 +3,7 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 import * as Constants from '../../resources/Constants';
+import LoadingOverlay from 'react-loading-overlay';
 import { 
     Button,
     Input,
@@ -36,14 +37,16 @@ export default class GeneralReport extends React.Component {
             sku_yr_table_properties: ['Year', 'Total Revenue (USD)', 'Average Revenue Per Case (USD)'],
             sku_totals_properties: ['Sum of Yearly Rev. (USD)', 'Avg. Manu. Run Size', 'Ingr. CPC (USD)', 'Avg. Manu. Setup CPC (USD)', 'Manu. Run CPC (USD)', 'COGS PC (USD)', 'Avg. Rev. PC (USD)', 'Avg. Profit PC (USD)', 'Profit Margin (%)'],
             sku_header_table_properties: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'CPC (USD)', 'Setup Cost (USD)', 'Run CPC (USD)'],
-            prod_lines: [],
-            customer: {},
+            prod_lines: Object.assign({}, props.general_prod_lines),
+            customer: Object.assign({}, props.general_customers),
             invalid_inputs: [],
             new_data: false,
+            report_button: false,
             total_years: 10,
-            tenYRdata: {},
+            tenYRdata: Object.assign({}, props.general_report_data),
             dataRanges: [],
-            years: []
+            years: [],
+            loading: false
         }
 
         this.calculateYears = this.calculateYears.bind(this);
@@ -109,6 +112,10 @@ export default class GeneralReport extends React.Component {
     }
 
     updateReportData = async () => {
+        await this.setState({
+            loading: true,
+            report_button: true
+        });
         var new_ten_yr_data = {
                  prodLines: []
                  };
@@ -127,18 +134,22 @@ export default class GeneralReport extends React.Component {
                     var tenYRSKUsdata = await Calculations.getTenYRSalesData(skus, cust_str, this.state.dataRanges, this.state.years);
                     new_ten_yr_data.prodLines.push({prod_line: this.state.prod_lines[pl], tenYRSKUdata: tenYRSKUsdata});
                     await this.setState({tenYRdata: new_ten_yr_data});
+                    await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer);
                     //console.log("this is the tenyr: "+JSON.stringify(this.state.tenYRdata));
+                }
+                else {
+                    await this.setState({tenYRdata: new_ten_yr_data});
+                    await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer);
                 }
             }
         }
         await this.setState({new_data: false});
+        await this.setState({
+            loading: false
+        });
     }
 
-    handleRowSelect = (res) => {
-
-    }
-
-    handleSelect = (e, item) => {
+    onSKUSelect = (e, item) => {
 
     }
 
@@ -158,31 +169,31 @@ export default class GeneralReport extends React.Component {
         return ( 
             <div>
                  <TableRow  class= "cols trselect">
-                        <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                        <TableRowColumn>
                             {'$'+cur_sku.totalData.sum_yearly_rev}
                         </TableRowColumn>
-                        <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                        <TableRowColumn>
                             {cur_sku.totalData.avg_manu_run_size}
                         </TableRowColumn>
-                        <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                        <TableRowColumn>
                             {'$'+cur_sku.totalData.ingr_cost_per_case}
                         </TableRowColumn>
-                        <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                        <TableRowColumn>
                             {'$'+cur_sku.totalData.avg_manu_setup_cost_per_case}
                         </TableRowColumn>
-                        <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                        <TableRowColumn>
                             {'$'+cur_sku.totalData.manu_run_cost_per_case}
                         </TableRowColumn>
-                        <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                        <TableRowColumn>
                             {'$'+cur_sku.totalData.total_COGS_per_case}
                         </TableRowColumn>
-                        <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                        <TableRowColumn>
                             {'$'+cur_sku.totalData.avg_rev_per_case}
                         </TableRowColumn>
-                        <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                        <TableRowColumn>
                             {'$'+cur_sku.totalData.avg_profit_per_case}
                         </TableRowColumn>
-                        <TableRowColumn onClick={e => this.handleSelect(e, cur_sku)}>
+                        <TableRowColumn>
                             {cur_sku.totalData.profit_marg}
                         </TableRowColumn>
                     </TableRow>
@@ -199,13 +210,13 @@ export default class GeneralReport extends React.Component {
                                     // need to show the val in the sku data here.
                                     //here we have the yr, sales data, and the sku# stuff
                                     <TableRow  class= "cols trselect">
-                                        <TableRowColumn onClick={e => this.handleSelect(e, cur_sku.sku)}>
+                                        <TableRowColumn>
                                             {cur_sku.skuData[ind].yr}
                                         </TableRowColumn>
-                                        <TableRowColumn onClick={e => this.handleSelect(e, cur_sku.sku)}>
+                                        <TableRowColumn>
                                         {'$'+cur_sku.skuData[ind].salesData.revenue}
                                         </TableRowColumn>
-                                        <TableRowColumn onClick={e => this.handleSelect(e, cur_sku.sku)}>
+                                        <TableRowColumn>
                                         {'$'+cur_sku.skuData[ind].salesData.avg_rev_per_case}
                                         </TableRowColumn>
                                     </TableRow>
@@ -220,28 +231,28 @@ export default class GeneralReport extends React.Component {
         return (
             <div>
                 <TableRow  class= "cols trselect">
-                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku.sku)}>
+                    <TableRowColumn>
                         {cur_sku.sku.name}
                     </TableRowColumn>
-                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku.sku)}>
+                    <TableRowColumn>
                     {cur_sku.sku.num}
                     </TableRowColumn>
-                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku.sku)}>
+                    <TableRowColumn>
                     {cur_sku.sku.case_upc}
                     </TableRowColumn>
-                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku.sku)}>
+                    <TableRowColumn>
                     {cur_sku.sku.unit_upc}
                     </TableRowColumn>
-                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku.sku)}>
+                    <TableRowColumn>
                     {cur_sku.sku.unit_size}
                     </TableRowColumn>
-                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku.sku)}>
+                    <TableRowColumn>
                     {'$'+cur_sku.sku.cpc}
                     </TableRowColumn>
-                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku.sku)}>
+                    <TableRowColumn>
                     {'$'+cur_sku.sku.setup_cost}
                     </TableRowColumn>
-                    <TableRowColumn onClick={e => this.handleSelect(e, cur_sku.sku)}>
+                    <TableRowColumn>
                     {'$'+cur_sku.sku.run_cpc}
                     </TableRowColumn>
                 </TableRow>
@@ -270,9 +281,9 @@ export default class GeneralReport extends React.Component {
         );
     }
 
-    skuLabelHeader = () => {
+    skuLabelHeader = (cur_sku) => {
         return (
-            <TableRow class= "cols trselect" selectable = {false} >
+            <TableRow class= "cols trselect" selectable = {false}>
                 {this.state.sku_header_table_properties.map(prop => 
                     <TableHeaderColumn>{prop}</TableHeaderColumn>
                 )}
@@ -292,25 +303,51 @@ export default class GeneralReport extends React.Component {
 
 
     generalReportTables = () => {
-        if(this.state.tenYRdata.prodLines!= undefined){
-            if (this.state.tenYRdata.prodLines.length>0){
-                console.log("DATA IS: "+ JSON.stringify(this.state.tenYRdata));
-                // console.log("DATA SKU LENGTH: "+ JSON.stringify(this.state.tenYRdata.prodLines[0].skus.length));
+        console.log("DATA IS: "+ JSON.stringify(this.state.tenYRdata));
+        console.log("report button "+ this.state.report_button);
 
+
+        // if(this.state.tenYRdata.prodLines == undefined && this.state.report_button){
+        //     return (
+        //         <div className = "report-container-general"> 
+        //             <h2 width>General Sales Report Summary</h2>
+        //             <h4 width>There are no associated SKUs for the selected Product Line(s).</h4>
+        //         </div>
+        //     );
+        // }
+        // else 
+        if(this.state.tenYRdata.prodLines!= undefined){
+            console.log("this one.");
+            if(this.state.tenYRdata.prodLines.length==0 && !this.state.loading && this.state.report_button){
                 return (
                     <div className = "report-container-general"> 
-                      <h3 width>General Sales Report Summary</h3>
+                        <h2 width>General Sales Report Summary</h2>
+                        <h4 width>There are no associated SKUs for the selected Product Line(s).</h4>
+                    </div>
+                );
+            }
+            if (this.state.tenYRdata.prodLines.length>0){
+                // console.log("DATA IS: "+ JSON.stringify(this.state.tenYRdata));
+                // console.log("DATA SKU LENGTH: "+ JSON.stringify(this.state.tenYRdata.prodLines[0].skus.length));
+                console.log("here");
+                return (
+                    <div className = "report-container-general"> 
+                      <h2 width>General Sales Report Summary</h2>
 
                     {this.state.tenYRdata.prodLines.map(pl_row => 
                     <div className = "report-container-general"> 
                         <h5>Product Line: {pl_row.prod_line.name}</h5>
+                            {/* {pl_row.tenYRSKUdata != undefined ? 
+                            <div className = "report-container-general"> */}
                             {pl_row.tenYRSKUdata.skus.map((cur_sku,index) =>
                                 <div>
-                                    <h7>SKU Name: {cur_sku.sku.name}</h7>
+                                    <h7 className = "hoverable" onClick={() => this.props.handleSkuSelect(cur_sku.sku, this.state.tenYRdata, this.state.prod_lines, this.state.customer)}>
+                                    SKU Name: {cur_sku.sku.name}
+                                    </h7>
                                     <div className = "report-container-general-sku">
                                         <Table height={'40px'}>
                                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-                                            {this.skuLabelHeader()}
+                                            {this.skuLabelHeader(cur_sku)}
                                         </TableHeader>
                                         <TableBody displayRowCheckbox = {false} stripedRows={this.state.stripedRows}>
                                             {this.getSKUTable(cur_sku)}
@@ -335,12 +372,15 @@ export default class GeneralReport extends React.Component {
                                             </TableHeader>
                                             <TableBody displayRowCheckbox = {false} stripedRows={this.state.stripedRows}>
                                                 {this.getSKUTotals(cur_sku)}
-                                                
                                             </TableBody>
                                             </Table>
                                     </div>
                                 </div>
                                 )}
+                                {/* </div>
+                                :
+                                <div> This Product Line has no SKUs associated with it </div>
+                            } */}
                     </div>
                 )}
                 </div>);
@@ -353,9 +393,11 @@ export default class GeneralReport extends React.Component {
         await this.setState({
             prod_lines: prodlines,
             new_data: true,
+            report_button: false,
             tenYRdata: {}
 
         })
+        await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer);
         //this.updateReportData();
     }
 
@@ -363,8 +405,10 @@ export default class GeneralReport extends React.Component {
         await this.setState({
             customer: customer,
             new_data: true,
+            report_button: false,
             tenYRdata: {}
         })
+        await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer);
         //this.updateReportData();
     }
 
@@ -387,14 +431,31 @@ export default class GeneralReport extends React.Component {
                             > 
                     {Constants.create_sum_sales_report} 
                 </div>
-                {this.generalReportTables()}
+                 
+                <LoadingOverlay
+                active={this.state.loading}
+                spinner
+                text='Loading report data...'
+                >
+                <div className = "report-container-general"> 
+                {this.state.loading ?<h2 width> Report Data Loading...</h2>: <div/>}
+                    {this.generalReportTables()}
+                </div>
+                </LoadingOverlay>
             </div>
         </div>
         );
     }
 }
 
+
+
+
+
 GeneralReport.propTypes = {
-    // customer: PropTypes.object,
-    // handleSelectCustomer: PropTypes.func
+    handleSkuSelect: PropTypes.func,
+    general_report_data: PropTypes.object,
+    general_customers: PropTypes.object,
+    general_prod_lines: PropTypes.object,
+    handleGeneralReportDataChange: PropTypes.func,
   };

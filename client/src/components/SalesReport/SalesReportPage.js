@@ -16,9 +16,10 @@ import '../../style/SalesReportPageStyle.css'
 class SalesReportPage extends React.Component {
     state = {
         value: 0,
-        customer: {},
-        allCustomers: false,
-        selected_sku: {}
+        selected_sku: {},
+        general_report_data: {},
+        general_prod_lines: {},
+        general_customers: {}
     };
 
     handleChange = (event, value) => {
@@ -29,6 +30,22 @@ class SalesReportPage extends React.Component {
     onSelectSku = async (sku) => {
         await this.setState({ selected_sku: sku })
     };
+
+    onSelectSkuFromGeneral = async (sku, gen_report_data, gen_prod_lines, gen_customers) => {
+        await this.setState({
+            selected_sku: sku,
+            value : 1,
+        })
+        await this.onChangeGeneralReportData(gen_report_data, gen_prod_lines, gen_customers);
+    }
+
+    onChangeGeneralReportData = async (gen_report_data, gen_prod_lines, gen_customers) => {
+        await this.setState({
+            general_report_data: gen_report_data,
+            general_prod_lines: gen_prod_lines,
+            general_customers: gen_customers
+        })
+    }
 
     render() {
 
@@ -50,7 +67,13 @@ class SalesReportPage extends React.Component {
                     </Tabs>
                 </Paper>
                 {this.state.value === 0 ? 
-                    <GeneralReport/> : 
+                    <GeneralReport
+                        general_report_data = {this.state.general_report_data}
+                        general_customers = {this.state.general_customers}
+                        general_prod_lines = {this.state.general_prod_lines}
+                        handleGeneralReportDataChange = {this.onChangeGeneralReportData}
+                        handleSkuSelect = {this.onSelectSkuFromGeneral}
+                        /> : 
                     <SkuDrilldown 
                         sku={this.state.selected_sku}
                         handleSelectSku={this.onSelectSku}
