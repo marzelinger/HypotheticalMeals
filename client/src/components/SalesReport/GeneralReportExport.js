@@ -60,6 +60,19 @@ export const exportGeneralReport = (dataIN, fileTitle)  => {
             var cur_sku_totals = cur_sku_row.totalData;
 
 
+            // var dataLine = [];
+            // dataLine.push(curData.num);
+            // dataLine.push(curData.name);
+            // dataLine.push(curData.case_upc);
+            // dataLine.push(curData.unit_upc);
+            // dataLine.push(curData.unit_size);
+            // dataLine.push(curData.cpc);
+            // dataLine.push(curData.prod_line.name);
+            // dataLine.push(curData.comment);
+            // rows.push(dataLine);
+
+
+
 
 
 

@@ -16,10 +16,12 @@ import '../../style/SalesReportPageStyle.css'
 class SalesReportPage extends React.Component {
     state = {
         value: 0,
-        selected_sku: {},
         general_report_data: {},
         general_prod_lines: {},
-        general_customers: {}
+        general_customers: {},
+        allCustomers: false,
+        selected_sku: {},
+        selected_customer: {}
     };
 
     handleChange = (event, value) => {
@@ -46,6 +48,9 @@ class SalesReportPage extends React.Component {
             general_customers: gen_customers
         })
     }
+    onSelectCustomer = async (customer) => {
+        await this.setState({ selected_customer: customer })
+    };
 
     render() {
 
@@ -76,7 +81,9 @@ class SalesReportPage extends React.Component {
                         /> : 
                     <SkuDrilldown 
                         sku={this.state.selected_sku}
+                        customer={this.state.selected_customer}
                         handleSelectSku={this.onSelectSku}
+                        handleSelectCustomer={this.onSelectCustomer}
                     /> 
                 } 
                 {/* first is General, Second is SKU */}
