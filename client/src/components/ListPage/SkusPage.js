@@ -267,7 +267,7 @@ export default class ListPage extends React.Component {
             exportData: newExportData,
             detail_view_item: new_item,
             detail_view_formula_item: new_formula_item,
-            detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel],
+            detail_view_options: [Constants.details_create, Constants.details_cancel],
             detail_view_action: Constants.details_create
         })
         this.toggle(Constants.details_modal);
@@ -341,6 +341,8 @@ export default class ListPage extends React.Component {
             newState.push(this.state.data[index]);
         });
         await this.setState({ selected_items: newState, selected_indexes: rowIndexes});
+        console.log("this is the selected skus: "+JSON.stringify(this.state.selected_items));
+
     };
 
      onDetailViewSelect = async (event, item) => {
@@ -358,7 +360,7 @@ export default class ListPage extends React.Component {
         }
         else{
             this.setState({ 
-                detail_view_options: [Constants.details_cancel],
+                detail_view_options: [Constants.details_exit],
                 detail_view_action: Constants.details_view
                 });
         }
@@ -375,11 +377,13 @@ export default class ListPage extends React.Component {
 
         switch (option) {
             case Constants.details_create:
-                newData.push(item);
                 //need to create the new formula and get the id of the newly created formula and then put that in the 
                 //item equal to the formula section of item.
                 console.log("this is the formula_item: "+JSON.stringify(formula_item));
-                resFormula = await SubmitRequest.submitCreateItem(Constants.formulas_page_name, formula_item);
+                
+                var success = await SubmitRequest.submitGetFormulaByID(formula_item._id);
+                if(success.success == false) resFormula = await SubmitRequest.submitCreateItem(Constants.formulas_page_name, formula_item);
+                else resFormula = await SubmitRequest.submitUpdateItem(Constants.formulas_page_name, formula_item);
 
                 // var newSKUitem = this.formatNewSKUFormula(item, resFormula);
                 console.log(resFormula)
@@ -391,7 +395,7 @@ export default class ListPage extends React.Component {
                 else {
                     resItem = { success: false, error: 'Formula Quantity is not entered correctly'}
                 }
-
+                newData.push(item);
                 break;
             case Constants.details_save:
                 let toSave = newData.findIndex(obj => {return obj._id === item._id});
@@ -417,6 +421,9 @@ export default class ListPage extends React.Component {
                 // })
                 break;
             case Constants.details_cancel:
+                resItem = {success: true}
+                break;
+            case Constants.details_exit:
                 resItem = {success: true}
                 break;
         }
@@ -465,7 +472,7 @@ export default class ListPage extends React.Component {
 
         return (
             <div className="list-page">
-            {this.props.default_ing_filter === undefined && this.props.default_formula_filter === undefined ? <GeneralNavBar></GeneralNavBar> : null}
+            {this.props.default_ing_filter === undefined && this.props.default_formula_filter === undefined ? <GeneralNavBar title={Constants.SkuTitle}></GeneralNavBar> : null}
                 <div className = "sku-table">
                     <PageTable 
                         columns={this.state.table_columns} 

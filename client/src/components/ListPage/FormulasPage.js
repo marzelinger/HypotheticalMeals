@@ -208,7 +208,7 @@ export default class FormulasPage extends React.Component {
             data: newData,
             exportData: newExportData,
             detail_view_item: item,
-            detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
+            detail_view_options: [Constants.details_create, Constants.details_cancel]
         })
         this.toggle(Constants.details_modal);
         this.loadDataFromServer();
@@ -241,7 +241,7 @@ export default class FormulasPage extends React.Component {
         else{
             this.setState({ 
                 detail_view_item: item ,
-                detail_view_options: [Constants.details_cancel]
+                detail_view_options: [Constants.details_exit]
                 });
         }
         this.toggle(Constants.details_modal);
@@ -268,6 +268,9 @@ export default class FormulasPage extends React.Component {
             case Constants.details_cancel:
                 res = {success: true}
                 break;
+            case Constants.details_exit:
+                res = {success: true}
+                break;
         }
         if (!res.success) alert(res.error);
         else {
@@ -290,7 +293,7 @@ export default class FormulasPage extends React.Component {
     render(){
         return(
             <div className="list-page">
-            <GeneralNavBar></GeneralNavBar>
+            <GeneralNavBar title={Constants.FormulaTitle}></GeneralNavBar>
                 <div className = 'formula-table'>
                     <PageTable
                         columns={this.state.table_columns} 

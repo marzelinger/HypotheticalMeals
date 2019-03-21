@@ -46,7 +46,7 @@ export default class ItemSearchInput extends React.Component {
             var res = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.substr);
         }
         else if (this.props.item_type === Constants.prod_line_label && this.state.substr.length > 0) {
-            var res = await SubmitRequest.submitGetProductLinesByNameSubstring(this.state.substr);
+            var res = await SubmitRequest.submitGetProductLinesByNameSubstring(this.state.substr,0,0);
         }
         else if (this.props.item_type === Constants.formula_label && this.state.substr.length > 0) {
             var res = await SubmitRequest.submitGetFormulasByNameSubstring(this.state.substr);
@@ -111,7 +111,7 @@ export default class ItemSearchInput extends React.Component {
         return (
         <div className='filter-item detailsfilter' style={{width: this.state.width + '%'}}>
             <FormGroup>
-                <Label>{this.props.item_type}</Label>
+                {this.props.hide_label ? null : <Label>{this.props.item_type}</Label>}
                 <Filter
                     handleFilterValueSelection = {(opt, e) => this.onFilterValueSelection(opt.label, opt.value._id)}
                     type = {this.getType()}
@@ -131,5 +131,6 @@ ItemSearchInput.propTypes = {
     item_type: PropTypes.string,
     invalid_inputs: PropTypes.arrayOf(PropTypes.string),
     handleSelectItem: PropTypes.func,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    hide_label: PropTypes.bool
   };

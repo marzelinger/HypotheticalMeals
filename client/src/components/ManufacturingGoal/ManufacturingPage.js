@@ -10,7 +10,7 @@ export default class ManufacturingPage extends React.Component {
   render() {
     return (
       <div>
-        <GeneralNavBar></GeneralNavBar>
+        <GeneralNavBar title={Constants.ManuGoalTitle}></GeneralNavBar>
         <ManufacturingGoalsBox></ManufacturingGoalsBox>
       </div>
     );

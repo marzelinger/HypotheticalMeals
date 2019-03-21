@@ -73,6 +73,33 @@ li {
     cursor: pointer;
 }
 
+.create_report_button{
+    background-color: rgb(0, 188, 212) !important;
+    border-color: #212529;
+    height: 40px;
+    width: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    margin-left: 20px;
+    cursor: pointer;
+}
+
+
+.skuDrillDown{
+    background-color: rgb(0, 188, 212) !important;
+    border-color: #212529;
+    height: 20px;
+    width: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    margin-left: 20px;
+    cursor: pointer;
+}
+
 #manuLineScheduleButton{
     background-color: rgb(0, 188, 212) !important;
     height: 40px;

@@ -65,11 +65,15 @@ router.get('/', (req, res) => {
 router.post('/skus', (req, res) => SkuHandler.createSku(req, res));
 router.put('/skus/:sku_id', (req, res) => SkuHandler.updateSkuByID(req, res));
 router.get('/skus', (req, res) => SkuHandler.getAllSkus(req, res));
+router.get('/skus/prodline/:prod_line_id', (req, res) => SkuHandler.getSkusByProdLine(req, res));
+
 router.get('/skus/:sku_id', (req, res) => SkuHandler.getSkuByID(req, res));
 router.get('/skus_num/:sku_num', (req, res) => SkuHandler.getSkusBySkuNumer(req, res));
 router.delete('/skus/:sku_id', (req, res) => SkuHandler.deleteSkuByID(req, res));
 router.get('/ingredients_by_sku/:sku_id', (req, res) => SkuHandler.getIngredientsBySkuID(req, res));
 router.get('/skus_name/:search_substr', (req, res) => SkuHandler.getSkusByNameSubstring(req, res));
+
+
 
 // Formula database APIs
 router.post('/formulas', (req, res) => FormulaHandler.createFormula(req, res));
@@ -83,9 +87,11 @@ router.get('/formulas_name/:search_substr', (req, res) => FormulaHandler.getForm
 router.post('/products', (req, res) => Prod_LineHandler.createProductLine(req, res));
 router.put('/products/:prod_line_id', (req, res) => Prod_LineHandler.updateProductLineByID(req, res));
 router.get('/products', (req, res) => Prod_LineHandler.getAllProductLines(req, res));
+router.get('/products/:currentPage/:pageSize', (req, res) => Prod_LineHandler.getAllProductLinesPag(req, res));
+
 router.get('/products/:prod_line_id', (req, res) => Prod_LineHandler.getProductLineByID(req, res));
 router.delete('/products/:prod_line_id', (req, res) => Prod_LineHandler.deleteProductLineByID(req, res));
-router.get('/products_name/:search_substr', (req, res) => Prod_LineHandler.getProductLinesByNameSubstring(req, res));
+router.get('/products_name/:search_substr/:currentPage/:pageSize', (req, res) => Prod_LineHandler.getProductLinesByNameSubstring(req, res));
 
 // Manufacturing Line database APIs
 router.post('/manulines', (req, res) => Manu_LineHandler.createManufacturingLine(req, res));
@@ -103,6 +109,8 @@ router.get('/manuactivities', (req, res) => Manu_ActivityHandler.getAllManufactu
 router.get('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.getManufacturingActivityByID(req, res));
 router.delete('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.deleteManufacturingActivityByID(req, res));
 router.get('/manuactivities/:manu_line_id/:start_date/:end_date/:duration', (req, res) => Manu_ActivityHandler.getManufacturingActivitiesForReport(req, res));
+router.get('/manuactivities/:sku_id', (req, res) => Manu_ActivityHandler.getManufacturingActivitiesBySKU(req, res));
+
 
 // Ingredient database APIs
 router.post('/ingredients', (req, res) => IngredientHandler.createIngredient(req, res));
@@ -179,6 +187,8 @@ router.post("/users/register", (req, res) => UserHandler.createUser(req, res));
 router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword(req,res));
 router.post("/users/loginDukeNetID", (req, res) => UserHandler.loginUserDukeNetID(req,res));
 router.delete('/users/:user_id', (req, res) => UserHandler.deleteUserByID(req, res));
+router.get('/users/:user_id', (req, res) => UserHandler.getUserByID(req, res));
+
 
 
 

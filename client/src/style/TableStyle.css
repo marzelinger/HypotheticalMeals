@@ -19,6 +19,11 @@ tbody {
     padding: 15px;
 }
 
+.prod-select-report {
+    /* //height: 200px; */
+    width: 400px;
+}
+
 tr {
     height: 30px !important;
     padding-left: 25px !important;

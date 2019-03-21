@@ -81,7 +81,6 @@ render() {
     const { errors } = this.state;
 return (
       <div className="container">
-      {/* <GeneralNavBar></GeneralNavBar> */}
         <div className="row">
           <div className="col s8 offset-s2">
           <Link to="/" className="btn-flat waves-effect">

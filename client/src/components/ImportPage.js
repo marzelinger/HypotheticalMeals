@@ -9,6 +9,7 @@ import {Input} from 'reactstrap'
 import './Center.css';
 import {exportImportReport} from "../actions/exportActions";
 import GeneralNavBar from './GeneralNavBar';
+import * as Constants from '../resources/Constants';
 
 var endpoint = "not specified";
 
@@ -522,7 +523,7 @@ export default class ImportPage extends React.Component {
     render() {
         return (
             <div className = "Import">
-                <GeneralNavBar></GeneralNavBar>
+                <GeneralNavBar title={Constants.ImportTitle}></GeneralNavBar>
 
 
                 <div className = "centerTitle">

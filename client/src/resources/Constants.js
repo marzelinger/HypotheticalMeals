@@ -11,9 +11,15 @@ export const manu_line_title="Manufacturing Lines"
 
 //List Pages
 export const IngTitle = "INGREDIENTS"
-export const SkuTitle = "SKUs"
+export const SkuTitle = "SKUS"
 export const ManuGoalTitle = "MANUFACTURING GOALS"
 export const FormulaTitle = "FORMULAS"
+export const SalesReportTitle = 'SALES REPORTS'
+export const ImportTitle = 'IMPORT'
+export const UserTitle = 'USERS'
+export const ManuLineTitle = 'MANUFACTURING LINES'
+export const ManuScheduleTitle = 'MANUFACTURING SCHEDULE'
+export const ProductLineTitle = 'PRODUCT LINES'
 
 export const ingredients_page_name = 'ingredients';
 export const users_page_name = 'users';
@@ -29,6 +35,7 @@ export const manu_activity_page_name = 'manuactivities';
 export const formulas_page_name = 'formulas';
 export const customers_page_name = 'customers';
 export const sku_drilldown_page_name = 'customers_sku';
+export const general_report_page_name = 'general_report';
 
 export const options = 'Options'
 export const keyword_label = "Keyword"
@@ -81,6 +88,7 @@ export const edit_manu_lines = 'Bulk Edit Manufacturing Lines'
 export const manu_lines_modal = 'manu_lines'
 export const details_modal = 'details'
 export const manu_report_data_modal = 'manu_report'
+export const create_sum_sales_report = 'Create Summary Sales Report'
 
 
 // CSV parsing constants

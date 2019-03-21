@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import Constants from '../../resources/Constants'
 
 import { exportSKUS, exportIngredients, exportProdLines, exportCalculator, exportFormulas, exportSalesReport } from "../../actions/exportActions";
+import {exportGeneralReport} from '../SalesReport/GeneralReportExport';
 class ExportSimple extends Component {
 
   constructor() {
@@ -41,6 +42,9 @@ class ExportSimple extends Component {
       case ("salesReport_sku"):
         exportSalesReport(this.props.data, this.props.fileTitle);
         break;
+      case ("general_report"):
+        exportGeneralReport(this.props.data, this.props.fileTitle);
+        break;
     }
 
       };
@@ -50,6 +54,7 @@ return (
             <div className = "exportbutton hoverable"
               onClick={this.onExportSimpleClick}
               primary={true}
+              disabled = {this.props.disabled}
             >
               {this.props.name || 'Export'}
             </div>

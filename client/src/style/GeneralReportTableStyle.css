@@ -1,0 +1,23 @@
+
+.prod-line-select-table tr {
+    grid-template-columns:  .5fr minmax(100px, 1fr);
+}
+
+.prod-line-select-table table {
+    overflow: scroll;
+    height: 150px;
+}
+
+.prod-line-select-table #complex {
+    grid-template-columns: minmax(150px, 1.5fr) 50px;
+    justify-items: end;
+}
+
+.prod-line-select-table #complex > *{
+    justify-self: flex-end;
+    
+}
+
+.prod-line-select-table .superrow {
+    grid-template-columns: 0fr 1fr 11fr;
+}

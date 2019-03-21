@@ -33,6 +33,7 @@ import configureStore from '../store/configureStore';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Link, withRouter } from "react-router-dom";
+import SubmitRequest from '../helpers/SubmitRequest';
 
 //const getAllUsers = require("../actions/authActions");
 
@@ -44,23 +45,22 @@ class App extends React.Component{
   constructor() {
     super();
     
-    //localStorage.clear();
-    //this.determineUserInit();
     this.state = {
       navbar_items: [Constants.SkuTitle, Constants.IngTitle, Constants.ManuGoalTitle, Constants.FormulaTitle],
     }
     this.determineUser();
   }
 
-  determineUser = () => {
+  determineUser = async () => {
     if (localStorage.jwtToken) {
-    //  if(localStorage.getItem("firstAdminCreated")){
         // Set auth token header auth
         const token = localStorage.jwtToken;
+        //check user still exists
+        const decoded = jwt_decode(token);
+        var user_id = decoded.id;
         setAuthToken(token);
         
         // Decode token and get user info and exp
-        const decoded = jwt_decode(token);
         if(decoded.admin==true){
           setAdminToken(token);
           this.state = {
@@ -71,7 +71,9 @@ class App extends React.Component{
         store.dispatch(setCurrentUser(decoded));
         // Check for expired token
         const currentTime = Date.now() / 1000; // to get in milliseconds
-        if (decoded.exp < currentTime) {
+        var response = await SubmitRequest.submitGetUserByID(user_id);
+
+        if (decoded.exp < currentTime || !response.success) {
           // Logout user
           store.dispatch(logoutUser());
           this.state = {
@@ -81,7 +83,6 @@ class App extends React.Component{
           // Redirect to login
           window.location.href = "./login";
         }
-     // }
     }
   }
 
@@ -92,13 +93,6 @@ class App extends React.Component{
         <Provider store={store}>
           <Router>
             <div className="App">
-                {/* <div>
-                  {(this.state.user)? (
-                    <GeneralNavBar></GeneralNavBar>
-                    ) : (
-                    <div></div>
-                    )}
-                </div> */}
                <Route exact path="/login" component={Login} />
                {/* <Route exact path="/adminregister" component={AdminRegister} />   */}
                <Route exact path= "/" component={Landing} />
