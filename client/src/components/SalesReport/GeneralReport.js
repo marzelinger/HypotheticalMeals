@@ -119,7 +119,7 @@ export default class GeneralReport extends React.Component {
     getButtons = () => {
         return (
         <div className = "ingbuttons">     
-            <ExportSimple data = {this.state.tenYRdata} fileTitle = {this.state.page_name}/> 
+            <ExportSimple data = {this.state.tenYRdata} fileTitle = {this.state.page_name} disabled={this.state.report_button ? "" : "disabled"}/> 
         </div>
         );
     }
@@ -335,9 +335,19 @@ export default class GeneralReport extends React.Component {
                               <div className = "report-container-general">
                                 {pl_row.tenYRSKUdata.skus.map((cur_sku,index) =>
                                 <div>
-                                    <h7 className = "hoverable" onClick={() => this.props.handleSkuSelect(cur_sku.sku, this.state.tenYRdata, this.state.prod_lines, this.state.customer)}>
-                                    SKU Name: {cur_sku.sku.name}
-                                    </h7>
+                                    <div className = "row">
+                                        <h7  >
+                                        SKU Name: {cur_sku.sku.name}
+                                        </h7>
+                                        <div className = "ingbuttons">     
+                                            <div className = "skuDrillDown hoverable"
+                                                onClick={() => this.props.handleSkuSelect(cur_sku.sku, this.state.tenYRdata, this.state.prod_lines, this.state.customer)}
+                                                primary={true}
+                                            >
+                                            View SKU Drilldown
+                                            </div>                
+                                        </div>
+                                    </div>
                                     <div className = "report-container-general-sku">
                                         <Table height={'40px'}>
                                         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
@@ -419,13 +429,15 @@ export default class GeneralReport extends React.Component {
                     simple = {false}
                 >
                 </ProductLineSelectSalesReport>
-                <div className = "create_sum_report_button hoverable"
-                            onClick={() => this.updateReportData()}
-                            primary={true}
-                            > 
-                    {Constants.create_sum_sales_report} 
+                <div className = "row">
+                    <div className = "create_report_button hoverable"
+                                onClick={() => this.updateReportData()}
+                                primary={true}
+                                > 
+                        {Constants.create_sum_sales_report} 
+                    </div>
+                    {this.getButtons()}
                 </div>
-                {this.getButtons()}
                  
                 <LoadingOverlay
                 active={this.state.loading}
