@@ -257,7 +257,7 @@ export default class ProductLineSelectSalesReport extends React.Component {
     render() {
         return (
             <div className="prod-line-select-page">
-                <div className = "prod-line-select-table ">
+                <div className = "prod-line-select-table prod-select-report">
                     <PageTable 
                         columns={this.state.table_columns} 
                         table_properties={this.state.table_properties} 
@@ -269,7 +269,7 @@ export default class ProductLineSelectSalesReport extends React.Component {
                         handleDetailViewSelect={this.onDetailViewSelect}
                         showDetails = {false}
                         selectable = {true}
-                        sortable = {true}
+                        sortable = {false}
                         title = {this.state.page_title}
                         showHeader = {true}
                         simple = {this.props.simple}
@@ -282,14 +282,15 @@ export default class ProductLineSelectSalesReport extends React.Component {
                         products = {this.state.product_lines}
                         onTableOptionSelection = {this.onTableOptionSelection}
                         reportSelect = {true}
+                    />                              
+                    <TablePagination
+                        currentPage = {this.state.currentPage}
+                        pagesCount = {this.state.pagesCount}
+                        handlePageClick = {this.handlePageClick}
+                        getButtons = {this.getButtons}
                     />
-                </div>                
-                <TablePagination
-                    currentPage = {this.state.currentPage}
-                    pagesCount = {this.state.pagesCount}
-                    handlePageClick = {this.handlePageClick}
-                    getButtons = {this.getButtons}
-                />
+                </div>  
+
             </div>
         );
     }
