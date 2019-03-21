@@ -32,7 +32,8 @@ const SkusSchema = new Schema({
   manu_rate: Number,
   setup_cost: Number,
   run_cpc: Number,
-  comment: String
+  comment: String,
+  status: String
 }, { timestamps: true });
 
 // export our module to use in server.js
