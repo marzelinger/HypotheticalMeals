@@ -36,6 +36,7 @@ export default class Scraper_Worker{
     }
 
     static async scrape_record(sku_num, sku_year){
+        console.log('hit ' + sku_num + ' ' + sku_year);
         tabletojson.convertUrl(
             `http://hypomeals-sales.colab.duke.edu:8080/?sku=${sku_num}&year=${sku_year}`,
             function(tablesAsJson) {
@@ -52,6 +53,8 @@ export default class Scraper_Worker{
                         sales: Number(record.sales),
                         ppc: Number(record['price/case'])
                     }
+                    console.log('adding')
+                    console.log(record)
                     Scraper_Worker.addRecord(sale_record);
                 })
             }

@@ -41,6 +41,8 @@ export default class ScraperHandler{
             sku_queue.push({num: target_num, year});
             worker.update_sku(target_num, 'queued');
         }
+        console.log('updating')
+        console.log(sku_queue)
         worker.update_queue(sku_queue);
     }
 
