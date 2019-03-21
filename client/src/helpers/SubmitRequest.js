@@ -23,32 +23,18 @@ export default class SubmitRequest{
   }
 
   // TODO: make this understand time limits
-  static async addAllSkuRecords(sku_num) {
-    for(var index = 0; index <= 20; index ++){
-        let year = 1999 + index;
-        setTimeout( () => {
-        this.addSkuRecords(sku_num, year);
-        }, 1000 * index + 1);
-    }
-    
+  static async addNewSkuRecords(sku_num) {
+    fetch(`/api/update_all`, { method: 'GET' , body: JSON.stringify({sku_num})})
+
   }
 
-  static async addSkuRecords(sku_num, year) {
-    console.log(sku_num + ':' + year);
-    var records = await fetch(`/api/scrape_records/${sku_num}/${year}`, { method: 'GET' })
-    .then(data => data.json())
-    .then((res) => {
-      if (!res.success) return { success: res.success, error: res.error };
-      else return{ 
-        success: res.success,
-        data: res.data
-      };
-    });
-    // console.log(records)
-    records.data.forEach(async (record) => {
-      var response = await SubmitRequest.submitCreateItem('records', record);
-      // console.log(response)
-    })
+  static async addNewSkuRecordsBulk(sku_nums) {
+    fetch(`/api/update_all`, { method: 'GET' , body: JSON.stringify({sku_nums})})
+  }
+
+  static async updateSkuRecords() {
+    console.log('here')
+    fetch(`/api/update_all`, { method: 'GET' })
   }
 
   static submitQueryString(query) {

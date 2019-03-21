@@ -157,7 +157,9 @@ router.put('/users/:user_id', (req, res) => UserHandler.updateUserByID(req, res)
 //scraping
 
 router.get('/scrape_customers', (req, res) => ScraperHandler.scrapeAllCustomers(req, res));
-router.get('/scrape_records/:sku_num/:year', (req, res) => ScraperHandler.scrapeSkuRecords(req, res));
+router.get('/scrape_new_sku', (req, res) => ScraperHandler.scrapeSkuRecords(req, res));
+router.get('/scrape_new_sku_bulk', (req, res) => ScraperHandler.bulkUpdateSkus(req, res));
+router.get('/update_all', (req, res) => ScraperHandler.updateAllRecords(req, res));
 
 // Use our router configuration when we call /api
 app.use('/api', router);
