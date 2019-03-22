@@ -14,16 +14,29 @@ import GeneralReport from './GeneralReport';
 import '../../style/SalesReportPageStyle.css'
 
 class SalesReportPage extends React.Component {
-    state = {
-        value: 0,
-        general_report_data: {},
-        general_prod_lines: [],
-        general_prod_lines_indices: [],
-        general_customers: {},
-        allCustomers: false,
-        selected_sku: {},
-        selected_customer: {}
-    };
+
+    constructor(props) {
+        super(props)
+        let today = new Date()
+        today.setTime(today.getTime() - 300*60*1000)
+        let last_year = new Date(today.getTime() - 300*60*1000)
+        last_year.setFullYear(today.getFullYear() - 1)
+
+        this.state = {
+            value: 0,
+            general_report_data: {},
+            general_prod_lines: [],
+            general_prod_lines_indices: [],
+            general_customer: {},
+            allCustomers: false,
+            selected_sku: {},
+            general_customer: {},
+            drilldown_customer: {},
+            dateRange: { 'startdate': last_year.toISOString().substr(0,10), 'enddate': today.toISOString().substr(0,10)},
+        }
+
+        this.onDateRangeSelect = this.onDateRangeSelect.bind(this);
+    }
 
     handleChange = (event, value) => {
         console.log(value)
@@ -34,26 +47,40 @@ class SalesReportPage extends React.Component {
         await this.setState({ selected_sku: sku })
     };
 
-    onSelectSkuFromGeneral = async (sku, gen_report_data, gen_prod_lines, gen_customers, gen_prod_line_indices) => {
+    onSelectSkuFromGeneral = async (sku, gen_report_data, gen_prod_lines, gen_customer, gen_prod_line_indices) => {
         await this.setState({
             selected_sku: sku,
             value : 1,
         })
-        await this.onChangeGeneralReportData(gen_report_data, gen_prod_lines, gen_customers, gen_prod_line_indices);
+        await this.onChangeGeneralReportData(gen_report_data, gen_prod_lines, gen_customer, gen_prod_line_indices);
     }
 
-    onChangeGeneralReportData = async (gen_report_data, gen_prod_lines, gen_customers, gen_prod_line_indices) => {
+    onChangeGeneralReportData = async (gen_report_data, gen_prod_lines, gen_customer, gen_prod_line_indices) => {
         await this.setState({
             general_report_data: gen_report_data,
             general_prod_lines: gen_prod_lines,
-            general_customers: gen_customers,
+            general_customer: gen_customer,
             general_prod_lines_indices: gen_prod_line_indices
         })
         console.log("gen data sales report: "+JSON.stringify(this.state.general_prod_lines));
     }
-    onSelectCustomer = async (customer) => {
-        await this.setState({ selected_customer: customer })
+
+    onSelectGeneralCustomer = async (customer) => {
+        await this.setState({ general_customer: customer })
     };
+
+    onSelectDrilldownCustomer = async (customer) => {
+        await this.setState({ drilldown_customer: customer })
+    };
+
+    onDateRangeSelect(event, type) {
+        console.log(type)
+        let newRange = Object.assign({}, this.state.dateRange)
+        newRange[type] = event.target.value
+        this.setState({
+            dateRange: newRange
+        })
+    }
 
     render() {
 
@@ -77,7 +104,7 @@ class SalesReportPage extends React.Component {
                 {this.state.value === 0 ? 
                     <GeneralReport
                         general_report_data = {this.state.general_report_data}
-                        general_customers = {this.state.general_customers}
+                        general_customer = {this.state.general_customer}
                         general_prod_lines = {this.state.general_prod_lines}
                         general_prod_lines_indices = {this.state.general_prod_lines_indices}
                         handleGeneralReportDataChange = {this.onChangeGeneralReportData}
@@ -85,9 +112,11 @@ class SalesReportPage extends React.Component {
                         /> : 
                     <SkuDrilldown 
                         sku={this.state.selected_sku}
-                        customer={this.state.selected_customer}
+                        customer={this.state.drilldown_customer}
                         handleSelectSku={this.onSelectSku}
-                        handleSelectCustomer={this.onSelectCustomer}
+                        handleSelectCustomer={this.onSelectDrilldownCustomer}
+                        dateRange={this.state.dateRange}
+                        handleDateRangeSelect={this.onDateRangeSelect}
                     /> 
                 } 
                 {/* first is General, Second is SKU */}

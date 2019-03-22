@@ -40,9 +40,9 @@ export default class GeneralReport extends React.Component {
             sku_header_table_properties: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count Per Case', 'Setup Cost (USD)', 'Run CPC (USD)'],
             prod_lines: Object.assign([], props.general_prod_lines),
             prod_lines_indices: Object.assign([], props.general_prod_lines_indices),
-            // customer: Object.assign({}, props.general_customers),
+            customer: Object.assign({}, props.general_customers),
             // prod_lines: [],
-            customer: {},
+            // customer: {},
             invalid_inputs: [],
             new_data: false,
             report_button: false,
@@ -418,11 +418,13 @@ export default class GeneralReport extends React.Component {
     }
 
     async onSelectCustomer(customer) {
-        await this.setState({
-            customer: customer,
+        console.log("this is the selecting customer.")
+        let custres = customer._id !== undefined ? await SubmitRequest.submitGetCustomerByID(customer._id) : {data: [{}]}
+        this.setState({
+            customer: custres.data[0],
             new_data: true,
             report_button: false,
-            tenYRdata: {}
+            tenYRdata: {}        
         })
         await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer, this.state.prod_lines_indices);
     }
@@ -432,8 +434,9 @@ export default class GeneralReport extends React.Component {
         <div className="report-container-general">
             <div className='item-properties'>
                 <CustomerSelectSalesReport
-                    item = {this.state.customer}
+                    customer = {this.props.general_customer}
                     handleSelectCustomer = {this.onSelectCustomer}
+                    className = 'sku-drilldown-filter'
                 />
                 <ProductLineSelectSalesReport
                     handleSelectProdLines= {this.onSelectProductLine}
@@ -475,7 +478,7 @@ export default class GeneralReport extends React.Component {
 GeneralReport.propTypes = {
     handleSkuSelect: PropTypes.func,
     general_report_data: PropTypes.object,
-    general_customers: PropTypes.object,
+    general_customer: PropTypes.object,
     general_prod_lines: PropTypes.arrayOf(PropTypes.object),
     general_prod_lines_indices: PropTypes.arrayOf(PropTypes.number),
     handleGeneralReportDataChange: PropTypes.func
