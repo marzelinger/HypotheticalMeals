@@ -10,9 +10,7 @@ export default class ScraperHandler{
             return tabletojson.convertUrl(
                 'http://hypomeals-sales.colab.duke.edu:8080/customers',
                 function(tablesAsJson) {
-                    console.log(tablesAsJson)
                     var data = tablesAsJson[0];
-                    console.log(data)
                     var clean_data = data.map((item) => {
                         return {name: item.cust_name, number: item['cust#']}
                     });
@@ -21,6 +19,18 @@ export default class ScraperHandler{
         }catch (e) {
             return res.json({ success: false, error: e});
         }
+    }
+
+    static async triggerReset(req, res){
+        await worker.trigger_reset();
+        ScraperHandler.resetAllRecords();
+    }
+
+    static async resetAllRecords(){
+        var skus = await SKU.find();
+        skus.forEach((sku) => {
+            ScraperHandler.updateNewSku({body: {sku_num: sku.num}}, {});
+        });
     }
 
     static async updateAllRecords(){
@@ -41,8 +51,6 @@ export default class ScraperHandler{
             sku_queue.push({num: target_num, year});
             worker.update_sku(target_num, 'queued');
         }
-        console.log('updating')
-        console.log(sku_queue)
         worker.update_queue(sku_queue);
     }
 

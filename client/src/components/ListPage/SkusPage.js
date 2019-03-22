@@ -445,14 +445,14 @@ export default class ListPage extends React.Component {
     getButtons = () => {
         return (
         <div className = "ingbuttons"> 
-            <div className = "manugoalbutton hoverable"
+            {/* <div className = "manugoalbutton hoverable"
                             onClick={() => SubmitRequest.addAllCustomers()}
                             primary={true}
                             > Add Customers </div>
             <div className = "manugoalbutton hoverable"
                             onClick={() => SubmitRequest.updateSkuRecords()}
                             primary={true}
-                            > Add All Records </div>
+                            > Add All Records </div> */}
             {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) ? null : 
                             (<div className = "manugoalbutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}
@@ -487,6 +487,7 @@ export default class ListPage extends React.Component {
                         selectable = {this.props.simple !=undefined ? !this.props.simple : true}
                         sortable = {this.props.simple != undefined ? !this.props.simple : true}
                         title = {this.state.page_title}
+                        showLoading = {true}
                         showHeader = {true}
                         simple = {this.props.simple}
                         filters = {this.state.filters}
