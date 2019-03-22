@@ -615,7 +615,7 @@ export default class CSV_parser{
     }
 
     static async parseIngredientsCSV(req, res){
-        try {
+       // try {
             //Extract the primary key (num) & unique identifier(case_upc) for each entry
             var db_ingredients_nums = new Map();
             var db_ingredients_name = new Set();
@@ -712,10 +712,10 @@ export default class CSV_parser{
                     new_data: ingrs_to_update_new, ignored_data: ingrs_to_ignore_arr});
             }
         }
-        catch (err) {
-            return res.json({ success: false, error : "Catch all error"});
-        }
-    }
+      //  catch (err) {
+      //      return res.json({ success: false, error : "Catch all error"});
+      //  }
+  //  }
 
     static async validateDataIngredients(obj, all_ingredients){
         var toReturn = {};
@@ -733,6 +733,7 @@ export default class CSV_parser{
         } 
         var isValid = obj[Constants.csv_ingr_cost].search(/^\$?\d+(,\d{3})*(\.\d*)?$/) >= 0;
         if(!isValid) {
+            console.log('this one 1');
             toReturn.success = false;
             toReturn.costIssue = true;
             return toReturn;
@@ -741,6 +742,7 @@ export default class CSV_parser{
         var intermediate_units = await UnitConversion.getCleanUnitForm(obj[Constants.csv_ingr_size]);
         if(intermediate_units.success == true) obj[Constants.csv_ingr_size] = intermediate_units.data;
         else {
+            console.log('this one 2');
             toReturn.costIssue = true;
             return toReturn;
         }
@@ -748,12 +750,16 @@ export default class CSV_parser{
         var isValid2 = await UnitConversion.getUnitType(obj[Constants.csv_ingr_size]);
         if(isValid2 == -1){
             // TODO: FIX THIS 
+            console.log('this one 3');
             toReturn.costIssue = true;
             return toReturn;
         }
 
         var moneyConversionSuccessObj = await this.extractNumFromCurrency(obj[Constants.csv_ingr_cost]);
-        if(moneyConversionSuccessObj.currencyIssue != 'undefined'){
+        console.log(obj[Constants.csv_ingr_cost]);
+        console.log(moneyConversionSuccessObj);
+        if(moneyConversionSuccessObj.success != true){
+            console.log('this one 4');
             toReturn.success = false;
             toReturn.costIssue = true;
             return toReturn;
@@ -766,12 +772,15 @@ export default class CSV_parser{
 
     static async indicateIngrDataFailure(res, dataValidationObj, row){
         if(dataValidationObj.missingRequiredField){
+            console.log('here');
             return res.json({ success: false,
                               badData: row});
         } else if(dataValidationObj.ingrNumIssue){
+            console.log('here 2');
             return res.json({ success: false,
                 badData: row});
         } else if(dataValidationObj.costIssue){
+            console.log('here 3');
             return res.json({ success: false,
                 badData: row});
         }
@@ -850,7 +859,7 @@ export default class CSV_parser{
 
     static async extractNumFromCurrency(qty){
         var toReturn = {};
-        var isValid = qty.test(/^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/);
+        var isValid = /^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/.test(qty);
         if(!isValid){
             toReturn.currencyIssue = true;
             return toReturn;
@@ -904,7 +913,7 @@ export default class CSV_parser{
     }
 
     static async parseFormulasCSV(req, res){
-        try{
+      //  try{
         var db_formula_nums = new Set();
         var db_ingredients_num = new Set();
 
@@ -1003,9 +1012,9 @@ export default class CSV_parser{
             console.log(updated_formula);
         }
         return res.json({ success: true, showImport: true, adds: formulas_added, updates: formulas_to_update_new, ignores: formulas_to_ignore});
-        } catch (err){
-            return res.json({ success: false, error: "Catch all error"});
-        }
+  //      } catch (err){
+   //         return res.json({ success: false, error: "Catch all error"});
+   //     }
     }
 
     static async reformatFormula(newObj, oldObj, formulasMap, formulasToCommentsMap){
@@ -1060,7 +1069,7 @@ export default class CSV_parser{
             return toReturn;
         }
 
-        var santizedEntry = UnitConversion.getCleanUnitForm(obj[Constants.csv_formula_quantity]);
+        var sanitizedEntry = UnitConversion.getCleanUnitForm(obj[Constants.csv_formula_quantity]);
         if(sanitizedEntry.success == false){
             toReturn.success = false;
             toReturn.unitIssue = true;
