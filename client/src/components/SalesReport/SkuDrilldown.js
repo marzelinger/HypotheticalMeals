@@ -197,7 +197,7 @@ export default class SkuDrilldown extends React.Component {
             interactivityEnabled: true,
             theme: "light2",
             title: {
-                text: this.props.sku.name + ' Weekly Revenue over Time',
+                text: this.props.sku.name + ' Weekly Revenue',
                 fontFamily: 'calibri',
                 fontWeight: 'normal'
             },
