@@ -123,17 +123,23 @@ export default class GeneralReport extends React.Component {
 
     getButtons = () => {
         return (
-        <div className = "ingbuttons">     
-            <ExportSimple data = {this.state.tenYRdata} fileTitle = {this.state.page_name} disabled={this.state.report_button ? "" : "disabled"}/> 
+        <div className = "ingbuttons">
+        {(this.state.report_button || this.state.tenYRdata.prodLines !=undefined) && !this.state.loading && this.state.tenYRdata.prodLines !=undefined ? <ExportSimple data = {this.state.tenYRdata.prodLines} fileTitle = {this.state.page_name}/>  : <div/>}
         </div>
         );
     }
 
     updateReportData = async () => {
+        if(this.state.prod_lines.length==0){
+            alert(Constants.gen_report_no_prod_line_selected);
+            return;
+        }
+        if(!this.state.new_data) return;
         await this.setState({
             loading: true,
             report_button: true
         });
+        console.log("report_button: "+this.state.report_button);
         var new_ten_yr_data = {
                  prodLines: []
                  };
@@ -162,9 +168,9 @@ export default class GeneralReport extends React.Component {
                 }
             }
         }
-        await this.setState({new_data: false});
         await this.setState({
-            loading: false
+            loading: false,
+            new_data: false
         });
     }
 
@@ -233,10 +239,10 @@ export default class GeneralReport extends React.Component {
                                             {cur_sku.skuData[ind].yr}
                                         </TableRowColumn>
                                         <TableRowColumn>
-                                        {'$'+cur_sku.skuData[ind].salesData.revenue}
+                                        {'$'+cur_sku.skuData[ind].salesData.rev_round}
                                         </TableRowColumn>
                                         <TableRowColumn>
-                                        {'$'+cur_sku.skuData[ind].salesData.avg_rev_per_case}
+                                        {'$'+cur_sku.skuData[ind].salesData.avg_rev_per_case_round}
                                         </TableRowColumn>
                                     </TableRow>
                                 )} 
@@ -322,8 +328,8 @@ export default class GeneralReport extends React.Component {
 
 
     generalReportTables = () => {
-        console.log("DATA IS: "+ JSON.stringify(this.state.tenYRdata));
-        console.log("report button "+ this.state.report_button);
+        // console.log("DATA IS: "+ JSON.stringify(this.state.tenYRdata));
+         console.log("report button "+ this.state.report_button);
         if(this.state.tenYRdata.prodLines!= undefined){
             if (this.state.tenYRdata.prodLines.length>0){
                 // console.log("DATA IS: "+ JSON.stringify(this.state.tenYRdata));
@@ -346,7 +352,7 @@ export default class GeneralReport extends React.Component {
                                         </h7>
                                         <div className = "ingbuttons">     
                                             <div className = "skuDrillDown hoverable"
-                                                onClick={() => this.props.handleSkuSelect(cur_sku.sku, this.state.tenYRdata, this.state.prod_lines, this.state.customer)}
+                                                onClick={() => this.props.handleSkuSelect(cur_sku.sku, this.state.tenYRdata, this.state.prod_lines, this.state.customer, this.state.prod_lines_indices)}
                                                 primary={true}
                                             >
                                             View SKU Drilldown
@@ -407,12 +413,8 @@ export default class GeneralReport extends React.Component {
             tenYRdata: {}
 
         })
-        console.log("gen data: "+JSON.stringify(this.state.prod_lines));
-        console.log("gen data2: "+JSON.stringify(this.state.prod_lines_indices));
-
-
+        console.log("report_button: "+this.state.report_button);
         await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer, this.state.prod_lines_indices);
-        //this.updateReportData();
     }
 
     async onSelectCustomer(customer) {
@@ -423,7 +425,6 @@ export default class GeneralReport extends React.Component {
             tenYRdata: {}
         })
         await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer, this.state.prod_lines_indices);
-        //this.updateReportData();
     }
 
     render() {

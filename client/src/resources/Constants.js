@@ -123,3 +123,8 @@ export const csv_formula_comment = "Comment";
 export const manu_report_modal = 'manu_report_modal'
 export const modify_manu_lines_label = 'Modify Manufacturing Lines'
 export const modify_formula_label = 'Modify Formula'
+
+
+
+
+export const gen_report_no_prod_line_selected = "Please select a product line to create a summary sales report!"

@@ -16,6 +16,7 @@ class ExportSimple extends Component {
       data: [],
       fileTitle: ""
     };
+
   }
 
 
@@ -50,11 +51,11 @@ class ExportSimple extends Component {
       };
 render() {
     const { user } = this.props.auth;
+    console.log("this is the disabled: "+this.props.disabled);
 return (
             <div className = "exportbutton hoverable"
               onClick={this.onExportSimpleClick}
               primary={true}
-              disabled = {this.props.disabled}
             >
               {this.props.name || 'Export'}
             </div>
@@ -64,7 +65,8 @@ return (
 ExportSimple.propTypes = {
   exportSKUS:PropTypes.func.isRequired,
   exportIngredients:PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  disabled: PropTypes.string
 };
 const mapStateToProps = state => ({
   auth: state.auth

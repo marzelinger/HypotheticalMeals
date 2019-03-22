@@ -53,7 +53,17 @@ export default class Calculations{
         if(total_cases!=0){
             avg_rev_per_case = total_rev/total_cases;
         }
-        return { revenue: total_rev, avg_rev_per_case: avg_rev_per_case, sales: total_cases};
+
+        var avg_rev_per_case_round = Math.round((avg_rev_per_case*100))/100;
+        var revenue_round = Math.round((total_rev*100))/100;
+
+        return { 
+            revenue: total_rev, 
+            avg_rev_per_case: avg_rev_per_case, 
+            sales: total_cases, 
+            rev_round: revenue_round, 
+            avg_rev_per_case_round: avg_rev_per_case_round
+        };
     }
 
     static async getAvgManuRunSize(sku){
@@ -131,16 +141,53 @@ export default class Calculations{
         }//manufacturing setup cost/avg_manu_runsize
         var manu_run_cost_per_case = sku.run_cpc; 
         var total_COGS_per_case = ingr_cost_per_case+avg_manu_setup_cost_per_case+manu_run_cost_per_case; // sum of ingredient cost, manufacturing setup cost, manufacturing run cost for sku divided to give a cost per case
+
         var avg_rev_per_case = 0;
         if(totalTimeSales!=0){
             avg_rev_per_case = sum_yearly_rev/totalTimeSales; 
+
         }
         var avg_profit_per_case = avg_rev_per_case - total_COGS_per_case; // = avg_rev - cogs
+
         var profit_marg = 0;
 
         if(total_COGS_per_case!=0){
             profit_marg = (avg_rev_per_case/total_COGS_per_case)-1;
         }
+
+
+        console.log("a: "+ sum_yearly_rev);
+
+        sum_yearly_rev = Math.round((sum_yearly_rev*100))/100;
+        console.log("aa: "+ sum_yearly_rev);
+        console.log("b: "+ ingr_cost_per_case);
+
+
+        ingr_cost_per_case = Math.round((ingr_cost_per_case*100))/100;
+
+        console.log("bb: "+ ingr_cost_per_case);
+
+
+
+        avg_manu_setup_cost_per_case = Math.round((avg_manu_setup_cost_per_case*100))/100;
+
+        manu_run_cost_per_case = Math.round((manu_run_cost_per_case*100))/100;
+
+        total_COGS_per_case = Math.round((total_COGS_per_case*100))/100;
+
+        avg_rev_per_case = Math.round((avg_rev_per_case*100))/100;
+
+        avg_profit_per_case = Math.round((avg_profit_per_case*100))/100;
+
+        profit_marg = Math.round(profit_marg);
+
+
+
+
+
+
+
+
         return {
             sum_yearly_rev : sum_yearly_rev,
             avg_manu_run_size : avg_manu_run_size,
