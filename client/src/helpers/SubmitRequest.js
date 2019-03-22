@@ -37,6 +37,10 @@ export default class SubmitRequest{
     fetch(`/api/update_all`, { method: 'GET' })
   }
 
+  static async submitReset() {
+    fetch(`/api/trigger_reset`, { method: 'GET' });
+  }
+
   static submitQueryString(query) {
     return fetch(query, { method: 'GET' })
           .then(data => data.json())

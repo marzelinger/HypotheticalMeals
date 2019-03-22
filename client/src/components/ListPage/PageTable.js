@@ -151,6 +151,18 @@ export default class PageTable extends Component {
       }
   }
 
+  getLoadingItem = (item) => {
+    return <div>{item.status}</div>
+  }
+
+  getLoadingCol = () => {
+    if(this.props.showLoading){
+      return (
+        <TableHeaderColumn> 
+            Sale Records Status
+        </TableHeaderColumn>);
+    }
+  }
 
 
   render() {
@@ -175,6 +187,7 @@ export default class PageTable extends Component {
                   this.getColumnComponent(prop)
                 )}
                 {this.getDetailsCol()}
+                {this.getLoadingCol()}
             </TableRow>
           </TableHeader>
           <TableBody
@@ -215,6 +228,7 @@ export default class PageTable extends Component {
                         disabled={this.props.disable_inputs}
                       />
                     </TableRowColumn>)}
+                    {this.props.showLoading ? this.getLoadingItem(item) : <div></div>}
                 </TableRow>
               )}
           </TableBody>

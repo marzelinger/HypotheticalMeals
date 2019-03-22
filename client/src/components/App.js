@@ -2,6 +2,7 @@ import React from 'react'
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import SkusPage from "./ListPage/SkusPage";
+import ResetPage from "./ListPage/ResetPage";
 import FormulasPage from "./ListPage/FormulasPage";
 import Landing from "./layout/Landing";
 import Register from "./auth/Register";
@@ -104,6 +105,7 @@ class App extends React.Component{
                 <PrivateRoute exact path="/" component={Dashboard} />
                 <AdminPrivateRoute exact path="/manu_schedule" component={ManuSchedulePage} />
                 <PrivateRoute exact path="/skus" component={SkusPage} />
+                <PrivateRoute exact path="/trigger_reset" component={ResetPage} />
                 <PrivateRoute exact path="/manu_goals" component={ManufacturingPage} />
                 <PrivateRoute exact path="/manu_lines" component={ManufacturingLinePage} />
                 <PrivateRoute exact path="/prod_lines" component={ProductLinePage} />

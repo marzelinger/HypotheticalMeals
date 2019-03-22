@@ -6,6 +6,11 @@ var awake = false;
 var sku_queue = [];
 
 export default class Scraper_Worker{
+    static async trigger_reset(){
+        sku_queue = [];
+        await Sale_Record.deleteMany({});
+    }
+
     static update_queue(new_skus){
         sku_queue.push(...new_skus);
         if(!awake){
@@ -53,8 +58,6 @@ export default class Scraper_Worker{
                         sales: Number(record.sales),
                         ppc: Number(record['price/case'])
                     }
-                    console.log('adding')
-                    console.log(record)
                     Scraper_Worker.addRecord(sale_record);
                 })
             }
