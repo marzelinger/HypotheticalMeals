@@ -168,7 +168,7 @@ export default class CSV_parser{
                 return res.json({ success: false, empty: true});
             }
 
-            var requiredNumFields = 12;
+            var requiredNumFields = 14;
             var columnsObj = await this.checkColumns(jsonArray[0], 
                 [Constants.csv_sku_num,
                     Constants.csv_sku_name,
@@ -181,6 +181,8 @@ export default class CSV_parser{
                     Constants.csv_sku_formula_factor,
                     Constants.csv_sku_ml,
                     Constants.csv_sku_rate,
+                    Constants.csv_sku_mfg_setup,
+                    Constants.csv_sku_mfg_run,
                     Constants.csv_sku_comment], requiredNumFields);
             if(columnsObj.success == false){
                 return this.indicateColumnFailure(res, columnsObj, requiredNumFields);
@@ -330,6 +332,12 @@ export default class CSV_parser{
         } else if(dataValidationObj.cpcIssue){
             return res.json({ success: false,
                 badData: row});
+        } else if(dataValidationObj.mfgRunIssue){
+            return res.json({ success: false,
+                badData: row});
+        } else if(dataValidationObj.mfgSetupIssue){
+            return res.json({ success: false,
+                badData:row});
         }
     }
 
@@ -384,6 +392,20 @@ export default class CSV_parser{
         if(!isNum4){
             toReturn.success = false;
             toReturn.cpcIssue = true;
+            return toReturn;
+        }
+
+        var mfgRunCostCurrencyObj = await this.extractNumFromCurrency(obj[Constants.csv_sku_mfg_run]);
+        if(mfgRunCostCurrencyObj.currencyIssue != 'undefined'){
+            toReturn.success = false;
+            toReturn.mfgRunIssue = true;
+            return toReturn;
+        }
+
+        var mfgSetupCostCurrencyObj = await this.extractNumFromCurrency(obj[Constants.csv_sku_mfg_setup]);
+        if(mfgSetupCostCurrencyObj.currencyIssue == 'undefined'){
+            toReturn.success = false;
+            toReturn.mfgSetupIssue = true;
             return toReturn;
         }
 
@@ -708,13 +730,28 @@ export default class CSV_parser{
             toReturn.costIssue = true;
             return toReturn;
         }
-        obj[Constants.csv_ingr_size] = UnitConversion.getCleanUnitForm(obj[Constants.csv_ingr_size]).data;
-        var isValid2 = await this.findUnit(obj[Constants.csv_ingr_size]);
+
+        var intermediate_units = await UnitConversion.getCleanUnitForm(obj[Constants.csv_ingr_size]);
+        if(intermediate_units.success == true) obj[Constants.csv_ingr_size] = intermediate_units.data;
+        else {
+            toReturn.costIssue = true;
+            return toReturn;
+        }
+
+        var isValid2 = await UnitConversion.getUnitType(obj[Constants.csv_ingr_size]);
         if(isValid2 == -1){
             // TODO: FIX THIS 
             toReturn.costIssue = true;
             return toReturn;
         }
+
+        var moneyConversionSuccessObj = await this.extractNumFromCurrency(obj[Constants.csv_ingr_cost]);
+        if(moneyConversionSuccessObj.currencyIssue != 'undefined'){
+            toReturn.success = false;
+            toReturn.costIssue = true;
+            return toReturn;
+        }
+        obj[Constants.csv_ingr_cost] = moneyConversionSuccessObj.data;
         //var isValid2 = obj[Constants.csv_ingr_size]
         toReturn.success = true;
         return toReturn;
@@ -801,6 +838,26 @@ export default class CSV_parser{
         var toReturn = [];
         toReturn[0] = objNew;
         toReturn[1] = objOld;
+        return toReturn;
+    }
+
+    static async extractNumFromCurrency(qty){
+        var toReturn = {};
+        var isValid = qty.test(/^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/);
+        if(!isValid){
+            toReturn.currencyIssue = true;
+            return toReturn;
+        }
+
+        var qty_arr = qty.match(/^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/);
+        var numeric_value = qty_arr[1];
+        if(numeric_value <= 0){
+            toReturn.currencyIssue = true;
+            return toReturn;
+        }
+
+        toReturn.data = numeric_value;
+        toReturn.success = true;
         return toReturn;
     }
 
@@ -996,30 +1053,26 @@ export default class CSV_parser{
             return toReturn;
         }
 
-        var santizedEntry = UnitConversion.getCleanUnitForm(obj[Constants.csv_formula_quantity]).data;
-        obj[Constants.csv_formula_quantity] = santizedEntry;
- 
-        var isUnitNum = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$/.test(obj[Constants.csv_formula_quantity]);
-        if(!isUnitNum){
-            console.log('maybe here');
+        var santizedEntry = UnitConversion.getCleanUnitForm(obj[Constants.csv_formula_quantity]);
+        if(sanitizedEntry.success == false){
             toReturn.success = false;
             toReturn.unitIssue = true;
             return toReturn;
         }
+        obj[Constants.csv_formula_quantity] = sanitizedEntry.data;
+    
         var ingr = await Ingredient.find({ num: obj[Constants.csv_formula_ingr] });
 
-        var unitType = await this.findUnit(ingr[0].pkg_size);
-        var unitType2 = await this.findUnit(obj[Constants.csv_formula_quantity]);
+        var unitType = await UnitConversion.getUnitType(ingr[0].pkg_size);
+        var unitType2 = await UnitConversion.getUnitType(obj[Constants.csv_formula_quantity]);
+
         if(unitType2 == -1) {
-            console.log('why this');
             toReturn.success = false;
             toReturn.unitIssue = true;
             return toReturn;
         }
         if(unitType != unitType2){
-            console.log(unitType);
-            console.log(unitType2);
-            console.log('here?');
+
             toReturn.success = false;
             toReturn.unitIssue = true;
             return toReturn;
@@ -1027,13 +1080,6 @@ export default class CSV_parser{
 
         toReturn.success = true;
         return toReturn;
-    }
-
-    static async findUnit(ingredient_pkg_size){
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg)$/.test(ingredient_pkg_size)) return 1;
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (floz|pt|qt|gal|ml|l)$/.test(ingredient_pkg_size)) return 2;
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count)$/.test(ingredient_pkg_size)) return 3;
-        return -1;
     }
 
     static async indicateFormulaDataValidationFailure(res, dataValidationObj, row){

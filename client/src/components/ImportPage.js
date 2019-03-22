@@ -10,6 +10,7 @@ import './Center.css';
 import {exportImportReport} from "../actions/exportActions";
 import GeneralNavBar from './GeneralNavBar';
 import * as Constants from '../resources/Constants';
+import headerTable from './../resources/Headers.PNG';
 
 var endpoint = "not specified";
 
@@ -540,8 +541,8 @@ export default class ImportPage extends React.Component {
                         <li> A CSV file starting with "ingredients" (i.e. ingredientsblahblah.csv)</li>
                     </ul>
                 </div>
-                <div className = "centerTitle">
-                    <h3> For more specifications regarding the upload format, please refer to this <a href="https://d1b10bmlvqabco.cloudfront.net/attach/jpvlvyxg51d1nc/iddif2iv5hz4jx/js9h14qu6k6a/Bulk_Import_Export_Format_Draft_2.3.pdf">link</a>. </h3>
+                <div className = "centerContainer">
+                    <img className="centerButton" src={headerTable}></img>
                 </div>
                 <div className="centerContainer">
                     <Input className="centerFile" type="file" onChange={this.handleSelectedFile} />
