@@ -102,7 +102,7 @@ export default class CustomerSelectSalesReport extends React.Component {
             <div className='sales-item-properties'>
                 <CustomInput type="checkbox" id="exampleswitch" name="customSwitch" onChange={() => this.onSelectAllCustomers()} checked={this.state.allCustomers}/>
                 {!this.state.rerender ? <ItemSearchInput
-                    curr_item={this.state.customer}//{this.state.allCustomers ? {name: 'All Customers'} :this.state.customer}
+                    curr_item={this.state.allCustomers ? {name: 'All Customers'} :this.state.customer}
                     item_type={Constants.customer_label}
                     invalid_inputs={this.state.invalid_inputs}
                     handleSelectItem={this.onSelectCustomer}

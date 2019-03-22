@@ -36,18 +36,10 @@ export default class SkuDrilldown extends React.Component {
         let {
             item_properties, 
             item_property_labels} = DataStore.getSkuSaleReportData();
-        
-        let today = new Date()
-        today.setTime(today.getTime() - 300*60*1000)
-        let last_year = new Date(today.getTime() - 300*60*1000)
-        last_year.setFullYear(today.getFullYear() - 1)
 
         this.state = {
             sku_totals_labels: ['Sum of Yearly Rev.', 'Avg. Manu. Run Size', 'Ingr. CPC', 'Avg. Manu. Setup CPC', 'Manu. Run CPC', 'COGS PC', 'Avg. Rev. PC', 'Avg. Profit PC', 'Profit Margin (%)'],
             sku_totals_props: ['sum_yearly_rev', 'avg_manu_run_size', 'ingr_cost_per_case', 'avg_manu_setup_cost_per_case', 'manu_run_cost_per_case', 'total_COGS_per_case', 'avg_rev_per_case', 'avg_profit_per_case', 'profit_marg'],
-            today: today.toISOString().substr(0,10),
-            last_year: last_year.toISOString().substr(0,10),
-            dateRange: { 'startdate': last_year.toISOString().substr(0,10), 'enddate': today.toISOString().substr(0,10)},
             new_data: false,
             invalid_inputs: [],
             totalRowData: {},
@@ -72,12 +64,12 @@ export default class SkuDrilldown extends React.Component {
     }
 
     async componentDidUpdate(prevProps, prevState) {
-        if ( this.props.sku._id !== undefined && this.state.dateRange['startdate'] !== null && 
-             this.state.dateRange['enddate'] !== null && this.state.new_data){
+        if ( this.props.sku._id !== undefined && this.props.dateRange['startdate'] !== null && 
+             this.props.dateRange['enddate'] !== null && this.state.new_data){
             var cust_str = (this.props.customer._id === undefined) ? '_' : this.props.customer._id;
             let datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', cust_str, '_', this.props.sku._id, 
 
-                                this.state.dateRange['startdate'], this.state.dateRange['enddate'], 0, 0)
+                                this.props.dateRange['startdate'], this.props.dateRange['enddate'], 0, 0)
             console.log(datares.data)
             if(datares.success){
                 await this.getTotalRowData(datares.data);
@@ -172,10 +164,9 @@ export default class SkuDrilldown extends React.Component {
     }
 
     onInputChange(event, type) {
-        let newRange = Object.assign({}, this.state.dateRange)
-        newRange[type] = event.target.value
+        console.log(type)
+        this.props.handleDateRangeSelect(event, type)
         this.setState({
-            dateRange: newRange,
             new_data: true
         })
     }
@@ -316,7 +307,7 @@ export default class SkuDrilldown extends React.Component {
                         type="date"
                         name="date"
                         id="startdate"
-                        defaultValue={this.state.last_year}
+                        defaultValue={this.props.dateRange.startdate}
                         onChange = {(e) => this.onInputChange(e, 'startdate')}
                     />
                 </FormGroup>
@@ -326,7 +317,7 @@ export default class SkuDrilldown extends React.Component {
                         type="date"
                         name="date"
                         id="enddate"
-                        defaultValue={this.state.today}
+                        defaultValue={this.props.dateRange.enddate}
                         onChange = {(e) => this.onInputChange(e, 'enddate')}
                     />
                 </FormGroup>
@@ -342,5 +333,6 @@ SkuDrilldown.propTypes = {
     customer: PropTypes.object,
     handleSelectSku: PropTypes.func,
     handleSelectCustomer: PropTypes.func,
+    handleDateRangeSelect: PropTypes.func,
     dateRange: PropTypes.object
 };

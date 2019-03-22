@@ -14,16 +14,27 @@ import GeneralReport from './GeneralReport';
 import '../../style/SalesReportPageStyle.css'
 
 class SalesReportPage extends React.Component {
-    state = {
-        value: 0,
-        general_report_data: {},
-        general_prod_lines: {},
-        general_customers: {},
-        allCustomers: false,
-        selected_sku: {},
-        general_customer: {},
-        drilldown_customer: {}
-    };
+    constructor(props) {
+        super(props)
+        let today = new Date()
+        today.setTime(today.getTime() - 300*60*1000)
+        let last_year = new Date(today.getTime() - 300*60*1000)
+        last_year.setFullYear(today.getFullYear() - 1)
+
+        this.state = {
+            value: 0,
+            general_report_data: {},
+            general_prod_lines: {},
+            general_customers: {},
+            allCustomers: false,
+            selected_sku: {},
+            general_customer: {},
+            drilldown_customer: {},
+            dateRange: { 'startdate': last_year.toISOString().substr(0,10), 'enddate': today.toISOString().substr(0,10)},
+        }
+
+        this.onDateRangeSelect = this.onDateRangeSelect.bind(this);
+    }
 
     handleChange = (event, value) => {
         console.log(value)
@@ -58,6 +69,15 @@ class SalesReportPage extends React.Component {
         await this.setState({ drilldown_customer: customer })
     };
 
+    onDateRangeSelect(event, type) {
+        console.log(type)
+        let newRange = Object.assign({}, this.state.dateRange)
+        newRange[type] = event.target.value
+        this.setState({
+            dateRange: newRange
+        })
+    }
+
     render() {
 
         return (
@@ -90,6 +110,8 @@ class SalesReportPage extends React.Component {
                         customer={this.state.drilldown_customer}
                         handleSelectSku={this.onSelectSku}
                         handleSelectCustomer={this.onSelectDrilldownCustomer}
+                        dateRange={this.state.dateRange}
+                        handleDateRangeSelect={this.onDateRangeSelect}
                     /> 
                 } 
                 {/* first is General, Second is SKU */}
