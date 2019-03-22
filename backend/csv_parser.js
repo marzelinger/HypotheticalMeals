@@ -615,7 +615,7 @@ export default class CSV_parser{
     }
 
     static async parseIngredientsCSV(req, res){
-       // try {
+        try {
             //Extract the primary key (num) & unique identifier(case_upc) for each entry
             var db_ingredients_nums = new Map();
             var db_ingredients_name = new Set();
@@ -712,10 +712,10 @@ export default class CSV_parser{
                     new_data: ingrs_to_update_new, ignored_data: ingrs_to_ignore_arr});
             }
         }
-      //  catch (err) {
-      //      return res.json({ success: false, error : "Catch all error"});
-      //  }
-  //  }
+        catch (err) {
+            return res.json({ success: false, error : "Catch all error"});
+        }
+    }
 
     static async validateDataIngredients(obj, all_ingredients){
         var toReturn = {};
