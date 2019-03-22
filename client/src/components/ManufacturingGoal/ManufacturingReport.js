@@ -13,6 +13,7 @@ import {
   import { Table } from 'reactstrap';
 
 import { Button, ModalBody, ModalFooter } from 'reactstrap';
+import * as Constants from '../../resources/Constants';
 import UnitConversion from '../../helpers/UnitConversion';
 import '../../style/printing.css'
 const html2canvas = require('html2canvas');
@@ -59,6 +60,19 @@ export default class ManufacturingReport extends React.Component {
     //         pdf.save("calculator.pdf");  
     //     });
     // }
+
+
+    async handleSubmit(e, opt) {
+        var reportData = {};
+        if (![Constants.details_save, Constants.details_export, Constants.details_create].includes(opt)) {
+            this.props.handleDetailViewSubmit(e, reportData, opt);
+            return;
+        }
+        if([Constants.details_export].includes(opt)){
+            this.print();
+            return;
+        }
+    }
 
 
     masterHeader = () => {
@@ -194,20 +208,6 @@ export default class ManufacturingReport extends React.Component {
             );
     }
     
-
-
-
-    // {this.props.list_items.map((item, index) => 
-    //     <TableRow className = {`myrow ${this.state.showCheckboxes ? " trselect":""}`} selected = {this.determineSelected(index)} key={index}>
-    //       {this.props.table_properties.map(prop => 
-    //         <TableRowColumn
-    //           key={prop}
-    //           onClick={e => this.props.handleSelect(e, item)}
-    //           style={{ height: 'auto !important' }}
-    //         >
-    //           {this.displayValue(item, prop)}
-    //         </TableRowColumn>
-    //       )}
     summationTable = () => {
         return (
             <div></div>
@@ -373,9 +373,9 @@ export default class ManufacturingReport extends React.Component {
                   <div>
                     {this.masterHeader()}
                     <div>
-                        {this.props.data.complete!=undefined ? 
+                        {this.props.data.reportData.complete!=undefined ? 
                             <div>
-                                {this.props.data.complete.map((item, index) =>
+                                {this.props.data.reportData.complete.map((item, index) =>
                                     <div key = {index} >
                                         {this.formatActivity(item)}
                                     </div>
@@ -384,13 +384,14 @@ export default class ManufacturingReport extends React.Component {
                             </div>
                             :<div></div>
                         }
+                    </div>
                     <div>
-                        {(this.props.data.all_cut !=undefined) ?
+                        {(this.props.data.reportData.all_cut !=undefined) ?
                             <div> 
-                                {this.props.data.all_cut.length>0 ?
+                                {this.props.data.reportData.all_cut.length>0 ?
                                     <div>
                                         <h6>The Following Activitities Began Before the Timespan and End After the Timespan.</h6>
-                                        {this.props.data.all_cut.map((item, index) =>
+                                        {this.props.data.reportData.all_cut.map((item, index) =>
                                             <div key = {index} >
                                                 {this.badActivity(item)}
                                             </div>)}
@@ -404,12 +405,12 @@ export default class ManufacturingReport extends React.Component {
                         }
                     </div>
                     <div>
-                        {(this.props.data.end_cut !=undefined) ? 
+                        {(this.props.data.reportData.end_cut !=undefined) ? 
                             <div>
-                                {this.props.data.end_cut.length>0 ?
+                                {this.props.data.reportData.end_cut.length>0 ?
                                     <div>
                                         <h6>The Following Activitities Began During the Timespan and End After the Timespan.</h6>
-                                        {this.props.data.end_cut.map((item, index) =>
+                                        {this.props.data.reportData.end_cut.map((item, index) =>
                                             <div key = {index} >
                                                 {this.badActivity(item)}
                                             </div>
@@ -424,12 +425,12 @@ export default class ManufacturingReport extends React.Component {
                         }
                     </div>
                     <div>
-                        {(this.props.data.beg_cut !=undefined) ? 
+                        {(this.props.data.reportData.beg_cut !=undefined) ? 
                             <div>
-                                {this.props.data.beg_cut.length>0 ?
+                                {this.props.data.reportData.beg_cut.length>0 ?
                                     <div>
                                         <h6>The Following Activitities Began Before the Timespan and End During the Timespan.</h6>
-                                        {this.props.data.beg_cut.map((item, index) =>
+                                        {this.props.data.reportData.beg_cut.map((item, index) =>
                                             <div key = {index} >
                                                 {this.badActivity(item)}
                                             </div>
@@ -442,20 +443,31 @@ export default class ManufacturingReport extends React.Component {
                             :
                             <div></div>
                         }
-                    </div>
-                  </div>   
+                    </div>   
                   </div>
                 </ModalBody>
                 <ModalFooter>
                     {/* <ExportSimple name = {'Export'} data = {this.state.data} fileTitle = {this.state.page_title}/> */}
-                    <div className = "exportbutton pdfbutton hoverable" onClick = {() => this.print()}>Export PDF</div>
+                    {/* <div className = "exportbutton pdfbutton hoverable" onClick = {() => this.print()}>Export PDF</div> */}
+
+                    <div className='item-options'>
+                        { this.props.detail_view_options.map(opt => 
+                            <Button 
+                                className = "detailButtons"
+                                key={opt} 
+                                onClick={(e) => this.handleSubmit(e, opt)}
+                            >{opt}</Button>
+                        )}
+                    </div>
                 </ModalFooter>                 
             </div>
         );    
     }
+}
 
 
 ManufacturingReport.propTypes = {
-    //data: PropTypes.array,
-    //manuData: PropTypes.array,
+    data: PropTypes.array,
+    manuData: PropTypes.array,
+    detail_view_options: PropTypes.arrayOf(PropTypes.string),
 }

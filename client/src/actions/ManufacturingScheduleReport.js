@@ -1,5 +1,7 @@
 import SubmitRequest from '../helpers/SubmitRequest';
 import { splitIngQuantity} from "./splitIngQuantity";
+import Calculations from "../components/SalesReport/Calculations";
+import UnitConversion from "../helpers/UnitConversion";
 
 var fileDownload = require('js-file-download');
 //The former should be fine: name, number, and quantity/unit for ingredients.
@@ -12,14 +14,15 @@ export const exportManuScheduleReport = async (manuData) => {
     
     let res = await SubmitRequest.submitGetManufacturingActivitiesForReport(manuData);
     if(res.success){
+        console.log("this is the res: "+JSON.stringify(res));
 
         // console.log("complete_acti: "+JSON.stringify(res.data.complete_activities));
         // console.log("beginning_cut: "+JSON.stringify(res.data.beginning_cut));
         // console.log("ending_cut: "+JSON.stringify(res.data.ending_cut));
         // console.log("allcut: "+JSON.stringify(res.data.all_cut));
         //createManuReport(manuData, res.data);
-        // let calculations = doCalcs(manuData, res.data.complete_activities);
-        let calculations = {}
+        let calculations = await doCalcs(manuData, res.data.complete_activities);
+        // let calculations = {}
         // console.log("this is the CALCULATIONS; "+JSON.stringify(calculations));
         return { reportData : {
             complete: res.data.complete_activities,
@@ -36,61 +39,72 @@ export const exportManuScheduleReport = async (manuData) => {
     } 
 }
 
-export const doCalcs = (manuData, activitites) => {
+export const doCalcs = async (manuData, activitites) => {
     var ingSUMmap = new Map();
     if(activitites.length==0) return [];
     var calculations =[];
     for(let act = 0; act<activitites.length; act++){
         var curAct = activitites[act];
-        var skudata = curAct.sku;
-        if(skudata !=undefined){
-        var numIngs=0;
-        if(skudata.formula!=undefined){
-            if(skudata.formula.ingredients!= undefined){
-                numIngs = skudata.formula.ingredients.length;
+        var sku = curAct.sku;
+        if(sku !=undefined){
+            var numIngs=0;
+            if(sku.formula!=undefined){
+                if(sku.formula.ingredients!= undefined){
+                    numIngs = sku.formula.ingredients.length;
+                }
+            }
+
+            for (let ing = 0; ing<numIngs; ing++){
+                var ing_pkg_size = sku.formula.ingredients[ing].pkg_size;
+                var form_ingredient_quant = sku.formula.ingredient_quantities[ing];
+                var ing_parse = await Calculations.parseUnitVal(ing_pkg_size);
+                var ing_pkg_size_val = ing_parse.val;
+                //need to convert the formula ingredient quantity to the ingredient pckg size unit.
+                //get the ingredient_pckg_size unit
+                var conversionFuncObj = UnitConversion.getConversionFunction(ing_pkg_size);
+                console.log("this is conversion func obj"+JSON.stringify(conversionFuncObj));
+                var converted_form = conversionFuncObj.func(form_ingredient_quant);
+
+                var form_parse = await this.parseUnitVal(converted_form);
+                var form_ing_val = form_parse.val;
+
+                //form_ing_val is the correct unit number to now multiply by the 
+
+                var cur_ing_sum = form_ing_val*sku.scale_factor*curAct.quantity;
+                //convert the form quant to the ing pckg size unit and then you add the num to the 
+                //now want to add each ing into the map
+                //map is key =ing value = sum
+                if(ingSUMmap.has(sku.formula.ingredients[ing].name)){
+                    //want to add the values together.
+
+                    var map_ing_parse = await Calculations.parseUnitVal(ingSUMmap.get(sku.formula.ingredients[ing].name));
+
+                    var tot = cur_ing_sum + map_ing_parse.val;
+                    ingSUMmap.set(sku.formula.ingredients[ing].name, tot+""+map_ing_parse);
+                    // console.log("in the map stuff");
+                    console.log("map current: "+JSON.stringify(ingSUMmap));
+
+                }
+                else{
+                    ingSUMmap.set(sku.formula.ingredients[ing].name, 
+                        cur_ing_sum);
+                }
             }
         }
-
-        for (let ing = 0; ing<numIngs; ing++){
-
-            var curIng = skudata.formula.ingredients[ing];
-            // console.log("this is the current ing: "+ JSON.stringify(curIng));
-            var {ingQuant, ingMeas} = splitIngQuantity(skudata.formula.ingredient_quantities[ing]);
-
-            //now want to add each ing into the map
-            //map is key =ing value = sum
-            if(ingSUMmap.has(skudata.formula.ingredients[ing].name)){
-                //want to add the values together.
-                var {ingFromMap, ingMeasMap} = splitIngQuantity(ingSUMmap.get(skudata.formula.ingredients[ing].name));
-                var tot = ingFromMap + ingQuant*curAct.quantity;
-                ingSUMmap.set(skudata.formula.ingredients[ing].name, tot+""+ingMeas);
-                // console.log("in the map stuff");
-                // console.log("this is the tot; "+tot);
-
-            }
-            else{ //TODO DOUBLE CHECK THIS SUMMATION AFTER BELAL'S STUFF
-                ingSUMmap.set(skudata.formula.ingredients[ing].name, 
-                    ingQuant*curAct.quantity+""+ingMeas);
-                    // console.log("in the map 3");
-
-            }
-        }
-        }
-
     }
     var ingNames = [];
     var ingTots = [];
-    for( var k in ingSUMmap){
-        ingNames.push(k);
-        ingTots.push(ingSUMmap.get(k));
-        // console.log("this is the INGNAMES; "+JSON.stringify(ingNames));
-        // console.log("this is the ingTOTS; "+JSON.stringify(ingTots));
-    }
+                    for( var k in ingSUMmap){
+                        ingNames.push(k);
+                        ingTots.push(ingSUMmap.get(k));
+                        // console.log("this is the INGNAMES; "+JSON.stringify(ingNames));
+                        // console.log("this is the ingTOTS; "+JSON.stringify(ingTots));
+                    }
 
-    return {summation: {
-            ingredientNames: ingNames,
-            ingredientQuantities: ingTots
-    }
+                    return {summation: {
+                            ingredientNames: ingNames,
+                            ingredientQuantities: ingTots
+                    }
 }
 }
 

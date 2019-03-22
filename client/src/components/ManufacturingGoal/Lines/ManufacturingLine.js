@@ -64,8 +64,8 @@ export default class ManufacturingLine extends React.Component{
               validateShortName = {this.props.validateShortName} 
               ></ManufacturingLineDetails>
             </div>
-            <Button id = "manuLineScheduleButton" color="primary" onClick={(e) => this.onReportClick(e)}  > Report</Button>{' '}
-            <div className = "exportbutton pdfbutton hoverable" onClick = {() => this.onReportClick()}>Preview PDF</div>
+            {/* <Button id = "manuLineScheduleButton" color="primary" onClick={(e) => this.onReportClick(e)}  > Report</Button>{' '} */}
+            <div className = "exportbutton pdfbutton hoverable" onClick = {() => this.onReportClick()}>Report</div>
           </div>
       </div>
     )

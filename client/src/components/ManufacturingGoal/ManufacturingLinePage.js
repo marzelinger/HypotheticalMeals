@@ -115,43 +115,47 @@ export default class ManufacturingLinePage extends React.Component {
   }
 
   onDetailViewSubmitReport= async (event, manuData, option) => {
-    console.log("this is the item state."+ JSON.stringify(manuData));
-    console.log("this is the item option."+ JSON.stringify(option));
-
-
     switch (option) {
+        case Constants.details_cancel:
+              await this.setState({ 
+                selected_manu_line: null,
+                detail_view_options: [],
+                detail_view_action: '',
+                manu_report_modal: false
+              });
+            break;
         case Constants.details_export:
-          // let {
-          //   complete,
-          //   beg_cut,
-          //   end_cut,
-          //   all_cut,
-          //   summation} = await exportManuScheduleReport(reportData);
-          //   this.setState({
-          //     complete: complete,
-          //     beg_cut: beg_cut,
-          //     end_cut: end_cut,
-          //     all_cut: all_cut,
-          //     summation: summation
-          //   });
             let reportData = await exportManuScheduleReport(manuData);
               await this.setState({
                 reportData: reportData,
                 manuData: manuData
               });
             console.log("this is the reportData: "+JSON.stringify(this.state.reportData));
-            this.toggle(Constants.manu_report_data_modal);
+            await this.setState({ 
+              selected_manu_line: null,
+              detail_view_options: [Constants.details_export, Constants.details_cancel],
+              detail_view_action: '',
+              manu_report_modal: false,
+              manu_report_data_modal: true
+
+            });
             break;
         };
-
-        await this.setState({ 
-            selected_manu_line: null,
-            detail_view_options: [],
-            detail_view_action: ''
-        });
-        this.toggle(Constants.manu_report_modal);
-    
   }
+
+  onDetailViewDataSubmit= async (event, manuData, option) => {
+    switch (option) {
+        case Constants.details_cancel:
+              await this.setState({ 
+                selected_manu_line: null,
+                detail_view_options: [],
+                detail_view_action: '',
+                manu_report_data_modal: false
+              });
+            break;
+        };
+  }
+
 
   render() {
     return (
@@ -172,6 +176,10 @@ export default class ManufacturingLinePage extends React.Component {
                     <ManufacturingReport
                             data = {this.state.reportData}
                             manuData = {this.state.manuData}
+                            detail_view_options = {this.state.detail_view_options}
+                            handleDetailViewSubmit={this.onDetailViewDataSubmit}
+
+
                     />
         </Modal>
       </div>
