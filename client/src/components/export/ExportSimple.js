@@ -54,6 +54,7 @@ return (
             <div className = "exportbutton hoverable"
               onClick={this.onExportSimpleClick}
               primary={true}
+              disabled = {this.props.disabled}
             >
               {this.props.name || 'Export'}
             </div>
