@@ -298,6 +298,8 @@ export default class CSV_parser{
                     sku.scale_factor = reformattedSKUS[0].scale_factor;
                     sku.manu_lines = reformattedSKUS[0].manu_lines;
                     sku.manu_rate = reformattedSKUS[0].manu_rate;
+                    sku.setup_cost = reformattedSKUS[0].setup_cost;
+                    sku.run_cpc = reformattedSKUS[0].run_cpc;
                     sku.comment = reformattedSKUS[0].comment;
                     console.log('gets here');
 
@@ -550,6 +552,9 @@ export default class CSV_parser{
         }
         objNew.manu_lines_to_show = manu_lines_string;
         objNew.manu_lines = manu_lines_to_add;
+
+        objNew.setup_cost = objOld[Constants.csv_sku_mfg_setup];
+        objNew.run_cpc = objOld[Constants.csv_sku_mfg_run];
         
         objNew.manu_rate = objOld[Constants.csv_sku_rate];
         objNew.comment = objOld[Constants.csv_sku_comment];
@@ -595,6 +600,8 @@ export default class CSV_parser{
             sku.scale_factor = addArray[i].scale_factor;
             sku.manu_lines = addArray[i].manu_lines;
             sku.manu_rate = addArray[i].manu_rate;
+            sku.setup_cost = addArray[i].setup_cost;
+            sku.run_cpc = addArray[i].run_cpc;
             sku.comment = addArray[i].comment;
             let new_sku = await sku.save();
             console.log("add array is: ");
