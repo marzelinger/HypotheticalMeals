@@ -362,80 +362,98 @@ export default class ManufacturingReport extends React.Component {
         console.log("propsdata "+JSON.stringify(this.props.data));
         return (
             <div>
-            <iframe id="ifmcontentstoprint" 
-            style={{
-                        height: '0px',
-                        width: '0px',
-                        position: 'absolute'
-                    }}
-                    ></iframe>  
-            <ModalBody id = "printarea">
-                {this.masterHeader()}
-                <div>
-                {this.props.data.complete.map((item, index) =>
-                    <div key = {index} >
-                    {this.formatActivity(item)}
-                    </div>)}
-                </div>
-                <div>
-                    {this.formatSumTable()}
-                </div>
-                <div>
-                {(this.props.data.all_cut !=undefined) ? 
-                    (this.props.data.all_cut.length>0 ?
-                        <div>
-                        <h6>The Following Activitities Began Before the Timespan and End After the Timespan.</h6>
-                        {this.props.data.all_cut.map((item, index) =>
-                            <div key = {index} >
-                            {this.badActivity(item)}
-                            </div>)}
+                <iframe id="ifmcontentstoprint" 
+                style={{
+                            height: '0px',
+                            width: '0px',
+                            position: 'absolute'
+                        }}
+                        ></iframe>  
+                <ModalBody id = "printarea">
+                  <div>
+                    {this.masterHeader()}
+                    <div>
+                        {this.props.data.complete!=undefined ? 
+                            <div>
+                                {this.props.data.complete.map((item, index) =>
+                                    <div key = {index} >
+                                        {this.formatActivity(item)}
+                                    </div>
+                                )}
+                                {this.formatSumTable()}
                             </div>
-                        : <div></div>
-                )
-                : <div></div>
-                }
-                </div>
-                <div>
-                {(this.props.data.end_cut !=undefined) ? 
-                    (this.props.data.end_cut.length>0 ?
-                        <div>
-                    <h6>The Following Activitities Began During the Timespan and End After the Timespan.</h6>
-                        {this.props.data.end_cut.map((item, index) =>
-                            <div key = {index} >
-                            {this.badActivity(item)}
-                            </div>)}
+                            :<div></div>
+                        }
+                    <div>
+                        {(this.props.data.all_cut !=undefined) ?
+                            <div> 
+                                {this.props.data.all_cut.length>0 ?
+                                    <div>
+                                        <h6>The Following Activitities Began Before the Timespan and End After the Timespan.</h6>
+                                        {this.props.data.all_cut.map((item, index) =>
+                                            <div key = {index} >
+                                                {this.badActivity(item)}
+                                            </div>)}
+                                    </div>
+                                    : 
+                                    <div></div>
+                                }
                             </div>
-                        : <div></div>
-                )
-                : <div></div>
-                }
-                </div>
-                <div>
-                {(this.props.data.beg_cut !=undefined) ? 
-                    (this.props.data.beg_cut.length>0 ?
-                        <div>
-                        <h6>The Following Activitities Began Before the Timespan and End During the Timespan.</h6>
-                        {this.props.data.beg_cut.map((item, index) =>
-                            <div key = {index} >
-                            {this.badActivity(item)}
-                            </div>)}
+                            : 
+                            <div></div>
+                        }
+                    </div>
+                    <div>
+                        {(this.props.data.end_cut !=undefined) ? 
+                            <div>
+                                {this.props.data.end_cut.length>0 ?
+                                    <div>
+                                        <h6>The Following Activitities Began During the Timespan and End After the Timespan.</h6>
+                                        {this.props.data.end_cut.map((item, index) =>
+                                            <div key = {index} >
+                                                {this.badActivity(item)}
+                                            </div>
+                                        )}
+                                    </div>
+                                    : 
+                                    <div></div>
+                                }
                             </div>
-                        : <div></div>
-                )
-                : <div></div>
-                }
-                </div>
-
-            
-            </ModalBody>
-            <ModalFooter>
-                {/* <ExportSimple name = {'Export'} data = {this.state.data} fileTitle = {this.state.page_title}/> */}
-                <div className = "exportbutton pdfbutton hoverable" onClick = {() => this.print()}>Export PDF</div>
-            </ModalFooter>                 
+                        : 
+                        <div></div>
+                        }
+                    </div>
+                    <div>
+                        {(this.props.data.beg_cut !=undefined) ? 
+                            <div>
+                                {this.props.data.beg_cut.length>0 ?
+                                    <div>
+                                        <h6>The Following Activitities Began Before the Timespan and End During the Timespan.</h6>
+                                        {this.props.data.beg_cut.map((item, index) =>
+                                            <div key = {index} >
+                                                {this.badActivity(item)}
+                                            </div>
+                                        )}
+                                    </div>
+                                    :
+                                    <div></div>
+                                }
+                            </div>
+                            :
+                            <div></div>
+                        }
+                    </div>
+                  </div>   
+                  </div>
+                </ModalBody>
+                <ModalFooter>
+                    {/* <ExportSimple name = {'Export'} data = {this.state.data} fileTitle = {this.state.page_title}/> */}
+                    <div className = "exportbutton pdfbutton hoverable" onClick = {() => this.print()}>Export PDF</div>
+                </ModalFooter>                 
             </div>
-        );
+        );    
     }
-}
+
 
 ManufacturingReport.propTypes = {
     //data: PropTypes.array,

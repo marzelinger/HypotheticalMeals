@@ -22,7 +22,6 @@ class ExportSimple extends Component {
 
   onExportSimpleClick(e){
     e.preventDefault();
-    console.log("this is the fileTitle"+this.props.fileTitle);
     
     switch(this.props.fileTitle){
       case ("skus"):
@@ -51,7 +50,6 @@ class ExportSimple extends Component {
       };
 render() {
     const { user } = this.props.auth;
-    console.log("this is the disabled: "+this.props.disabled);
 return (
             <div className = "exportbutton hoverable"
               onClick={this.onExportSimpleClick}

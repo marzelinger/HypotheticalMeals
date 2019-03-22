@@ -6,11 +6,10 @@ var fileDownload = require('js-file-download');
 const html2canvas = require('html2canvas');
 const jsPDF = require('jspdf');
 
-
-
-
 export const exportManuScheduleReport = async (manuData) => {
     // console.log("making the manu report in export manu schedule report: ");
+    
+    
     let res = await SubmitRequest.submitGetManufacturingActivitiesForReport(manuData);
     if(res.success){
 
@@ -19,7 +18,8 @@ export const exportManuScheduleReport = async (manuData) => {
         // console.log("ending_cut: "+JSON.stringify(res.data.ending_cut));
         // console.log("allcut: "+JSON.stringify(res.data.all_cut));
         //createManuReport(manuData, res.data);
-        let calculations = doCalcs(manuData, res.data.complete_activities);
+        // let calculations = doCalcs(manuData, res.data.complete_activities);
+        let calculations = {}
         // console.log("this is the CALCULATIONS; "+JSON.stringify(calculations));
         return { reportData : {
             complete: res.data.complete_activities,
@@ -52,6 +52,7 @@ export const doCalcs = (manuData, activitites) => {
         }
 
         for (let ing = 0; ing<numIngs; ing++){
+
             var curIng = skudata.formula.ingredients[ing];
             // console.log("this is the current ing: "+ JSON.stringify(curIng));
             var {ingQuant, ingMeas} = splitIngQuantity(skudata.formula.ingredient_quantities[ing]);

@@ -115,7 +115,9 @@ export default class ManufacturingLinePage extends React.Component {
   }
 
   onDetailViewSubmitReport= async (event, manuData, option) => {
-    //console.log("this is the item  state."+ JSON.stringify(reportData));
+    console.log("this is the item state."+ JSON.stringify(manuData));
+    console.log("this is the item option."+ JSON.stringify(option));
+
 
     switch (option) {
         case Constants.details_export:
@@ -132,14 +134,12 @@ export default class ManufacturingLinePage extends React.Component {
           //     all_cut: all_cut,
           //     summation: summation
           //   });
-            let { reportData} = await exportManuScheduleReport(manuData);
+            let reportData = await exportManuScheduleReport(manuData);
               await this.setState({
                 reportData: reportData,
                 manuData: manuData
               });
             console.log("this is the reportData: "+JSON.stringify(this.state.reportData));
-            console.log("this is the summ: "+JSON.stringify(this.state.reportData));
-
             this.toggle(Constants.manu_report_data_modal);
             break;
         };
