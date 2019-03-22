@@ -66,7 +66,18 @@
     overflow: hidden;
 }
 
-.report-container-general-sku td, .report-container-general-sku th {
+.report-container-general-sku th {
+    display: flex;
+    justify-content: center;
+}
+
+.report-container-general-total td {
+    display: flex;
+    justify-content: center;
+    font-weight: normal;
+}
+
+.report-container-general-total thead, .report-container-general-total th {
     display: flex;
     justify-content: center;
 }

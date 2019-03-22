@@ -21,7 +21,8 @@ class SalesReportPage extends React.Component {
         general_customers: {},
         allCustomers: false,
         selected_sku: {},
-        selected_customer: {}
+        general_customer: {},
+        drilldown_customer: {}
     };
 
     handleChange = (event, value) => {
@@ -48,8 +49,13 @@ class SalesReportPage extends React.Component {
             general_customers: gen_customers
         })
     }
-    onSelectCustomer = async (customer) => {
-        await this.setState({ selected_customer: customer })
+
+    onSelectGeneralCustomer = async (customer) => {
+        await this.setState({ general_customer: customer })
+    };
+
+    onSelectDrilldownCustomer = async (customer) => {
+        await this.setState({ drilldown_customer: customer })
     };
 
     render() {
@@ -81,9 +87,9 @@ class SalesReportPage extends React.Component {
                         /> : 
                     <SkuDrilldown 
                         sku={this.state.selected_sku}
-                        customer={this.state.selected_customer}
+                        customer={this.state.drilldown_customer}
                         handleSelectSku={this.onSelectSku}
-                        handleSelectCustomer={this.onSelectCustomer}
+                        handleSelectCustomer={this.onSelectDrilldownCustomer}
                     /> 
                 } 
                 {/* first is General, Second is SKU */}

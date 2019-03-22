@@ -50,14 +50,18 @@ export default class CustomerSelectSalesReport extends React.Component {
     async fillCustomerLine() {
         var res = {};
         if (this.state.customer !== null && this.state.customer !== '' && this.state.customer._id !== undefined) {
-            console.log(this.state.customer)
             res = await SubmitRequest.submitGetCustomerByID(this.state.customer._id);
-            console.log(res);
             if (res === undefined || !res.success) {
                 await this.setState({ customer: '' });
             }
             else{
-                await this.setState({ customer: res.data[0] });
+                this.props.handleSelectCustomer(res.data[0])
+                await this.setState({ 
+                    customer: res.data[0] ,
+                    allCustomers: false,
+                    singleCustomer: true,
+                    // rerender: true
+                });
             }
         }
         else {
@@ -98,7 +102,7 @@ export default class CustomerSelectSalesReport extends React.Component {
             <div className='sales-item-properties'>
                 <CustomInput type="checkbox" id="exampleswitch" name="customSwitch" onChange={() => this.onSelectAllCustomers()} checked={this.state.allCustomers}/>
                 {!this.state.rerender ? <ItemSearchInput
-                    curr_item={this.state.allCustomers ? {name: 'All Customers'} :this.state.customer}
+                    curr_item={this.state.customer}//{this.state.allCustomers ? {name: 'All Customers'} :this.state.customer}
                     item_type={Constants.customer_label}
                     invalid_inputs={this.state.invalid_inputs}
                     handleSelectItem={this.onSelectCustomer}

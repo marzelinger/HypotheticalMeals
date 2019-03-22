@@ -47,7 +47,6 @@ export default class SkuDrilldown extends React.Component {
             sku_totals_props: ['sum_yearly_rev', 'avg_manu_run_size', 'ingr_cost_per_case', 'avg_manu_setup_cost_per_case', 'manu_run_cost_per_case', 'total_COGS_per_case', 'avg_rev_per_case', 'avg_profit_per_case', 'profit_marg'],
             today: today.toISOString().substr(0,10),
             last_year: last_year.toISOString().substr(0,10),
-            customer: {},
             dateRange: { 'startdate': last_year.toISOString().substr(0,10), 'enddate': today.toISOString().substr(0,10)},
             new_data: false,
             invalid_inputs: [],
@@ -60,7 +59,7 @@ export default class SkuDrilldown extends React.Component {
             invalid_inputs: [],
             page_name: 'salesReport_sku',
             message: (<Alert color='primary'>Please select a SKU</Alert>),
-            }
+        }
 
         this.onSelectSku = this.onSelectSku.bind(this);
         this.onSelectCustomer = this.onSelectCustomer.bind(this);
@@ -188,14 +187,9 @@ export default class SkuDrilldown extends React.Component {
                     {this.state.sku_totals_props.map(prop => {
                         if (['sum_yearly_rev', 'ingr_cost_per_case', 'avg_manu_setup_cost_per_case', 'manu_run_cost_per_case', 'total_COGS_per_case', 'avg_rev_per_case', 'avg_profit_per_case'].includes(prop)){
                             var toDisplay = '$' + this.state.totalRowData[prop]
-                        } else {
-                            var toDisplay = this.state.totalRowData[prop]
-                        }
-                        return (
-                            <th>
-                                {toDisplay}
-                            </th>
-                        )
+                        } 
+                        else var toDisplay = this.state.totalRowData[prop]
+                        return <td>{toDisplay}</td>
                     }
                     )}
                     </tr>
@@ -212,7 +206,9 @@ export default class SkuDrilldown extends React.Component {
             interactivityEnabled: true,
             theme: "light2",
             title: {
-                text: this.props.sku.name + ' Sales Report'
+                text: this.props.sku.name + ' Weekly Revenue over Time',
+                fontFamily: 'calibri',
+                fontWeight: 'normal'
             },
             axisX:{
                 title: "Date",
@@ -298,7 +294,6 @@ export default class SkuDrilldown extends React.Component {
     }
 
     render() {
-        console.log(this.props.customer)
         return (
         <div className='sku-drilldown'>
             <div className='filter-container'>
@@ -311,7 +306,7 @@ export default class SkuDrilldown extends React.Component {
                     className='sku-drilldown-filter'
                 />
                 <CustomerSelectSalesReport
-                    item = {this.props.customer}
+                    customer = {this.props.customer}
                     handleSelectCustomer = {this.onSelectCustomer}
                     className='sku-drilldown-filter'
                 />
@@ -346,5 +341,6 @@ SkuDrilldown.propTypes = {
     sku: PropTypes.object,
     customer: PropTypes.object,
     handleSelectSku: PropTypes.func,
-    handleSelectCustomer: PropTypes.func
+    handleSelectCustomer: PropTypes.func,
+    dateRange: PropTypes.object
 };
