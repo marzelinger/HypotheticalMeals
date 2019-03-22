@@ -100,7 +100,8 @@ export default class SkuDrilldown extends React.Component {
     }
 
     async getTotalRowData(records){
-        var recordsCalcs = Calculations.getSalesTotals(records);
+        var recordsCalcs = await Calculations.getSalesTotals(records);
+        console.log("recordCalcs: "+JSON.stringify(recordsCalcs));
         if(recordsCalcs != undefined){
             var total_data = await Calculations.calcTotalData(this.props.sku, recordsCalcs.revenue, recordsCalcs.sales, recordsCalcs.avg_rev_per_case);
             await this.setState({

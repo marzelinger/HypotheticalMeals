@@ -145,7 +145,10 @@ class SkuHandler{
     static async getSkuByID(req, res){
         try {
             var target_id = req.params.sku_id;
-            let to_return = await SKU.find({ _id : target_id });
+            let to_return = await SKU.find({ _id : target_id }).populate('formula').populate({
+                path: 'formula',
+                populate: { path: 'ingredients' }
+              }).populate('prod_line');
             if(to_return.length == 0) return res.json({ success: false, error: '404'});
             return res.json({ success: true, data: to_return});
         } catch (err) {

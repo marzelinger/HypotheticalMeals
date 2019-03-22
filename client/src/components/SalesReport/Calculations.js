@@ -43,6 +43,8 @@ export default class Calculations{
     }
 
     static async getSalesTotals(records) {
+
+        // console.log("these are the records.")
         var total_rev = 0;
         var total_cases = 0;
         var avg_rev_per_case = 0;
@@ -130,6 +132,10 @@ export default class Calculations{
     }
 
     static async calcTotalData(sku, totalTimeRev, totalTimeSales, tenYRcaseavg){
+
+        console.log("sku here: "+JSON.stringify(sku));
+        // console.log("sku here: "+JSON.stringify(sku));
+
 
        
         var sum_yearly_rev = totalTimeRev;
