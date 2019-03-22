@@ -202,7 +202,7 @@ class Manu_ActivityHandler{
                     else if(diffEnd<0 && diffStart<0){
                         //this activity is larger than the span
                         all_cut.push(curAct);
-                        console.log("allcut: "+all_cut.length);
+                        // console.log("allcut: "+all_cut.length);
 
                         continue;
                     }
@@ -210,7 +210,7 @@ class Manu_ActivityHandler{
                         // activity starts after report
                         //but tail cuttoff
                         ending_cut.push(curAct);
-                        console.log("ending: "+ending_cut.length);
+                        // console.log("ending: "+ending_cut.length);
 
                         continue;
                     }
@@ -218,7 +218,7 @@ class Manu_ActivityHandler{
                         //activity starts before report,
                         //front cut
                         beginning_cut.push(curAct);
-                        console.log("begginging: "+beginning_cut.length);
+                        // console.log("begginging: "+beginning_cut.length);
                         continue;
                     }
                 }

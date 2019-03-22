@@ -38,16 +38,17 @@ export default class GeneralReport extends React.Component {
             sku_yr_table_properties: ['Year', 'Total Revenue (USD)', 'Average Revenue Per Case (USD)'],
             sku_totals_properties: ['Sum of Yearly Rev. (USD)', 'Avg. Manu. Run Size', 'Ingr. CPC (USD)', 'Avg. Manu. Setup CPC (USD)', 'Manu. Run CPC (USD)', 'COGS PC (USD)', 'Avg. Rev. PC (USD)', 'Avg. Profit PC (USD)', 'Profit Margin (%)'],
             sku_header_table_properties: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count Per Case', 'Setup Cost (USD)', 'Run CPC (USD)'],
-            // prod_lines: Object.assign({}, props.general_prod_lines),
+            prod_lines: Object.assign([], props.general_prod_lines),
+            prod_lines_indices: Object.assign([], props.general_prod_lines_indices),
             // customer: Object.assign({}, props.general_customers),
-            prod_lines: [],
+            // prod_lines: [],
             customer: {},
             invalid_inputs: [],
             new_data: false,
             report_button: false,
             total_years: 10,
-            // tenYRdata: Object.assign({}, props.general_report_data),
-            tenYRdata: {},
+            tenYRdata: Object.assign({}, props.general_report_data),
+            // tenYRdata: {},
             dataRanges: [],
             years: [],
             loading: false,
@@ -57,6 +58,10 @@ export default class GeneralReport extends React.Component {
         this.calculateYears = this.calculateYears.bind(this);
         this.onSelectProductLine = this.onSelectProductLine.bind(this);
         this.onSelectCustomer = this.onSelectCustomer.bind(this);
+        console.log("gen data constructor: "+JSON.stringify(this.state.prod_lines));
+        console.log("gen data constructor2: "+JSON.stringify(this.state.prod_lines_indices));
+
+
     }
 
     async componentDidMount() {
@@ -147,13 +152,13 @@ export default class GeneralReport extends React.Component {
                     var tenYRSKUsdata = await Calculations.getTenYRSalesData(skus, cust_str, this.state.dataRanges, this.state.years);
                     new_ten_yr_data.prodLines.push({prod_line: this.state.prod_lines[pl], tenYRSKUdata: tenYRSKUsdata});
                     await this.setState({tenYRdata: new_ten_yr_data});
-                    await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer);
+                    await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer, this.state.prod_lines_indices);
                     //console.log("this is the tenyr: "+JSON.stringify(this.state.tenYRdata));
                 }
                 else {
                     new_ten_yr_data.prodLines.push({prod_line: this.state.prod_lines[pl], tenYRSKUdata: { skus: []}});
                     await this.setState({tenYRdata: new_ten_yr_data});
-                    await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer);
+                    await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer, this.state.prod_lines_indices);
                 }
             }
         }
@@ -393,15 +398,20 @@ export default class GeneralReport extends React.Component {
         return;
     }
 
-    async onSelectProductLine(prodlines) {
+    async onSelectProductLine(prodlines, indices) {
         await this.setState({
             prod_lines: prodlines,
+            prod_lines_indices: indices,
             new_data: true,
             report_button: false,
             tenYRdata: {}
 
         })
-        await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer);
+        console.log("gen data: "+JSON.stringify(this.state.prod_lines));
+        console.log("gen data2: "+JSON.stringify(this.state.prod_lines_indices));
+
+
+        await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer, this.state.prod_lines_indices);
         //this.updateReportData();
     }
 
@@ -412,7 +422,7 @@ export default class GeneralReport extends React.Component {
             report_button: false,
             tenYRdata: {}
         })
-        await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer);
+        await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer, this.state.prod_lines_indices);
         //this.updateReportData();
     }
 
@@ -427,6 +437,8 @@ export default class GeneralReport extends React.Component {
                 <ProductLineSelectSalesReport
                     handleSelectProdLines= {this.onSelectProductLine}
                     simple = {false}
+                    prod_lines = {this.state.prod_lines}
+                    prod_lines_indices = {this.state.prod_lines_indices}
                 >
                 </ProductLineSelectSalesReport>
                 <div className = "row">
@@ -463,6 +475,7 @@ GeneralReport.propTypes = {
     handleSkuSelect: PropTypes.func,
     general_report_data: PropTypes.object,
     general_customers: PropTypes.object,
-    general_prod_lines: PropTypes.object,
-    handleGeneralReportDataChange: PropTypes.func,
+    general_prod_lines: PropTypes.arrayOf(PropTypes.object),
+    general_prod_lines_indices: PropTypes.arrayOf(PropTypes.number),
+    handleGeneralReportDataChange: PropTypes.func
   };

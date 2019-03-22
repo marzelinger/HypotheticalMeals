@@ -17,7 +17,8 @@ class SalesReportPage extends React.Component {
     state = {
         value: 0,
         general_report_data: {},
-        general_prod_lines: {},
+        general_prod_lines: [],
+        general_prod_lines_indices: [],
         general_customers: {},
         allCustomers: false,
         selected_sku: {},
@@ -33,20 +34,22 @@ class SalesReportPage extends React.Component {
         await this.setState({ selected_sku: sku })
     };
 
-    onSelectSkuFromGeneral = async (sku, gen_report_data, gen_prod_lines, gen_customers) => {
+    onSelectSkuFromGeneral = async (sku, gen_report_data, gen_prod_lines, gen_customers, gen_prod_line_indices) => {
         await this.setState({
             selected_sku: sku,
             value : 1,
         })
-        await this.onChangeGeneralReportData(gen_report_data, gen_prod_lines, gen_customers);
+        await this.onChangeGeneralReportData(gen_report_data, gen_prod_lines, gen_customers, gen_prod_line_indices);
     }
 
-    onChangeGeneralReportData = async (gen_report_data, gen_prod_lines, gen_customers) => {
+    onChangeGeneralReportData = async (gen_report_data, gen_prod_lines, gen_customers, gen_prod_line_indices) => {
         await this.setState({
             general_report_data: gen_report_data,
             general_prod_lines: gen_prod_lines,
-            general_customers: gen_customers
+            general_customers: gen_customers,
+            general_prod_lines_indices: gen_prod_line_indices
         })
+        console.log("gen data sales report: "+JSON.stringify(this.state.general_prod_lines));
     }
     onSelectCustomer = async (customer) => {
         await this.setState({ selected_customer: customer })
@@ -76,6 +79,7 @@ class SalesReportPage extends React.Component {
                         general_report_data = {this.state.general_report_data}
                         general_customers = {this.state.general_customers}
                         general_prod_lines = {this.state.general_prod_lines}
+                        general_prod_lines_indices = {this.state.general_prod_lines_indices}
                         handleGeneralReportDataChange = {this.onChangeGeneralReportData}
                         handleSkuSelect = {this.onSelectSkuFromGeneral}
                         /> : 
