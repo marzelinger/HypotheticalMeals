@@ -913,7 +913,7 @@ export default class CSV_parser{
     }
 
     static async parseFormulasCSV(req, res){
-      //  try{
+        try{
         var db_formula_nums = new Set();
         var db_ingredients_num = new Set();
 
@@ -1012,9 +1012,9 @@ export default class CSV_parser{
             console.log(updated_formula);
         }
         return res.json({ success: true, showImport: true, adds: formulas_added, updates: formulas_to_update_new, ignores: formulas_to_ignore});
-  //      } catch (err){
-   //         return res.json({ success: false, error: "Catch all error"});
-   //     }
+        } catch (err){
+            return res.json({ success: false, error: "Catch all error"});
+        }
     }
 
     static async reformatFormula(newObj, oldObj, formulasMap, formulasToCommentsMap){
