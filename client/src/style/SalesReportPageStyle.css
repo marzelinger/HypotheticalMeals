@@ -71,8 +71,6 @@
     justify-content: center;
 }
 
-
-
 .filter-container{
     display:flex; 
     flex-direction:row; 
@@ -90,15 +88,16 @@
     align-content: center;
 }
 
-.sku-drilldown-export {
-    align-self: right;
-}
-
 .report-container .export-button .exportbutton {
     margin-left: auto;
     margin-right: 20px;
     margin-top: -10px;
+    margin-bottom: 50px;
     width: 110px;
+}
+
+canvas.canvasjs-chart-canvas {
+    margin-top: 50px;
 }
 
 .sales-item-details .sales-item-properties {

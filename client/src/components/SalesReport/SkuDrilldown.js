@@ -186,9 +186,14 @@ export default class SkuDrilldown extends React.Component {
             <div>
                  <tr >
                     {this.state.sku_totals_props.map(prop => {
+                        if (['sum_yearly_rev', 'ingr_cost_per_case', 'avg_manu_setup_cost_per_case', 'manu_run_cost_per_case', 'total_COGS_per_case', 'avg_rev_per_case', 'avg_profit_per_case'].includes(prop)){
+                            var toDisplay = '$' + this.state.totalRowData[prop]
+                        } else {
+                            var toDisplay = this.state.totalRowData[prop]
+                        }
                         return (
                             <th>
-                                {this.state.totalRowData[prop]}
+                                {toDisplay}
                             </th>
                         )
                     }
@@ -250,7 +255,7 @@ export default class SkuDrilldown extends React.Component {
     injectReportPreview() {
         return (
             <div className='report-container'>
-                <Table>
+                <Table className='sku-drilldown-table'>
                     <thead>
                         <tr>
                             {this.state.item_property_labels.map(lab => <th>{lab}</th>)}
@@ -287,6 +292,7 @@ export default class SkuDrilldown extends React.Component {
                 <CanvasJSChart 
                     options = {this.getOptions()}
                     onRef = {ref => this.chart = ref}
+                    className='sku-drilldown-chart'
                 />
             </div>)
     }
