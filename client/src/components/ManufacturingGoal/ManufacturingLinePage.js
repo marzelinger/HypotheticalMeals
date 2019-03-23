@@ -89,7 +89,7 @@ export default class ManufacturingLinePage extends React.Component {
     switch(modalType){
         case Constants.manu_report_modal:
             this.setState({manu_report_modal: !this.state.manu_report_modal})
-            console.log("the toggle of manu_report_modal is: "+this.state.manu_report_modal);
+            // console.log("the toggle of manu_report_modal is: "+this.state.manu_report_modal);
             break;
         case Constants.manu_report_data_modal:
             this.setState({manu_report_data_modal: !this.state.manu_report_data_modal})
@@ -100,9 +100,9 @@ export default class ManufacturingLinePage extends React.Component {
   onManuReportSelect = async (e, manu_line_id) => {
     //want to set the selected manu_line and then toggle the thing open.
     //do we also want to get all the SKUS scheduled for that?
-    console.log("manureportselected: "+manu_line_id);
+    // console.log("manureportselected: "+manu_line_id);
     var new_manu_line = await SubmitRequest.submitGetManufacturingLineByID(manu_line_id);
-    console.log("new_manu_line: "+JSON.stringify(new_manu_line));
+    // console.log("new_manu_line: "+JSON.stringify(new_manu_line));
 
     await this.setState({
       selected_manu_line: new_manu_line.data[0],
@@ -130,7 +130,7 @@ export default class ManufacturingLinePage extends React.Component {
                 reportData: reportData,
                 manuData: manuData
               });
-            console.log("this is the reportData: "+JSON.stringify(this.state.reportData));
+            // console.log("this is the reportData: "+JSON.stringify(this.state.reportData));
             await this.setState({ 
               selected_manu_line: null,
               detail_view_options: [Constants.details_export, Constants.details_cancel],
@@ -178,8 +178,6 @@ export default class ManufacturingLinePage extends React.Component {
                             manuData = {this.state.manuData}
                             detail_view_options = {this.state.detail_view_options}
                             handleDetailViewSubmit={this.onDetailViewDataSubmit}
-
-
                     />
         </Modal>
       </div>
