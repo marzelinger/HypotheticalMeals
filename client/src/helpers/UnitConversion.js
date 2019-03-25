@@ -12,9 +12,9 @@ export default class UnitConversion {
             case 'ounce':
                 return num + ' oz';
             case 'lb':
-                return num*16 + ' oz';
+                return num*16 + ' oz'
             case 'pound':
-                return num*16 + ' oz';
+                return num*16 + ' oz'
             case 'ton':
                 return num*32000 + ' oz';
             case 'g':
@@ -75,6 +75,8 @@ export default class UnitConversion {
                 return num*28.3495 + ' g'
             case 'lb':
                 return num*453.592 + ' g'
+            case 'pound':
+                return num*453.592 + ' g'
             case 'ton':
                 return num*907185 + ' g'
             case 'g':
@@ -93,6 +95,8 @@ export default class UnitConversion {
             case 'oz':
                 return num/35.274 + ' kg'
             case 'lb':
+                return num/2.20462 + ' kg'
+            case 'pound':
                 return num/2.20462 + ' kg'
             case 'ton':
                 return num*907.185 + ' kg'

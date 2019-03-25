@@ -109,6 +109,7 @@ export default class ItemStore{
       var res = await SubmitRequest.submitGetData(page_name);
       var new_id = await ItemStore.getUniqueNumber(res.data);
       return {
+        _id: 'unassigned',
         name: '',
         num: new_id,
         ingredients: [],
