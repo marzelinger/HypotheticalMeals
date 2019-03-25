@@ -74,7 +74,7 @@ export class GoalSkuTable extends React.Component{
             </TableRow>
           ))
       return (
-        <div>
+        <div className = "goalsskutable">
           <Table multiSelectable = {this.props.simple}
           onRowSelection = {(index) => this.handleSelectedRow(index)}
           deselect
