@@ -398,14 +398,14 @@ export default class CSV_parser{
         }
 
         var mfgRunCostCurrencyObj = await this.extractNumFromCurrency(obj[Constants.csv_sku_mfg_run]);
-        if(mfgRunCostCurrencyObj.currencyIssue != 'undefined'){
+        if(typeof mfgRunCostCurrencyObj.currencyIssue != 'undefined'){
             toReturn.success = false;
             toReturn.mfgRunIssue = true;
             return toReturn;
         }
 
         var mfgSetupCostCurrencyObj = await this.extractNumFromCurrency(obj[Constants.csv_sku_mfg_setup]);
-        if(mfgSetupCostCurrencyObj.currencyIssue == 'undefined'){
+        if(typeof mfgSetupCostCurrencyObj.currencyIssue != 'undefined'){
             toReturn.success = false;
             toReturn.mfgSetupIssue = true;
             return toReturn;
@@ -861,6 +861,7 @@ export default class CSV_parser{
         var toReturn = {};
         var isValid = /^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/.test(qty);
         if(!isValid){
+            console.log('this is the problem');
             toReturn.currencyIssue = true;
             return toReturn;
         }
@@ -868,6 +869,7 @@ export default class CSV_parser{
         var qty_arr = qty.match(/^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/);
         var numeric_value = qty_arr[1];
         if(numeric_value <= 0){
+            console.log('this is the problem2');
             toReturn.currencyIssue = true;
             return toReturn;
         }
