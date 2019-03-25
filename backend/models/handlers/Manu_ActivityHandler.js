@@ -12,7 +12,7 @@ class Manu_ActivityHandler{
             var new_quantity = req.body.quantity;
             var new_scheduled = req.body.scheduled || false
             var new_start = req.body.start
-            var new_duration = new_quantity / new_sku.manu_rate;
+            var new_duration = Math.round(new_quantity / new_sku.manu_rate);
             var new_manu_line = req.body.manu_line;
             var new_overwritten = false;
             var new_orphaned= false;
@@ -77,8 +77,8 @@ class Manu_ActivityHandler{
             var new_scheduled = req.body.scheduled;
             var new_start = req.body.start
             var new_overwritten = req.body.overwritten
-            if (new_overwritten) var new_duration = req.body.duration;
-            else var new_duration = new_sku.manu_rate * new_quantity;
+            if (new_overwritten) var new_duration = Math.round(req.body.duration);
+            else var new_duration = Math.round(new_sku.manu_rate * new_quantity);
             var new_manu_line = req.body.manu_line;
             var new_orphaned= req.body.orphaned;
             var new_over_deadline = req.body.over_deadline;
