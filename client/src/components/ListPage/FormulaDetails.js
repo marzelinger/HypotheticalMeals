@@ -255,8 +255,10 @@ export default class FormulaDetails extends React.Component {
         let inv = this.state.invalid_inputs;
         if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.state.item, opt)
         else {
-            if(inv.includes('name')){
-                alert_string += '\nThe formula name provided is too long';
+            if(inv.includes('name_long')){
+                alert_string += '\nThe formula name provided is too . Must be between 1 and 32 characters.';
+            } else if(inv.includes('name_short')){
+                alert_string += '\nThe formula name provided is too short. Must be between 1 and 32 characters.';
             }
             alert(alert_string);
         } 
@@ -267,7 +269,13 @@ export default class FormulaDetails extends React.Component {
         this.state.item_properties.map(prop => {
             if (!this.state.item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
         })
-        if (this.state.item['name'].length > 32) inv_in.push('name');
+        console.log(this.state.item.name.length);
+        if(this.state.item.name.length == 0){
+            inv_in.push("name_short");
+        }
+        if (this.state.item.name.length > 32) {
+            inv_in.push('name_long');
+        }
         await this.setState({ invalid_inputs: inv_in });
     }
 
