@@ -10,7 +10,7 @@ import { Provider } from "react-redux";
 
 class Logout extends Component {
   onLogoutClick = e => {
-    console.log("this is in the onLogoutClcik");
+    // console.log("this is in the onLogoutClcik");
     e.preventDefault();
     this.props.logoutUser();
   };

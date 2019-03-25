@@ -487,6 +487,26 @@ export default class SubmitRequest{
     }
   }
 
+
+  static async submitGetSKUsByManuLine(id) {
+    // console.log("this is the id: "+id);
+    try {
+      return fetch('/api/skus/manu_line_id/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
+
   static async submitGetManufacturingActivitiesBySKU(sku) {
     try {
       return fetch('/api/manuactivities/' + sku._id)
@@ -507,7 +527,6 @@ export default class SubmitRequest{
 
   static async submitGetManufacturingActivitiesForReport(reportData) {
     try {
-      //console.log("here in the submitrequest for report");
       return fetch(`/api/manuactivities/${reportData.manu_line._id}/${reportData.start_date}/${reportData.end_date}/${reportData.duration}`)
       .then(data => data.json())
       .then((res) => {

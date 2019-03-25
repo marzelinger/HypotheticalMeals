@@ -43,6 +43,8 @@ export default class Calculations{
     }
 
     static async getSalesTotals(records) {
+
+        // console.log("these are the records.")
         var total_rev = 0;
         var total_cases = 0;
         var avg_rev_per_case = 0;
@@ -53,7 +55,17 @@ export default class Calculations{
         if(total_cases!=0){
             avg_rev_per_case = total_rev/total_cases;
         }
-        return { revenue: total_rev, avg_rev_per_case: avg_rev_per_case, sales: total_cases};
+
+        var avg_rev_per_case_round = Math.round((avg_rev_per_case*100))/100;
+        var revenue_round = Math.round((total_rev*100))/100;
+
+        return { 
+            revenue: total_rev, 
+            avg_rev_per_case: avg_rev_per_case, 
+            sales: total_cases, 
+            rev_round: revenue_round, 
+            avg_rev_per_case_round: avg_rev_per_case_round
+        };
     }
 
     static async getAvgManuRunSize(sku){
@@ -93,26 +105,28 @@ export default class Calculations{
     static async getIngrCostPerCase(sku){
         var ingr_cost_per_case = 0;
         console.log("this is the sku: "+JSON.stringify(sku));
-        if(sku.formula.ingredients!=undefined){
-            for(let ing = 0; ing<sku.formula.ingredients.length; ing++){
-                var ing_cost = sku.formula.ingredients[ing].pkg_cost;
-                var ing_pkg_size = sku.formula.ingredients[ing].pkg_size;
-                var form_ingredient_quant = sku.formula.ingredient_quantities[ing];
+        if(sku.formula!=undefined){
+            if(sku.formula.ingredients!=undefined){
+                for(let ing = 0; ing<sku.formula.ingredients.length; ing++){
+                    var ing_cost = sku.formula.ingredients[ing].pkg_cost;
+                    var ing_pkg_size = sku.formula.ingredients[ing].pkg_size;
+                    var form_ingredient_quant = sku.formula.ingredient_quantities[ing];
 
 
 
-                var ing_parse = await this.parseUnitVal(ing_pkg_size);
-                var ing_pkg_size_val = ing_parse.val;
-                //need to convert the formula ingredient quantity to the ingredient pckg size unit.
-                //get the ingredient_pckg_size unit
-                var conversionFuncObj = UnitConversion.getConversionFunction(ing_pkg_size);
-                console.log("this is conversion func obj"+JSON.stringify(conversionFuncObj));
-                var converted_form = conversionFuncObj.func(form_ingredient_quant);
+                    var ing_parse = await this.parseUnitVal(ing_pkg_size);
+                    var ing_pkg_size_val = ing_parse.val;
+                    //need to convert the formula ingredient quantity to the ingredient pckg size unit.
+                    //get the ingredient_pckg_size unit
+                    var conversionFuncObj = UnitConversion.getConversionFunction(ing_pkg_size);
+                    console.log("this is conversion func obj"+JSON.stringify(conversionFuncObj));
+                    var converted_form = conversionFuncObj.func(form_ingredient_quant);
 
-                var form_parse = await this.parseUnitVal(converted_form);
-                var form_ing_val = form_parse.val;
-                
-                ingr_cost_per_case +=(ing_cost/ing_pkg_size_val) * form_ing_val;
+                    var form_parse = await this.parseUnitVal(converted_form);
+                    var form_ing_val = form_parse.val;
+                    
+                    ingr_cost_per_case +=(ing_cost/ing_pkg_size_val) * form_ing_val;
+                }
             }
         }
         console.log("INGR CPC: "+ingr_cost_per_case)
@@ -120,6 +134,10 @@ export default class Calculations{
     }
 
     static async calcTotalData(sku, totalTimeRev, totalTimeSales, tenYRcaseavg){
+
+        console.log("sku here: "+JSON.stringify(sku));
+        // console.log("sku here: "+JSON.stringify(sku));
+
 
        
         var sum_yearly_rev = totalTimeRev;
@@ -131,16 +149,53 @@ export default class Calculations{
         }//manufacturing setup cost/avg_manu_runsize
         var manu_run_cost_per_case = sku.run_cpc; 
         var total_COGS_per_case = ingr_cost_per_case+avg_manu_setup_cost_per_case+manu_run_cost_per_case; // sum of ingredient cost, manufacturing setup cost, manufacturing run cost for sku divided to give a cost per case
+
         var avg_rev_per_case = 0;
         if(totalTimeSales!=0){
             avg_rev_per_case = sum_yearly_rev/totalTimeSales; 
+
         }
         var avg_profit_per_case = avg_rev_per_case - total_COGS_per_case; // = avg_rev - cogs
+
         var profit_marg = 0;
 
         if(total_COGS_per_case!=0){
             profit_marg = (avg_rev_per_case/total_COGS_per_case)-1;
         }
+
+
+        console.log("a: "+ sum_yearly_rev);
+
+        sum_yearly_rev = Math.round((sum_yearly_rev*100))/100;
+        console.log("aa: "+ sum_yearly_rev);
+        console.log("b: "+ ingr_cost_per_case);
+
+
+        ingr_cost_per_case = Math.round((ingr_cost_per_case*100))/100;
+
+        console.log("bb: "+ ingr_cost_per_case);
+
+
+
+        avg_manu_setup_cost_per_case = Math.round((avg_manu_setup_cost_per_case*100))/100;
+
+        manu_run_cost_per_case = Math.round((manu_run_cost_per_case*100))/100;
+
+        total_COGS_per_case = Math.round((total_COGS_per_case*100))/100;
+
+        avg_rev_per_case = Math.round((avg_rev_per_case*100))/100;
+
+        avg_profit_per_case = Math.round((avg_profit_per_case*100))/100;
+
+        profit_marg = Math.round(profit_marg);
+
+
+
+
+
+
+
+
         return {
             sum_yearly_rev : sum_yearly_rev,
             avg_manu_run_size : avg_manu_run_size,

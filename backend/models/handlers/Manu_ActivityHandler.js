@@ -12,7 +12,7 @@ class Manu_ActivityHandler{
             var new_quantity = req.body.quantity;
             var new_scheduled = req.body.scheduled || false
             var new_start = req.body.start
-            var new_duration = new_quantity / new_sku.manu_rate;
+            var new_duration = Math.round(new_quantity / new_sku.manu_rate);
             var new_manu_line = req.body.manu_line;
             var new_overwritten = false;
             var new_orphaned= false;
@@ -77,8 +77,8 @@ class Manu_ActivityHandler{
             var new_scheduled = req.body.scheduled;
             var new_start = req.body.start
             var new_overwritten = req.body.overwritten
-            if (new_overwritten) var new_duration = req.body.duration;
-            else var new_duration = new_sku.manu_rate * new_quantity;
+            if (new_overwritten) var new_duration = Math.round(req.body.duration);
+            else var new_duration = Math.round(new_sku.manu_rate * new_quantity);
             var new_manu_line = req.body.manu_line;
             var new_orphaned= req.body.orphaned;
             var new_over_deadline = req.body.over_deadline;
@@ -153,9 +153,6 @@ class Manu_ActivityHandler{
         try{
 
             var target_manu_line_id = req.params.manu_line_id;
-            // var manu_target = {
-            //     _id: 
-            // }
             var target_start_date = req.params.start_date;
             var target_end_date = req.params.end_date;
             var target_duration = req.params.duration;
@@ -191,34 +188,46 @@ class Manu_ActivityHandler{
                     var diffStart = startAct-startRep; //should be positive
                     var diffEnd = endRep-endAct; //the endRep should be greater than end of activity so should be positive
 
+                    console.log("START_REP: "+startRep);
+                    console.log("END_REP: "+endRep);
+                    console.log("START_ACT: "+startAct);
+                    console.log("END_ACT: "+endAct);
+
                     if(diffEnd>=0 && diffStart>=0){
                         //this is a valid activity.
                         //the start is greater than the rep
                         //the end is less than the rep
+                        console.log("comp");
                         complete_activities.push(curAct);
 
                         continue;
                     }
                     else if(diffEnd<0 && diffStart<0){
                         //this activity is larger than the span
+                        console.log("all");
+
                         all_cut.push(curAct);
-                        console.log("allcut: "+all_cut.length);
+                        // console.log("allcut: "+all_cut.length);
 
                         continue;
                     }
                     else if(diffEnd<0 && diffStart>=0){
                         // activity starts after report
                         //but tail cuttoff
+                        console.log("end");
+
                         ending_cut.push(curAct);
-                        console.log("ending: "+ending_cut.length);
+                        // console.log("ending: "+ending_cut.length);
 
                         continue;
                     }
                     else if(diffEnd>=0 && diffStart<0){
                         //activity starts before report,
                         //front cut
+                        console.log("beg");
+
                         beginning_cut.push(curAct);
-                        console.log("begginging: "+beginning_cut.length);
+                        // console.log("begginging: "+beginning_cut.length);
                         continue;
                     }
                 }

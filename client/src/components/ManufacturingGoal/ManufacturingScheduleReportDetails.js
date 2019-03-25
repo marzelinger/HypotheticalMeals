@@ -49,7 +49,7 @@ export default class ManufacturingScheduleReportDetails extends React.Component 
 
     async componentDidMount() {
         //await this.fillProductLine();
-        console.log("modal mounted");
+        // console.log("modal mounted");
     }
 
     async fillProductLine() {
@@ -82,46 +82,46 @@ export default class ManufacturingScheduleReportDetails extends React.Component 
         this.setState({ item: item });
     };
 
-    removeIngredient(formula_item, value, qty) {
+    // removeIngredient(formula_item, value, qty) {
         
-        let ind = -1;
-        qty = parseInt(qty);
-        formula_item.ingredients.map((ing, index) => {
-            if (ing._id === value._id)
-                ind = index;
-        });
-        if (ind > -1) {
-            let curr_qty = formula_item.ingredient_quantities[ind];
-            curr_qty = curr_qty - qty;
-            if (curr_qty > 0) formula_item.ingredient_quantities[ind] = curr_qty;
-            else {
-                formula_item.ingredients.splice(ind,1);
-                formula_item.ingredient_quantities.splice(ind,1);
-            }
-        }
-        this.setState({ formula_item: formula_item})
-    }
+    //     let ind = -1;
+    //     qty = parseInt(qty);
+    //     formula_item.ingredients.map((ing, index) => {
+    //         if (ing._id === value._id)
+    //             ind = index;
+    //     });
+    //     if (ind > -1) {
+    //         let curr_qty = formula_item.ingredient_quantities[ind];
+    //         curr_qty = curr_qty - qty;
+    //         if (curr_qty > 0) formula_item.ingredient_quantities[ind] = curr_qty;
+    //         else {
+    //             formula_item.ingredients.splice(ind,1);
+    //             formula_item.ingredient_quantities.splice(ind,1);
+    //         }
+    //     }
+    //     this.setState({ formula_item: formula_item})
+    // }
 
 
-    addIngredient(formula_item, value, qty) {
-        let ind = -1;
-        qty = parseInt(qty);
-        formula_item.ingredients.map((ing, index) => {
-            if (ing._id === value._id)
-                ind = index;
-        });
-        console.log("this is after the mapping");
-        if (ind > -1){
-            let curr_qty = formula_item.ingredient_quantities[ind];
-            curr_qty = curr_qty + qty;
-            formula_item.ingredient_quantities[ind] = curr_qty;
-        }
-        else {
-            formula_item.ingredients.push(value);
-            formula_item.ingredient_quantities.push(qty);
-        }
-        this.setState({ formula_item: formula_item })
-    }
+    // addIngredient(formula_item, value, qty) {
+    //     let ind = -1;
+    //     qty = parseInt(qty);
+    //     formula_item.ingredients.map((ing, index) => {
+    //         if (ing._id === value._id)
+    //             ind = index;
+    //     });
+    //     // console.log("this is after the mapping");
+    //     if (ind > -1){
+    //         let curr_qty = formula_item.ingredient_quantities[ind];
+    //         curr_qty = curr_qty + qty;
+    //         formula_item.ingredient_quantities[ind] = curr_qty;
+    //     }
+    //     else {
+    //         formula_item.ingredients.push(value);
+    //         formula_item.ingredient_quantities.push(qty);
+    //     }
+    //     this.setState({ formula_item: formula_item })
+    // }
 
     formatData = async () =>{
         

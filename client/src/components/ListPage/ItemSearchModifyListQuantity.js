@@ -51,28 +51,28 @@ export default class ItemSearchModifyListQuantity extends React.Component {
             res.data = []
         }
         if (res === undefined || !res.success) res.data = [];
-        this.setState({ assisted_search_results: res.data });
+        await this.setState({ assisted_search_results: res.data });
     }
 
-    toggleFocus() {
+    async toggleFocus() {
         if (this){
-            this.setState({
+            await this.setState({
                 focus: true
             })
         }
     }
 
-    toggleBlur() {
+    async toggleBlur() {
         if (this){
-            this.setState({
+            await this.setState({
                 focus: false
             })
         }
     }
 
-    onFilterValueChange = (value, e) => {
+    onFilterValueChange = async (value, e) => {
         if (e.action === 'input-change'){
-            this.setState({
+            await this.setState({
                 substr: value
             });
             return value;
@@ -80,14 +80,15 @@ export default class ItemSearchModifyListQuantity extends React.Component {
         return this.setState.substr;
     }
 
-    onQuantityChange = (e) => {
-        this.setState({
+    onQuantityChange = async(e) => {
+        await this.setState({
             qty: e.target.value
         });
     }
 
     async onFilterValueSelection (name, value, e) {
-        this.setState({value: value});
+        console.log("filter value selected: "+ JSON.stringify(value));
+        await this.setState({value: value});
     }
 
     determineButtonDisplay(state, option) {

@@ -145,7 +145,7 @@ export default class ListPage extends React.Component {
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
         var final_ing_filter = this.state.filters['ingredients'].join(',');
         var final_keyword_filter = this.state.filters['keyword'];
-        var final_prod_line_filter = this.state.filters['products'].join(',');
+        var final_prod_line_filter = this.state.filters['product lines'].join(',');
         var final_formula_filter = this.state.filters['formula'].join(',');
         console.log("final formula filter is" + final_formula_filter);
         //Check how the filter state is being set 
@@ -475,7 +475,7 @@ export default class ListPage extends React.Component {
                         selectable = {this.props.simple !=undefined ? !this.props.simple : true}
                         sortable = {this.props.simple != undefined ? !this.props.simple : true}
                         title = {this.state.page_title}
-                        showLoading = {true}
+                        showLoading = {this.props.simple ? false : true}
                         showHeader = {true}
                         simple = {this.props.simple}
                         filters = {this.state.filters}

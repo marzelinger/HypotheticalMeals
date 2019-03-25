@@ -90,6 +90,7 @@ export default class ManufacturingGoal extends React.Component{
   }
 
   handleDetailViewSubmit = async(event, item, option)=> {
+    console.log("this is the handle detail view submit: "+JSON.stringify(item));
     if(option == Constants.details_delete){
       return await this.handleDeleteGoal();
     }else{
