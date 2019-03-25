@@ -16,7 +16,7 @@ export default class DataStore{
         table_options: [Constants.create_item, Constants.add_keyword_filter, Constants.add_sku_filter],
         item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment'],
         item_property_labels: ['Name', 'Ingr#', 'Package Size', 'Package Cost (USD)', 'Vendor Info', 'Comments'],
-        item_property_patterns: ['.*', '^[0-9]+$', '^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$', '^[0-9]*[\.]?[0-9]{1,2}$', '.*', '.*'],
+        item_property_patterns: ['.*', '^[0-9]+$', '^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|ounce|lb|pound|ton|g|gram|kg|kilogram|floz|fluidounce|pt|pint|qt|quart|gal|gallon|ml|milliliter|l|liter|ct|count)$', '^[0-9]*[\.]?[0-9]{1,2}$', '.*', '.*'],
         item_property_field_type: ['text', 'text', 'text', 'text', 'textarea', 'textarea'],  
       };
     }
@@ -25,13 +25,13 @@ export default class DataStore{
       return {
         page_name: Constants.formulas_page_name,
         page_title: 'Formulas',
-        table_columns: ['Name', 'Formula#'],
-        table_properties: ['name', 'num'],
+        table_columns: ['Name', 'Formula#', "Comment"],
+        table_properties: ['name', 'num', "comment"],
         table_options: [Constants.create_item, Constants.add_keyword_filter, Constants.add_ing_filter],
-        item_properties: ['name', 'num'],
-        item_property_labels: ['Name', 'Formula#'],
-        item_property_patterns: ['.+', '^[0-9]+$'], 
-        item_property_field_type: ['text', 'text'],
+        item_properties: ['name', 'num', "comment"],
+        item_property_labels: ['Name', 'Formula#', "Comment"],
+        item_property_patterns: ['.+', '^[0-9]+$', '.*'], 
+        item_property_field_type: ['text', 'text', 'text'],
       }
     }
 
