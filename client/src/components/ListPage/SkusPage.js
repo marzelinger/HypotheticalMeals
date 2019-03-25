@@ -487,7 +487,7 @@ export default class ListPage extends React.Component {
                         selectable = {this.props.simple !=undefined ? !this.props.simple : true}
                         sortable = {this.props.simple != undefined ? !this.props.simple : true}
                         title = {this.state.page_title}
-                        showLoading = {true}
+                        showLoading = {this.props.simple ? false : true}
                         showHeader = {true}
                         simple = {this.props.simple}
                         filters = {this.state.filters}
