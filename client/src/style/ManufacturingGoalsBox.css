@@ -18,6 +18,7 @@
   }
 
   .goals {
+    overflow: scroll;
     height: 60vh;
   }
 

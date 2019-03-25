@@ -7,7 +7,8 @@ import ItemStore from './../client/src/helpers/ItemStore';
 import * as Constants from './../client/src/resources/Constants';
 import CheckDigit from "./../client/src/helpers/CheckDigit";
 import UnitConversion from "./../client/src/helpers/UnitConversion";
-
+import ScraperHandler from './models/handlers/Scraper';
+import { SlowBuffer } from 'buffer';
 const csv = require('csvtojson');
 const fs = require('fs');
 
@@ -304,6 +305,8 @@ export default class CSV_parser{
                     console.log('gets here');
 
                     let new_sku = await sku.save();
+                    ScraperHandler.updateNewSku({body: sku.num}, {});
+                    // insert call here 
                     skus_added.push(toShow);
                 }
                 return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: skus_added, showImport: true, new_data: skus_to_update_new, ignored_data: skus_to_ignore_arr});
@@ -604,6 +607,7 @@ export default class CSV_parser{
             sku.run_cpc = addArray[i].run_cpc;
             sku.comment = addArray[i].comment;
             let new_sku = await sku.save();
+            ScraperHandler.updateNewSku({body: sku.num}, {});
             console.log("add array is: ");
             console.log(addArray[i]);
             returningAdd.push(addArray[i]);

@@ -82,11 +82,11 @@
     justify-content: center;
 }
 
-thead > tr {
+.report-container thead > tr {
     height: 100% !important;
 }
 
-thead > tr > th{
+.report-container thead > tr > th{
     height: 100% !important;
 }
 
