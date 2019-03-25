@@ -9,18 +9,20 @@ export default class UnitConversion {
         switch (unit){
             case 'oz':
                 return val;
+            case 'ounce':
+                return num + ' oz';
             case 'lb':
                 return num*16 + ' oz'
             case 'pound':
                 return num*16 + ' oz'
             case 'ton':
-                return num*32000 + ' oz'
+                return num*32000 + ' oz';
             case 'g':
-                return num*0.035274 + ' oz'
+                return num*0.035274 + ' oz';
             case 'kg':
-                return num*35.274 + ' oz'
+                return num*35.274 + ' oz';
             default:
-                return 'invalid unit'
+                return 'invalid unit';
         }
     }
     static toPound(val){
@@ -32,7 +34,7 @@ export default class UnitConversion {
             case 'lb':
                 return val
             case 'pound':
-                return val
+                return num + ' lb'
             case 'ton':
                 return num*2000 + ' lb'
             case 'g':

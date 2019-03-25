@@ -43,6 +43,13 @@ export default class ManufacturingGoalDetails extends React.Component {
             data: [],
         }
         this.toggle = this.toggle.bind(this);
+        this.onModifyList = this.onModifyList.bind(this);
+        this.removeSku = this.removeSku.bind(this);
+        this.addSku = this.addSku.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.validateInputs = this.validateInputs.bind(this);
+        this.onEnable = this.onEnable.bind(this);
+
     }
 
     async componentDidMount() {
@@ -61,22 +68,25 @@ export default class ManufacturingGoalDetails extends React.Component {
         return this.state.item_property_field_type[this.state.item_properties.indexOf(prop)];
     }
 
-    onPropChange = (value, item, prop) => {
+    onPropChange = async (value, item, prop) => {
         item[prop] = value
-        this.setState({ item: item });
+        await this.setState({ item: item });
     };
 
-    onModifyList = (option, value, qty) => {
+    onModifyList = async (option, value, qty) => {
+        console.log("modifything list;");
         var item = Object.assign({}, this.state.item);
         switch (option) {
             case Constants.details_add:
-                this.addSku(item, value, qty);
+                console.log("adding list;");
+
+                await this.addSku(item, value, qty);
                 break;
             case Constants.details_remove:
-                this.removeSku(item, value, qty);
+                await this.removeSku(item, value, qty);
                 break;
         }
-        this.setState({ 
+        await this.setState({ 
             item: item,
             item_changed: true 
         })
@@ -103,7 +113,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                 item.activities.splice(ind,1);
             }
         }
-        this.setState({ item: item })
+        await this.setState({ item: item })
     }
 
     addSku = async(item, value, qty) => {
@@ -124,7 +134,9 @@ export default class ManufacturingGoalDetails extends React.Component {
             var new_activity = {sku: value, quantity: qty}
             item.activities.push(new_activity);
         }
-        this.setState({ item: item })
+        await this.setState({ item: item })
+        console.log("this is the item after adding sku: "+JSON.stringify(this.state.item));
+
     }
 
     async handleSubmit(e, opt) {
@@ -132,7 +144,7 @@ export default class ManufacturingGoalDetails extends React.Component {
             var return_val = await this.props.handleDetailViewSubmit(e, this.state.item, opt);
             console.log(return_val)
             if(return_val){
-                this.setState({modal: false})
+                await this.setState({modal: false})
             };
             return;
         }
@@ -145,7 +157,7 @@ export default class ManufacturingGoalDetails extends React.Component {
             var return_val = await this.props.handleDetailViewSubmit(e, item, opt)
             console.log(return_val)
             if(return_val.success){
-                this.setState({modal: false, errorText: ''})
+                await this.setState({modal: false, errorText: ''})
             }
             else{
                 alert(`${alert_string}, ${return_val.error}`)
@@ -180,13 +192,13 @@ export default class ManufacturingGoalDetails extends React.Component {
         await this.setState({ invalid_inputs: inv_in, errorText: error_text });
     }
 
-    onEnable = () => {
+    onEnable = async () => {
         var action = !this.state.item.enabled ? 'enable' : 'disable';
         var result = !this.state.item.enabled ? 'a need to schedule all currently scheduled activities' : 'all currently scheduled activities becoming orphaned.';
 
         if(window.confirm(`Are you sure you want to ${action} this goal? Doing so will result in ${result}`)){
             var item = this.state.item
-            this.setState({
+            await this.setState({
                 item: {...item, enabled: !this.state.item.enabled}
             })
         }
@@ -267,6 +279,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                 item: item,
                 detail_view_options: this.props.options
             })
+            console.log("this is the item: "+JSON.stringify(this.state.item));
         } catch (e){
             console.log(e);
         }

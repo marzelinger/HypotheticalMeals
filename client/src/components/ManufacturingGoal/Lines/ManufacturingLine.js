@@ -20,29 +20,30 @@ export default class ManufacturingLine extends React.Component{
     }
   }
 
-  onNameChange = (event) => {
-    this.setState({name: event.target.value})
-  }
+  // onNameChange = (event) => {
+  //   this.setState({name: event.target.value})
+  // }
 
-  onNameSubmit = (event) => {
-    console.log(event.charCode)
-    if(event.charCode == 13){
-      this.props.handleUpdateManuLine(this.props.id, this.state.name);
-    }
-  }
+  // onNameSubmit = (event) => {
+  //   console.log(event.charCode)
+  //   if(event.charCode == 13){
+  //     this.props.handleUpdateManuLine(this.props.id, this.state.name);
+  //   }
+  // }
 
-  onManuLineChange = async (newval, sku, action) => {
-          console.log('updating here');
-          let updated_sku = this.props.skus[sku];
-          updated_sku.manu_line = newval.value;
-          await SubmitRequest.submitUpdateItem('skus', updated_sku);
-  }
+  // onManuLineChange = async (newval, sku, action) => {
+  //         console.log('updating here');
+  //         let updated_sku = this.props.skus[sku];
+  //         updated_sku.manu_line = newval.value;
+  //         await SubmitRequest.submitUpdateItem('skus', updated_sku);
+  // }
 
   onReportClick = (e) => {
     this.props.handleReportSelect(e, this.props.id);
   }
 
   render() {
+    // console.log("this is the manu_line: "+JSON.stringify(this.props.manu_line));
     return (
       <div id="singleGoal">
         <div className="textContent">
@@ -64,8 +65,7 @@ export default class ManufacturingLine extends React.Component{
               validateShortName = {this.props.validateShortName} 
               ></ManufacturingLineDetails>
             </div>
-            <Button id = "manuLineScheduleButton" color="primary" onClick={(e) => this.onReportClick(e)}  > Report</Button>{' '}
-            <div className = "exportbutton pdfbutton hoverable" onClick = {() => this.onReportClick()}>Preview PDF</div>
+            <div className = "exportbutton pdfbutton hoverable" onClick = {() => this.onReportClick()}>Report</div>
           </div>
       </div>
     )

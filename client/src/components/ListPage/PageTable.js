@@ -169,7 +169,7 @@ export default class PageTable extends Component {
     return (
       <div className = "table-container">
         <Table
-          height={this.props.reportSelect ? '200px' : (!this.state.selectable ? null : '413px')}
+          height={this.props.reportSelect ? null : (!this.state.selectable ? null : '413px')}
           fixedHeader={this.state.fixedHeader}
           fixedFooter={this.state.fixedFooter}
           selectable={this.state.selectable}

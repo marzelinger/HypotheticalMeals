@@ -14,8 +14,8 @@ var client_id = "meta-alligators";
 const params = {
   client_id: "meta-alligators",
   client_secret: "zHMB4Sl*o*Awu*mjZv$VEa+fX=QACLIWuRNWyNe@kNtTYLd*4E",
-  redirect_uri: "https://metaalligators.colab.duke.edu/loginDuke",
-  // redirect_uri: "http://localhost:3000/loginDuke",
+  //redirect_uri: "https://metaalligators.colab.duke.edu/loginDuke",
+  redirect_uri: "http://localhost:3000/loginDuke",
   response_type: "token",
   state: 7777,
   scope: "basic"
@@ -49,7 +49,7 @@ class DukeLogin extends Component {
 async getNetIDToken(){
   if(window.location.hash.length>0){
     netidtoken = querystring.parse(window.location.hash.substring(1)).access_token;
-    console.log("this is the netidtoken2: "+netidtoken);
+    // console.log("this is the netidtoken2: "+netidtoken);
     if(netidtoken){
       await this.setState({ netIDAuth: true, netIDToken: netidtoken});
       await this.getNetIDIdentity();
@@ -106,7 +106,7 @@ const userData = {
 
 async onRadioBtnClick() {
   let authURI = OAUTH_URL +'?'+this.encodeGetParams(params);
-  console.log("this is the authURI: "+authURI);
+  // console.log("this is the authURI: "+authURI);
   window.location.replace(authURI);
 }
 

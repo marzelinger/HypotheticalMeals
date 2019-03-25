@@ -63,7 +63,7 @@ class Landing extends Component {
 
   componentWillReceiveProps(nextProps) {
     var response = this.props.getAllUsers();
-    console.log("this is the response for the getAll Users: " +response);
+    // console.log("this is the response for the getAll Users: " +response);
     if (response != null){
       this.setState({
         user : 1
