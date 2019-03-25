@@ -62,5 +62,4 @@ export default class ScraperHandler{
     }
 }
 
-ScraperHandler.updateAllRecords();
 setTimeout(() => ScraperHandler.updateAllRecords(), 86400000);

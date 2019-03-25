@@ -15,20 +15,6 @@ const currentUserIsAdmin = require("../../components/auth/currentUserIsAdmin");
 export default class ProductLine extends React.Component{
   constructor(props){
     super(props);
-    this.state = {
-      name: this.props.name
-    }
-  }
-
-  onNameChange = (event) => {
-    this.setState({name: event.target.value})
-  }
-
-  onNameSubmit = (event) => {
-    console.log(event.charCode)
-    if(event.charCode == 13){
-      this.props.handleUpdateProdLine(this.props.id, this.state.name);
-    }
   }
 
   onProdLineChange = async (newval, sku, action) => {
@@ -38,13 +24,18 @@ export default class ProductLine extends React.Component{
           await SubmitRequest.submitUpdateItem('skus', updated_sku);
   }
 
+  handleDetailViewSubmit = async(event, item, option)=> {
+    console.log('here')
+      return await this.props.handleDetailViewSubmit(event, item, option);
+  }
+
   render() {
     return (
       <div id="singleGoal">
         <div className="textContent">
           <div className="singleGoalContent" id={'prodline' + this.props.id}>
-          {/* <h3>{this.state.name}</h3> */}
-          <input onKeyPress = {(event) => this.onNameSubmit(event)} type = "text" value = {this.state.name} onChange = {(event) => this.onNameChange(event)}></input>
+          <h3>{this.props.name}</h3>
+          {/* <input onKeyPress = {(event) => this.onNameSubmit(event)} type = "text" value = {this.state.name} onChange = {(event) => this.onNameChange(event)}></input> */}
           </div>
           <UncontrolledCollapse toggler={'#prodline' + this.props.id}>
                 <Card>
@@ -54,9 +45,16 @@ export default class ProductLine extends React.Component{
                 </Card>
             </UncontrolledCollapse>
         </div>
-          <div className="singleGoalButtons">
-            {currentUserIsAdmin().isValid ? (<img id ="deleteButton" onClick={() => {this.props.handleDeleteProdLine(this.props.id); }} src= {deleteButton}></img>):(<div/>)}
+        <div className="singleGoalButtons">
+          <div className = "editform" className="form">
+                <ProductLineDetails
+                item = {this.props.line}
+                buttonImage = {editButton}
+                handleDetailViewSubmit = {this.handleDetailViewSubmit}
+                options = {[Constants.details_save, Constants.details_delete, Constants.details_cancel]}
+                ></ProductLineDetails>
           </div>
+        </div>
       </div>
     )
   }
@@ -69,5 +67,7 @@ ProductLine.propTypes = {
   id: PropTypes.string.isRequired,
   handleUpdateProdLine: PropTypes.func.isRequired,
   handleDeleteProdLine: PropTypes.func.isRequired,
-  prod_lines: PropTypes.array.isRequired
+  handleDetailViewSubmit: PropTypes.func.isRequired,
+  prod_lines: PropTypes.array.isRequired,
+  line: PropTypes.object
 };

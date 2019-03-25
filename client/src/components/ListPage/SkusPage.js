@@ -67,7 +67,7 @@ export default class ListPage extends React.Component {
             filters: {
                 'keyword': '',
                 'ingredients': [],
-                'products': [],
+                'product lines': [],
                 'formula' : [],
             },
             filterChange: false,
@@ -145,7 +145,7 @@ export default class ListPage extends React.Component {
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
         var final_ing_filter = this.state.filters['ingredients'].join(',');
         var final_keyword_filter = this.state.filters['keyword'];
-        var final_prod_line_filter = this.state.filters['products'].join(',');
+        var final_prod_line_filter = this.state.filters['product lines'].join(',');
         console.log(final_prod_line_filter);
         var final_formula_filter = this.state.filters['formula'].join(',');
         console.log(final_formula_filter);

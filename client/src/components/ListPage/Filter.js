@@ -63,7 +63,7 @@ export default class Filter extends React.Component {
                         this.handleResponse(response)
                     })
                     break;
-                case Constants.prod_line_page_name:
+                case Constants.prod_lines_page_name:
                     SubmitRequest.submitGetProductLinesByNameSubstring(input,0,0).then((response) => {
                         this.handleResponse(response)
                     });
