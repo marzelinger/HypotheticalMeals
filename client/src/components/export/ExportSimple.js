@@ -20,13 +20,13 @@ class ExportSimple extends Component {
   }
 
 
-  onExportSimpleClick(e){
+  async onExportSimpleClick(e){
     console.log(this.props.data)
     e.preventDefault();
     
     switch(this.props.fileTitle){
       case ("skus"):
-        exportSKUS(this.props.data, this.props.fileTitle);
+        await exportSKUS(this.props.data, this.props.fileTitle);
         break;
       case("calculator"):
         exportCalculator(this.props.data, this.props.fileTitle);

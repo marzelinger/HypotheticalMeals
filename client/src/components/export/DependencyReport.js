@@ -48,7 +48,13 @@ async loadDataFromServerForReport(ingredients){
     skulabel.push("Unit UPC");
     skulabel.push("Unit size");
     skulabel.push("Count per case");
-    skulabel.push("Product Line Name");
+    skulabel.push("PL Name");
+    skulabel.push("Formula#");
+    skulabel.push("Formula factor");
+    skulabel.push("ML Shortnames");
+    skulabel.push("Rate");
+    skulabel.push("Mfg setup cost");
+    skulabel.push("Mfg run cost");
     skulabel.push("Comment");
     var inglabel = [];
     inglabel.push("Ingr#");
@@ -75,19 +81,14 @@ async loadDataFromServerForReport(ingredients){
         dataLine.push(curData.comment);
         rows.push(dataLine);
 
-        console.log("this is the dataline: "+dataLine);
         var res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, 
           "_", curData._id, "_", currentPage, pageSize, "_", "_");
-        console.log("this is the res: "+res);
 
         if (!res.success) {
           this.setState({ error: res.error });
         }
         else {
           var resData = res.data;
-          console.log("this is the skuData: "+resData);
-          console.log('this is the res.data.length: '+resData.length);
-          console.log("this is the skuData string: "+JSON.stringify(resData));
         if(resData.length>0){
           rows.push(skuBIG);
           rows.push(skulabel);
@@ -95,20 +96,32 @@ async loadDataFromServerForReport(ingredients){
           for(let s = 0; s<resData.length; s++){
           var curSku = [];
           var curSkuObj = resData[s];
+          console.log("curSkuObj: "+JSON.stringify(curSkuObj));
           curSku.push(curSkuObj.num);
-          console.log("this is the num: "+curSkuObj.num);
           curSku.push(curSkuObj.name);
           curSku.push(curSkuObj.case_upc);
           curSku.push(curSkuObj.unit_upc);
           curSku.push(curSkuObj.unit_size);
           curSku.push(curSkuObj.cpc);
           curSku.push(curSkuObj.prod_line.name);
-          console.log("this is the prod: "+curSkuObj.prod_line.name);
-          console.log("this is the prod string: "+JSON.stringify(curSkuObj.prod_line));
+          curSku.push(curSkuObj.formula.num);
+          curSku.push(curSkuObj.scale_factor);
+          var ml_names = "";
+          if(curSkuObj.manu_lines!=undefined){
+              for (let m = 0; m<curSkuObj.manu_lines.length; m++){
+                  ml_names+=""+curSkuObj.manu_lines[m].short_name;
+  
+                  if(m!=curSkuObj.manu_lines.length-1){
+                      ml_names+=",";
+                  }
+              }
+          }
+          curSku.push(ml_names);
+          curSku.push(curSkuObj.manu_rate);
+          curSku.push(curSkuObj.setup_cost);
+          curSku.push(curSkuObj.run_cpc);
           curSku.push(curSkuObj.comment);
-          console.log("this is the curSku: "+curSku);
           rows.push(curSku);
-          console.log("this is the skuData: "+finalData);
         }
       }
 
