@@ -6,10 +6,12 @@ import ProductLine from './ProductLine';
 const ProductLineList = (props) => {
   const LineNodes = props.data.map(line => (
     <ProductLine
+      line = {line}
       key={line._id}
       id={line._id}
       name={line.name}
       skus={line.skus}
+      handleDetailViewSubmit = {props.handleDetailViewSubmit}
       handleUpdateProdLine={props.handleUpdateProdLine}
       handleDeleteProdLine={props.handleDeleteProdLine}
       prod_lines = {props.data.map((item) => {

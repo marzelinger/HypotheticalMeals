@@ -82,6 +82,14 @@
     justify-content: center;
 }
 
+thead > tr {
+    height: 100% !important;
+}
+
+thead > tr > th{
+    height: 100% !important;
+}
+
 .filter-container{
     display:flex; 
     flex-direction:row; 

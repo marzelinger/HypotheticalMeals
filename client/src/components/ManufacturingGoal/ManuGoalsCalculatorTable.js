@@ -96,6 +96,7 @@ export default class ManuGoalsCalculatorTable extends React.Component {
             <ModalFooter>
                 <ExportSimple name = {'Export'} data = {this.state.data} fileTitle = {this.state.page_title}/>
                 <div className = "exportbutton pdfbutton hoverable" onClick = {() => this.print()}>Export PDF</div>
+                <div className = "exportbutton pdfbutton hoverable" onClick = {this.props.toggle}>Exit</div>
             </ModalFooter>                 
             </div>
         );

@@ -31,6 +31,7 @@ export const skus_page_name = 'skus';
 export const manugoals_page_name = 'manugoals';
 export const manu_line_page_name = 'manulines';
 export const prod_line_page_name = 'products';
+export const prod_lines_page_name = 'product lines';
 export const manu_activity_page_name = 'manuactivities';
 export const formulas_page_name = 'formulas';
 export const customers_page_name = 'customers';

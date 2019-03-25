@@ -67,7 +67,7 @@ export default class ListPage extends React.Component {
             filters: {
                 'keyword': '',
                 'ingredients': [],
-                'products': [],
+                'product lines': [],
                 'formula' : [],
             },
             filterChange: false,
