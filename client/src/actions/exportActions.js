@@ -11,7 +11,13 @@ export const exportSKUS = (dataIN, fileTitle)  => {
     label.push("Unit UPC");
     label.push("Unit size");
     label.push("Count per case");
-    label.push("Product Line Name");
+    label.push("PL Name");
+    label.push("Formula#");
+    label.push("Formula factor");
+    label.push("ML Shortnames");
+    label.push("Rate");
+    label.push("Mfg setup cost");
+    label.push("Mfg run cost");
     label.push("Comment");
     rows.push(label);
     for(let i = 0; i<count ; i++){
@@ -24,6 +30,22 @@ export const exportSKUS = (dataIN, fileTitle)  => {
         dataLine.push(curData.unit_size);
         dataLine.push(curData.cpc);
         dataLine.push(curData.prod_line.name);
+        dataLine.push(curData.formula.num);
+        dataLine.push(curData.scale_factor);
+        var ml_names = "";
+        if(curData.manu_lines!=undefined){
+            for (let m = 0; m<curData.manu_lines.length; m++){
+                ml_names+=""+curData.manu_lines.short_name;
+
+                if(m!=curData.manu_lines.length-1){
+                    ml_names+=",";
+                }
+            }
+        }
+        dataLine.push(ml_names);
+        dataLine.push(curData.manu_rate);
+        dataLine.push(curData.setup_cost);
+        dataLine.push(curData.run_cpc);
         dataLine.push(curData.comment);
         rows.push(dataLine);
     }    
