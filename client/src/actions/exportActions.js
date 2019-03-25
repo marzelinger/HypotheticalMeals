@@ -11,7 +11,13 @@ export const exportSKUS = (dataIN, fileTitle)  => {
     label.push("Unit UPC");
     label.push("Unit size");
     label.push("Count per case");
-    label.push("Product Line Name");
+    label.push("PL Name");
+    label.push("Formula#");
+    label.push("Formula factor");
+    label.push("ML Shortnames");
+    label.push("Rate");
+    label.push("Mfg setup cost");
+    label.push("Mfg run cost");
     label.push("Comment");
     rows.push(label);
     for(let i = 0; i<count ; i++){
@@ -24,6 +30,22 @@ export const exportSKUS = (dataIN, fileTitle)  => {
         dataLine.push(curData.unit_size);
         dataLine.push(curData.cpc);
         dataLine.push(curData.prod_line.name);
+        dataLine.push(curData.formula.num);
+        dataLine.push(curData.scale_factor);
+        var ml_names = "";
+        if(curData.manu_lines!=undefined){
+            for (let m = 0; m<curData.manu_lines.length; m++){
+                ml_names+=""+curData.manu_lines.short_name;
+
+                if(m!=curData.manu_lines.length-1){
+                    ml_names+=",";
+                }
+            }
+        }
+        dataLine.push(ml_names);
+        dataLine.push(curData.manu_rate);
+        dataLine.push(curData.setup_cost);
+        dataLine.push(curData.run_cpc);
         dataLine.push(curData.comment);
         rows.push(dataLine);
     }    
@@ -539,4 +561,33 @@ export const exportSalesReport = (dataIN, fileTitle) => {
      }); 
     fileDownload(csvContent, fileTitle+'.csv');
 
+}
+
+export const exportManuGoal = (dataIN, fileTitle) => {
+    console.log('yo')
+    var count = dataIN.length;
+    const rows = [];
+    var label = [];
+    let { item_properties, item_property_labels } = DataStore.getManuGoalDataExportData()
+    label.push(item_property_labels);
+    rows.push(label);
+    for(let i = 0; i<count ; i++){
+        console.log(curData)
+        var curData = dataIN[i];
+        var dataLine = [];
+        for (let j = 0; j < item_properties.length; j++) {
+            if (item_properties[j] === 'name' || item_properties[j] === 'num' || item_properties[j] === 'unit_size' || 
+                item_properties[j] === 'cpc' || item_properties[j] === 'manu_rate'){
+                dataLine.push(curData.sku[item_properties[j]])
+            }
+            else dataLine.push(curData[item_properties[j]])
+        }
+        rows.push(dataLine);
+    }    
+    let csvContent = "";
+    rows.forEach(function(rowArray){
+        let row = rowArray.join(",");
+        csvContent += row + "\r\n";
+     }); 
+    fileDownload(csvContent, fileTitle+'.csv');
 }

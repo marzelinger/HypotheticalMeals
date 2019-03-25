@@ -16,7 +16,7 @@ export default class DataStore{
         table_options: [Constants.create_item, Constants.add_keyword_filter, Constants.add_sku_filter],
         item_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'vendor_info', 'comment'],
         item_property_labels: ['Name', 'Ingr#', 'Package Size', 'Package Cost (USD)', 'Vendor Info', 'Comments'],
-        item_property_patterns: ['.+', '^[0-9]+$', '^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$', '^[0-9]*[\.]?[0-9]{1,2}$', '.*', '.*'],
+        item_property_patterns: ['.*', '^[0-9]+$', '^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$', '^[0-9]*[\.]?[0-9]{1,2}$', '.*', '.*'],
         item_property_field_type: ['text', 'text', 'text', 'text', 'textarea', 'textarea'],  
       };
     }
@@ -96,7 +96,7 @@ export default class DataStore{
           Constants.add_ing_filter, Constants.add_prod_filter],
         item_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'comment', 'manu_rate', 'scale_factor', 'setup_cost', 'run_cpc'],
         item_property_labels: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count per Case', 'Comment', 'Manufacturing Rate', 'Formula Scale Factor', 'Manufacturing Setup Cost (USD)', 'Manufacturing Run Cost Per Case (USD)'],
-        item_property_patterns: ['.+', '^[0-9]+$', '^[0-9]{12}$', '^[0-9]{12}$', '^[0-9]+ {0,2}[a-z.]+$', '^[0-9]+$', '.*', '^[0-9]*[\.]?[0-9]+$', '^[0-9]*[\.]?[0-9]+$', '^[0-9]*[\.]?[0-9]{1,2}$', '^[0-9]*[\.]?[0-9]{1,2}$'],  
+        item_property_patterns: ['^.{1,32}$', '^[0-9]+$', '^[0-9]{12}$', '^[0-9]{12}$', '.*', '^[0-9]+$', '.*', '^[0-9]*[\.]?[0-9]+$', '^[0-9]*[\.]?[0-9]+$', '^[0-9]*[\.]?[0-9]{1,2}$', '^[0-9]*[\.]?[0-9]{1,2}$'],  
         item_property_field_type: ['text', 'text', 'text', 'text', 'text', 'text', 'textarea', 'text','text', 'text', 'text', 'text'],
       };
   }
@@ -150,6 +150,13 @@ export default class DataStore{
       return {
         item_properties: ['year', 'week', 'cust_name', 'cust_num', 'sales', 'ppc', 'revenue'],
         item_property_labels: ['Year', 'Week', 'Customer Name', 'Customer Number', 'Number of Sales', 'Price per Case (USD)', 'Revenue (USD)']
+      };
+    }
+
+    static getManuGoalDataExportData() {
+      return {
+        item_properties: ['name', 'num', 'unit_size', 'cpc', 'quantity', 'manu_rate'],
+        item_property_labels: ['Name', 'SKU#', 'Unit Size', 'Count per Case', 'Quantity', 'Manufacturing Rate']
       };
     }
   }

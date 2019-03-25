@@ -3,6 +3,7 @@ import 'whatwg-fetch';
 import ManufacturingLineList from './ManufacturingLineList';
 import * as Constants from '../../../resources/Constants';
 import SubmitRequest from '../../../helpers/SubmitRequest';
+import ManufacturingLineDetails from './ManufacturingLineDetails';
 import '../../../style/ManufacturingGoalsBox.css'
 import ExportSimple from '../../export/ExportSimple';
 
@@ -411,12 +412,16 @@ export default class ManufacturingLinesBox extends Component {
             handleDetailViewSelect = {this.onDetailViewSelect}
             handleDetailViewSubmit= {this.handleDetailViewSubmit}
             validateShortName = {this.validateUniqueShortName} 
-                      />
+            />
         </div>
         <div className="form">
-          <ExportSimple data = {this.state.data} fileTitle = {"manufacturingLines"}/> 
-        </div>
-        {/* {this.state.error && <p>{this.state.error}</p>} */}
+        <ManufacturingLineDetails
+         validateShortName = {this.validateUniqueShortName} 
+          buttonImage = {addButton}
+          handleDetailViewSubmit = {this.handleDetailViewSubmit}
+          options = {[Constants.details_create, Constants.details_cancel]}
+          ></ManufacturingLineDetails>
+          </div>
       </div>
     );
   }

@@ -79,6 +79,9 @@ export default class ListPage extends React.Component {
                 this.state.user = jwt_decode(localStorage.getItem("jwtToken")).username;
             }
         }
+        this.pollInterval = null;
+
+        this.loadDataFromServer = this.loadDataFromServer.bind(this);
         this.toggle = this.toggle.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onFilterValueChange = this.onFilterValueChange.bind(this);
@@ -93,6 +96,11 @@ export default class ListPage extends React.Component {
     toggle = (modalType) => {
         switch(modalType){
             case Constants.details_modal:
+                // if (!this.state.details_modal) {
+                //     if (this.pollInterval) clearInterval(this.pollInterval);
+                //     this.pollInterval = null;
+                // }
+                // else this.pollInterval = setInterval(this.loadDataFromServer, 2000);
                 this.setState({details_modal: !this.state.details_modal})
                 break;
             case Constants.manu_goals_modal:
@@ -111,6 +119,11 @@ export default class ListPage extends React.Component {
                 break;
         }
     }
+    
+    componentWillUnmount() {
+        // if (this.pollInterval) clearInterval(this.pollInterval);
+        // this.pollInterval = null;
+    }
 
     async componentDidMount() {
         if (this.props.default_ing_filter !== undefined){
@@ -125,7 +138,10 @@ export default class ListPage extends React.Component {
         //     millisTill10 += 86400000; // it's after 10am, try 10am tomorrow.
         // }
         // setTimeout(() => this.updateRecords(), millisTill10);
-        this.loadDataFromServer();
+        await this.loadDataFromServer();
+        // if (!this.pollInterval) {
+        //     this.pollInterval = setInterval(this.loadDataFromServer, 2000);
+        // }
     }
 
     async componentDidUpdate (prevProps, prevState) {
@@ -137,7 +153,7 @@ export default class ListPage extends React.Component {
     updateDataState = async () => {
         var {data: ingredients} = await SubmitRequest.submitGetData(Constants.ingredients_page_name);
         var {data: productlines} = await SubmitRequest.submitGetData(Constants.prod_line_page_name);
-        this.setState({ingredients: ingredients, product_lines: productlines});
+        await this.setState({ingredients: ingredients, product_lines: productlines});
     }
 
 
@@ -167,7 +183,7 @@ export default class ListPage extends React.Component {
             exportData: resALL.data,
             filterChange: false
         })
-        this.updateDataState();
+        await this.updateDataState();
     }
 
     async checkCurrentPageInBounds(dataResAll){
@@ -336,19 +352,16 @@ export default class ListPage extends React.Component {
         else if(rowIndexes == 'none'){
             rowIndexes = [];
         }
-        console.log(rowIndexes);
         var newState = [];
         rowIndexes.forEach( index => {
             newState.push(this.state.data[index]);
         });
         await this.setState({ selected_items: newState, selected_indexes: rowIndexes});
-        console.log("this is the selected skus: "+JSON.stringify(this.state.selected_items));
 
     };
 
      onDetailViewSelect = async (event, item) => {
         let formula_item = await SubmitRequest.submitGetFormulaByID(item.formula._id);
-        console.log("this is the ondetailview: "+JSON.stringify(formula_item));
         this.setState({
             detail_view_item: item,
             detail_view_formula_item: formula_item.data[0]
@@ -369,18 +382,14 @@ export default class ListPage extends React.Component {
     };
 
     async onDetailViewSubmit(event, item, formula_item, option) {
-        console.log("made it to the ondetailviewsubmit");
-        // var res = {};
         var resItem = {};
         var resFormula = {};
         var newData = this.state.data.splice();
-        console.log("this is the item  state."+ JSON.stringify(item));
 
         switch (option) {
             case Constants.details_create:
                 //need to create the new formula and get the id of the newly created formula and then put that in the 
                 //item equal to the formula section of item.
-                console.log("this is the formula_item: "+JSON.stringify(formula_item));
                 
                 var success = await SubmitRequest.submitGetFormulaByID(formula_item._id);
                 if(success.success == false) resFormula = await SubmitRequest.submitCreateItem(Constants.formulas_page_name, formula_item);
@@ -403,11 +412,6 @@ export default class ListPage extends React.Component {
                 newData[toSave] = item;
                 resFormula = await SubmitRequest.submitUpdateItem(Constants.formulas_page_name, formula_item);
                 resItem = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
-                
-                console.log("this is the save res."+ JSON.stringify(resItem));
-                console.log("this is the save res."+ JSON.stringify(resFormula));
-
-
                 break;
             case Constants.details_delete:
                 let toDelete = newData.findIndex(obj => {return obj._id === item._id});
@@ -428,7 +432,6 @@ export default class ListPage extends React.Component {
                 resItem = {success: true}
                 break;
         }
-        console.log(resItem)
         if (!resItem.success) alert(resItem.error);
         else {
             this.setState({ 
