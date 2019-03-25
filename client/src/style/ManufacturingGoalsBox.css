@@ -19,7 +19,6 @@
 
   .goals {
     height: 60vh;
-    overflow: scroll;
   }
 
   .goals > div{

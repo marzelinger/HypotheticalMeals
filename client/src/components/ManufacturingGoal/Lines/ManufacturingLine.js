@@ -47,7 +47,7 @@ export default class ManufacturingLine extends React.Component{
       <div id="singleGoal">
         <div className="textContent">
           <div className="singleGoalContent" id={'manuline' + this.props.id}>
-          <h3>{this.state.name}</h3>
+          <h3>{this.props.name}</h3>
           {/* <input onKeyPress = {(event) => this.onNameSubmit(event)} type = "text" value = {this.state.name} onChange = {(event) => this.onNameChange(event)}></input> */}
           </div>
         </div>
