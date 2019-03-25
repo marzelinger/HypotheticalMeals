@@ -105,26 +105,28 @@ export default class Calculations{
     static async getIngrCostPerCase(sku){
         var ingr_cost_per_case = 0;
         console.log("this is the sku: "+JSON.stringify(sku));
-        if(sku.formula.ingredients!=undefined){
-            for(let ing = 0; ing<sku.formula.ingredients.length; ing++){
-                var ing_cost = sku.formula.ingredients[ing].pkg_cost;
-                var ing_pkg_size = sku.formula.ingredients[ing].pkg_size;
-                var form_ingredient_quant = sku.formula.ingredient_quantities[ing];
+        if(sku.formula!=undefined){
+            if(sku.formula.ingredients!=undefined){
+                for(let ing = 0; ing<sku.formula.ingredients.length; ing++){
+                    var ing_cost = sku.formula.ingredients[ing].pkg_cost;
+                    var ing_pkg_size = sku.formula.ingredients[ing].pkg_size;
+                    var form_ingredient_quant = sku.formula.ingredient_quantities[ing];
 
 
 
-                var ing_parse = await this.parseUnitVal(ing_pkg_size);
-                var ing_pkg_size_val = ing_parse.val;
-                //need to convert the formula ingredient quantity to the ingredient pckg size unit.
-                //get the ingredient_pckg_size unit
-                var conversionFuncObj = UnitConversion.getConversionFunction(ing_pkg_size);
-                console.log("this is conversion func obj"+JSON.stringify(conversionFuncObj));
-                var converted_form = conversionFuncObj.func(form_ingredient_quant);
+                    var ing_parse = await this.parseUnitVal(ing_pkg_size);
+                    var ing_pkg_size_val = ing_parse.val;
+                    //need to convert the formula ingredient quantity to the ingredient pckg size unit.
+                    //get the ingredient_pckg_size unit
+                    var conversionFuncObj = UnitConversion.getConversionFunction(ing_pkg_size);
+                    console.log("this is conversion func obj"+JSON.stringify(conversionFuncObj));
+                    var converted_form = conversionFuncObj.func(form_ingredient_quant);
 
-                var form_parse = await this.parseUnitVal(converted_form);
-                var form_ing_val = form_parse.val;
-                
-                ingr_cost_per_case +=(ing_cost/ing_pkg_size_val) * form_ing_val;
+                    var form_parse = await this.parseUnitVal(converted_form);
+                    var form_ing_val = form_parse.val;
+                    
+                    ingr_cost_per_case +=(ing_cost/ing_pkg_size_val) * form_ing_val;
+                }
             }
         }
         console.log("INGR CPC: "+ingr_cost_per_case)

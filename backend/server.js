@@ -72,8 +72,7 @@ router.get('/skus_num/:sku_num', (req, res) => SkuHandler.getSkusBySkuNumer(req,
 router.delete('/skus/:sku_id', (req, res) => SkuHandler.deleteSkuByID(req, res));
 router.get('/ingredients_by_sku/:sku_id', (req, res) => SkuHandler.getIngredientsBySkuID(req, res));
 router.get('/skus_name/:search_substr', (req, res) => SkuHandler.getSkusByNameSubstring(req, res));
-
-
+router.get('/skus/manu_line_id/:manu_line_id', (req, res) => SkuHandler.getSkuByManuLineID(req, res));
 
 // Formula database APIs
 router.post('/formulas', (req, res) => FormulaHandler.createFormula(req, res));

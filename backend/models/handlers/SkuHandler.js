@@ -157,6 +157,25 @@ class SkuHandler{
         }
     }
 
+
+    
+    static async getSkuByManuLineID(req, res){
+        try {
+
+            var target_manu_line_id = req.params.manu_line_id;
+            console.log("target_manu_line: "+target_manu_line_id);
+            let to_return = await SKU.find({ manu_lines : target_manu_line_id }).populate('formula').populate({
+                path: 'formula',
+                populate: { path: 'ingredients' }
+              }).populate('prod_line');
+            if(to_return.length == 0) return res.json({ success: false, error: '404'});
+            return res.json({ success: true, data: to_return});
+        } catch (err) {
+            console.log(err)
+            return res.json({ success: false, error: err});
+        }
+    }
+
     static async getSkusByProdLine(req, res){
         try {
             var target_prod = req.params.prod_line_id;

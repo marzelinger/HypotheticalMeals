@@ -5,8 +5,6 @@ import * as Constants from '../../../resources/Constants';
 import SubmitRequest from '../../../helpers/SubmitRequest';
 import '../../../style/ManufacturingGoalsBox.css'
 import ExportSimple from '../../export/ExportSimple';
-import ManufacturingLineDetails from './ManufacturingLineDetails';
-import ManufacturingLineDetailsEdit from './ManufacturingLineDetailsEdit';
 
 import PropTypes from "prop-types";
 import addButton from '../../../resources/add.png';
@@ -28,7 +26,8 @@ export default class ManufacturingLinesBox extends Component {
       detail_view_action: '',
       detail_view_options: [],
       details_modal: false,
-      selected_manu_line: {}
+      selected_manu_line: {},
+      //skus: []
     };
     this.pollInterval = null;
     this.submitNewManuLine = this.submitNewManuLine.bind(this);
@@ -39,29 +38,9 @@ export default class ManufacturingLinesBox extends Component {
     this.submitUpdatedManuLine = this.submitUpdatedManuLine.bind(this);
     this.handleDetailViewSubmit = this.handleDetailViewSubmit.bind(this);
     this.onDetailViewSelect = this.onDetailViewSelect.bind(this);
+    this.updateSKUManuLines = this.updateSKUManuLines.bind(this);
+    //this.setSKUSForManuLine = this.setSKUSForManuLine.bind(this);
   }
-
-  // onChangeText = (e) => {
-  //   const newState = { ...this.state };
-  //   newState[e.target.name] = e.target.value;
-  //   this.setState(newState);
-  // }
-
-  // onAddClick = async() => {
-  //   try{
-  //     var new_manu_line = await ItemStore.getEmptyItem(Constants.manu_line_page_name);
-  //     console.log(new_manu_line);
-  //     await this.setState({ 
-  //       modal_state: true,
-  //       manu_line: new_manu_line,
-  //       detail_view_action: Constants.details_create,
-  //       detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
-  //     })
-  // } catch (e){
-  //     console.log(e);
-  // }
-
-  // }
 
   onUpdateManuLine = async (id, name) => {
     console.log('updating line with id: '+id);
@@ -92,7 +71,7 @@ export default class ManufacturingLinesBox extends Component {
 
   async handleDetailViewSubmit(event, item, option) {
     var newData = this.state.data;
-    console.log(item);
+    console.log("item in detail submit: "+JSON.stringify(item));
     switch (option) {
         case Constants.details_create:
             newData.push(item);
@@ -121,7 +100,8 @@ export default class ManufacturingLinesBox extends Component {
             this.submitUpdatedManuLine();
             break;
         case Constants.details_delete:
-            if(window.confirm("Deleting this manufacturing line will unschedule all activities scheduled to it. Are you sure you want to delete it?")){
+          //TODO CHECK THAT NO SKUS ASSOCIATED WITH THIS MANU LINE.  
+          if(window.confirm("Deleting this manufacturing line will unschedule all activities scheduled to it. Are you sure you want to delete it?")){
               this.onDeleteManuLine(item._id)
               return true;
             }
@@ -167,15 +147,51 @@ export default class ManufacturingLinesBox extends Component {
   }
 
   async submitNewManuLine() {
+    console.log("item skus")
     const { name, short_name, comment } = this.state;
     let res = await SubmitRequest.submitCreateItem(Constants.manu_line_page_name, { name, short_name, comment });
     if (!res.success) {
       this.setState({ error: res.error });
     }
     else {
-      this.setState({ name: '', error: null });
+      console.log("this is res. "+JSON.stringify(res));
+      var updateRes = await this.updateSKUManuLines(res.data);
+      if(!updateRes.success){
+        this.setState({ error: updateRes.error });
+      }
+      else{
+        this.setState({ name: '', error: null });
+      }
+    }  
+}
+
+  async updateSKUManuLines(manu_line){
+    if(this.state.skus!=undefined){
+      //need to go into these skus and add this manu_line
+      for(let s = 0; s<this.state.skus.length; s++){
+        var curSKU = this.state.skus[s];
+        console.log("curSKU: "+ JSON.stringify(curSKU));
+        //get the current sku, add the manu line to it, then update in db.
+          var manu_lines = curSKU.manu_lines;
+          manu_lines.push(manu_line._id);
+          curSKU.manu_lines = manu_lines;
+          console.log("cur SKU: "+ JSON.stringify(curSKU));
+
+          let updateRes = await SubmitRequest.submitUpdateItem(Constants.skus_page_name, curSKU);
+          console.log("updateRes: "+ JSON.stringify(updateRes));
+
+          if(!updateRes.success){
+            return {error: updateRes.error, success: false};
+          }
+          else{
+            return{ name: '', error: null, success: true };
+
+          }
+      }
     }
   }
+
+
 
   async submitUpdatedManuLine() {
     const { name, short_name, comment, updateId } = this.state;
@@ -183,6 +199,8 @@ export default class ManufacturingLinesBox extends Component {
     console.log("this is the item: "+ JSON.stringify(item));
     console.log("this is the updateid; "+updateId);
     let res = await SubmitRequest.submitUpdateItem(Constants.manu_line_page_name, item);
+    
+    //updateSKUManuLines TODO
     if (!res.success) {
       this.setState({ error: res.error});
     }
@@ -191,12 +209,20 @@ export default class ManufacturingLinesBox extends Component {
     }
   }
 
-  componentDidMount() {
+
+
+
+
+  async componentDidMount() {
     this.loadManuLinesFromServer();
+    //await this.setSKUSForManuLine();
     if (!this.pollInterval) {
       this.pollInterval = setInterval(this.loadManuLinesFromServer, 2000);
     }
   }
+
+
+
 
   componentWillUnmount() {
     if (this.pollInterval) clearInterval(this.pollInterval);
@@ -206,11 +232,13 @@ export default class ManufacturingLinesBox extends Component {
   async loadSkusforLines(all_manu_lines) {
     var manu_lines = [];
     for( const manu_line of all_manu_lines ){ 
-      let res = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path, '_', '_', '_', '_', '_', '_', manu_line._id);
+      let res = await SubmitRequest.submitGetSKUsByManuLine(manu_line._id);
+      console.log("this is the response in loadSKUS: "+ JSON.stringify(res));
       if (!res.success) {
         this.setState({ error: res.error});
       }
       else {
+
         var skus = res.data;
       }
       var manu_line_with_sku = {
@@ -277,36 +305,9 @@ export default class ManufacturingLinesBox extends Component {
                       />
         </div>
         <div className="form">
-        {/* <ManufacturingLineDetails validateShortName = {this.validateUniqueShortName} handleDetailViewSubmit = {this.handleDetailViewSubmit}></ManufacturingLineDetails> */}
-        <ManufacturingLineDetails
-         validateShortName = {this.validateUniqueShortName} 
-          buttonImage = {addButton}
-          handleDetailViewSubmit = {this.handleDetailViewSubmit}
-          options = {[Constants.details_create, Constants.details_cancel]}
-          ></ManufacturingLineDetails>
-        
-        {/* <ManufacturingLineDetailsEdit 
-        validateShortName = {this.validateUniqueShortName} 
-        handleDetailViewSubmit = {this.handleDetailViewSubmit} 
-        manu_line= {this.state.selected_manu_line} 
-        details_modal={this.state.details_modal}
-        detail_view_action= {this.state.detail_view_action}
-        detail_view_options= {this.state.detail_view_options}>
-        </ManufacturingLineDetailsEdit> */}
-
-{/* 
-        <img className = "hoverable" id = "button" src={addButton} onClick={this.onAddClick}></img>
-          <ManufacturingLineDetails 
-          validateShortName = {this.validateUniqueShortName} 
-          handleDetailViewSubmit = {this.handleDetailViewSubmit} 
-          detail_view_action={this.state.detail_view_action}
-          detail_view_options={this.state.detail_view_options}
-          modal = {this.state.modal_state}
-          manu_line = {this.state.manu_line}
-          ></ManufacturingLineDetails> */}
           <ExportSimple data = {this.state.data} fileTitle = {"manufacturingLines"}/> 
         </div>
-        {this.state.error && <p>{this.state.error}</p>}
+        {/* {this.state.error && <p>{this.state.error}</p>} */}
       </div>
     );
   }

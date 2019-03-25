@@ -6,7 +6,6 @@ import * as Constants from '../../resources/Constants';
 import '../../style/ManufacturingGoalsStyle.css';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import { Modal } from 'reactstrap';
-import ManuLineDetails from './Lines/ManufacturingLineDetails';
 
 import ManufacturingScheduleReportDetails from './ManufacturingScheduleReportDetails';
 import ManufacturingReport from './ManufacturingReport';

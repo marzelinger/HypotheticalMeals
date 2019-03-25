@@ -38,6 +38,10 @@ export default class ManufacturingLineDetails extends React.Component {
             shortNameChanged: false
         }
         this.toggle = this.toggle.bind(this);
+        this.onModifyList = this.onModifyList.bind(this);
+        this.removeSku = this.removeSku.bind(this);
+        this.addSku = this.addSku.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     async componentDidMount() {
@@ -56,7 +60,7 @@ export default class ManufacturingLineDetails extends React.Component {
         return this.state.item_property_field_type[this.state.item_properties.indexOf(prop)];
     }
 
-    onPropChange = (value, item, prop) => {
+    onPropChange = async(value, item, prop) => {
         if (prop === 'short_name' && value.length > 5) {
             alert('Manufacturing Line shortname must be a maximum of 5 characters!')
             return
@@ -66,11 +70,12 @@ export default class ManufacturingLineDetails extends React.Component {
             return
         }
         item[prop] = value
-        this.setState({ item: item });
+        await this.setState({ item: item });
     };
 
-    onModifyList = (option, value) => {
+    onModifyList = async(option, value) => {
         var item = Object.assign({}, this.state.item);
+        console.log("this is the modify list: ");
         switch (option) {
             case Constants.details_add:
                 this.addSku(item, value);
@@ -79,13 +84,13 @@ export default class ManufacturingLineDetails extends React.Component {
                 this.removeSku(item, value);
                 break;
         }
-        this.setState({ 
+        await this.setState({ 
             item: item,
             item_changed: true 
         })
     }
 
-    removeSku(item, value) {
+    async removeSku(item, value) {
         let ind = -1;
         item.skus.map((sku, index) => {
             if (sku._id === value._id)
@@ -94,10 +99,10 @@ export default class ManufacturingLineDetails extends React.Component {
         if (ind > -1) {
             item.skus.splice(ind,1);
         }
-        this.setState({ item: item })
+        await this.setState({ item: item })
     }
 
-    addSku(item, value) {
+    async addSku(item, value) {
         let ind = -1;
         item.skus.map((sku, index) => {
             if (sku._id === value._id)
@@ -109,13 +114,13 @@ export default class ManufacturingLineDetails extends React.Component {
         else {
             item.skus.push(value);
         }
-        this.setState({ item: item })
+        await this.setState({ item: item })
     }
 
     async handleSubmit(e, opt) {
         if (![Constants.details_save, Constants.details_create].includes(opt)) {
             if(this.props.handleDetailViewSubmit(e, this.state.item, opt)){
-                this.setState({modal: false})
+                await this.setState({modal: false})
             };
             return;
         }
@@ -124,7 +129,7 @@ export default class ManufacturingLineDetails extends React.Component {
         let inv = this.state.invalid_inputs;
         if (inv.length === 0) {
             if(this.props.handleDetailViewSubmit(e, this.state.item, opt)){
-                this.setState({modal: false})
+                await this.setState({modal: false})
             }
         }
         else {
@@ -182,6 +187,7 @@ export default class ManufacturingLineDetails extends React.Component {
       }
 
     render() {
+        console.log("these are the skus: "+JSON.stringify(this.state.item));
         return (
         <div>
         <img id = "buttonline" src={this.props.buttonImage} onClick={this.toggle}></img>
