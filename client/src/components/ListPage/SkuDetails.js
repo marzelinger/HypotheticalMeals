@@ -408,6 +408,16 @@ export default class SKUDetails extends React.Component {
 
     }
 
+    isNewSku(prop) {
+        if (prop !== 'num') {
+            return true
+        }
+        if (this.props.detail_view_options.includes(Constants.details_create)){
+            return true
+        }
+        return false
+    }
+
 
     async validateInputs() { 
         var inv_in = [];
@@ -437,7 +447,7 @@ export default class SKUDetails extends React.Component {
                         value={ this.state.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
                         onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
-                        disabled = {(currentUserIsAdmin().isValid) ? "" : "disabled"}
+                        disabled = {(currentUserIsAdmin().isValid) && this.isNewSku(prop) ? "" : "disabled"}
                    />
                 </FormGroup>
             )
