@@ -542,3 +542,32 @@ export const exportSalesReport = (dataIN, fileTitle) => {
     fileDownload(csvContent, fileTitle+'.csv');
 
 }
+
+export const exportManuGoal = (dataIN, fileTitle) => {
+    console.log('yo')
+    var count = dataIN.length;
+    const rows = [];
+    var label = [];
+    let { item_properties, item_property_labels } = DataStore.getManuGoalDataExportData()
+    label.push(item_property_labels);
+    rows.push(label);
+    for(let i = 0; i<count ; i++){
+        console.log(curData)
+        var curData = dataIN[i];
+        var dataLine = [];
+        for (let j = 0; j < item_properties.length; j++) {
+            if (item_properties[j] === 'name' || item_properties[j] === 'num' || item_properties[j] === 'unit_size' || 
+                item_properties[j] === 'cpc' || item_properties[j] === 'manu_rate'){
+                dataLine.push(curData.sku[item_properties[j]])
+            }
+            else dataLine.push(curData[item_properties[j]])
+        }
+        rows.push(dataLine);
+    }    
+    let csvContent = "";
+    rows.forEach(function(rowArray){
+        let row = rowArray.join(",");
+        csvContent += row + "\r\n";
+     }); 
+    fileDownload(csvContent, fileTitle+'.csv');
+}

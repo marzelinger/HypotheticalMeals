@@ -12,6 +12,7 @@ import CheckErrors from '../../../helpers/CheckErrors';
 import ManufacturingGoalDetails from './ManufacturingGoalDetails';
 import * as Constants from '../../../resources/Constants';
 import editButton from '../../../resources/edit.png';
+import ExportSimple from'../../export/ExportSimple'
 
 export default class ManufacturingGoal extends React.Component{
   constructor(props){
@@ -119,6 +120,7 @@ export default class ManufacturingGoal extends React.Component{
                 <Card>
                     <CardBody>
                         <ManuGoalsTables handleDeleteActivities = {this.handleDeleteActivities} onQuantityChange = {this.onQuantityChange} activities = {this.props.activities}></ManuGoalsTables>
+                        <ExportSimple data = {this.props.activities} fileTitle = {this.props.name + '_goal'}/>
                     </CardBody>
                 </Card>
             </UncontrolledCollapse>

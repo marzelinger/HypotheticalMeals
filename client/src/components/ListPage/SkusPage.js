@@ -336,19 +336,16 @@ export default class ListPage extends React.Component {
         else if(rowIndexes == 'none'){
             rowIndexes = [];
         }
-        console.log(rowIndexes);
         var newState = [];
         rowIndexes.forEach( index => {
             newState.push(this.state.data[index]);
         });
         await this.setState({ selected_items: newState, selected_indexes: rowIndexes});
-        console.log("this is the selected skus: "+JSON.stringify(this.state.selected_items));
 
     };
 
      onDetailViewSelect = async (event, item) => {
         let formula_item = await SubmitRequest.submitGetFormulaByID(item.formula._id);
-        console.log("this is the ondetailview: "+JSON.stringify(formula_item));
         this.setState({
             detail_view_item: item,
             detail_view_formula_item: formula_item.data[0]
@@ -369,18 +366,14 @@ export default class ListPage extends React.Component {
     };
 
     async onDetailViewSubmit(event, item, formula_item, option) {
-        console.log("made it to the ondetailviewsubmit");
-        // var res = {};
         var resItem = {};
         var resFormula = {};
         var newData = this.state.data.splice();
-        console.log("this is the item  state."+ JSON.stringify(item));
 
         switch (option) {
             case Constants.details_create:
                 //need to create the new formula and get the id of the newly created formula and then put that in the 
                 //item equal to the formula section of item.
-                console.log("this is the formula_item: "+JSON.stringify(formula_item));
                 
                 var success = await SubmitRequest.submitGetFormulaByID(formula_item._id);
                 if(success.success == false) resFormula = await SubmitRequest.submitCreateItem(Constants.formulas_page_name, formula_item);
@@ -403,11 +396,6 @@ export default class ListPage extends React.Component {
                 newData[toSave] = item;
                 resFormula = await SubmitRequest.submitUpdateItem(Constants.formulas_page_name, formula_item);
                 resItem = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
-                
-                console.log("this is the save res."+ JSON.stringify(resItem));
-                console.log("this is the save res."+ JSON.stringify(resFormula));
-
-
                 break;
             case Constants.details_delete:
                 let toDelete = newData.findIndex(obj => {return obj._id === item._id});
@@ -428,7 +416,6 @@ export default class ListPage extends React.Component {
                 resItem = {success: true}
                 break;
         }
-        console.log(resItem)
         if (!resItem.success) alert(resItem.error);
         else {
             this.setState({ 

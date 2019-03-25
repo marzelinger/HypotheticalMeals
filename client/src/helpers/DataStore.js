@@ -152,4 +152,11 @@ export default class DataStore{
         item_property_labels: ['Year', 'Week', 'Customer Name', 'Customer Number', 'Number of Sales', 'Price per Case (USD)', 'Revenue (USD)']
       };
     }
+
+    static getManuGoalDataExportData() {
+      return {
+        item_properties: ['name', 'num', 'unit_size', 'cpc', 'quantity', 'manu_rate'],
+        item_property_labels: ['Name', 'SKU#', 'Unit Size', 'Count per Case', 'Quantity', 'Manufacturing Rate']
+      };
+    }
   }

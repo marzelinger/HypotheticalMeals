@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Constants from '../../resources/Constants'
 
-import { exportSKUS, exportIngredients, exportProdLines, exportCalculator, exportFormulas, exportSalesReport } from "../../actions/exportActions";
+import { exportSKUS, exportIngredients, exportProdLines, exportCalculator, exportFormulas, exportSalesReport, exportManuGoal } from "../../actions/exportActions";
 import {exportGeneralReport} from '../SalesReport/GeneralReportExport';
 class ExportSimple extends Component {
 
@@ -20,6 +20,7 @@ class ExportSimple extends Component {
 
 
   onExportSimpleClick(e){
+    console.log(this.props.data)
     e.preventDefault();
     console.log("this is the fileTitle"+this.props.fileTitle);
     
@@ -46,8 +47,11 @@ class ExportSimple extends Component {
         exportGeneralReport(this.props.data, this.props.fileTitle);
         break;
     }
+    if (this.props.fileTitle.substring(this.props.fileTitle.length, this.props.fileTitle.length - 5) === '_goal'){
+      exportManuGoal(this.props.data, this.props.fileTitle);
+    }
 
-      };
+  };
 render() {
     const { user } = this.props.auth;
 return (
