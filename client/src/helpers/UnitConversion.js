@@ -7,37 +7,47 @@ export default class UnitConversion {
         let num = parseFloat(val.split(' ')[0]);
         let unit = val.split(' ')[1];
         switch (unit){
+            case 'ounce': 
             case 'oz':
                 return val;
+            case 'ounce':
+                return num + ' oz';
             case 'lb':
+            case 'pound':
                 return num*16 + ' oz'
             case 'pound':
                 return num*16 + ' oz'
             case 'ton':
-                return num*32000 + ' oz'
+                return num*32000 + ' oz';
             case 'g':
+            case 'gram':
                 return num*0.035274 + ' oz'
             case 'kg':
+            case 'kilogram':
                 return num*35.274 + ' oz'
             default:
-                return 'invalid unit'
+                return 'invalid unit';
         }
     }
     static toPound(val){
         let num = parseFloat(val.split(' ')[0]);
         let unit = val.split(' ')[1];
         switch (unit){
+            case 'ounce':
             case 'oz':
                 return num/16 + ' lb'
             case 'lb':
-                return val
             case 'pound':
                 return val
+            case 'pound':
+                return num + ' lb'
             case 'ton':
                 return num*2000 + ' lb'
             case 'g':
+            case 'gram':
                 return num*0.00220462 + ' lb'
             case 'kg':
+            case 'kilogram':
                 return num*2.20462 + ' lb'
             default:
                 return 'invalid unit'
@@ -49,16 +59,20 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'oz':
+            case 'ounce':
                 return num/16 + ' ton'
             case 'lb':
+            case 'pound':
                 return num/32000 + ' ton'
             case 'pound':
                 return num/32000 + ' ton'
             case 'ton':
                 return val
             case 'g':
+            case 'gram':
                 return num/907185 + ' ton'
             case 'kg':
+            case 'kilogram':
                 return num/907.185 + ' ton'
             default:
                 return 'invalid unit'
@@ -70,16 +84,20 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'oz':
+            case 'ounce':
                 return num*28.3495 + ' g'
             case 'lb':
+            case 'pound':
                 return num*453.592 + ' g'
             case 'pound':
                 return num*453.592 + ' g'
             case 'ton':
                 return num*907185 + ' g'
             case 'g':
+            case 'gram':
                 return val
             case 'kg':
+            case 'kilogram':
                 return num*1000 + ' g'
             default:
                 return 'invalid unit'
@@ -91,16 +109,20 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'oz':
+            case 'ounce':
                 return num/35.274 + ' kg'
             case 'lb':
+            case 'pound':
                 return num/2.20462 + ' kg'
             case 'pound':
                 return num/2.20462 + ' kg'
             case 'ton':
                 return num*907.185 + ' kg'
             case 'g':
+            case 'gram':
                 return num/1000 + ' kg'
             case 'kg':
+            case 'kilogram':
                 return val
             default:
                 return 'invalid unit'
@@ -112,16 +134,22 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'floz':
+            case 'fluidounce':
                 return val
             case 'pt':
+            case 'pint':
                 return  num/0.0625  + ' floz'
             case 'qt':
+            case 'quart':
                 return  num/0.03125  + ' floz'
             case 'gal':
+            case 'gallon':
                 return  num/0.0078125  + ' floz'
             case 'ml':
+            case "milliliter":
                 return  num/29.5735  + ' floz'
             case 'l':
+            case "liter":
                 return  num/0.0295735  + ' floz'
             default:
                 return 'invalid unit'
@@ -133,16 +161,22 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'floz':
+            case 'fluidounce':
                 return  num/16  + ' pt'
             case 'pt':
+            case 'pint':
                 return val
             case 'qt':
+            case 'quart':
                 return  num/0.5  + ' pt'
             case 'gal':
+            case 'gallon':
                 return  num/0.125  + ' pt'
             case 'ml':
+            case 'milliliter':
                 return  num/473.176  + ' pt'
             case 'l':
+            case 'liter':
                 return  num/0.473176  + ' pt'
             default:
                 return 'invalid unit'
@@ -154,16 +188,22 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'floz':
+            case 'fluidounce':
                 return  num*0.03125  + ' qt'
             case 'pt':
+            case 'pint':
                 return  num*0.5  + ' qt'
             case 'qt':
+            case 'quart':
                 return val
             case 'gal':
+            case 'gallon':
                 return  num*4  + ' qt'
             case 'ml':
+            case 'milliliter':
                 return  num*0.00105669  + ' qt'
             case 'l':
+            case 'liter':
                 return  num*1.05669  + ' qt'
             default:
                 return 'invalid unit'
@@ -175,16 +215,22 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'floz':
+            case 'fluidounce':
                 return  num*0.0078125  + ' gal'
             case 'pt':
+            case 'pint':
                 return  num*0.125  + ' gal'
             case 'qt':
+            case 'quart': 
                 return  num*0.25  + ' gal'
             case 'gal':
+            case 'gallon':
                 return val
             case 'ml':
+            case 'milliliter':
                 return  num*0.000264172  + ' gal'
             case 'l':
+            case 'liter':
                 return  num*0.264172  + ' gal'
             default:
                 return 'invalid unit'
@@ -196,16 +242,22 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'floz':
+            case 'fluidounce':
                 return  num*29.5735  + ' ml'
             case 'pt':
+            case 'pint':
                 return  num*473.176  + ' ml'
             case 'qt':
+            case 'quart':
                 return  num*946.353  + ' ml'
             case 'gal':
+            case 'gallon':
                 return  num*3785.41  + ' ml'
             case 'ml':
+            case 'milliliter':
                 return val
             case 'l':
+            case 'liter':
                 return  num*1000  + ' ml'
             default:
                 return 'invalid unit'
@@ -217,16 +269,22 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'floz':
+            case 'fluidounce':
                 return  num*0.0295735  + ' l'
             case 'pt':
+            case 'pint':
                 return  num*0.473176  + ' l'
             case 'qt':
+            case 'quart':
                 return  num*0.946353  + ' l'
             case 'gal':
+            case 'gallon':
                 return  num*3.78541  + ' l'
             case 'ml':
+            case 'milliliter':
                 return  num*0.001  + ' l'
             case 'l':
+            case 'liter':
                 return val
             default:
                 return 'invalid unit'
@@ -235,7 +293,7 @@ export default class UnitConversion {
 
     static toCount(val){
         let unit = val.split(' ')[1];
-        if (unit === 'ct'){
+        if (unit === 'ct' || unit === 'count'){
             return val
         }
         return 'invalid unit'

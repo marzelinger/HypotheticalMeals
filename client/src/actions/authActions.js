@@ -113,8 +113,6 @@ export const getDukeInfo = (userData) => dispatch => {
     })
     .then( response => {
 
-    console.log("this is the res: "+JSON.stringify(response));
-    console.log("this is the netid: "+response.data.netid);
     var netidVal = response.data.netid;
     return response.data;
     }

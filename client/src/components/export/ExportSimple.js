@@ -16,12 +16,12 @@ class ExportSimple extends Component {
       data: [],
       fileTitle: ""
     };
+
   }
 
 
   onExportSimpleClick(e){
     e.preventDefault();
-    console.log("this is the fileTitle"+this.props.fileTitle);
     
     switch(this.props.fileTitle){
       case ("skus"):
@@ -54,7 +54,6 @@ return (
             <div className = "exportbutton hoverable"
               onClick={this.onExportSimpleClick}
               primary={true}
-              disabled = {this.props.disabled}
             >
               {this.props.name || 'Export'}
             </div>
@@ -64,7 +63,8 @@ return (
 ExportSimple.propTypes = {
   exportSKUS:PropTypes.func.isRequired,
   exportIngredients:PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  disabled: PropTypes.string
 };
 const mapStateToProps = state => ({
   auth: state.auth

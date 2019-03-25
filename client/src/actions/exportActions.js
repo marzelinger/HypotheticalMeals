@@ -476,7 +476,6 @@ export const exportReportFormulas = (addedLabel, updatedLabel, ignoredLabel,adde
 }
 
 export const exportImportReport = (added_items, updated_items, ignored_items, fileType)  => {
-    //console.log("in this exportImport file");
     var addedLabel = [];
     addedLabel.push("Added "+ fileType);
     var updatedLabel = [];
@@ -513,7 +512,6 @@ export const exportImportReport = (added_items, updated_items, ignored_items, fi
 }
 
 export const exportSalesReport = (dataIN, fileTitle) => {
-    console.log('yo')
     var count = dataIN.length;
     const rows = [];
     var label = [];

@@ -49,9 +49,11 @@ export const exportGeneralReport = (dataIN, fileTitle)  => {
         var cur_pl_row = dataIN[pl];
         var cur_pl = cur_pl_row.prod_line;
         var cur_ten_yr_data = cur_pl_row.tenYRSKUdata;
-
-        rows.push()
-
+        //add the pl header and name
+        var plName = [];
+        plName.push(cur_pl.name);
+        rows.push(plHeader);
+        rows.push(plName);
         var cur_skus = cur_pl_row.tenYRSKUdata.skus;
         for(let s = 0; s<cur_skus.length; s++){
             var cur_sku_row = cur_pl_row.tenYRSKUdata.skus[s];
@@ -59,59 +61,49 @@ export const exportGeneralReport = (dataIN, fileTitle)  => {
             var cur_sku_data = cur_sku_row.skuData;
             var cur_sku_totals = cur_sku_row.totalData;
 
+            //push the sku header
+            rows.push(sku_header);
+            //push the sku info
+            var sku_line = [];
+            sku_line.push(cur_sku.num);
+            sku_line.push(cur_sku.name);
+            sku_line.push(cur_sku.case_upc);
+            sku_line.push(cur_sku.unit_upc);
+            sku_line.push(cur_sku.unit_size);
+            sku_line.push(cur_sku.cpc);
+            sku_line.push(cur_sku.setup_cost);
+            sku_line.push(cur_sku.run_cpc);
+            rows.push(sku_line);
+            //push records header
+            rows.push(records_header);
+            for (let y = 0; y<cur_sku_data.length; y++){
+                var cur_yr = cur_sku_data[y].yr;
+                var cur_sales_data = cur_sku_data[y].salesData;
+                var cur_rev_rounded = cur_sales_data.rev_round;
+                var avg_rev_per_case_round = cur_sales_data.avg_rev_per_case_round;
+                var record_line = [];
+                record_line.push(cur_yr);
+                record_line.push(cur_rev_rounded);
+                record_line.push(avg_rev_per_case_round);
+                rows.push(record_line);
 
-            // var dataLine = [];
-            // dataLine.push(curData.num);
-            // dataLine.push(curData.name);
-            // dataLine.push(curData.case_upc);
-            // dataLine.push(curData.unit_upc);
-            // dataLine.push(curData.unit_size);
-            // dataLine.push(curData.cpc);
-            // dataLine.push(curData.prod_line.name);
-            // dataLine.push(curData.comment);
-            // rows.push(dataLine);
+            }
 
-
-
-
-
-
-
-
-
-
-
-
-
+            rows.push(totals_header);
+            var tot_line = [];
+            tot_line.push(cur_sku_totals.sum_yearly_rev);
+            tot_line.push(cur_sku_totals.avg_manu_run_size);
+            tot_line.push(cur_sku_totals.ingr_cost_per_case);
+            tot_line.push(cur_sku_totals.avg_manu_setup_cost_per_case);
+            tot_line.push(cur_sku_totals.manu_run_cost_per_case);
+            tot_line.push(cur_sku_totals.total_COGS_per_case);
+            tot_line.push(cur_sku_totals.avg_rev_per_case);
+            tot_line.push(cur_sku_totals.avg_profit_per_case);
+            tot_line.push(cur_sku_totals.profit_marg);
+            rows.push(tot_line);
         }
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
-    // rows.push(label);
-    // for(let i = 0; i<count ; i++){
-    //     var curData = dataIN[i];
-    //     var dataLine = [];
-    //     dataLine.push(curData.num);
-    //     dataLine.push(curData.name);
-    //     dataLine.push(curData.case_upc);
-    //     dataLine.push(curData.unit_upc);
-    //     dataLine.push(curData.unit_size);
-    //     dataLine.push(curData.cpc);
-    //     dataLine.push(curData.prod_line.name);
-    //     dataLine.push(curData.comment);
-    //     rows.push(dataLine);
-    // }    
+ 
     let csvContent = "";
     rows.forEach(function(rowArray){
         let row = rowArray.join(",");

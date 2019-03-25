@@ -34,8 +34,8 @@ export default class ProductLineSelectSalesReport extends React.Component {
             table_columns,
             table_properties,
             table_options,
-            selected_items: [],
-            selected_indexes: [],
+            selected_items: Object.assign([], props.prod_lines),
+            selected_indexes: Object.assign([], props.prod_lines_indices),
             detail_view_item: {},
             detail_view_formula_item: {},
             detail_view_options: [],
@@ -224,7 +224,7 @@ export default class ProductLineSelectSalesReport extends React.Component {
             }
             await this.setState({selected_items: this.state.data, selected_indexes: indexes});
             // console.log("this is the selected prodlines2: "+JSON.stringify(this.state.selected_items));
-            this.props.handleSelectProdLines(this.state.selected_items);
+            this.props.handleSelectProdLines(this.state.selected_items, this.state.selected_indexes);
             return;
         }
         else if(rowIndexes == 'none'){
@@ -236,7 +236,7 @@ export default class ProductLineSelectSalesReport extends React.Component {
             newState.push(this.state.data[index]);
         });
         await this.setState({ selected_items: newState, selected_indexes: rowIndexes});
-        this.props.handleSelectProdLines(this.state.selected_items);
+        this.props.handleSelectProdLines(this.state.selected_items, this.state.selected_indexes);
         // console.log("this is the selected prodlines: "+JSON.stringify(this.state.selected_items));
     };
 
@@ -298,5 +298,7 @@ export default class ProductLineSelectSalesReport extends React.Component {
 
 ProductLineSelectSalesReport.propTypes = {
     handleSelectProdLines: PropTypes.func,
-    simple: PropTypes.bool
+    simple: PropTypes.bool,
+    prod_lines: PropTypes.arrayOf(PropTypes.object),
+    prod_lines_indices: PropTypes.arrayOf(PropTypes.number)
 }
