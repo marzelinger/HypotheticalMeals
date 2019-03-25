@@ -375,9 +375,9 @@ export default class SKUDetails extends React.Component {
 
         if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.state.item, formulaItemToSubmit, opt)
         else {
-            if (inv.includes('case_upc') && this.state.item['case_upc'].length > 11)
+            if (inv.includes('case_upc_num') && !inv.includes('case_upc') && this.state.item['case_upc'].length > 11)
                 alert_string += '\nTry Case UPC: ' + CheckDigit.apply(this.state.item['case_upc'].slice(0,11));
-            if (inv.includes('unit_upc') && this.state.item['unit_upc'].length > 11)
+            if (inv.includes('unit_upc_num') && !inv.includes('unit_upc') && this.state.item['unit_upc'].length > 11)
                 alert_string += '\nTry Unit UPC: ' + CheckDigit.apply(this.state.item['unit_upc'].slice(0,11));
             if (inv.includes('formula_name') && opt == Constants.details_create)
                 alert_string += '\n You must select or create a formula when creating a SKU.';
@@ -408,20 +408,25 @@ export default class SKUDetails extends React.Component {
 
     }
 
+    isNewSku(prop) {
+        if (prop !== 'num') {
+            return true
+        }
+        if (this.props.detail_view_options.includes(Constants.details_create)){
+            return true
+        }
+        return false
+    }
+
 
     async validateInputs() { 
         var inv_in = [];
         this.state.item_properties.map(prop => {
-            console.log(this.state.item);
-            console.log(prop);
-            console.log(this.state.item[prop]);
             if (!this.state.item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
-            console.log("adding stuff here.......AAAAA");
         })
         if (this.state.prod_line_item.name === undefined) inv_in.push('prod_line');
-        if (!CheckDigit.isValid(this.state.item['case_upc'])) inv_in.push('case_upc');
-        if (!CheckDigit.isValid(this.state.item['unit_upc'])) inv_in.push('unit_upc');
-        console.log(inv_in)
+        if (!CheckDigit.isValid(this.state.item['case_upc'])) inv_in.push('case_upc_num');
+        if (!CheckDigit.isValid(this.state.item['unit_upc'])) inv_in.push('unit_upc_num');
 
         this.state.formProps.item_properties.map(prop => {
             if (!this.state.formula_item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push("formula_"+prop);
@@ -442,7 +447,7 @@ export default class SKUDetails extends React.Component {
                         value={ this.state.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
                         onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
-                        disabled = {(currentUserIsAdmin().isValid) ? "" : "disabled"}
+                        disabled = {(currentUserIsAdmin().isValid) && this.isNewSku(prop) ? "" : "disabled"}
                    />
                 </FormGroup>
             )

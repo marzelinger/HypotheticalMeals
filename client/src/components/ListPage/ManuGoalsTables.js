@@ -17,7 +17,7 @@ export default class ManuGoalsTables extends React.Component {
         super(props);
         this.state = {
             page_title: 'SKUs',
-            table_columns: ['Name', 'Number', 'Unit Size', 'Count per Case', 'Quantity', 'Manufacturing Rate'],
+            table_columns: ['Name', 'SKU#', 'Unit Size', 'Count per Case', 'Quantity', 'Manufacturing Rate'],
             table_properties: ['name', 'num', 'unit_size', 'cpc', 'quantity', 'manu_rate'],
             data: this.props.activities,
             error: null,
