@@ -130,3 +130,4 @@ export const modify_formula_label = 'Modify Formula'
 
 
 export const gen_report_no_prod_line_selected = "Please select a product line to create a summary sales report!"
+export const sku_dependency_exists = "This manufacturing line cannot be deleted because the following sku(s) are dependent on it: "

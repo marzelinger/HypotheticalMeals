@@ -13,6 +13,7 @@ import ItemStore from '../../../helpers/ItemStore';
 import addButton from '../../../resources/add.png';
 import SimpleLineTable from './SimpleLineTable';
 import ItemSearchModifyListQuantity from '../../ListPage/ItemSearchModifyListQuantity';
+// import { constants } from 'http2';
 
 export default class ManufacturingLineDetails extends React.Component {
     constructor(props) {
@@ -91,18 +92,26 @@ export default class ManufacturingLineDetails extends React.Component {
     }
 
     async removeSku(item, value) {
+        console.log("deleting sku");
         let ind = -1;
         item.skus.map((sku, index) => {
+            console.log("here is the sku: "+JSON.stringify(sku));
             if (sku._id === value._id)
                 ind = index;
+                console.log("here is the ind: "+JSON.stringify(ind));
+
         });
         if (ind > -1) {
             item.skus.splice(ind,1);
+            console.log("this is the itme skus: "+JSON.stringify(item.skus));
+            // var skus_to_delete = [];
+            // skus_to_delete.push()
         }
         await this.setState({ item: item })
     }
 
     async addSku(item, value) {
+        console.log("adding sku");
         let ind = -1;
         item.skus.map((sku, index) => {
             if (sku._id === value._id)
@@ -117,24 +126,63 @@ export default class ManufacturingLineDetails extends React.Component {
         await this.setState({ item: item })
     }
 
+    async checkSKUsManuLinesBeforeDelete(){
+        //go through skus, if any of them only have that manu line, cannot delete
+        var depend_skus = [];
+        if(this.state.item.skus!=undefined){
+            for(let s = 0; s<this.state.item.skus.length; s++){
+                var curSKU = this.state.item.skus[s];
+                if(curSKU.manu_lines!=undefined){
+                    if(curSKU.manu_lines.includes(this.state.item._id)){
+                        if(curSKU.manu_lines.length==1){
+                            //this is the only manu line the sku has, cannot be deleted.
+                            depend_skus.push(curSKU.name);
+                        }
+                    }
+                }
+            }
+        }
+        if(depend_skus.length!=0){
+            alert(Constants.sku_dependency_exists+JSON.stringify(depend_skus));
+            return {error: true};
+        }
+        else{
+            return {error: false};
+        }
+
+    }
     async handleSubmit(e, opt) {
-        if (![Constants.details_save, Constants.details_create].includes(opt)) {
+        if (![Constants.details_save, Constants.details_create, Constants.details_delete].includes(opt)) {
             if(this.props.handleDetailViewSubmit(e, this.state.item, opt)){
+                //TODO CHECK IF YOU CAN DELETE THIS.
                 await this.setState({modal: false})
             };
             return;
         }
-        await this.validateInputs();
-        let alert_string = 'Invalid Fields';
-        let inv = this.state.invalid_inputs;
-        if (inv.length === 0) {
-            if(this.props.handleDetailViewSubmit(e, this.state.item, opt)){
-                await this.setState({modal: false})
+        if([Constants.details_delete].includes(opt)){
+            //go through the skus and make sure that can't delete one if the skus.
+            var res = await this.checkSKUsManuLinesBeforeDelete();
+            if(!res.error){
+                if(this.props.handleDetailViewSubmit(e, this.state.item, opt)){
+                    //TODO CHECK IF YOU CAN DELETE THIS.
+                    await this.setState({modal: false})
+                };
+                return;
             }
         }
-        else {
-            alert(alert_string);
-        } 
+        else{
+            await this.validateInputs();
+            let alert_string = 'Invalid Fields';
+            let inv = this.state.invalid_inputs;
+            if (inv.length === 0) {
+                if(this.props.handleDetailViewSubmit(e, this.state.item, opt)){
+                    await this.setState({modal: false})
+                }
+            }
+            else {
+                alert(alert_string);
+            } 
+        }
     }
 
     async validateInputs() { 
@@ -198,13 +246,13 @@ export default class ManufacturingLineDetails extends React.Component {
                 </div>
                 <div className='item-properties'>
                     { this.injectProperties() }
-                    <ItemSearchModifyListQuantity
+                    {/* <ItemSearchModifyListQuantity
                         api_route={Constants.skus_page_name}
                         item_type={Constants.details_modify_skus}
                         options={[Constants.details_add, Constants.details_remove]}
                         handleModifyList={this.onModifyList}
                         qty_disable = {true}
-                    />
+                    /> */}
                     <SimpleLineTable skus = {this.state.item.skus} >
                     </SimpleLineTable>
                 </div>

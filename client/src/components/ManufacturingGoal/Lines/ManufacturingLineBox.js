@@ -166,6 +166,8 @@ export default class ManufacturingLinesBox extends Component {
 }
 
   async updateSKUManuLines(manu_line){
+    //need to check that the skus are not deleted. from the manu line if it was the only sku the manuline had.
+    
     if(this.state.skus!=undefined){
       //need to go into these skus and add this manu_line
       for(let s = 0; s<this.state.skus.length; s++){
@@ -200,13 +202,19 @@ export default class ManufacturingLinesBox extends Component {
     console.log("this is the updateid; "+updateId);
     let res = await SubmitRequest.submitUpdateItem(Constants.manu_line_page_name, item);
     
-    //updateSKUManuLines TODO
     if (!res.success) {
-      this.setState({ error: res.error});
+      this.setState({ error: res.error });
     }
     else {
-      this.setState({ name: '', error: null })
-    }
+      console.log("this is res. "+JSON.stringify(res));
+      var updateRes = await this.updateSKUManuLines(res.data);
+      if(!updateRes.success){
+        this.setState({ error: updateRes.error });
+      }
+      else{
+        this.setState({ name: '', error: null });
+      }
+    }  
   }
 
 
@@ -256,6 +264,7 @@ export default class ManufacturingLinesBox extends Component {
     if(currentUserIsAdmin().isValid){
         await this.setState({ 
         selected_manu_line: item,
+        previous_skus: item.skus,
         details_modal: true,
         detail_view_action: Constants.details_edit,
         detail_view_options: [Constants.details_save, Constants.details_cancel]
@@ -266,6 +275,7 @@ export default class ManufacturingLinesBox extends Component {
     else{
         await this.setState({ 
             selected_manu_line: item,
+            previous_skus: item.skus,
             details_modal: true,
             detail_view_action: Constants.details_view,
             detail_view_options: [Constants.details_exit]
