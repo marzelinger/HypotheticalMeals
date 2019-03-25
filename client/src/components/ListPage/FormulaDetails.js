@@ -309,7 +309,7 @@ export default class FormulaDetails extends React.Component {
                     handlePropChange={this.onPropChange}
                     disabled={currentUserIsAdmin().isValid ? false : true}
                 />
-                <DetailsViewSkuTable id='2' formula={this.props.item}/>
+                <DetailsViewSkuTable id='2' formula={this.state.item}/>
 
                 
             </div>

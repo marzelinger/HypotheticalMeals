@@ -248,7 +248,7 @@ export default class FormulasPage extends React.Component {
                 detail_view_options: [Constants.details_exit]
                 });
         }
-        this.toggle(Constants.details_modal);
+        this.toggle();
     };
 
     async onDetailViewSubmit(event, item, option) {

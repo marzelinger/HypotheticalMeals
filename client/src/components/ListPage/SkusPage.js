@@ -116,7 +116,7 @@ export default class ListPage extends React.Component {
         if (this.props.default_ing_filter !== undefined){
             await this.onFilterValueSelection([{ value: { _id : this.props.default_ing_filter._id }}], null, 'ingredients');
         }
-        if( this.props.default_formula_filter !== undefined){
+        if(this.props.default_formula_filter !== undefined){
             await this.onFilterValueSelection([{ value: { _id : this.props.default_formula_filter._id }}], null, 'formula');
         }
         // var now = new Date();
@@ -146,9 +146,8 @@ export default class ListPage extends React.Component {
         var final_ing_filter = this.state.filters['ingredients'].join(',');
         var final_keyword_filter = this.state.filters['keyword'];
         var final_prod_line_filter = this.state.filters['products'].join(',');
-        console.log(final_prod_line_filter);
         var final_formula_filter = this.state.filters['formula'].join(',');
-        console.log(final_formula_filter);
+        console.log("final formula filter is" + final_formula_filter);
         //Check how the filter state is being set 
         if (final_ing_filter === '') final_ing_filter = '_';
         if (final_keyword_filter === '') final_keyword_filter = '_';
@@ -241,10 +240,12 @@ export default class ListPage extends React.Component {
     }
 
     onFilterValueSelection (vals, e, type)  {
+        console.log(vals);
         var filters = this.state.filters;
         filters[type] = []
         vals.map((item) => {
             filters[type].push(item.value._id);
+            console.log("the item is" + JSON.stringify(item));
         })
         this.setState({
             filters: filters,
