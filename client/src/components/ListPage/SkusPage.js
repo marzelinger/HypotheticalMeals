@@ -96,6 +96,11 @@ export default class ListPage extends React.Component {
     toggle = (modalType) => {
         switch(modalType){
             case Constants.details_modal:
+                // if (!this.state.details_modal) {
+                //     if (this.pollInterval) clearInterval(this.pollInterval);
+                //     this.pollInterval = null;
+                // }
+                // else this.pollInterval = setInterval(this.loadDataFromServer, 2000);
                 this.setState({details_modal: !this.state.details_modal})
                 break;
             case Constants.manu_goals_modal:
@@ -116,8 +121,8 @@ export default class ListPage extends React.Component {
     }
     
     componentWillUnmount() {
-        if (this.pollInterval) clearInterval(this.pollInterval);
-        this.pollInterval = null;
+        // if (this.pollInterval) clearInterval(this.pollInterval);
+        // this.pollInterval = null;
     }
 
     async componentDidMount() {
@@ -134,9 +139,9 @@ export default class ListPage extends React.Component {
         // }
         // setTimeout(() => this.updateRecords(), millisTill10);
         await this.loadDataFromServer();
-        if (!this.pollInterval) {
-            this.pollInterval = setInterval(this.loadDataFromServer, 2000);
-        }
+        // if (!this.pollInterval) {
+        //     this.pollInterval = setInterval(this.loadDataFromServer, 2000);
+        // }
     }
 
     async componentDidUpdate (prevProps, prevState) {
