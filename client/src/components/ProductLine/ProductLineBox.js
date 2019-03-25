@@ -20,6 +20,7 @@ class ProductLinesBox extends Component {
     this.onDeleteProdLine = this.onDeleteProdLine.bind(this);
     this.loadProdLinesFromServer = this.loadProdLinesFromServer.bind(this);
     this.submitUpdatedProdLine = this.submitUpdatedProdLine.bind(this);
+    this.handleDetailViewSubmit = this.handleDetailViewSubmit.bind(this);
   }
 
   onChangeText = (e) => {
@@ -55,7 +56,7 @@ class ProductLinesBox extends Component {
   async onDeleteProdLine(id) {
     if(!this.checkValidDelete(id)){
       alert('You cannot delete this product line, it is still used by skus');
-      return;
+      return false;
     }
     const i = this.state.data.findIndex(c => c._id === id);
     let item = this.state.data[i];
@@ -68,7 +69,9 @@ class ProductLinesBox extends Component {
     let res = await SubmitRequest.submitDeleteItem(Constants.prod_line_page_name, item);
     if (!res.success) {
       this.setState({ error: res.error });
+      return false;
     }
+    return true;
   }
 
   submitProdLine = (e) => {
@@ -96,6 +99,7 @@ class ProductLinesBox extends Component {
   async submitUpdatedProdLine() {
     const { name, updateId } = this.state;
     let item = { name, _id: updateId };
+    console.log(name);
     let res = await SubmitRequest.submitUpdateItem(Constants.prod_line_page_name, item);
     if (!res.success) {
       this.setState({ error: res.error});
@@ -148,6 +152,46 @@ class ProductLinesBox extends Component {
     await this.setState({data: prod_lines});
   }
 
+  async handleDetailViewSubmit(event, item, option) {
+    console.log(event)
+    console.log(item)
+    console.log(option)
+    console.log(this.state)
+    var newData = this.state.data;
+    console.log(item);
+    switch (option) {
+        case Constants.details_create:
+            newData.push(item);
+            await this.setState({
+              name: item.name,
+            })
+            this.submitNewProdLine();
+            break;
+        case Constants.details_cancel:
+            break;
+        case Constants.details_exit:
+            break;
+        case Constants.details_save:
+        //update manu line
+          newData.push(item);
+            await this.setState({
+              name: item.name,
+              updateId: item._id
+            })
+            this.submitUpdatedProdLine();
+            break;
+        case Constants.details_delete:
+          return await this.onDeleteProdLine(item._id)
+    }
+      await this.setState({ 
+          data: newData,
+      });
+      this.loadProdLinesFromServer();
+      return true;
+  }
+
+  
+
   render() {
     return (
       <div className="goalsbox">
@@ -157,6 +201,7 @@ class ProductLinesBox extends Component {
             data={this.state.data}
             handleDeleteProdLine={this.onDeleteProdLine}
             handleUpdateProdLine={this.onUpdateProdLine}
+            handleDetailViewSubmit = {this.handleDetailViewSubmit}
           />
         </div>
         <div className="form">

@@ -87,7 +87,14 @@ export default class FormulaDetails extends React.Component {
         let ingr = await SubmitRequest.submitGetIngredientByID(value._id);
         console.log(ingr);
         console.log('gets here');
-        var ingrType = await UnitConversion.getUnitType(qty);
+        var sanitizedUnits = await UnitConversion.getCleanUnitForm(qty);
+
+        if(sanitizedUnits.success == false) {
+            alert("Please enter one of the following units: oz, ounce, lb, pound, ton, g, gram, kilogram, kg, floz, fluidounce, pt, pint, qt, quart, gal, gallon, ml, milliliter, l, liter, ct, count");
+            return;
+        }
+
+        var ingrType = await UnitConversion.getUnitType(sanitizedUnits.data);
         var ingrType2 = await UnitConversion.getUnitType(ingr.data[0].pkg_size);
         console.log("here" + ingrType)
         console.log("here" + ingrType2)
@@ -184,10 +191,17 @@ export default class FormulaDetails extends React.Component {
         let ingr = await SubmitRequest.submitGetIngredientByID(value._id);
         console.log(ingr);
         console.log('gets here');
-        var ingrType = await UnitConversion.getUnitType(qty);
+
+        var sanitizedUnits = await UnitConversion.getCleanUnitForm(qty);
+
+        if(sanitizedUnits.success == false) {
+            alert("Please enter one of the following units: oz, ounce, lb, pound, ton, g, gram, kilogram, kg, floz, fluidounce, pt, pint, qt, quart, gal, gallon, ml, milliliter, l, liter, ct, count");
+            return;
+        }
+
+        var ingrType = await UnitConversion.getUnitType(sanitizedUnits.data);
         var ingrType2 = await UnitConversion.getUnitType(ingr.data[0].pkg_size);
-        console.log("here" + ingrType)
-        console.log("here" + ingrType2)
+
         if(ingrType == -1){
             //TODO: fix this alert message
             alert("Please enter one of the following units: oz, ounce, lb, pound, ton, g, gram, kilogram, kg, floz, fluidounce, pint, pt, quart, qt, gal, gallon, ml, milliliter, l, liter, count, ct");

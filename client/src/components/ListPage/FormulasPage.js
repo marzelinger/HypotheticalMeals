@@ -210,12 +210,16 @@ export default class FormulasPage extends React.Component {
             detail_view_item: item,
             detail_view_options: [Constants.details_create, Constants.details_cancel]
         })
-        this.toggle(Constants.details_modal);
+        this.toggle();
         this.loadDataFromServer();
     }
 
     onTableOptionSelection = async(e, opt) => {
-        this.onCreateNewItem();
+        switch (opt){
+            case Constants.create_item:
+                this.onCreateNewItem();
+                break;
+        }
     }
 
     async onSort(event, sortKey){
@@ -244,7 +248,7 @@ export default class FormulasPage extends React.Component {
                 detail_view_options: [Constants.details_exit]
                 });
         }
-        this.toggle(Constants.details_modal);
+        this.toggle();
     };
 
     async onDetailViewSubmit(event, item, option) {
