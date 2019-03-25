@@ -104,6 +104,8 @@ export const csv_sku_formula = "Formula#";
 export const csv_sku_formula_factor = "Formula factor";
 export const csv_sku_ml = "ML Shortnames";
 export const csv_sku_rate = "Rate";
+export const csv_sku_mfg_setup = "Mfg setup cost"
+export const csv_sku_mfg_run = "Mfg run cost"
 export const csv_sku_comment = "Comment";
 
 export const csv_ingr_num = "Ingr#";

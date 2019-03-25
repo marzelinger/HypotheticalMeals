@@ -14,15 +14,27 @@ import GeneralReport from './GeneralReport';
 import '../../style/SalesReportPageStyle.css'
 
 class SalesReportPage extends React.Component {
-    state = {
-        value: 0,
-        general_report_data: {},
-        general_prod_lines: {},
-        general_customers: {},
-        allCustomers: false,
-        selected_sku: {},
-        selected_customer: {}
-    };
+    constructor(props) {
+        super(props)
+        let today = new Date()
+        today.setTime(today.getTime() - 300*60*1000)
+        let last_year = new Date(today.getTime() - 300*60*1000)
+        last_year.setFullYear(today.getFullYear() - 1)
+
+        this.state = {
+            value: 0,
+            general_report_data: {},
+            general_prod_lines: {},
+            general_customers: {},
+            allCustomers: false,
+            selected_sku: {},
+            general_customer: {},
+            drilldown_customer: {},
+            dateRange: { 'startdate': last_year.toISOString().substr(0,10), 'enddate': today.toISOString().substr(0,10)},
+        }
+
+        this.onDateRangeSelect = this.onDateRangeSelect.bind(this);
+    }
 
     handleChange = (event, value) => {
         console.log(value)
@@ -48,9 +60,23 @@ class SalesReportPage extends React.Component {
             general_customers: gen_customers
         })
     }
-    onSelectCustomer = async (customer) => {
-        await this.setState({ selected_customer: customer })
+
+    onSelectGeneralCustomer = async (customer) => {
+        await this.setState({ general_customer: customer })
     };
+
+    onSelectDrilldownCustomer = async (customer) => {
+        await this.setState({ drilldown_customer: customer })
+    };
+
+    onDateRangeSelect(event, type) {
+        console.log(type)
+        let newRange = Object.assign({}, this.state.dateRange)
+        newRange[type] = event.target.value
+        this.setState({
+            dateRange: newRange
+        })
+    }
 
     render() {
 
@@ -81,9 +107,11 @@ class SalesReportPage extends React.Component {
                         /> : 
                     <SkuDrilldown 
                         sku={this.state.selected_sku}
-                        customer={this.state.selected_customer}
+                        customer={this.state.drilldown_customer}
                         handleSelectSku={this.onSelectSku}
-                        handleSelectCustomer={this.onSelectCustomer}
+                        handleSelectCustomer={this.onSelectDrilldownCustomer}
+                        dateRange={this.state.dateRange}
+                        handleDateRangeSelect={this.onDateRangeSelect}
                     /> 
                 } 
                 {/* first is General, Second is SKU */}

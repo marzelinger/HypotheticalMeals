@@ -66,12 +66,21 @@
     overflow: hidden;
 }
 
-.report-container-general-sku td, .report-container-general-sku th {
+.report-container-general-sku th {
     display: flex;
     justify-content: center;
 }
 
+.report-container-general-total td {
+    display: flex;
+    justify-content: center;
+    font-weight: normal;
+}
 
+.report-container-general-total thead, .report-container-general-total th {
+    display: flex;
+    justify-content: center;
+}
 
 .filter-container{
     display:flex; 
@@ -90,15 +99,16 @@
     align-content: center;
 }
 
-.sku-drilldown-export {
-    align-self: right;
-}
-
 .report-container .export-button .exportbutton {
     margin-left: auto;
     margin-right: 20px;
     margin-top: -10px;
+    margin-bottom: 50px;
     width: 110px;
+}
+
+canvas.canvasjs-chart-canvas {
+    margin-top: 50px;
 }
 
 .sales-item-details .sales-item-properties {

@@ -88,6 +88,7 @@ export default class Filter extends React.Component {
     }
 
     getDetailsPlaceholder = () => {
+        console.log(this.props.place_holder)
         return (this.props.place_holder != undefined ? this.props.place_holder.name : `Add ${this.getLabel(this.props.type)}`);
     }
 
