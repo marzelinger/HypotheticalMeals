@@ -43,7 +43,7 @@ export default class ManufacturingLine extends React.Component{
   }
 
   render() {
-    console.log("this is the manu_line: "+JSON.stringify(this.props.manu_line));
+    // console.log("this is the manu_line: "+JSON.stringify(this.props.manu_line));
     return (
       <div id="singleGoal">
         <div className="textContent">

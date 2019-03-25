@@ -92,18 +92,18 @@ export default class ManufacturingLineDetails extends React.Component {
     }
 
     async removeSku(item, value) {
-        console.log("deleting sku");
+        // console.log("deleting sku");
         let ind = -1;
         item.skus.map((sku, index) => {
-            console.log("here is the sku: "+JSON.stringify(sku));
+            // console.log("here is the sku: "+JSON.stringify(sku));
             if (sku._id === value._id)
                 ind = index;
-                console.log("here is the ind: "+JSON.stringify(ind));
+                // console.log("here is the ind: "+JSON.stringify(ind));
 
         });
         if (ind > -1) {
             item.skus.splice(ind,1);
-            console.log("this is the itme skus: "+JSON.stringify(item.skus));
+            // console.log("this is the itme skus: "+JSON.stringify(item.skus));
             // var skus_to_delete = [];
             // skus_to_delete.push()
         }
@@ -111,7 +111,7 @@ export default class ManufacturingLineDetails extends React.Component {
     }
 
     async addSku(item, value) {
-        console.log("adding sku");
+        // console.log("adding sku");
         let ind = -1;
         item.skus.map((sku, index) => {
             if (sku._id === value._id)
@@ -152,24 +152,24 @@ export default class ManufacturingLineDetails extends React.Component {
 
     }
     async handleSubmit(e, opt) {
-        if (![Constants.details_save, Constants.details_create, Constants.details_delete].includes(opt)) {
+        if (![Constants.details_save, Constants.details_create].includes(opt)) {
             if(this.props.handleDetailViewSubmit(e, this.state.item, opt)){
                 //TODO CHECK IF YOU CAN DELETE THIS.
                 await this.setState({modal: false})
             };
             return;
         }
-        if([Constants.details_delete].includes(opt)){
-            //go through the skus and make sure that can't delete one if the skus.
-            var res = await this.checkSKUsManuLinesBeforeDelete();
-            if(!res.error){
-                if(this.props.handleDetailViewSubmit(e, this.state.item, opt)){
-                    //TODO CHECK IF YOU CAN DELETE THIS.
-                    await this.setState({modal: false})
-                };
-                return;
-            }
-        }
+        // if([Constants.details_delete].includes(opt)){
+        //     //go through the skus and make sure that can't delete one if the skus.
+        //     var res = await this.checkSKUsManuLinesBeforeDelete();
+        //     if(!res.error){
+        //         if(this.props.handleDetailViewSubmit(e, this.state.item, opt)){
+        //             //TODO CHECK IF YOU CAN DELETE THIS.
+        //             await this.setState({modal: false})
+        //         };
+        //         return;
+        //     }
+        // }
         else{
             await this.validateInputs();
             let alert_string = 'Invalid Fields';
@@ -192,7 +192,7 @@ export default class ManufacturingLineDetails extends React.Component {
         })
         if(!inv_in.includes('short_name')){
             let vsm = await this.props.validateShortName(this.state.item.short_name, this.state.item._id);
-            console.log("vsm: "+vsm);
+            // console.log("vsm: "+vsm);
             if(!vsm){
                 inv_in.push('short_name');
             }
@@ -217,12 +217,12 @@ export default class ManufacturingLineDetails extends React.Component {
     }
 
     toggle = async () => {
-        console.log('toggling');
+        // console.log('toggling');
         try{
             var item = this.props.item || await ItemStore.getEmptyItem(Constants.manu_line_page_name);
 
             //var item = await ItemStore.getEmptyItem(Constants.manu_line_page_name);
-            console.log(item);
+            // console.log(item);
             await this.setState({ 
                 modal: !this.state.modal,
                 item: item,
@@ -235,7 +235,7 @@ export default class ManufacturingLineDetails extends React.Component {
       }
 
     render() {
-        console.log("these are the skus: "+JSON.stringify(this.state.item));
+        // console.log("these are the skus: "+JSON.stringify(this.state.item));
         return (
         <div>
         <img id = "buttonline" src={this.props.buttonImage} onClick={this.toggle}></img>
@@ -246,13 +246,13 @@ export default class ManufacturingLineDetails extends React.Component {
                 </div>
                 <div className='item-properties'>
                     { this.injectProperties() }
-                    {/* <ItemSearchModifyListQuantity
+                    <ItemSearchModifyListQuantity
                         api_route={Constants.skus_page_name}
                         item_type={Constants.details_modify_skus}
                         options={[Constants.details_add, Constants.details_remove]}
                         handleModifyList={this.onModifyList}
                         qty_disable = {true}
-                    /> */}
+                    />
                     <SimpleLineTable skus = {this.state.item.skus} >
                     </SimpleLineTable>
                 </div>

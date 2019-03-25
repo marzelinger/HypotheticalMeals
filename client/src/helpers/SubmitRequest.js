@@ -489,7 +489,7 @@ export default class SubmitRequest{
 
 
   static async submitGetSKUsByManuLine(id) {
-    console.log("this is the id: "+id);
+    // console.log("this is the id: "+id);
     try {
       return fetch('/api/skus/manu_line_id/' + id)
       .then(data => data.json())

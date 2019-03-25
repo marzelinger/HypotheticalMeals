@@ -168,7 +168,7 @@ class SkuHandler{
                 path: 'formula',
                 populate: { path: 'ingredients' }
               }).populate('prod_line');
-            if(to_return.length == 0) return res.json({ success: false, error: '404'});
+            //if(to_return.length == 0) return res.json({ success: false, error: '404'});
             return res.json({ success: true, data: to_return});
         } catch (err) {
             console.log(err)
