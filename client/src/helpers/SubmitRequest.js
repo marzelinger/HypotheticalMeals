@@ -507,7 +507,6 @@ export default class SubmitRequest{
 
   static async submitGetManufacturingActivitiesForReport(reportData) {
     try {
-      //console.log("here in the submitrequest for report");
       return fetch(`/api/manuactivities/${reportData.manu_line._id}/${reportData.start_date}/${reportData.end_date}/${reportData.duration}`)
       .then(data => data.json())
       .then((res) => {
