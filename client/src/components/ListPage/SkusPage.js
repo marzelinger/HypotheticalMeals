@@ -79,6 +79,9 @@ export default class ListPage extends React.Component {
                 this.state.user = jwt_decode(localStorage.getItem("jwtToken")).username;
             }
         }
+        this.pollInterval = null;
+
+        this.loadDataFromServer = this.loadDataFromServer.bind(this);
         this.toggle = this.toggle.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onFilterValueChange = this.onFilterValueChange.bind(this);
@@ -111,6 +114,11 @@ export default class ListPage extends React.Component {
                 break;
         }
     }
+    
+    componentWillUnmount() {
+        if (this.pollInterval) clearInterval(this.pollInterval);
+        this.pollInterval = null;
+    }
 
     async componentDidMount() {
         if (this.props.default_ing_filter !== undefined){
@@ -125,7 +133,10 @@ export default class ListPage extends React.Component {
         //     millisTill10 += 86400000; // it's after 10am, try 10am tomorrow.
         // }
         // setTimeout(() => this.updateRecords(), millisTill10);
-        this.loadDataFromServer();
+        await this.loadDataFromServer();
+        if (!this.pollInterval) {
+            this.pollInterval = setInterval(this.loadDataFromServer, 2000);
+        }
     }
 
     async componentDidUpdate (prevProps, prevState) {
@@ -137,7 +148,7 @@ export default class ListPage extends React.Component {
     updateDataState = async () => {
         var {data: ingredients} = await SubmitRequest.submitGetData(Constants.ingredients_page_name);
         var {data: productlines} = await SubmitRequest.submitGetData(Constants.prod_line_page_name);
-        this.setState({ingredients: ingredients, product_lines: productlines});
+        await this.setState({ingredients: ingredients, product_lines: productlines});
     }
 
 
@@ -167,7 +178,7 @@ export default class ListPage extends React.Component {
             exportData: resALL.data,
             filterChange: false
         })
-        this.updateDataState();
+        await this.updateDataState();
     }
 
     async checkCurrentPageInBounds(dataResAll){
