@@ -27,6 +27,7 @@ export default class ScraperHandler{
     static async triggerReset(req, res){
         await Sale_Record.deleteMany({});
         ScraperHandler.resetAllRecords();
+        return res.json({ success: true});
     }
 
     static async resetAllRecords(){
@@ -44,6 +45,7 @@ export default class ScraperHandler{
             // worker.update_sku(sku.num, 'queued');
         });
         process.send(sku_queue);
+        return res.json({ success: true});
         // worker.update_queue(sku_queue);
     }
 
@@ -57,6 +59,12 @@ export default class ScraperHandler{
             // worker.update_sku(target_num, 'queued');
         }
         process.send(sku_queue);
+        try{
+            return res.json({ success: true});
+        }
+        catch(err){
+            return;
+        }
     }
 
     static async bulkUpdateSkus(req, res){
@@ -64,6 +72,7 @@ export default class ScraperHandler{
         target_nums.forEach(num => {
             this.updateNewSku({body: {sku_num: num}}, {});
         })
+        return res.json({ success: true, data: target_nums});
     }
     static async updateStatus(sku_num, status){
         let updated_sku = await SKU.findOneAndUpdate({ num : sku_num},
