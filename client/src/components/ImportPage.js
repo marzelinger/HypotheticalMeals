@@ -11,6 +11,7 @@ import {exportImportReport} from "../actions/exportActions";
 import GeneralNavBar from './GeneralNavBar';
 import * as Constants from '../resources/Constants';
 import headerTable from './../resources/Headers.PNG';
+import formatListNumbered from 'material-ui/svg-icons/editor/format-list-numbered';
 
 var endpoint = "not specified";
 
@@ -80,6 +81,9 @@ export default class ImportPage extends React.Component {
 
             manu_line_error: false,
             manu_line_name: "",
+
+            missingRequiredField: false,
+            missingRequiredFieldRow: -1,
 
             unknownError: false,
         }
@@ -215,18 +219,11 @@ export default class ImportPage extends React.Component {
                             prod_line_name: res.data.prod_line_name
                         })
                     // Setting state for a formula entry with an invalid SKU #
-                    } else if(typeof res.data.sku_dependency != 'undefined'){
+                    } else if (typeof res.data.missingRequiredField != 'undefined'){
                         this.setState({
-                            sku_dependency: true,
-                            dependency_row: res.data.sku_dependency,
+                            missingRequiredField: true,
+                            missingRequiredFieldRow: res.data.missingRequiredField,
                         })
-                    // Setting state for a formula entry with an invalid Ingr #
-                    } else if(typeof res.data.ingr_dependency != 'undefined'){
-                        this.setState({
-                            ingr_dependency: true,
-                            dependency_row: res.data.ingr_dependency,
-                        })
-                    // Setting state for the update table from a SKU import
                     } else if(typeof res.data.badData != 'undefined'){
                         this.setState({
                             badData: true,
@@ -515,6 +512,9 @@ export default class ImportPage extends React.Component {
             manu_line_error: false,
             manu_line_name: "",
 
+            missingRequiredField: false,
+            missingRequiredFieldRow: -1,
+
             unknownError: false,
         })
     }
@@ -624,9 +624,11 @@ export default class ImportPage extends React.Component {
                     The formula specified in row {this.state.rowIssue} is not the first occurence in the CSV and should not have a comment
                 </Alert>
 
-                <Alert color="danger" isOpen={this.state.ingr_duplicate} toggle={this.resetState}>
-                    Ingredient # {this.state.ingr_dup_num} is specified more than once for Formula # {this.state.formula_num}
+                <Alert color="danger" isOpen={this.state.missingRequiredField} toggle={this.resetState}>
+                    The entry in row {this.state.missingRequiredFieldRow} is missing a required field
                 </Alert>
+
+
                 
 
                 {this.state.showUpdateTable && <ImportTable
