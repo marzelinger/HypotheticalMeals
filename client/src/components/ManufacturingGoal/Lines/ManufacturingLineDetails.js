@@ -92,6 +92,7 @@ export default class ManufacturingLineDetails extends React.Component {
     }
 
     async removeSku(item, value) {
+        
         // console.log("deleting sku");
         let ind = -1;
         item.skus.map((sku, index) => {

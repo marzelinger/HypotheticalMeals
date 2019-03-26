@@ -162,10 +162,10 @@ class Manu_ActivityHandler{
                 path: 'sku',
                 populate: { path: 'formula', populate: {path: 'ingredients'} }
             });
-            if(to_return.length == 0) {
-                return res.json({success: false, error: '404'});
-            }
-            else{
+            // if(to_return.length == 0) {
+            //     return res.json({success: false, error: '404'});
+            // }
+            // else{
                 //to-return is the activities with starts between the start and end date.
                 //go through each of these activities and if the start+duration of activity is less than our end,
                 //classified as a good activity
@@ -188,48 +188,138 @@ class Manu_ActivityHandler{
                     var diffStart = startAct-startRep; //should be positive
                     var diffEnd = endRep-endAct; //the endRep should be greater than end of activity so should be positive
 
+                    //if the startAct greater than the end Rep --> should not be included
+                    //if the start report greater than end act --> should not be included.
+
+                    //if start Act greater than start rep and end act less than end rep : complete
+                    //if start act less than start report and end act greater than end rep: all sides cut
+                    //if start act less than start report and endt act less than end rep: beginning cut
+                    //if start act greater than start report and end act greater than end rep: end cut
+                    //startAct<startRep && endAct=<endRep: beg cut 
+                    //startAct<startRep && endAct>endRep: beg cut, end cut
+                    //startAct>=startRep && endAct=<endRep: complete
+                    //startAct>=startRep && endAct>endRep: end cut
                     console.log("START_REP: "+startRep);
                     console.log("END_REP: "+endRep);
                     console.log("START_ACT: "+startAct);
                     console.log("END_ACT: "+endAct);
-
-                    if(diffEnd>=0 && diffStart>=0){
-                        //this is a valid activity.
-                        //the start is greater than the rep
-                        //the end is less than the rep
-                        console.log("comp");
-                        complete_activities.push(curAct);
-
+                    console.log("COMPLETE: startAct>=startRep && endAct<=endRep"+ startAct>=startRep && endAct<=endRep);
+                    console.log("COMPLETE: startAct>=startRep && endAct<=endRep"+ startAct>=startRep && endAct<=endRep);
+                    
+                    //SOMETHING WRONG IN END CUT
+                    if(endAct<=startRep){
+                        //this activity shouldn't be anywhere. happens before schedule.
                         continue;
                     }
-                    else if(diffEnd<0 && diffStart<0){
-                        //this activity is larger than the span
-                        console.log("all");
-
-                        all_cut.push(curAct);
-                        // console.log("allcut: "+all_cut.length);
-
+                    else if(startAct>=endRep){
+                        //this activity shouldn't be anywhere. happends after schedule.
                         continue;
                     }
-                    else if(diffEnd<0 && diffStart>=0){
-                        // activity starts after report
-                        //but tail cuttoff
-                        console.log("end");
+                    else if(startAct>=startRep){
+                        //The activity ends after the start of the report
+                        //which is good
+                        if(endAct<=endRep){
+                            //activity ends before report ends
+                            //complete here
+                            console.log("comp");
+                            complete_activities.push(curAct);
+    
+                            continue;
 
-                        ending_cut.push(curAct);
-                        // console.log("ending: "+ending_cut.length);
+                        }
+                        else if(endAct>endRep){
+                            //the activity ends after the report
+                            //end cut
+                            console.log("end");
 
-                        continue;
+                            ending_cut.push(curAct);
+                            // console.log("ending: "+ending_cut.length);
+                        }
                     }
-                    else if(diffEnd>=0 && diffStart<0){
-                        //activity starts before report,
-                        //front cut
-                        console.log("beg");
+                    else if(startAct<startRep){
+                        //the activity starts before the report does. bad
+                        if(endAct<=endRep){
+                            //the activity ends before report ends
+                            //beginning cut
+                            console.log("beg");
 
-                        beginning_cut.push(curAct);
-                        // console.log("begginging: "+beginning_cut.length);
-                        continue;
+                            beginning_cut.push(curAct);
+                            // console.log("begginging: "+beginning_cut.length);
+                            continue;
+                        }
+                        else if(endAct>endRep){
+                            //the activity ends after the report
+                            //all cut
+                                                   //this activity is larger than the span
+                            console.log("all");
+
+                            all_cut.push(curAct);
+                            // console.log("allcut: "+all_cut.length);
+
+                            continue;
+                        }
                     }
+
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    // if(diffEnd>=0 && diffStart>=0){
+                    // // else if(startAct>=startRep && endAct<=endRep){
+
+                    //     //this is a valid activity.
+                    //     //the start is greater than the rep
+                    //     //the end is less than the rep
+                    //     console.log("comp");
+                    //     complete_activities.push(curAct);
+
+                    //     continue;
+                    // }
+                    // else if(diffEnd<0 && diffStart<0){
+                    // // else if(startAct<startRep && endAct>endRep){
+
+                    //     //this activity is larger than the span
+                    //     console.log("all");
+
+                    //     all_cut.push(curAct);
+                    //     // console.log("allcut: "+all_cut.length);
+
+                    //     continue;
+                    // }
+                    // else if(diffEnd<0 && diffStart>=0){
+                    // // else if(startAct>=startRep && endAct>endRep){
+
+                    //     // activity starts after report
+                    //     //but tail cuttoff
+                    //     console.log("end");
+
+                    //     ending_cut.push(curAct);
+                    //     // console.log("ending: "+ending_cut.length);
+
+                    //     continue;
+                    // }
+                    // else if(diffEnd>=0 && diffStart<0){
+                    // //var diffStart = startAct-startRep; //should be positive
+                    // // var diffEnd = endRep-endAct;
+                    // // else if(startAct<startRep && endAct<=endRep){
+                    //     //activity starts before report,
+                    //     //front cut
+                    //     console.log("beg");
+
+                    //     beginning_cut.push(curAct);
+                    //     // console.log("begginging: "+beginning_cut.length);
+                    //     continue;
+                    // }
+                    // // else if(startAct>endRep || startRep>EndAct){
+                    // //     //this activity should not be included.
+                    // //     complete_activities.push({});
+                    // //     continue;
+                    // // }
                 }
 
             return res.json({ success: true, data: 
@@ -239,8 +329,7 @@ class Manu_ActivityHandler{
                         all_cut:all_cut
                     }
                     });
-        }
-            
+        //}          
     } 
     catch (err){
             return res.json({ success: false, error: err});   
