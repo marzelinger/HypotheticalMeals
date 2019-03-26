@@ -380,9 +380,15 @@ export default class SKUDetails extends React.Component {
             if (inv.includes('unit_upc_num') && !inv.includes('unit_upc') && this.state.item['unit_upc'].length > 11)
                 alert_string += '\nTry Unit UPC: ' + CheckDigit.apply(this.state.item['unit_upc'].slice(0,11));
             if (inv.includes('formula_name') && opt == Constants.details_create)
-                alert_string += '\n You must select or create a formula when creating a SKU.';
+                alert_string += '\nYou must select or create a formula when creating a SKU.';
             if (inv.includes('formula_name_length'))
-                alert_string += '\n The formula name cannot be longer than 32 characters.';
+                alert_string += '\nThe formula name cannot be longer than 32 characters.';
+            if (inv.includes('formula_name_length_short'))
+                alert_string += '\nThe formula name must have at least one character';
+            if (inv.includes('setup_cost'))
+                alert_string += '\nThe setup cost must be a valid currency expression (i.e. 5.00, 2.44, 4.33, 5, 12)';
+            if (inv.includes('run_cpc'))
+                alert_string += '\nThe run cost must be a valid currency expression (i.e. 5.00, 2.44, 4.33, 5, 12)';
             alert(alert_string);
         } 
     }
@@ -433,6 +439,15 @@ export default class SKUDetails extends React.Component {
         })
         if (this.state.formula_item.name === undefined) inv_in.push('formula');
         if (this.state.formula_item['name'].length > 32) inv_in.push('formula_name_length');
+        if (this.state.formula_item['name'].length == 0) inv_in.push('formula_name_length_short');
+
+        /*console.log(this.state.item);
+        console.log(/^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/.test(this.state.item['setup_cost']));
+        if ( !(/^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/.test(this.state.item['setup_cost']) )) {
+            console.log('gets here2323');
+            inv_in.push('setup_cost');
+        }
+        if ( !(/^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/.test(this.state.item['run_cpc'])) ) inv_in.push('run_cpc');*/
 
         await this.setState({ invalid_inputs: inv_in });
     }

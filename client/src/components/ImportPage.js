@@ -63,18 +63,13 @@ export default class ImportPage extends React.Component {
             update_list_ignores: [],
 
             aborted: false,
-            sku_dependency: false,
-            ingr_dependency: false,
-            dependency_row: -1,
 
             badData: false,
             incompleteEntry: false,
-            badDataRow: -1,
 
             formula_comment: false,
-            ingr_duplicate: false,
-            ingr_dup_num: -1,
-            formula_num: -1,
+            ingredient_duplicate: false,
+            ingredient_duplicate_num: -1,
 
             sku_formula_num: -1,
             sku_formula_error: false,
@@ -83,7 +78,22 @@ export default class ImportPage extends React.Component {
             manu_line_name: "",
 
             missingRequiredField: false,
-            missingRequiredFieldRow: -1,
+            skuNameIssue: false,
+            skuNumIssue: false,
+            caseUPCIssue: false,
+            unitUPCIssue: false,
+            cpcIssue: false,
+            mfgRunIssue: false,
+            mfgSetupIssue: false,
+            ingrNumIssue: false,
+            ingrCostIssue: false,
+            ingrUnitIssue: false,
+            formulaNumIssue: false,
+            formulaNameIssue: false,
+            formulaIngrIssue: false,
+            formulaUnitIssue: false,
+            formulaFactorIssue: false,
+            mfgRateIssue: false,
 
             unknownError: false,
         }
@@ -162,13 +172,108 @@ export default class ImportPage extends React.Component {
                             formula_comment: true,
                             rowIssue: res.data.formula_comment
                         });
+                    } 
+                    else if(typeof res.data.skuNameIssue != 'undefined'){
+                        this.setState({
+                            skuNameIssue: true,
+                            rowIssue: res.data.skuNameIssue
+                        })
+                    }
+                    else if(typeof res.data.skuNumIssue != 'undefined'){
+                        this.setState({
+                            skuNumIssue: true,
+                            rowIssue: res.data.skuNumIssue,
+                        })
+                    }
+                    else if(typeof res.data.caseUPCIssue != 'undefined'){
+                        this.setState({
+                            caseUPCIssue: true,
+                            rowIssue: res.data.caseUPCIssue
+                        })
+                    }
+                    else if(typeof res.data.unitUPCIssue != 'undefined'){
+                        this.setState({
+                            unitUPCIssue: true,
+                            rowIssue: res.data.unitUPCIssue
+                        })
+                    }
+                    else if(typeof res.data.cpcIssue != 'undefined'){
+                        this.setState({
+                            cpcIssue: true,
+                            rowIssue: res.data.cpcIssue
+                        })
+                    }
+                    else if(typeof res.data.mfgRunIssue != 'undefined'){
+                        this.setState({
+                            mfgRunIssue: true,
+                            rowIssue: res.data.mfgRunIssue
+                        })
+                    }
+                    else if(typeof res.data.mfgSetupIssue != 'undefined'){
+                        this.setState({
+                            mfgSetupIssue: true,
+                            rowIssue: res.data.mfgSetupIssue
+                        })
+                    }
+                    else if(typeof res.data.ingrNumIssue != 'undefined'){
+                        this.setState({
+                            ingrNumIssue: true,
+                            rowIssue: res.data.ingrNumIssue
+                        })
+                    }
+                    else if(typeof res.data.ingrCostIssue != 'undefined'){
+                        this.setState({
+                            ingrCostIssue: true,
+                            rowIssue: res.data.ingrCostIssue
+                        })
+                    }
+                    else if(typeof res.data.formulaNumIssue != 'undefined'){
+                        this.setState({
+                            formulaNumIssue: true,
+                            rowIssue: res.data.formulaNumIssue
+                        })
+                    }
+                    else if(typeof res.data.formulaNameIssue != 'undefined'){
+                        this.setState({
+                            formulaNameIssue: true,
+                            rowIssue: res.data.formulaNameIssue
+                        })
+                    }
+                    else if(typeof res.data.formulaIngrIssue != 'undefined'){
+                        this.setState({
+                            formulaIngrIssue: true,
+                            rowIssue: res.data.formulaIngrIssue
+                        })
+                    }
+                    else if(typeof res.data.formulaUnitIssue != 'undefined'){
+                        this.setState({
+                            formulaUnitIssue: true,
+                            rowIssue: res.data.formulaUnitIssue
+                        })
+                    }
+                    else if(typeof res.data.formulaFactorIssue != 'undefined'){
+                        this.setState({
+                            formulaFactorIssue: true,
+                            rowIssue: res.data.formulaFactorIssue,
+                        })
+                    }
+                    else if(typeof res.data.mfgRateIssue != 'undefined'){
+                        this.setState({
+                            mfgRateIssue: true,
+                            rowIssue: res.data.mfgRateIssue
+                        })
+                    }
+                    else if(typeof res.data.ingrUnitIssue != 'undefined'){
+                        this.setState({
+                            ingrUnitIssue: true,
+                            rowIssue: res.data.ingrUnitIssue
+                        })
                     }
                     else if(typeof res.data.ingredient_duplicate != 'undefined'){
                         this.setState({
-                            ingr_duplicate: true,
+                            ingredient_duplicate: true,
                             rowIssue: res.data.ingredient_duplicate,
-                            ingr_dup_num: res.data.ingredient_num,
-                            formula_num: res.data.formula_num
+                            ingredient_duplicate_num: res.data.ingredient_num,
                         })
                     }
                     else if(typeof res.data.duplicate != 'undefined'){
@@ -191,7 +296,7 @@ export default class ImportPage extends React.Component {
                             requiredHeaders: res.data.requiredFields
                         })
                     }
-                    else if(typeof res.data.error == "Catch all error"){
+                    else if(typeof res.data.error != 'undefined' && res.data.error == "Catch all error"){
                         this.setState({
                             unknownError: true,
                         })
@@ -222,17 +327,17 @@ export default class ImportPage extends React.Component {
                     } else if (typeof res.data.missingRequiredField != 'undefined'){
                         this.setState({
                             missingRequiredField: true,
-                            missingRequiredFieldRow: res.data.missingRequiredField,
+                            rowIssue: res.data.missingRequiredField,
                         })
                     } else if(typeof res.data.badData != 'undefined'){
                         this.setState({
                             badData: true,
-                            badDataRow: res.data.badData,
+                            rowIssue: res.data.badData,
                         })
                     } else if(typeof res.data.incompleteEntry != 'undefined'){
                         this.setState({
                             incompleteEntry: true,
-                            badDataRow: res.data.incompleteEntry,
+                            rowIssue: res.data.incompleteEntry,
                         })
                     }else if(typeof res.data.old_data != 'undefined' && endpoint == "/api/parseSkus"){
                         this.setState({
@@ -379,7 +484,7 @@ export default class ImportPage extends React.Component {
 
     onDismissBadData = () =>{
         this.setState({
-            badDataRow: -1,
+            rowIssue: -1,
             badData: false,
             incompleteEntry: false,
         })
@@ -492,16 +597,13 @@ export default class ImportPage extends React.Component {
             //update_list_no_collisions: [],
 
             aborted: false,
-            sku_dependency: false,
-            ingr_dependency: false,
             dependency_row: -1,
             badData: false,
             incompleteEntry: false,
-            badDataRow: -1,
+
             formula_comment: false,
-            ingr_duplicate: false,
-            ingr_dup_num: -1,
-            formula_num: -1,
+            ingredient_duplicate: false,
+            ingredient_duplicate_num: -1,
 
             manu_line_error: false,
             manu_line_name: "",
@@ -513,7 +615,22 @@ export default class ImportPage extends React.Component {
             manu_line_name: "",
 
             missingRequiredField: false,
-            missingRequiredFieldRow: -1,
+            skuNameIssue: false,
+            skuNumIssue: false,
+            caseUPCIssue: false,
+            unitUPCIssue: false,
+            cpcIssue: false,
+            mfgRunIssue: false,
+            mfgSetupIssue: false,
+            ingrNumIssue: false,
+            ingrUnitIssue: false,
+            ingrCostIssue: false,
+            formulaNumIssue: false,
+            formulaNameIssue: false,
+            formulaIngrIssue: false,
+            formulaUnitIssue: false,
+            formulaFactorIssue: false,
+            mfgRateIssue: false,
 
             unknownError: false,
         })
@@ -553,19 +670,19 @@ export default class ImportPage extends React.Component {
                 { this.state.waiting ? <Progress animated value={100}/> : null}
 
                 <Alert color="danger" isOpen={this.state.duplicate} toggle={this.onDismissDuplicate}>
-                    A duplicate occured on row {this.state.rowIssue}
+                    A duplicate occured on row {this.state.rowIssue}.
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.collision} toggle={this.onDismissCollision}>
-                    An ambiguous collision occured on row {this.state.rowIssue}
+                    An ambiguous collision occured on row {this.state.rowIssue}.
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.incorrectNumHeaders} toggle={this.onDismissHeaderCount}>
-                    Please check the number of columns provided. {this.state.requiredHeaders} columns were expected
+                    Please check the number of columns provided. {this.state.requiredHeaders} columns were expected.
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.incorrectHeaders} toggle={this.onDismissHeaderName}>
-                    Column {this.state.incorrectColumnNum} had name "{this.state.incorrectColumnName}" when "{this.state.correctColumnName}" was expected
+                    Column {this.state.incorrectColumnNum} had name "{this.state.incorrectColumnName}" when "{this.state.correctColumnName}" was expected.
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.unknownError} toggle={this.resetState}>
@@ -573,61 +690,120 @@ export default class ImportPage extends React.Component {
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.empty} toggle={this.onDismissEmpty} >
-                    The provided CSV file had no entries
+                    The provided CSV file had no entries.
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.sku_formula_error} toggle={this.onDismissSkuFormula}>
-                    Formula # {this.state.formula_num} does not exist
+                    Formula # {this.state.sku_formula_num} does not exist.
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.prod_line_error} toggle={this.onDismissProdLine} >
-                    The product line "{this.state.prod_line_name}" from row {this.state.rowIssue} does not exist
+                    The product line "{this.state.prod_line_name}" from row {this.state.rowIssue} does not exist.
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.manu_line_error} toggle={this.onDismissManuLine}>
-                    The manufacturing line shortname "{this.state.manu_line_name}" from row {this.state.rowIssue} does not exist
+                    The manufacturing line shortname "{this.state.manu_line_name}" from row {this.state.rowIssue} does not exist.
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.noFile} toggle={this.onDismissNoFile}>
-                    No file was entered
+                    No file was entered.
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.invalidFileExtension} toggle={this.onDismissFileExtension}>
-                    The file provided has an invalid extension. Please enter a .csv file
+                    The file provided has an invalid extension. Please enter a .csv file.
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.invalidFileName} toggle={this.onDismissFileName}>
-                    The file provided was named incorrectly
+                    The file provided was named incorrectly.
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.aborted} toggle={this.resetState}>
-                    The import was aborted
-                </Alert>
-
-                <Alert color="danger" isOpen={this.state.sku_dependency} toggle={this.onDismissDependency}>
-                    The SKU specified in row {this.state.dependency_row+1} does not exist
-                </Alert>
-
-                <Alert color="danger" isOpen={this.state.ingr_dependency} toggle={this.onDismissDependency}>
-                    The entry specified in row {this.state.dependency_row+1} does not exist
+                    The import was aborted.
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.incompleteEntry} toggle={this.onDismissBadData}>
-                    The entry specified in row {this.state.badDataRow} does not exist
+                    The entry specified in row {this.state.rowIssue} does not exist.
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.badData} toggle={this.onDismissBadData}>
-                    The entry specified in row {this.state.badDataRow} has bad data
+                    The entry specified in row {this.state.rowIssue} has bad data.
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.formula_comment} toggle={this.resetState}>
-                    The formula specified in row {this.state.rowIssue} is not the first occurence in the CSV and should not have a comment
+                    The formula specified in row {this.state.rowIssue} is not the first occurence in the CSV and should not have a comment.
                 </Alert>
 
                 <Alert color="danger" isOpen={this.state.missingRequiredField} toggle={this.resetState}>
-                    The entry in row {this.state.missingRequiredFieldRow} is missing a required field
+                    The entry in row {this.state.rowIssue} is missing a required field.
                 </Alert>
 
+                <Alert color="danger" isOpen={this.state.ingredient_duplicate} toggle={this.resetState}>
+                    The Ingredient # {this.ingredient_duplicate_num} in row {this.state.rowIssue} specifies a duplicate ingredient.
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.skuNameIssue} toggle={this.resetState}>
+                    The SKU in row {this.state.rowIssue} has an invalid name. Please keep the length between 1-31 characters.
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.skuNumIssue} toggle={this.resetState}>
+                    The SKU in row {this.state.rowIssue} has an invalid SKU #. Please only use numbers in the SKU #.
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.caseUPCIssue} toggle={this.resetState}>
+                    The SKU in row {this.state.rowIssue} has an invalid case UPC.
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.unitUPCIssue} toggle={this.resetState}>
+                    The SKU in row {this.state.rowIssue} has an invalid unit UPC.
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.cpcIssue} toggle={this.resetState}>
+                    The SKU in row {this.state.rowIssue} has an invalid cost per case.
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.mfgRunIssue} toggle={this.resetState}>
+                    The SKU in row {this.state.rowIssue} has an invalid manufacturing run cost.
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.mfgSetupIssue} toggle={this.resetState}>
+                    The SKU in row {this.state.rowIssue} has an invalid manufacturing setup cost.
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.ingrNumIssue} toggle={this.resetState}>
+                    The Ingredient # in row {this.state.rowIssue} does not exist.
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.ingrCostIssue} toggle={this.resetState}>
+                    The Ingredient quantity in row {this.state.rowIssue} has an invalid cost. Please enter a number.
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.formulaNumIssue} toggle={this.resetState}>
+                    The Formula in row {this.state.rowIssue} has an invalid Formula #.
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.formulaNameIssue} toggle={this.resetState}>
+                    The Formula in row {this.state.rowIssue} has an invalid name. Please keep the length between 1-31 characters.
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.formulaIngrIssue} toggle={this.resetState}>
+                    The Ingredient in row {this.state.rowIssue} does not exist.
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.formulaUnitIssue} toggle={this.resetState}>
+                    The Ingredient quantity in row {this.state.rowIssue} has invalid units. Please try oz, ounce, pound, lb, ton, g, gram, gram, kg, kilogram, fluidounce, floz, pt, pint, qt, quart, gallon, gal, ml, milliliter, liter, l, ct, count. Or the issue may be from inputting a quantity of different unit type than the ingredient has in the database(i.e. cannot convert from a mass unit to a volume unit)
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.formulaFactorIssue} toggle={this.resetState}>
+                    The Formula factor in row {this.state.rowIssue} is invalid. Please enter a valid number.
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.mfgRateIssue} toggle={this.resetState}>
+                    The manufacturing rate in row {this.state.rowIssue} is invalid. Please enter a valid number.
+                </Alert>
+
+                <Alert color="danger" isOpen={this.state.ingrUnitIssue} toggle={this.resetState}>
+                    The Ingredient in row {this.state.rowIssue} has invalid invalid units. Please try oz, ounce, pound, lb, ton, g, gram, gram, kg, kilogram, fluidounce, floz, pt, pint, qt, quart, gallon, gal, ml, milliliter, liter, l, ct, count.
+                </Alert>
 
                 
 

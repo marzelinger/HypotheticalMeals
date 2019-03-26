@@ -304,7 +304,7 @@ export default class UnitConversion {
     t.func(val)*/
 
     static getConversionFunction(unit_string) {
-        console.log(unit_string)
+        
         let match = unit_string.match('^([0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|lb|pound|ton|g|gram|kg|kilogram|' + 
                                       'floz|fluidounce|pt|pint|qt|quart|gal|gallon|ml|milliliter|l|liter|ct|count)$')
         if (match === null) {
@@ -312,7 +312,7 @@ export default class UnitConversion {
         }
         let val = match[1]
         let unit = match[2]
-        console.log(match)
+      
         switch (unit) {
             case 'oz':
             case 'ounce': 
@@ -364,8 +364,7 @@ export default class UnitConversion {
 
     static getCleanUnitForm(unit_string) {
         let reg = unit_string.match('^([0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) ?(.*)')
-        console.log(reg[1]);
-        console.log(reg[2]);
+      
         let num = reg[1]
         unit_string = reg[2]
         unit_string = unit_string.replace(/ /g, '')
