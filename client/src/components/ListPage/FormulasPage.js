@@ -289,8 +289,13 @@ export default class FormulasPage extends React.Component {
     }
 
     getButtons = () => {
-        
-        return;
+        return (
+            <div className = "ingbuttons"> 
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) ? 
+                null : 
+                (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}
+            </div>
+                );   
     }
 
 

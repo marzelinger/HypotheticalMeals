@@ -108,13 +108,23 @@ async loadDataFromServerForReport(ingredients){
           curSku.push(curSkuObj.scale_factor);
           var ml_names = "";
           if(curSkuObj.manu_lines!=undefined){
-              for (let m = 0; m<curSkuObj.manu_lines.length; m++){
-                  ml_names+=""+curSkuObj.manu_lines[m].short_name;
-  
-                  if(m!=curSkuObj.manu_lines.length-1){
-                      ml_names+=",";
-                  }
-              }
+            ml_names+="\"";
+            for (let m = 0; m<curSkuObj.manu_lines.length; m++){
+                console.log("manu_line: "+curSkuObj.manu_lines[m]);
+                var manu = await SubmitRequest.submitGetManufacturingLineByID(curSkuObj.manu_lines[m]);
+                console.log("manu: "+JSON.stringify(manu));
+                if(manu.success){
+                    if(manu.data!=undefined){
+                        var sn = manu.data[0].short_name;
+                        ml_names+=""+sn;
+
+                        if(m!=curSkuObj.manu_lines.length-1){
+                            ml_names+=",";
+                        }
+                    }
+                }
+            }
+            ml_names+="\"";
           }
           curSku.push(ml_names);
           curSku.push(curSkuObj.manu_rate);

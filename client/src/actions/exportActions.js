@@ -88,16 +88,49 @@ export const exportFormulas = (dataIN, fileTitle)  => {
 
     for(let i = 0; i<count ; i++){
         var curData = dataIN[i];
-        var dataLine = [];
-        dataLine.push(curData.num);
-        dataLine.push(curData.name);
-        dataLine.push(curData.ingredients[i]['num']);
-        dataLine.push(curData.ingredient_quantities[i]);
-        if(i==0){
-        dataLine.push(curData.comment);
+        console.log("this is the form: "+JSON.stringify(curData));
+        if(curData.ingredients== undefined){
+            console.log("no ingredients in this form");
+            var dataLine = [];
+            dataLine.push(curData.num);
+            dataLine.push(curData.name);
+            dataLine.push("\"\"");
+            dataLine.push("\"\"");
+            dataLine.push(curData.comment);
+            rows.push(dataLine);
+
         }
-        rows.push(dataLine);
-    }    
+        else if(curData.ingredients!=undefined){
+            if(curData.ingredients.length==0){
+                console.log("no ingredients in this form");
+                var dataLine = [];
+                dataLine.push(curData.num);
+                dataLine.push(curData.name);
+                dataLine.push("\"\"");
+                dataLine.push("\"\"");
+                dataLine.push(curData.comment);
+                rows.push(dataLine);
+            }
+            else {
+                for(let k = 0; k<curData.ingredients.length; k++){
+                    console.log("here is the loop:");
+                    var dataLine = [];
+                    dataLine.push(curData.num);
+                    dataLine.push(curData.name);
+                    dataLine.push(curData.ingredients[k].num);
+                    dataLine.push(curData.ingredient_quantities[k]);
+                    if(k==0){
+                        dataLine.push(curData.comment);
+                    }
+                    else{
+                        dataLine.push("\"\"");
+                    }
+                    rows.push(dataLine);
+                    console.log("this is the rows: "+rows);
+                }
+            }
+        }
+    }
     let csvContent = "";
     rows.forEach(function(rowArray){
         let row = rowArray.join(",");
