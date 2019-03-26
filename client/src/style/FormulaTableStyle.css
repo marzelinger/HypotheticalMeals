@@ -1,6 +1,6 @@
 
 .formula-table tr {
-    grid-template-columns:  minmax(100px, 5fr) minmax(100px, 5fr) minmax(100px, 2fr);
+    grid-template-columns:  minmax(100px, 3fr) minmax(100px, 3fr) minmax(100px, 3fr) minmax(100px, 3fr);
 }
 
 .formula-table #complex {
@@ -8,5 +8,5 @@
 }
 
 .formula-table .superrow {
-    grid-template-columns: 1fr 11fr;
+    grid-template-columns: 1fr 5fr;
 }

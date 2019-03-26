@@ -20,4 +20,5 @@
 
 .prod-line-select-table .superrow {
     grid-template-columns: 0fr 1fr 11fr;
+    height: 40px !important;
 }
