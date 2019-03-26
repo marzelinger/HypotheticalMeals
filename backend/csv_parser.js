@@ -16,7 +16,7 @@ const fs = require('fs');
 export default class CSV_parser{
 
     static async parseProdLineCSV (req, res){
-        try{
+        try {
             // Extracts all prod lines from database
             var db_prod_lines = new Set();
             let all_prod_lines = await Prod_Line.find()
@@ -41,19 +41,25 @@ export default class CSV_parser{
 
             // For each CSV to potentially add, check if it would cause a collision
             // If it doesn't, add it to a set indicating it will be added
+            var prod_lines_already_seen = new Set();
             var added = 0;
             var ignored = 0;
             for(var i = 0; i < jsonArray.length; i++){
                 var obj = jsonArray[i];
-                if(db_prod_lines.has(obj.Name)){
+
+                if(prod_lines_already_seen.has(obj.Name)){
+                    return res.json({success: false, duplicate: i+2});
+                }
+                else if(db_prod_lines.has(obj.Name)){
                     ignored = ignored + 1;
                 }
                 else if(!prod_lines_to_add.has(obj.Name)){
                     added = added + 1;
                     prod_lines_to_add.add(obj.Name);
                 } else {
-                    return res.json({ success: false, collision: i});
+                    return res.json({ success: false, collision: i+2});
                 }
+                prod_lines_already_seen.add(obj.Name);
             }
 
             // Creates the product line to save to the database 
@@ -84,12 +90,9 @@ export default class CSV_parser{
     static async checkColumns(obj, correctColumnNames, correctColumnNum){
         var toReturn = {};
         var count = 0; 
-        console.log(obj);
-        console.log(correctColumnNames.length);
+
         for(var key in obj){
-            console.log(key);
-            console.log(count);
-            console.log(correctColumnNames[count]);
+
             if(count >= correctColumnNum){
                 toReturn.success = false;
                 toReturn.colCountIncorrect = true;
@@ -105,10 +108,9 @@ export default class CSV_parser{
             }
             count++;
         }
-        console.log(count);
-        console.log(correctColumnNum);
+    
         if(count != correctColumnNum){
-            console.log('gest here');
+  
             toReturn.success = false;
             toReturn.colCountIncorrect = true;
             return toReturn;
@@ -133,7 +135,7 @@ export default class CSV_parser{
     }
 
     static async parseSKUCSV(req, res){
-     //   try{ 
+        try{ 
             // Extracts all skus from the database
             var db_skus = new Map();
             var db_caseUPCs = new Set();
@@ -197,7 +199,7 @@ export default class CSV_parser{
             var skus_to_ignore = new Set();
             for(var i = 0; i < jsonArray.length; i++){
                 var obj = jsonArray[i];
-                console.log("my obj is: " + JSON.stringify(obj));
+           
                 //Validate required fields
 
                 var dataValidationObj = await this.validateDataSKUs(obj, all_skus);
@@ -304,7 +306,7 @@ export default class CSV_parser{
                     sku.setup_cost = reformattedSKUS[0].setup_cost;
                     sku.run_cpc = reformattedSKUS[0].run_cpc;
                     sku.comment = reformattedSKUS[0].comment;
-                    console.log(sku);
+      
 
                     let new_sku = await sku.save();
                   //  await ScraperHandler.updateNewSku({body: sku.num}, {});
@@ -313,48 +315,46 @@ export default class CSV_parser{
                 }
                 return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: skus_added, showImport: true, new_data: skus_to_update_new, ignored_data: skus_to_ignore_arr});
             } else{
-                console.log("the skus in interest are: " + JSON.stringify(skus_to_update_old));
                 return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: intermediate_skus_added, old_data: skus_to_update_old, new_data: skus_to_update_new, ignored_data: skus_to_ignore_arr});
             }
-  //      } catch (err){
-  //          return res.json({ success: false, error: "Catch all error"})
-  //      }
+        } catch (err){
+            return res.json({ success: false, error: "Catch all error"})
+        }
     }
 
     static async indicateSKUDataFailure(res, dataValidationObj, row){
-        console.log('this is it');
+  
         if(dataValidationObj.missingRequiredField){
-            console.log(1);
             return res.json({ success: false,
                               missingRequiredField: row});
         } else if(dataValidationObj.nameIssue){
-            console.log(2);
             return res.json({ success: false,
-                badData: row});
+                skuNameIssue: row});
         } else if(dataValidationObj.skuNumIssue){
-            console.log(3);
             return res.json({ success: false,
-                badData: row});
+                skuNumIssue: row});
         } else if(dataValidationObj.caseUPCIssue){
-            console.log(4);
             return res.json({ success: false,
-                badData: row});
+                caseUPCIssue: row});
         } else if(dataValidationObj.unitUPCIssue){
-            console.log(5);
             return res.json({ success: false,
-                badData: row});
+                unitUPCIssue: row});
         } else if(dataValidationObj.cpcIssue){
-            console.log(6);
+          
             return res.json({ success: false,
-                badData: row});
+                cpcIssue: row});
         } else if(dataValidationObj.mfgRunIssue){
-            console.log(7);
+   
             return res.json({ success: false,
-                badData: row});
+                mfgRunIssue: row});
         } else if(dataValidationObj.mfgSetupIssue){
-            console.log(8);
+  
             return res.json({ success: false,
-                badData:row});
+                mfgSetupIssue:row});
+        } else if(dataValidationObj.formulaFactorIssue){
+            return res.json({ success: false, formulaFactorIssue: row});
+        } else if(dataValidationObj.mfgRateIssue){
+            return res.json({ succss: false, mfgRateIssue: row});
         }
     }
 
@@ -363,7 +363,7 @@ export default class CSV_parser{
         // Checks to make sure we have all required fields
         if(!obj[Constants.csv_sku_name] || !obj[Constants.csv_sku_caseUPC] || !obj[Constants.csv_sku_unitUPC] ||
         !obj[Constants.csv_sku_unitsize] || !obj[Constants.csv_sku_cpc] || !obj[Constants.csv_sku_pl]) {
-            console.log(JSON.stringify(obj));
+         
             toReturn.success = false;
             toReturn.missingRequiredField = true;
             return toReturn;
@@ -410,6 +410,20 @@ export default class CSV_parser{
         if(!isNum4){
             toReturn.success = false;
             toReturn.cpcIssue = true;
+            return toReturn;
+        }
+
+        var isNum5 = /^\d{0,20}(\.\d{1,20})?$/.test(obj[Constants.csv_sku_formula_factor]);
+        if(!isNum5){
+            toReturn.success = false;
+            toReturn.formulaFactorIssue = true;
+            return toReturn;
+        }
+
+        var isNum6 = /^\d{0,20}(\.\d{1,20})?$/.test(obj[Constants.csv_sku_rate]);
+        if(!isNum6){
+            toReturn.success = false;
+            toReturn.mfgRateIssue = true;
             return toReturn;
         }
 
@@ -626,8 +640,7 @@ export default class CSV_parser{
             sku.comment = addArray[i].comment;
             let new_sku = await sku.save();
         //    await ScraperHandler.updateNewSku({body: sku.num}, {});
-            console.log("add array is: ");
-            console.log(addArray[i]);
+       
             returningAdd.push(addArray[i]);
         }
         return res.json({ success: true, adds: returningAdd, updates: returningUpdate, ignores: ignoreArray});
@@ -637,7 +650,7 @@ export default class CSV_parser{
     }
 
     static async parseIngredientsCSV(req, res){
-        try {
+      try {
             //Extract the primary key (num) & unique identifier(case_upc) for each entry
             var db_ingredients_nums = new Map();
             var db_ingredients_name = new Set();
@@ -655,7 +668,6 @@ export default class CSV_parser{
             }
             
             var requiredNumFields = 6;
-            console.log("the constants file is getting : " + Constants.csv_ingr_cost)
             var columnsObj = await this.checkColumns(jsonArray[0], 
                 [Constants.csv_ingr_num, 
                 Constants.csv_ingr_name, 
@@ -683,10 +695,10 @@ export default class CSV_parser{
 
                 var collisionObj = await this.searchForIngrCollision(obj, ingrs_to_add_nums, ingrs_to_add_names, db_ingredients_name, db_ingredients_nums, ingrs_to_update, ingrs_to_ignore);
                 if(collisionObj.success == false){
-                    console.log(collisionObj);
+                  
                     return await this.indicateIngrCollisionFailure(res, collisionObj, i+2);
                 }  
-                console.log('data validation checks out');
+
             }
 
             var added = 0;
@@ -753,35 +765,35 @@ export default class CSV_parser{
             toReturn.ingrNumIssue = true;
             return toReturn;
         } 
-        var isValid = obj[Constants.csv_ingr_cost].search(/^\$?\d+(,\d{3})*(\.\d*)?$/) >= 0;
+
+ /*  var isValid = obj[Constants.csv_ingr_cost].search(/^\$?\d+(,\d{3})*(\.\d*)?$/) >= 0;
         if(!isValid) {
-            console.log('this one 1');
+
             toReturn.success = false;
             toReturn.costIssue = true;
             return toReturn;
-        }
+        }*/
 
         var intermediate_units = await UnitConversion.getCleanUnitForm(obj[Constants.csv_ingr_size]);
         if(intermediate_units.success == true) obj[Constants.csv_ingr_size] = intermediate_units.data;
         else {
-            console.log('this one 2');
-            toReturn.costIssue = true;
+            
+            toReturn.success = false;
+            toReturn.unitIssue = true;
             return toReturn;
         }
 
         var isValid2 = await UnitConversion.getUnitType(obj[Constants.csv_ingr_size]);
         if(isValid2 == -1){
             // TODO: FIX THIS 
-            console.log('this one 3');
-            toReturn.costIssue = true;
+            
+            toReturn.success = false;
+            toReturn.unitIssue = true;
             return toReturn;
         }
 
         var moneyConversionSuccessObj = await this.extractNumFromCurrency(obj[Constants.csv_ingr_cost]);
-        console.log(obj[Constants.csv_ingr_cost]);
-        console.log(moneyConversionSuccessObj);
         if(moneyConversionSuccessObj.success != true){
-            console.log('this one 4');
             toReturn.success = false;
             toReturn.costIssue = true;
             return toReturn;
@@ -789,22 +801,23 @@ export default class CSV_parser{
         obj[Constants.csv_ingr_cost] = moneyConversionSuccessObj.data;
         //var isValid2 = obj[Constants.csv_ingr_size]
         toReturn.success = true;
+        console.log('returns successfully');
         return toReturn;
     }
 
     static async indicateIngrDataFailure(res, dataValidationObj, row){
         if(dataValidationObj.missingRequiredField){
-            console.log('here');
             return res.json({ success: false,
-                              badData: row});
+                              missingRequiredField: row});
         } else if(dataValidationObj.ingrNumIssue){
-            console.log('here 2');
             return res.json({ success: false,
-                badData: row});
+                ingrNumIssue: row});
         } else if(dataValidationObj.costIssue){
-            console.log('here 3');
             return res.json({ success: false,
-                badData: row});
+                ingrCostIssue: row});
+        } else if(dataValidationObj.unitIssue){
+            return res.json({ success: false,
+                ingrUnitIssue: row});
         }
     }
 
@@ -819,8 +832,7 @@ export default class CSV_parser{
         else if(db_ingredients_name.has(obj[Constants.csv_ingr_name]) && !db_ingredients_nums.has(obj[Constants.csv_ingr_num])){
             toReturn.ambiguousCollision = true;
             toReturn.success = false;
-            console.log(obj[Constants.csv_ingr_name]);
-            console.log('1 collsion');
+
             return toReturn;
         // Check for a collision based on the primary key
         } else if(db_ingredients_nums.has(obj[Constants.csv_ingr_num])) {
@@ -838,7 +850,7 @@ export default class CSV_parser{
             else if(db_ingredients_nums.get(obj[Constants.csv_ingr_num]) != obj[Constants.csv_ingr_name] && db_ingredients_name.has(obj[Constants.csv_ingr_name])) {
                 toReturn.ambiguousCollision = true;
                 toReturn.success = false;
-                console.log('2 collsion');
+
                 return toReturn;
             } // If it is neither, indicate that it will be updated, its added to *_to_add_* to indicate it exists in the file
             else {
@@ -883,7 +895,7 @@ export default class CSV_parser{
         var toReturn = {};
         var isValid = /^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/.test(qty);
         if(!isValid){
-            console.log('this is the problem');
+
             toReturn.currencyIssue = true;
             return toReturn;
         }
@@ -891,7 +903,7 @@ export default class CSV_parser{
         var qty_arr = qty.match(/^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/);
         var numeric_value = qty_arr[1];
         if(numeric_value <= 0){
-            console.log('this is the problem2');
+
             toReturn.currencyIssue = true;
             return toReturn;
         }
@@ -906,7 +918,7 @@ export default class CSV_parser{
         try{
         var returningAdds = [];
         var returningUpdates = [];
-        console.log(req.body);
+
         var ignoreArray = JSON.parse(req.body.ignores);
         var updateArray = JSON.parse(req.body.updates);
         var addArray = JSON.parse(req.body.adds);
@@ -915,7 +927,7 @@ export default class CSV_parser{
                 {$set: {name: updateArray[i].name, vendor_info : updateArray[i].vendor_info, pkg_size: updateArray[i].pkg_size, 
                         pkg_cost: updateArray[i].pkg_cost, comment: updateArray[i].comment}}, 
                         {upsert : true, new : true});
-            console.log(updated_ingr);
+           
             returningUpdates.push(updated_ingr);
         }
         for(var i = 0; i < addArray.length; i++){
@@ -976,7 +988,7 @@ export default class CSV_parser{
             // Checks to see formula name is under 32 digits and the ingredient units are all correct
             var dataValidationObj = await this.validateDataFormulas(obj, all_formulas, db_ingredients_num);
             if(dataValidationObj.success == false){
-                console.log(dataValidationObj);
+              
                 return await this.indicateFormulaDataValidationFailure(res, dataValidationObj, i+2);
 
             }
@@ -1004,7 +1016,7 @@ export default class CSV_parser{
                 updated = updated + 1;
                 var newObj ={};
                 var reformattedFormulas = await this.reformatFormula(newObj, obj, formulas_to_update, formulas_to_comments);
-                console.log(reformattedFormulas[0]);
+          
                 formulas_to_update_new.push(reformattedFormulas[0]);
                 formulas_dealt_with.add(obj[Constants.csv_formula_num]);
             }
@@ -1018,14 +1030,14 @@ export default class CSV_parser{
         }
         
         for (var i = 0; i < formulas_added.length; i++){
-            console.log("gets here");
+         
             var formula = new Formula();
             formula.name = formulas_added[i].name;
             formula.num = formulas_added[i].num;
             formula.ingredients = formulas_added[i].ingredients;
             formula.ingredient_quantities = formulas_added[i].ingredient_quantities;
             formula.comment = formulas_added[i].comment;
-            console.log(formula);
+  
             let new_formula = await formula.save();
         }
         for (var i = 0; i < formulas_to_update_new.length; i++){
@@ -1033,7 +1045,7 @@ export default class CSV_parser{
                 {$set: {name: formulas_to_update_new[i].name, num: formulas_to_update_new[i].num, 
                         ingredients: formulas_to_update_new[i].ingredients, ingredient_quantities: formulas_to_update_new[i].ingredient_quantities,
                         comment: formulas_to_update_new[i].comment}}, {upsert: true, new: true});
-            console.log(updated_formula);
+    
         }
         return res.json({ success: true, showImport: true, adds: formulas_added, updates: formulas_to_update_new, ignores: formulas_to_ignore});
         } catch (err){
@@ -1047,11 +1059,11 @@ export default class CSV_parser{
         newObj.name = oldObj[Constants.csv_formula_name];
         newObj.num = oldObj[Constants.csv_formula_num];
         var ingredient_map = formulasMap.get(oldObj[Constants.csv_formula_num]);
-        console.log("gets here");
+  
         for(var ingredient_key of ingredient_map.keys()){
-            console.log(ingredient_key);
+   
             var ingredient = await Ingredient.find({ num: ingredient_key });
-            console.log(ingredient.length);
+
             var ingredient_id = ingredient[0]._id; 
             ingredients.push(ingredient_id);
             quantities.push(ingredient_map.get(ingredient_key));
@@ -1124,15 +1136,15 @@ export default class CSV_parser{
 
     static async indicateFormulaDataValidationFailure(res, dataValidationObj, row){
         if(dataValidationObj.missingRequiredField){
-            return res.json({ success: false, badData: row});
+            return res.json({ success: false, missingRequiredField: row});
         } else if(dataValidationObj.formulaNumIssue){
-            return res.json({ success: false, badData: row});
+            return res.json({ success: false, formulaNumIssue: row});
         } else if(dataValidationObj.formulaNameIssue){
-            return res.json({ success: false, badData: row});
+            return res.json({ success: false, formulaNameIssue: row});
         } else if(dataValidationObj.formulaIngrIssue){
-            return res.json({ success: false, badData: row});
+            return res.json({ success: false, formulaIngrIssue: row});
         } else if(dataValidationObj.unitIssue){
-            return res.json({ success: false, badData: row});
+            return res.json({ success: false, formulaUnitIssue: row});
         }
     }
 
