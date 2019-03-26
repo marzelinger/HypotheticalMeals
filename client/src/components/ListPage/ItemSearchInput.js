@@ -29,6 +29,7 @@ export default class ItemSearchInput extends React.Component {
 
     //TODO MAKE SURE THAT THE CURITEM SENDING FROM FORMULADETAILS IS THE POPULATED ONE.
     async componentDidUpdate (prevProps, prevState) {
+        console.log(prevState.substr + ' _ ' + this.state.substr)
         if (prevState.substr !== this.state.substr) {
             await this.updateResults();
         }
@@ -46,6 +47,7 @@ export default class ItemSearchInput extends React.Component {
             var res = await SubmitRequest.submitGetIngredientsByNameSubstring(this.state.substr);
         }
         else if (this.props.item_type === Constants.prod_line_label && this.state.substr.length > 0) {
+            console.log('yo')
             var res = await SubmitRequest.submitGetProductLinesByNameSubstring(this.state.substr,0,0);
         }
         else if (this.props.item_type === Constants.formula_label && this.state.substr.length > 0) {
@@ -62,10 +64,12 @@ export default class ItemSearchInput extends React.Component {
             res.data = []
         }
         if (res === undefined || !res.success) res.data = [];
+        console.log(res.data)
         this.setState({ assisted_search_results: res.data });
     }
 
     onFilterValueChange = (value, e) => {
+        console.log(value)
         if (e.action === 'input-change'){
             var new_item = this.props.curr_item
             if (new_item !== value){
@@ -85,7 +89,7 @@ export default class ItemSearchInput extends React.Component {
             return Constants.ingredients_page_name;
         }
         else if(this.props.item_type ===Constants.prod_line_label){
-            return Constants.prod_line_page_name;
+            return Constants.prod_lines_page_name;
         }
         else if(this.props.item_type ===Constants.formula_label){
             return Constants.formulas_page_name;
