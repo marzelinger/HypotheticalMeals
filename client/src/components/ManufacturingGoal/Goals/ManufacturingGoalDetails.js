@@ -107,7 +107,7 @@ export default class ManufacturingGoalDetails extends React.Component {
             let curr_qty = item.activities[ind].quantity
             curr_qty = curr_qty - qty;
             if (curr_qty > 0){
-                item.activities[ind].quantity = item.activities[ind].quantity - qty;
+                item.activities[ind].quantity = Math.round(item.activities[ind].quantity - qty);
             } 
             else {
                 item.activities.splice(ind,1);
@@ -128,7 +128,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                 alert("You cannot edit activities that have already been scheduled");
                 return;
             }
-            item.activities[ind].quantity  = item.activities[ind].quantity + qty;
+            item.activities[ind].quantity  = Math.round(item.activities[ind].quantity + qty);
         }
         else {
             var new_activity = {sku: value, quantity: qty}

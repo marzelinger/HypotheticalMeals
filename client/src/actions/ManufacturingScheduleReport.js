@@ -24,11 +24,35 @@ const jsPDF = require('jspdf');
             let calculations = await doCalcs(manuData, res.data.complete_activities);
             // let calculations = {}
             // console.log("this is the CALCULATIONS; "+JSON.stringify(calculations));
+            if(res.data.complete_activities==undefined){
+                var comp = [];
+            }
+            else{
+                var comp = res.data.complete_activities;
+            }
+            if(res.data.beginning_cut==undefined){
+                var beg = [];
+            }
+            else{
+                var beg = res.data.beginning_cut;
+            }
+            if(res.data.ending_cut==undefined){
+                var end = [];
+            }
+            else{
+                var end = res.data.ending_cut;
+            }
+            if(res.data.all_cut==undefined){
+                var all = [];
+            }
+            else{
+                var all = res.data.all_cut;
+            }
             return { reportData : {
-                complete: res.data.complete_activities,
-                beg_cut: res.data.beginning_cut,
-                end_cut: res.data.ending_cut,
-                all_cut: res.data.all_cut,
+                complete: comp,
+                beg_cut: beg,
+                end_cut: end,
+                all_cut: all,
                 summation: calculations
                 }
             };
@@ -41,90 +65,92 @@ const jsPDF = require('jspdf');
 
     export const doCalcs = async (manuData, activitites) => {
         var ingSUMmap = new Map();
-        if(activitites.length==0) return [];
-        var calculations =[];
-        for(let act = 0; act<activitites.length; act++){
-            var curAct = activitites[act];
-            var sku = curAct.sku;
-            if(sku !=undefined){
-                var numIngs=0;
-                if(sku.formula!=undefined){
-                    if(sku.formula.ingredients!= undefined){
-                        numIngs = sku.formula.ingredients.length;
+        if(activitites!=undefined){
+            if(activitites.length==0) return [];
+            var calculations =[];
+            for(let act = 0; act<activitites.length; act++){
+                var curAct = activitites[act];
+                var sku = curAct.sku;
+                if(sku !=undefined){
+                    var numIngs=0;
+                    if(sku.formula!=undefined){
+                        if(sku.formula.ingredients!= undefined){
+                            numIngs = sku.formula.ingredients.length;
+                        }
                     }
-                }
 
-                for (let ing = 0; ing<numIngs; ing++){
-                    var ing_pkg_size = sku.formula.ingredients[ing].pkg_size;
-                    console.log("ing_pkg_size: "+JSON.stringify(ing_pkg_size));
+                    for (let ing = 0; ing<numIngs; ing++){
+                        var ing_pkg_size = sku.formula.ingredients[ing].pkg_size;
+                        console.log("ing_pkg_size: "+JSON.stringify(ing_pkg_size));
 
-                    var form_ingredient_quant = sku.formula.ingredient_quantities[ing];
-                    console.log("form_ingredient_quant: "+JSON.stringify(form_ingredient_quant));
+                        var form_ingredient_quant = sku.formula.ingredient_quantities[ing];
+                        console.log("form_ingredient_quant: "+JSON.stringify(form_ingredient_quant));
 
-                    var ing_parse = await Calculations.parseUnitVal(ing_pkg_size);
-                    console.log("ing_parse: "+JSON.stringify(ing_parse));
+                        var ing_parse = await Calculations.parseUnitVal(ing_pkg_size);
+                        console.log("ing_parse: "+JSON.stringify(ing_parse));
 
-                    var ing_pkg_size_val = ing_parse.val;
-                    var ing_pkg_size_unit = ing_parse.unit;
-                    console.log("ing_pkg_size_val: "+JSON.stringify(ing_pkg_size_val));
+                        var ing_pkg_size_val = ing_parse.val;
+                        var ing_pkg_size_unit = ing_parse.unit;
+                        console.log("ing_pkg_size_val: "+JSON.stringify(ing_pkg_size_val));
 
-                    //need to convert the formula ingredient quantity to the ingredient pckg size unit.
-                    //get the ingredient_pckg_size unit
-                    var conversionFuncObj = UnitConversion.getConversionFunction(ing_pkg_size);
-                    console.log("this is conversion func obj"+JSON.stringify(conversionFuncObj));
-                    console.log("form_ingredient_quant: "+form_ingredient_quant);
-                    var converted_form = conversionFuncObj.func(form_ingredient_quant);
-                    console.log("converted_form: "+JSON.stringify(converted_form));
+                        //need to convert the formula ingredient quantity to the ingredient pckg size unit.
+                        //get the ingredient_pckg_size unit
+                        var conversionFuncObj = UnitConversion.getConversionFunction(ing_pkg_size);
+                        console.log("this is conversion func obj"+JSON.stringify(conversionFuncObj));
+                        console.log("form_ingredient_quant: "+form_ingredient_quant);
+                        var converted_form = conversionFuncObj.func(form_ingredient_quant);
+                        console.log("converted_form: "+JSON.stringify(converted_form));
 
-                    var form_parse = await Calculations.parseUnitVal(converted_form);
-                    var form_ing_val = form_parse.val;
-                    var form_ing_unit = form_parse.unit;
-                    console.log("form_ing_val: "+JSON.stringify(form_ing_val));
+                        var form_parse = await Calculations.parseUnitVal(converted_form);
+                        var form_ing_val = form_parse.val;
+                        var form_ing_unit = form_parse.unit;
+                        console.log("form_ing_val: "+JSON.stringify(form_ing_val));
 
-                    //form_ing_val is the correct unit number to now multiply by the 
-                    console.log("scale_factor: "+sku.scale_factor);
-                    console.log("quant: "+curAct.quantity);
-
-
-                    var cur_ing_sum = Number(form_ing_val)*Number(sku.scale_factor)*Number(curAct.quantity);
-                    console.log("cur_ing_sum: "+JSON.stringify(cur_ing_sum));
-                    //convert the form quant to the ing pckg size unit and then you add the num to the 
-                    //now want to add each ing into the map
-                    //map is key =ing value = [sum, num packages]
-                    //map_val[0] = sum
-                    //map_val[1] = num_pckg
-                    //console.log("sku: "+JSON.stringify(sku));
-                    if(ingSUMmap.has(sku.formula.ingredients[ing].name)){
-                        //want to add the values together.
-                        console.log("ing_name: "+sku.formula.ingredients[ing].name);
-                        var map_val = ingSUMmap.get(sku.formula.ingredients[ing].name);
-                        console.log("map_val: "+JSON.stringify(map_val));
-
-                        var map_ing_parse = await Calculations.parseUnitVal(map_val[0]);
-                        console.log("map_ing_parse: "+JSON.stringify(map_ing_parse));
-                        var new_sum = Number(cur_ing_sum) + Number(map_ing_parse.val);
-                        console.log("new_sum: "+new_sum);
+                        //form_ing_val is the correct unit number to now multiply by the 
+                        console.log("scale_factor: "+sku.scale_factor);
+                        console.log("quant: "+curAct.quantity);
 
 
-                        var new_num_pckg = Number(new_sum)/Number(ing_pkg_size_val);
-                        console.log("new_num_pckg: "+new_num_pckg);
+                        var cur_ing_sum = Number(form_ing_val)*Number(sku.scale_factor)*Number(curAct.quantity);
+                        console.log("cur_ing_sum: "+JSON.stringify(cur_ing_sum));
+                        //convert the form quant to the ing pckg size unit and then you add the num to the 
+                        //now want to add each ing into the map
+                        //map is key =ing value = [sum, num packages]
+                        //map_val[0] = sum
+                        //map_val[1] = num_pckg
+                        //console.log("sku: "+JSON.stringify(sku));
+                        if(ingSUMmap.has(sku.formula.ingredients[ing].name)){
+                            //want to add the values together.
+                            console.log("ing_name: "+sku.formula.ingredients[ing].name);
+                            var map_val = ingSUMmap.get(sku.formula.ingredients[ing].name);
+                            console.log("map_val: "+JSON.stringify(map_val));
+
+                            var map_ing_parse = await Calculations.parseUnitVal(map_val[0]);
+                            console.log("map_ing_parse: "+JSON.stringify(map_ing_parse));
+                            var new_sum = Number(cur_ing_sum) + Number(map_ing_parse.val);
+                            console.log("new_sum: "+new_sum);
 
 
-                        var new_map_val = [new_sum+" "+form_ing_unit, new_num_pckg];
-                        console.log("new_map_val: "+new_map_val);
-                        ingSUMmap.set(sku.formula.ingredients[ing].name, new_map_val);
-                        // console.log("in the map stuff");
-                        console.log("map current: "+ingSUMmap);
+                            var new_num_pckg = Number(new_sum)/Number(ing_pkg_size_val);
+                            console.log("new_num_pckg: "+new_num_pckg);
 
-                    }
-                    else{
-                        var new_num_pckg = Number(cur_ing_sum)/Number(ing_pkg_size_val);
-                        console.log("new_num_pckg2: "+new_num_pckg);
-                        var new_map_val = [cur_ing_sum+" "+form_ing_unit, new_num_pckg];
-                        console.log("new_map_val2: "+JSON.stringify(new_map_val));
 
-                        ingSUMmap.set(sku.formula.ingredients[ing].name, 
-                            new_map_val);
+                            var new_map_val = [new_sum+" "+form_ing_unit, new_num_pckg];
+                            console.log("new_map_val: "+new_map_val);
+                            ingSUMmap.set(sku.formula.ingredients[ing].name, new_map_val);
+                            // console.log("in the map stuff");
+                            console.log("map current: "+ingSUMmap);
+
+                        }
+                        else{
+                            var new_num_pckg = Number(cur_ing_sum)/Number(ing_pkg_size_val);
+                            console.log("new_num_pckg2: "+new_num_pckg);
+                            var new_map_val = [cur_ing_sum+" "+form_ing_unit, new_num_pckg];
+                            console.log("new_map_val2: "+JSON.stringify(new_map_val));
+
+                            ingSUMmap.set(sku.formula.ingredients[ing].name, 
+                                new_map_val);
+                        }
                     }
                 }
             }

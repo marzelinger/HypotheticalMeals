@@ -163,7 +163,7 @@ class SkuHandler{
         try {
 
             var target_manu_line_id = req.params.manu_line_id;
-            console.log("target_manu_line: "+target_manu_line_id);
+            // console.log("target_manu_line: "+target_manu_line_id);
             let to_return = await SKU.find({ manu_lines : target_manu_line_id }).populate('formula').populate({
                 path: 'formula',
                 populate: { path: 'ingredients' }
