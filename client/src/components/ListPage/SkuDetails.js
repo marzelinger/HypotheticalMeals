@@ -298,6 +298,22 @@ export default class SKUDetails extends React.Component {
         return output;
     }
 
+    parseIngUnit = (unit_string) => {
+        console.log("unit_sting: "+unit_string);
+        var str = ""+unit_string;
+    
+        let match = str.match('^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|ounce|lb|pound|ton|g|gram|kg|kilogram|' + 'floz|fluidounce|pt|pint|qt|quart|gal|gallon|ml|milliliter|l|liter|ct|count)$');
+        if (match === null) {
+          console.log("Incorrect String Format in the parseIngUnit in Calculator");
+          return {};
+        }
+      
+        let val = match[1]
+        let unit = match[2]
+        console.log("val: "+ val + "    unit: "+unit);
+        return  {val: val, unit: unit};
+      }
+
 
 
     async addIngredient(item, value, qty) {
