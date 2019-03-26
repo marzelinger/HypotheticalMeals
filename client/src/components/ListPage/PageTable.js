@@ -20,6 +20,7 @@ import Toggle from 'material-ui/Toggle';
 import PropTypes from 'prop-types';
 import TableActions from './TableActions';
 import '../../style/TableStyle.css'
+import SubmitRequest from '../../helpers/SubmitRequest';
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
 
@@ -42,6 +43,7 @@ export default class PageTable extends Component {
       showDetails: props.showDetails!= undefined ? props.showDetails : false,
       page_name: this.props.page_name
     };
+
   }
   
   getPropertyLabel = (col) => {

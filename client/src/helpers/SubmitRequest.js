@@ -48,7 +48,8 @@ export default class SubmitRequest{
             if (!res.success) return { success: res.success, error: res.error };
             else return{ 
               success: res.success,
-              data: res.data
+              data: res.data,
+              status: res.status
             };
             
           });
