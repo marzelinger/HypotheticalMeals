@@ -14,8 +14,8 @@ var client_id = "meta-alligators";
 const params = {
   client_id: "meta-alligators",
   client_secret: "zHMB4Sl*o*Awu*mjZv$VEa+fX=QACLIWuRNWyNe@kNtTYLd*4E",
-  //redirect_uri: "https://metaalligators.colab.duke.edu/loginDuke",
-  redirect_uri: "http://localhost:3000/loginDuke",
+  redirect_uri: "https://metaalligators.colab.duke.edu/loginDuke",
+  // redirect_uri: "http://localhost:3000/loginDuke",
   response_type: "token",
   state: 7777,
   scope: "basic"
