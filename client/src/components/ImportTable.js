@@ -13,8 +13,8 @@ export class ImportTable extends React.Component{
         if(this.props.label==="SKUs"){
             this.state = {
                 page_title: "SKUs",
-                table_columns: ['Name', 'Number','Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line', "Comment"],
-                table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', "comment"],
+                table_columns: ['Name', 'Number','Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line', "Formula #", "Formula Factor", "Manufacturing Line", "Manufacturing Rate", "Manufacturing Setup Cost", "Manufacturing Run Cost", "Comment"],
+                table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', "formula", "scale_factor", "manu_lines", "manu_rate", "setup_cost", "run_cpc", "comment"],
                 list_items: this.props.items,
                 new_list_items: this.props.new_items,
             }
@@ -66,7 +66,7 @@ export class ImportTable extends React.Component{
                                 <td
                                     key={prop}
                                 >
-                                     {prop === "prod_line" ? item["prod_line_to_show"] : item[prop]}
+                                     {prop === "prod_line" ? (item["prod_line_to_show"]) : (prop==="formula" ? item["formula_to_show"] : (prop ==="manu_lines" ? item["manu_lines_to_show"] : item[prop])) }
                                 </td>
                             )}
                             </tr>
@@ -96,7 +96,7 @@ export class ImportTable extends React.Component{
                                 <td
                                     key={prop}
                                 >
-                                     {prop === "prod_line" ? item["prod_line_to_show"] : item[prop]}
+                                     {prop === "prod_line" ? (item["prod_line_to_show"]) : (prop==="formula" ? item["formula_to_show"] : (prop ==="manu_lines" ? item["manu_lines_to_show"] : item[prop])) }
                                 </td>
                             )}
                             </tr>)}

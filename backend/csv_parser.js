@@ -133,7 +133,7 @@ export default class CSV_parser{
     }
 
     static async parseSKUCSV(req, res){
-        try{ 
+     //   try{ 
             // Extracts all skus from the database
             var db_skus = new Map();
             var db_caseUPCs = new Set();
@@ -197,18 +197,16 @@ export default class CSV_parser{
             var skus_to_ignore = new Set();
             for(var i = 0; i < jsonArray.length; i++){
                 var obj = jsonArray[i];
+                console.log("my obj is: " + JSON.stringify(obj));
                 //Validate required fields
 
                 var dataValidationObj = await this.validateDataSKUs(obj, all_skus);
                 if(dataValidationObj.success == false){
-                    console.log('fails here 1');
-                    console.log(dataValidationObj);
                     return await this.indicateSKUDataFailure(res, dataValidationObj, i+2);
                 }
                 
                 var collisionObj = await this.searchForSKUCollision(obj, db_prod_lines, skus_to_add_num, skus_to_add_caseUPC, db_skus, db_caseUPCs, skus_to_update, skus_to_ignore, db_formulas, db_Manu_Line)
                 if(collisionObj.success == false){
-                    console.log(collisionObj);
                     return await this.indicateSKUCollisionFailure(res, collisionObj, i+2);
                 }
             }
@@ -225,7 +223,6 @@ export default class CSV_parser{
             var skus_to_update_old = [];
             var skus_to_ignore_arr = []
             for(var i =0; i < jsonArray.length; i++){
-                console.log(i);
                 var obj = jsonArray[i];
                 if(skus_to_update.has(obj[Constants.csv_sku_num])){
                     updated = updated + 1;
@@ -234,6 +231,7 @@ export default class CSV_parser{
                     old_sku_to_show.name = old_sku[0].name;
                     old_sku_to_show.num = old_sku[0].num;
                     old_sku_to_show.case_upc = old_sku[0].case_upc;
+                    old_sku_to_show.unit_size = old_sku[0].unit_size;
                     old_sku_to_show.unit_upc = old_sku[0].unit_upc;
                     old_sku_to_show.cpc = old_sku[0].cpc;
                     
@@ -242,23 +240,27 @@ export default class CSV_parser{
                     old_sku_to_show.prod_line_to_show = prod_line[0].name;
 
                     old_sku_to_show.formula = old_sku[0].formula;
-                    old_sku_to_show.formula_to_show = 
+                    var formula = await Formula.find({ _id: old_sku[0].formula._id })
+                    old_sku_to_show.formula_to_show = formula[0].num;
 
                     old_sku_to_show.scale_factor = old_sku[0].scale_factor;
 
                     old_sku_to_show.manu_lines = old_sku[0].manu_lines;
                     var manu_lines_to_show_string = "";
+                
                     for(var j = 0; j < old_sku[0].manu_lines.length; j++){
                         var manu_line = await Manu_Line.find({ _id: old_sku[0].manu_lines[j] });
-                        manu_lines_to_show_string = manu_lines_to_show_string + manu_line.short_name + ",";
+                        manu_lines_to_show_string = manu_lines_to_show_string + manu_line[0].short_name + ",";
                     }
-                    old_sku_to_show.manu_lines_to_show = manu_lines_to_show_string;
+                    old_sku_to_show.manu_lines_to_show = manu_lines_to_show_string.substring(0, manu_lines_to_show_string.length - 1);
 
                     old_sku_to_show.manu_rate = old_sku[0].manu_rate;
+
+                    old_sku_to_show.setup_cost = old_sku[0].setup_cost;
+                    old_sku_to_show.run_cpc = old_sku[0].run_cpc;
                     old_sku_to_show.comment = old_sku[0].comment;
 
                     var newObj = {};
-                    console.log('her23e');
                     var reformattedSKUS = await this.reformatSKU(newObj, obj);
                     skus_to_update_new.push(reformattedSKUS[0]);
                     skus_to_update_old.push(old_sku_to_show);
@@ -267,7 +269,7 @@ export default class CSV_parser{
                 else if(skus_to_add_num.has(obj[Constants.csv_sku_num])){
                     added = added + 1;
                     var newObj = {};
-                    console.log('break here2');
+
                     var reformattedSKUS = await this.reformatSKU(newObj, obj);
                     intermediate_skus_added.push(reformattedSKUS[0]);
                     intermediate_unformatted_skus_added.push(reformattedSKUS[1]);
@@ -275,7 +277,7 @@ export default class CSV_parser{
                 else {
                     ignored = ignored + 1;
                     var newObj = {};
-                    console.log('her23weee');
+
                     var reformattedSKUS = await this.reformatSKU(newObj, obj);
                     skus_to_ignore_arr.push(reformattedSKUS[0]);
                 }
@@ -285,7 +287,7 @@ export default class CSV_parser{
                 for(var i = 0; i < intermediate_unformatted_skus_added.length; i++){
                     var sku = new SKU();
                     var toShow = {};
-                    console.log('break here');
+
                     var reformattedSKUS = await this.reformatSKU(toShow, intermediate_unformatted_skus_added[i]);
                     sku.name = reformattedSKUS[0].name;
                     sku.num = reformattedSKUS[0].num;
@@ -302,45 +304,55 @@ export default class CSV_parser{
                     sku.setup_cost = reformattedSKUS[0].setup_cost;
                     sku.run_cpc = reformattedSKUS[0].run_cpc;
                     sku.comment = reformattedSKUS[0].comment;
-                    console.log('gets here');
+                    console.log(sku);
 
                     let new_sku = await sku.save();
-                    ScraperHandler.updateNewSku({body: sku.num}, {});
+                  //  await ScraperHandler.updateNewSku({body: sku.num}, {});
                     // insert call here 
                     skus_added.push(toShow);
                 }
                 return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: skus_added, showImport: true, new_data: skus_to_update_new, ignored_data: skus_to_ignore_arr});
             } else{
+                console.log("the skus in interest are: " + JSON.stringify(skus_to_update_old));
                 return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: intermediate_skus_added, old_data: skus_to_update_old, new_data: skus_to_update_new, ignored_data: skus_to_ignore_arr});
             }
-        } catch (err){
-            return res.json({ success: false, error: "Catch all error"})
-        }
+  //      } catch (err){
+  //          return res.json({ success: false, error: "Catch all error"})
+  //      }
     }
 
     static async indicateSKUDataFailure(res, dataValidationObj, row){
+        console.log('this is it');
         if(dataValidationObj.missingRequiredField){
+            console.log(1);
             return res.json({ success: false,
                               missingRequiredField: row});
         } else if(dataValidationObj.nameIssue){
+            console.log(2);
             return res.json({ success: false,
                 badData: row});
         } else if(dataValidationObj.skuNumIssue){
+            console.log(3);
             return res.json({ success: false,
                 badData: row});
         } else if(dataValidationObj.caseUPCIssue){
+            console.log(4);
             return res.json({ success: false,
                 badData: row});
         } else if(dataValidationObj.unitUPCIssue){
+            console.log(5);
             return res.json({ success: false,
                 badData: row});
         } else if(dataValidationObj.cpcIssue){
+            console.log(6);
             return res.json({ success: false,
                 badData: row});
         } else if(dataValidationObj.mfgRunIssue){
+            console.log(7);
             return res.json({ success: false,
                 badData: row});
         } else if(dataValidationObj.mfgSetupIssue){
+            console.log(8);
             return res.json({ success: false,
                 badData:row});
         }
@@ -351,6 +363,7 @@ export default class CSV_parser{
         // Checks to make sure we have all required fields
         if(!obj[Constants.csv_sku_name] || !obj[Constants.csv_sku_caseUPC] || !obj[Constants.csv_sku_unitUPC] ||
         !obj[Constants.csv_sku_unitsize] || !obj[Constants.csv_sku_cpc] || !obj[Constants.csv_sku_pl]) {
+            console.log(JSON.stringify(obj));
             toReturn.success = false;
             toReturn.missingRequiredField = true;
             return toReturn;
@@ -435,7 +448,7 @@ export default class CSV_parser{
         }
 
         var sku_MLs_string = obj[Constants.csv_sku_ml].substring(1, obj[Constants.csv_sku_ml].length - 1);
-        console.log("string is : " + sku_MLs_string);
+
         var sku_MLs_arr = sku_MLs_string.split(",");
         for(var i = 0 ; i < sku_MLs_arr.length; i++){
             if(!db_Manu_Line.has(sku_MLs_arr[i])) {
@@ -486,7 +499,7 @@ export default class CSV_parser{
             {
                 var good = true;
                 var ML_array = obj[Constants.csv_sku_ml].substring(1, obj[Constants.csv_sku_ml].length - 2).split(',');
-                console.log(ML_array);
+                
                 for(var i = 0; i < ML_array.length; i++){
                     if(!all_manu_lines.has(ML_array[i])){
                         good = false;
@@ -525,8 +538,7 @@ export default class CSV_parser{
     }
 
     static async reformatSKU(objNew, objOld){
-        console.log("objOld is " + objOld);
-        console.log("objNew is " + objNew);
+
         objNew.name = objOld.Name;
         objNew.num = objOld[Constants.csv_sku_num];
         objNew.case_upc = objOld[Constants.csv_sku_caseUPC];
@@ -537,6 +549,7 @@ export default class CSV_parser{
         objNew.prod_line_to_show = objOld[Constants.csv_sku_pl];
         let prod_line = await Prod_Line.find({ name : objOld[Constants.csv_sku_pl]});
         objNew.prod_line = prod_line[0]._id;
+      
 
         objNew.formula_to_show = objOld[Constants.csv_sku_formula];
         let formula = await Formula.find({ num : objOld[Constants.csv_sku_formula]});
@@ -550,14 +563,19 @@ export default class CSV_parser{
 
         var manu_lines_to_add = [];
         for(var i = 0; i < manu_lines_arr.length; i++){
+
             let manu_line = await Manu_Line.find({ short_name : manu_lines_arr[i] });
+
             manu_lines_to_add.push(manu_line[0]._id);
         }
+
         objNew.manu_lines_to_show = manu_lines_string;
         objNew.manu_lines = manu_lines_to_add;
 
-        objNew.setup_cost = objOld[Constants.csv_sku_mfg_setup];
-        objNew.run_cpc = objOld[Constants.csv_sku_mfg_run];
+        var intermediate_setup = await this.extractNumFromCurrency(objOld[Constants.csv_sku_mfg_setup]);
+        var intermediate_run = await this.extractNumFromCurrency(objOld[Constants.csv_sku_mfg_run]);
+        objNew.setup_cost = intermediate_setup.data;
+        objNew.run_cpc = intermediate_run.data;
         
         objNew.manu_rate = objOld[Constants.csv_sku_rate];
         objNew.comment = objOld[Constants.csv_sku_comment];
@@ -607,7 +625,7 @@ export default class CSV_parser{
             sku.run_cpc = addArray[i].run_cpc;
             sku.comment = addArray[i].comment;
             let new_sku = await sku.save();
-            ScraperHandler.updateNewSku({body: sku.num}, {});
+        //    await ScraperHandler.updateNewSku({body: sku.num}, {});
             console.log("add array is: ");
             console.log(addArray[i]);
             returningAdd.push(addArray[i]);
