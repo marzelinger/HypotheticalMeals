@@ -160,7 +160,7 @@ export default class Calculations{
         var profit_marg = 0;
 
         if(total_COGS_per_case!=0){
-            profit_marg = (avg_rev_per_case/total_COGS_per_case)-1;
+            profit_marg = ((avg_rev_per_case/total_COGS_per_case)-1)*100;
         }
 
 
