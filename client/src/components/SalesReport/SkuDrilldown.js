@@ -68,7 +68,6 @@ export default class SkuDrilldown extends React.Component {
              this.props.dateRange['enddate'] !== null && this.state.new_data){
             var cust_str = (this.props.customer._id === undefined) ? '_' : this.props.customer._id;
             let datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', cust_str, '_', this.props.sku._id, 
-
                                 this.props.dateRange['startdate'], this.props.dateRange['enddate'], 0, 0)
             console.log(datares.data)
             if(datares.success){
@@ -310,6 +309,7 @@ export default class SkuDrilldown extends React.Component {
                         id="startdate"
                         defaultValue={this.props.dateRange.startdate}
                         onChange = {(e) => this.onInputChange(e, 'startdate')}
+                        max={moment(this.props.dateRange.enddate).format("YYYY-MM-DD")}
                     />
                 </FormGroup>
                 <FormGroup className='sku-drilldown-filter'>
@@ -320,6 +320,7 @@ export default class SkuDrilldown extends React.Component {
                         id="enddate"
                         defaultValue={this.props.dateRange.enddate}
                         onChange = {(e) => this.onInputChange(e, 'enddate')}
+                        max={moment().format("YYYY-MM-DD")}
                     />
                 </FormGroup>
             </div>
