@@ -61,6 +61,7 @@ class SkuHandler{
             sku.manu_rate = new_manu_rate
             sku.setup_cost = new_setup_cost
             sku.run_cpc = new_run_cpc
+            sku.status = 'queued';
             let new_sku = await sku.save();
             return res.json({ success: true, data: new_sku});
         }
@@ -163,7 +164,7 @@ class SkuHandler{
         try {
 
             var target_manu_line_id = req.params.manu_line_id;
-            console.log("target_manu_line: "+target_manu_line_id);
+            // console.log("target_manu_line: "+target_manu_line_id);
             let to_return = await SKU.find({ manu_lines : target_manu_line_id }).populate('formula').populate({
                 path: 'formula',
                 populate: { path: 'ingredients' }

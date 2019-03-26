@@ -129,7 +129,7 @@ export default class ManufacturingLinePage extends React.Component {
                 reportData: reportData,
                 manuData: manuData
               });
-            // console.log("this is the reportData: "+JSON.stringify(this.state.reportData));
+            console.log("this is the reportData: "+JSON.stringify(this.state.reportData));
             await this.setState({ 
               selected_manu_line: null,
               detail_view_options: [Constants.details_export, Constants.details_cancel],

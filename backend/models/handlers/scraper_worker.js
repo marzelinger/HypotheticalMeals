@@ -1,34 +1,42 @@
 
-import Sale_Record from '../databases/sale_record';
-import SKU from '../databases/sku';
 const tabletojson = require('tabletojson');
 var awake = false;
 var sku_queue = [];
 
-export default class Scraper_Worker{
-    static async trigger_reset(){
+process.on('message', (message) => {
+    if(message == 'reset'){
+        trigger_reset();
+    }
+    else{
+        update_queue(message)
+    }
+    process.send('message recieved')
+})
+
+    async function trigger_reset(){
         sku_queue = [];
-        await Sale_Record.deleteMany({});
     }
 
-    static update_queue(new_skus){
+    async function update_queue(new_skus){
         sku_queue.push(...new_skus);
+        var promises = new_skus.map((sku) => update_sku(sku.num, 'queued'))
+        await Promise.all(promises);
         if(!awake){
-            Scraper_Worker.start_scraping();
+            start_scraping();
         }
     }
     
-    static start_scraping(){
+    async function start_scraping(){
         awake = true;
-        Scraper_Worker.updateRecords();
+        updateRecords();
     }
 
-    static async updateRecords() {
+    async function updateRecords() {
         var sku = sku_queue.shift();
-        Scraper_Worker.scrape_record(sku.num, sku.year);
+        scrape_record(sku.num, sku.year);
         if(sku_queue.length != 0){
             setTimeout( () => {
-            this.updateRecords()
+            updateRecords()
             }, 200)
         } 
         else{
@@ -36,12 +44,11 @@ export default class Scraper_Worker{
         }
     }
 
-    static async update_sku(sku_num, status){
-        var resp = await SKU.findOneAndUpdate({num : sku_num},{$set: {status}}, {upsert : true, new : true});
+    async function update_sku(sku_num, status){
+        await process.send({type: 'status', sku_num: sku_num, status:status});
     }
 
-    static async scrape_record(sku_num, sku_year){
-        // console.log('hit ' + sku_num + ' ' + sku_year);
+    async function scrape_record(sku_num, sku_year){
         tabletojson.convertUrl(
             `http://hypomeals-sales.colab.duke.edu:8080/?sku=${sku_num}&year=${sku_year}`,
             function(tablesAsJson) {
@@ -58,29 +65,17 @@ export default class Scraper_Worker{
                         sales: Number(record.sales),
                         ppc: Number(record['price/case'])
                     }
-                    Scraper_Worker.addRecord(sale_record);
+                    process.send({type: 'add_record', sale_record})
                 })
             }
         ).then(() => {
-            Scraper_Worker.update_sku(sku_num, 'success');
+            if(!sku_queue.some((sku) =>  sku.num == sku_num)){
+                update_sku(sku_num, 'success');
+            }
+           
         });
     }
 
-    static async addRecord(sale_record){
-      var record = new Sale_Record();
-      var {cust_name, cust_num, sku_num, date, sales, ppc} = sale_record
-      record.cust_name = cust_name
-      record.cust_num = cust_num
-      record.sku_num = sku_num
-      record.date = date
-      record.sales = sales
-      record.ppc = ppc
-      let conflict = await Sale_Record.find({cust_name, cust_num, sku_num, date, sales, ppc});
-      if(conflict.length > 0){
-        return;
-      }
-      record.save();
-    }
+    
 
-}
 

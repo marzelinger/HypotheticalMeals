@@ -27,6 +27,7 @@ import Calculations from './Calculations'
 import ExportSimple from '../export/ExportSimple';
 // import { Table } from 'reactstrap';
 import ItemSearchInput from '../ListPage/ItemSearchInput'
+import style from '../../style/GeneralReport.css';
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
@@ -337,8 +338,10 @@ export default class GeneralReport extends React.Component {
                 console.log("here");
                 return (
                     <div className = "report-container-general"> 
+                      <div className = "report-heading">
                       <h2 width>General Sales Report Summary</h2>
-
+                      {this.getButtons()}
+                      </div>
                     {this.state.tenYRdata.prodLines.map(pl_row => 
                     <div className = "report-container-general"> 
                         <h5>Product Line: {pl_row.prod_line.name}</h5>
@@ -433,18 +436,19 @@ export default class GeneralReport extends React.Component {
         return (
         <div className="report-container-general">
             <div className='item-properties'>
-                <CustomerSelectSalesReport
-                    customer = {this.props.general_customer}
-                    handleSelectCustomer = {this.onSelectCustomer}
-                    className = 'sku-drilldown-filter'
-                />
                 <ProductLineSelectSalesReport
+                    className = 'select-lines'
                     handleSelectProdLines= {this.onSelectProductLine}
                     simple = {false}
                     prod_lines = {this.state.prod_lines}
                     prod_lines_indices = {this.state.prod_lines_indices}
                 >
                 </ProductLineSelectSalesReport>
+                <CustomerSelectSalesReport
+                    customer = {this.props.general_customer}
+                    handleSelectCustomer = {this.onSelectCustomer}
+                    className = 'sku-drilldown-filter'
+                />
                 <div className = "row">
                     <div className = "create_report_button hoverable"
                                 onClick={() => this.updateReportData()}
@@ -452,18 +456,18 @@ export default class GeneralReport extends React.Component {
                                 > 
                         {Constants.create_sum_sales_report} 
                     </div>
-                    {this.getButtons()}
                 </div>
-                 
+            </div>
+            <div className = "report">
                 <LoadingOverlay
-                active={this.state.loading}
-                spinner
-                text='Loading report data...'
-                >
-                <div className = "report-container-general"> 
-                {this.state.loading ?<h2 width> Report Data Loading...</h2>: <div/>}
-                    {this.generalReportTables()}
-                </div>
+                    active={this.state.loading}
+                    spinner
+                    text='Loading report data...'
+                    >
+                    <div className = "report-container-general"> 
+                    {this.state.loading ?<h2 width> Report Data Loading...</h2>: <div/>}
+                        {this.generalReportTables()}
+                    </div>
                 </LoadingOverlay>
             </div>
         </div>

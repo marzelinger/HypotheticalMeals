@@ -1,7 +1,8 @@
 import DataStore from '../helpers/DataStore'
+import SubmitRequest from '../helpers/SubmitRequest';
 var fileDownload = require('js-file-download');
 
-export const exportSKUS = (dataIN, fileTitle)  => {
+export const exportSKUS = async (dataIN, fileTitle)  => {
     var count = dataIN.length;
     const rows = [];
     var label = [];
@@ -21,40 +22,57 @@ export const exportSKUS = (dataIN, fileTitle)  => {
     label.push("Comment");
     rows.push(label);
     for(let i = 0; i<count ; i++){
-        var curData = dataIN[i];
-        var dataLine = [];
-        dataLine.push(curData.num);
-        dataLine.push(curData.name);
-        dataLine.push(curData.case_upc);
-        dataLine.push(curData.unit_upc);
-        dataLine.push(curData.unit_size);
-        dataLine.push(curData.cpc);
-        dataLine.push(curData.prod_line.name);
-        dataLine.push(curData.formula.num);
-        dataLine.push(curData.scale_factor);
-        var ml_names = "";
-        if(curData.manu_lines!=undefined){
-            for (let m = 0; m<curData.manu_lines.length; m++){
-                ml_names+=""+curData.manu_lines.short_name;
+        var half_sku = dataIN[i];
+        var curResponse = await SubmitRequest.submitGetSkuByID(half_sku._id);
+        if(curResponse.success){
+            var curData = curResponse.data[0];
+            var dataLine = [];
+            console.log('curData: '+JSON.stringify(curData));
+            dataLine.push(curData.num);
+            dataLine.push(curData.name);
+            dataLine.push(curData.case_upc);
+            dataLine.push(curData.unit_upc);
+            dataLine.push(curData.unit_size);
+            dataLine.push(curData.cpc);
+            dataLine.push(curData.prod_line['name']);
+            dataLine.push(curData.formula['num']);
+            dataLine.push(curData.scale_factor);
+            var ml_names = "";
+            if(curData.manu_lines!=undefined){
 
-                if(m!=curData.manu_lines.length-1){
-                    ml_names+=",";
-                }
+                    ml_names+="\"";
+                    for (let m = 0; m<curData.manu_lines.length; m++){
+                        console.log("manu_line: "+curData.manu_lines[m]);
+                        var manu = await SubmitRequest.submitGetManufacturingLineByID(curData.manu_lines[m]);
+                        console.log("manu: "+JSON.stringify(manu));
+                        if(manu.success){
+                            if(manu.data!=undefined){
+                                var sn = manu.data[0].short_name;
+                                ml_names+=""+sn;
+        
+                                if(m!=curData.manu_lines.length-1){
+                                    ml_names+=",";
+                                }
+                            }
+                        }
+                    }
+                    ml_names+="\"";
             }
-        }
-        dataLine.push(ml_names);
-        dataLine.push(curData.manu_rate);
-        dataLine.push(curData.setup_cost);
-        dataLine.push(curData.run_cpc);
-        dataLine.push(curData.comment);
-        rows.push(dataLine);
-    }    
-    let csvContent = "";
-    rows.forEach(function(rowArray){
-        let row = rowArray.join(",");
-        csvContent += row + "\r\n";
-     }); 
-    fileDownload(csvContent, fileTitle+'.csv');
+            dataLine.push(ml_names);
+            dataLine.push(curData.manu_rate);
+            dataLine.push(curData.setup_cost);
+            dataLine.push(curData.run_cpc);
+            dataLine.push(curData.comment);
+            rows.push(dataLine);
+        }   
+    } 
+        let csvContent = "";
+        rows.forEach(function(rowArray){
+            let row = rowArray.join(",");
+            csvContent += row + "\r\n";
+        }); 
+        fileDownload(csvContent, fileTitle+'.csv');
+    
 }
 
 export const exportFormulas = (dataIN, fileTitle)  => {
@@ -70,16 +88,49 @@ export const exportFormulas = (dataIN, fileTitle)  => {
 
     for(let i = 0; i<count ; i++){
         var curData = dataIN[i];
-        var dataLine = [];
-        dataLine.push(curData.num);
-        dataLine.push(curData.name);
-        dataLine.push(curData.ingredients[i]['num']);
-        dataLine.push(curData.ingredient_quantities[i]);
-        if(i==0){
-        dataLine.push(curData.comment);
+        console.log("this is the form: "+JSON.stringify(curData));
+        if(curData.ingredients== undefined){
+            console.log("no ingredients in this form");
+            var dataLine = [];
+            dataLine.push(curData.num);
+            dataLine.push(curData.name);
+            dataLine.push("\"\"");
+            dataLine.push("\"\"");
+            dataLine.push(curData.comment);
+            rows.push(dataLine);
+
         }
-        rows.push(dataLine);
-    }    
+        else if(curData.ingredients!=undefined){
+            if(curData.ingredients.length==0){
+                console.log("no ingredients in this form");
+                var dataLine = [];
+                dataLine.push(curData.num);
+                dataLine.push(curData.name);
+                dataLine.push("\"\"");
+                dataLine.push("\"\"");
+                dataLine.push(curData.comment);
+                rows.push(dataLine);
+            }
+            else {
+                for(let k = 0; k<curData.ingredients.length; k++){
+                    console.log("here is the loop:");
+                    var dataLine = [];
+                    dataLine.push(curData.num);
+                    dataLine.push(curData.name);
+                    dataLine.push(curData.ingredients[k].num);
+                    dataLine.push(curData.ingredient_quantities[k]);
+                    if(k==0){
+                        dataLine.push(curData.comment);
+                    }
+                    else{
+                        dataLine.push("\"\"");
+                    }
+                    rows.push(dataLine);
+                    console.log("this is the rows: "+rows);
+                }
+            }
+        }
+    }
     let csvContent = "";
     rows.forEach(function(rowArray){
         let row = rowArray.join(",");

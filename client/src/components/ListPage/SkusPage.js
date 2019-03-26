@@ -135,7 +135,7 @@ export default class ListPage extends React.Component {
         // setTimeout(() => this.updateRecords(), millisTill10);
         await this.loadDataFromServer();
         if (!this.pollInterval) {
-            this.pollInterval = setInterval(this.loadDataFromServer, 2000);
+            this.pollInterval = setInterval(this.loadDataFromServer, 3000);
         }
     }
 
@@ -153,7 +153,6 @@ export default class ListPage extends React.Component {
 
 
     async loadDataFromServer() {
-        let allData = await SubmitRequest.submitGetData(this.state.page_name);
         var final_ing_filter = this.state.filters['ingredients'].join(',');
         var final_keyword_filter = this.state.filters['keyword'];
         var final_prod_line_filter = this.state.filters['product lines'].join(',');
@@ -173,12 +172,15 @@ export default class ListPage extends React.Component {
             res.data = [];
             resALL.data = [];
         }
+        console.log(res);
         await this.setState({
             data: res.data,
             exportData: resALL.data,
             filterChange: false
         })
+        console.log(this.state.data)
         await this.updateDataState();
+
     }
 
     async checkCurrentPageInBounds(dataResAll){
