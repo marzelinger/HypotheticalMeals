@@ -134,9 +134,9 @@ export default class ListPage extends React.Component {
         // }
         // setTimeout(() => this.updateRecords(), millisTill10);
         await this.loadDataFromServer();
-        if (!this.pollInterval) {
-            this.pollInterval = setInterval(this.loadDataFromServer, 3000);
-        }
+        // if (!this.pollInterval) {
+        //     this.pollInterval = setInterval(this.loadDataFromServer, 3000);
+        // }
     }
 
     async componentDidUpdate (prevProps, prevState) {

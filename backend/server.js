@@ -168,7 +168,7 @@ router.put('/scrape_new_sku', (req, res) => ScraperHandler.updateNewSku(req, res
 router.put('/scrape_new_sku_bulk', (req, res) => ScraperHandler.bulkUpdateSkus(req, res));
 router.get('/trigger_reset', (req, res) => ScraperHandler.triggerReset(req, res));
 router.get('/update_all', (req, res) => ScraperHandler.updateAllRecords(req, res));
-
+router.get('/status/:sku_num', (req, res) => ScraperHandler.getStatus(req, res));
 // Use our router configuration when we call /api
 app.use('/api', router);
 app.use(passport.initialize());
