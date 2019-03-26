@@ -37,7 +37,7 @@ process.on('message', (message) => {
         if(sku_queue.length != 0){
             setTimeout( () => {
             updateRecords()
-            }, 200)
+            }, 500)
         } 
         else{
             awake = false;
