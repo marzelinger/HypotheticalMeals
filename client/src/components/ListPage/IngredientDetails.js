@@ -80,6 +80,14 @@ export default class IngredientDetails extends React.Component {
                     inv_in.push(prop);
                 }
             }
+            else if(prop === 'pkg_cost'){
+                console.log('gets here belal')
+                var isValid = /^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/.test(this.props.item[prop])
+                if(!isValid){
+                    console.log('this is the eror belal is looking for');
+                    inv_in.push(prop);
+                }
+            }
             else if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) {
                 inv_in.push(prop);
             }

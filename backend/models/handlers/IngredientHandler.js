@@ -40,6 +40,11 @@ class IngredientHandler{
             if(sanitized_ingr_unit.success == false) return res.json({ success: false, error: "Please enter a valid unit. Options are: oz, ounce, lb, pound, ton, g, gram, kg, kilogram, floz, fluidounce, pt, pint, qt, quart, gal, gallon, ml, milliliter, l, liter, ct, count"});
             ingredient.pkg_size = sanitized_ingr_unit.data;
 
+            var isValid = /^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/.test(new_pkg_cost);
+            if(!isValid) return res.json({ success: false, error: "Please enter a valid currency valid (i.e. $5.00, $ 5.00, 5.00 USD"});
+            var cost_arr = new_pkg_cost.match(/^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/);
+            new_pkg_cost = cost_arr[1];
+
             ingredient.pkg_cost = new_pkg_cost;
             ingredient.sku_count = new_sku_count;
             ingredient.comment = new_comment; 
@@ -68,6 +73,12 @@ class IngredientHandler{
             new_pkg_size = sanitized_ingr_unit.data;
 
             var new_pkg_cost = req.body.pkg_cost;
+
+            var isValid = /^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/.test(new_pkg_cost);
+            if(!isValid) return res.json({ success: false, error: "Please enter a valid currency valid (i.e. $5.00, $ 5.00, 5.00 USD"});
+            var cost_arr = new_pkg_cost.match(/^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/);
+            new_pkg_cost = cost_arr[1];
+
             var new_sku_count = req.body.sku_count
             var new_comment = req.body.comment;
 
