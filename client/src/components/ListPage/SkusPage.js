@@ -153,9 +153,6 @@ export default class ListPage extends React.Component {
 
 
     async loadDataFromServer() {
-        console.log('loading data')
-        let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        console.log(allData)
         var final_ing_filter = this.state.filters['ingredients'].join(',');
         var final_keyword_filter = this.state.filters['keyword'];
         var final_prod_line_filter = this.state.filters['product lines'].join(',');
@@ -181,7 +178,6 @@ export default class ListPage extends React.Component {
             exportData: resALL.data,
             filterChange: false
         })
-        console.log('here???')
         console.log(this.state.data)
         await this.updateDataState();
 

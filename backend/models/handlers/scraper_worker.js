@@ -8,7 +8,6 @@ process.on('message', (message) => {
         trigger_reset();
     }
     else{
-        console.log(message)
         update_queue(message)
     }
     process.send('message recieved')
@@ -19,11 +18,9 @@ process.on('message', (message) => {
     }
 
     async function update_queue(new_skus){
-        console.log('updating')
         sku_queue.push(...new_skus);
-        await new_skus.forEach(async(sku) => {
-            await update_sku(sku.num, 'queued');
-        })
+        var promises = new_skus.map((sku) => update_sku(sku.num, 'queued'))
+        await Promise.all(promises);
         if(!awake){
             start_scraping();
         }
@@ -48,11 +45,10 @@ process.on('message', (message) => {
     }
 
     async function update_sku(sku_num, status){
-        process.send({type: 'status', sku_num: sku_num, status:status});
+        await process.send({type: 'status', sku_num: sku_num, status:status});
     }
 
     async function scrape_record(sku_num, sku_year){
-        console.log('poll: ' + sku_num + ' ' + sku_year )
         tabletojson.convertUrl(
             `http://hypomeals-sales.colab.duke.edu:8080/?sku=${sku_num}&year=${sku_year}`,
             function(tablesAsJson) {

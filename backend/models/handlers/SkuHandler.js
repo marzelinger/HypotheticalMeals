@@ -61,6 +61,7 @@ class SkuHandler{
             sku.manu_rate = new_manu_rate
             sku.setup_cost = new_setup_cost
             sku.run_cpc = new_run_cpc
+            sku.status = 'queued';
             let new_sku = await sku.save();
             return res.json({ success: true, data: new_sku});
         }
