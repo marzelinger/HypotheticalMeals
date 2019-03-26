@@ -12,6 +12,7 @@ import '../../style/SkusPage.css'
 import '../../style/GeneralReportTableStyle.css'
 import '../../style/SkuTableStyle.css'
 import '../../style/GeneralReport.css'
+import { Label } from 'reactstrap';
 const jwt_decode = require('jwt-decode');
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
@@ -258,6 +259,7 @@ export default class ProductLineSelectSalesReport extends React.Component {
         return (
             <div className="prod-line-select-page">
                 <div className = "prod-line-select-table prod-select-report">
+                    <Label>Select Product Line</Label>
                     <PageTable 
                         columns={this.state.table_columns} 
                         table_properties={this.state.table_properties} 
