@@ -68,7 +68,6 @@ export default class ScraperHandler{
     static async updateStatus(sku_num, status){
         let updated_sku = await SKU.findOneAndUpdate({ num : sku_num},
             {$set: {status : status}}, {upsert : true, new : true});
-        console.log(updated_sku);
     }
 
     static async addRecord(sale_record){
@@ -87,9 +86,9 @@ export default class ScraperHandler{
         record.save();
       }
 }
-process.on('message', (message) => {
+process.on('message', async (message) => {
     if(message.type == 'status'){
-        ScraperHandler.updateStatus(message.sku_num, message.status)
+        await ScraperHandler.updateStatus(message.sku_num, message.status)
     }
     else if(message.type == 'add_record'){
         ScraperHandler.addRecord(message.sale_record);
