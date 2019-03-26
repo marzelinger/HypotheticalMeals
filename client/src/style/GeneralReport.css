@@ -60,6 +60,10 @@ li {
     display: block;
 }
 
+.create_report_button {
+    margin-top: 25px;
+}
+
 .create_sum_report_button, .manulinebutton{
     background-color: rgb(0, 188, 212) !important;
     border-color: #212529;
@@ -70,4 +74,28 @@ li {
     justify-content: center;
     border-radius: 12px;
     margin-left: 20px;
+}
+
+.prod-line-select-table > .table-container {
+    padding: 0px;
+}
+
+.prod-line-select-table {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+
+.item-properties {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-items: center;
+    padding: 20px;
+    border-bottom: 1px solid rgb(224, 224, 224)
+}
+
+.report-heading {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
 }
