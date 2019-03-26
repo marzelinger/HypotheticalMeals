@@ -74,9 +74,17 @@ class SalesReportPage extends React.Component {
     };
 
     onDateRangeSelect(event, type) {
-        console.log(type)
+        console.log(new Date())
         let newRange = Object.assign({}, this.state.dateRange)
         newRange[type] = event.target.value
+        // if (new Date(newRange['startdate']) > new Date(newRange['enddate'])) {
+        //     alert('Start date cannot be after End date!')
+        //     return
+        // }
+        // else if (new Date(newRange['enddate']) > new Date()) {
+        //     alert('Start date cannot be after End date!')
+        //     return
+        // }
         this.setState({
             dateRange: newRange
         })
