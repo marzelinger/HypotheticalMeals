@@ -284,6 +284,7 @@ export default class CSV_parser{
             }  
 
             if(updated == 0) {
+                var toscrape = [];
                 for(var i = 0; i < intermediate_unformatted_skus_added.length; i++){
                     var sku = new SKU();
                     var toShow = {};
@@ -304,13 +305,12 @@ export default class CSV_parser{
                     sku.setup_cost = reformattedSKUS[0].setup_cost;
                     sku.run_cpc = reformattedSKUS[0].run_cpc;
                     sku.comment = reformattedSKUS[0].comment;
-                    console.log(sku);
-
                     let new_sku = await sku.save();
-                  //  await ScraperHandler.updateNewSku({body: sku.num}, {});
-                    // insert call here 
+                    toscrape.push(new_sku.num)
                     skus_added.push(toShow);
                 }
+                console.log('done adding')
+                ScraperHandler.bulkUpdateSkus({body: {sku_nums: toscrape}}, {});
                 return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: skus_added, showImport: true, new_data: skus_to_update_new, ignored_data: skus_to_ignore_arr});
             } else{
                 console.log("the skus in interest are: " + JSON.stringify(skus_to_update_old));
@@ -608,6 +608,7 @@ export default class CSV_parser{
                         manu_lines: updateArray[i].manu_lines, manu_rate: updateArray[i].manu_rate, comment : updateArray[i].comment}}, {upsert : true, new : true});
                         returningUpdate.push(updateArray[i]);
         }
+        var toscrape = []
         for(var i = 0; i < addArray.length; i++){
             var sku = new SKU();
             sku.name = addArray[i].name;
@@ -625,11 +626,15 @@ export default class CSV_parser{
             sku.run_cpc = addArray[i].run_cpc;
             sku.comment = addArray[i].comment;
             let new_sku = await sku.save();
-        //    await ScraperHandler.updateNewSku({body: sku.num}, {});
+            console.log('here')
+            console.log(new_sku)
             console.log("add array is: ");
             console.log(addArray[i]);
             returningAdd.push(addArray[i]);
+            toscrape.push(new_sku.num)
         }
+        console.log('here')
+        ScraperHandler.bulkUpdateSkus({body: {sku_nums: toscrape}}, {});
         return res.json({ success: true, adds: returningAdd, updates: returningUpdate, ignores: ignoreArray});
         } catch(err){
             return res.json({ success: false, error: "Catch all error"});
