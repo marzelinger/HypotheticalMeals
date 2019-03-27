@@ -86,6 +86,18 @@ export default class Calculations{
     }
 
 
+    static checkValLength(val){
+        var val_str = ""+val;
+        var split_val = val_str.split(".");
+        if(split_val.length==2){
+            if (split_val[1].length>5){
+                //want to round.
+                return Math.round((val*100000))/100000;
+            }
+        }
+        return val;
+    }
+
     static async formatDate(start_date, end_date){
 
         console.log("START DATE: "+start_date);
@@ -194,7 +206,7 @@ export default class Calculations{
 
                     var form_parse = await this.parseUnitVal(converted_form);
                     console.log("form_parse"+JSON.stringify(form_parse));
-                    if (!form_parse.success) return 0;
+                    if (!form_parse.val) return 0;
 
                     var form_ing_val = form_parse.val;
                     console.log("form_ing_val"+JSON.stringify(form_ing_val));

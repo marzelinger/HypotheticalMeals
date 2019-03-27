@@ -1,4 +1,5 @@
 import { bool } from "prop-types";
+import Calculations from "../components/SalesReport/Calculations";
 
 // Unit conversion for Ingredients units
 
@@ -7,24 +8,27 @@ export default class UnitConversion {
         let num = parseFloat(val.split(' ')[0]);
         let unit = val.split(' ')[1];
         switch (unit){
-            case 'ounce': 
             case 'oz':
-                return val;
+                var number = Calculations.checkValLength(num);
+                return number + ' oz';
             case 'ounce':
-                return num + ' oz';
+                var number = Calculations.checkValLength(num);
+                return number + ' oz';            
             case 'lb':
             case 'pound':
-                return num*16 + ' oz'
-            case 'pound':
-                return num*16 + ' oz'
+                var number = Calculations.checkValLength(num*16);
+                return number + ' oz'
             case 'ton':
-                return num*32000 + ' oz';
+                var number = Calculations.checkValLength(num*32000);
+                return number + ' oz';
             case 'g':
             case 'gram':
-                return num*0.035274 + ' oz'
+                var number = Calculations.checkValLength(num*0.035274);
+                return number + ' oz'
             case 'kg':
             case 'kilogram':
-                return num*35.274 + ' oz'
+                var number = Calculations.checkValLength(num*35.274);
+                return number + ' oz'
             default:
                 return 'invalid unit';
         }
@@ -35,20 +39,23 @@ export default class UnitConversion {
         switch (unit){
             case 'ounce':
             case 'oz':
-                return num/16 + ' lb'
+                var number = Calculations.checkValLength(num/16);
+                return number + ' lb'
             case 'lb':
             case 'pound':
-                return val
-            case 'pound':
-                return num + ' lb'
+                var number = Calculations.checkValLength(num);
+                return number + ' lb'
             case 'ton':
-                return num*2000 + ' lb'
+                var number = Calculations.checkValLength(num*2000);
+                return number + ' lb'
             case 'g':
             case 'gram':
-                return num*0.00220462 + ' lb'
+                var number = Calculations.checkValLength(num*0.00220462);
+                return number + ' lb'
             case 'kg':
             case 'kilogram':
-                return num*2.20462 + ' lb'
+                var number = Calculations.checkValLength(num*2.20462);
+                return number + ' lb'
             default:
                 return 'invalid unit'
         }
@@ -60,20 +67,24 @@ export default class UnitConversion {
         switch (unit){
             case 'oz':
             case 'ounce':
-                return num/16 + ' ton'
+                var number = Calculations.checkValLength(num/16);
+                return number + ' ton'
             case 'lb':
             case 'pound':
-                return num/32000 + ' ton'
-            case 'pound':
-                return num/32000 + ' ton'
+                var number = Calculations.checkValLength(num/32000);
+
+                return number + ' ton'
             case 'ton':
-                return val
+                var number = Calculations.checkValLength(num);
+                return number + ' ton'
             case 'g':
             case 'gram':
-                return num/907185 + ' ton'
+                var number = Calculations.checkValLength(num/907185);
+                return number + ' ton'
             case 'kg':
             case 'kilogram':
-                return num/907.185 + ' ton'
+                var number = Calculations.checkValLength(num/907.185);
+                return number + ' ton'
             default:
                 return 'invalid unit'
         }
@@ -258,7 +269,8 @@ export default class UnitConversion {
                 return val
             case 'l':
             case 'liter':
-                return  num*1000  + ' ml'
+                var number = Calculations.checkValLength(num*1000);
+                return  number  + ' ml'
             default:
                 return 'invalid unit'
         }
@@ -381,4 +393,5 @@ export default class UnitConversion {
         }
         return { success: false, error: 'Incorrect String Format' }
     }
+
 }
