@@ -124,7 +124,7 @@ class Manu_ActivityHandler{
             var target_id = req.params.manu_activity_id;
             let to_return = await Manu_Activity.find({ _id : target_id}).populate('sku').populate('manu_line').populate({
                 path: 'sku',
-                populate: { path: 'ingredients' }
+                populate: { path: 'formula' }
               });
 
             if(to_return.length == 0) return res.json({success: false, error: '404'});
@@ -139,12 +139,15 @@ class Manu_ActivityHandler{
             var target_sku_id = req.params.sku_id;
             var target_start_date = req.params.start;
             var target_end_date = req.params.end;
+            console.log("TARGET_START: "+target_start_date);
+            console.log("TARGET_END: "+target_end_date);
+
             var complete = [];
             let to_return = await Manu_Activity.find({ sku : target_sku_id, start: {$gte: target_start_date}}).populate('sku').populate('manu_line').populate({
                 path: 'sku',
-                populate: { path: 'ingredients' }
+                populate: { path: 'formula' }
               });
-
+            console.log("TO_RETURN LENGTH: "+to_return.length);
             if(to_return.length == 0) {
                 return res.json({success: false, error: '404'});
             }
@@ -176,6 +179,11 @@ class Manu_ActivityHandler{
             var target_manu_line_id = req.params.manu_line_id;
             var target_start_date = req.params.start_date;
             var target_end_date = req.params.end_date;
+
+            //console.log("TARGET_START: "+target_start_date);
+            //console.log("TARGET_END: "+target_end_date);
+
+
             var target_duration = req.params.duration;
             // let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id , scheduled: true, start: {$gte: target_start_date, $lt: target_end_date}})
             let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id , scheduled: true})

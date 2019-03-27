@@ -509,6 +509,8 @@ export default class SubmitRequest{
 
   static async submitGetManufacturingActivitiesBySKU(sku, start, end) {
     try {
+      console.log("THIS IS THE SKU: "+JSON.stringify(sku));
+      console.log("sku: "+sku._id+"     start;    "+start+"       end: "+end);
       return fetch('/api/manuactivities/sku/' + sku._id+'/'+start+'/'+end)
       .then(data => data.json())
       .then((res) => {
