@@ -95,7 +95,15 @@ export default class SkuDrilldown extends React.Component {
         if(recordsCalcs != undefined){
             //format dates.
             //into ISO
-            var total_data = await Calculations.calcTotalData(this.props.sku, recordsCalcs.revenue, recordsCalcs.sales, recordsCalcs.avg_rev_per_case, this.props.dateRange.startdate, this.props.dateRange.enddate);
+            var start_date = new Date(this.props.dateRange.startdate);
+            start_date.setHours(start_date.getHours() + 8);
+            var end_date = new Date(this.props.dateRange.enddate)
+            end_date.setHours(end_date.getHours() + 8);
+
+            console.log("start_sku: "+ start_date.toISOString());
+            console.log("end_sku: "+ start_date.toISOString());
+
+            var total_data = await Calculations.calcTotalData(this.props.sku, recordsCalcs.revenue, recordsCalcs.sales, recordsCalcs.avg_rev_per_case, start_date.toISOString(), end_date.toISOString());
             await this.setState({
                 totalRowData : total_data
             });
