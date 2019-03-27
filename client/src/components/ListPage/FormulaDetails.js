@@ -156,7 +156,7 @@ export default class FormulaDetails extends React.Component {
         
         var new_num = Number(qty1_arr[1]) - Number(qty2_arr[1]);
         new_num = new_num.toFixed(5);
-        var output = "" + new_num + " " + qty1_arr[2];
+        var output = "" + Math.round((new_num*100000))/100000 + " " + qty1_arr[2];
         return output
     }
 
@@ -182,7 +182,7 @@ export default class FormulaDetails extends React.Component {
         
         var new_num = Number(qty1_arr[1]) + Number(qty2_arr[1]);
         new_num = new_num.toFixed(5);
-        var output = "" + new_num + " " + qty1_arr[2];
+        var output = "" + Math.round((new_num*100000))/100000 + " " + qty1_arr[2];
         return output;
     }
 
