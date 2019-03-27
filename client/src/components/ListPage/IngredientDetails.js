@@ -90,6 +90,7 @@ export default class IngredientDetails extends React.Component {
             }
             else if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) {
                 inv_in.push(prop);
+                console.log('hello');
             }
         })
         await this.setState({ invalid_inputs: inv_in });

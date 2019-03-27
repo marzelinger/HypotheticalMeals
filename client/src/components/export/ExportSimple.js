@@ -22,6 +22,7 @@ class ExportSimple extends Component {
 
   async onExportSimpleClick(e){
     console.log(this.props.data)
+    if(this.props.data!=undefined){
     e.preventDefault();
     
     switch(this.props.fileTitle){
@@ -50,6 +51,7 @@ class ExportSimple extends Component {
     if (this.props.fileTitle.substring(this.props.fileTitle.length, this.props.fileTitle.length - 5) === '_goal'){
       exportManuGoal(this.props.data, this.props.fileTitle);
     }
+  }
 
   };
 render() {

@@ -162,7 +162,7 @@ export default class IngredientsPage extends React.Component {
         let data = this.state.data.slice();
         await data.map(async (item) => {
                        let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', this.state.currentPage, this.state.pageSize,'_', '_');
-
+                        console.log("this is the skus responde: "+JSON.stringify(skus));
            // let skus = await SubmitRequest.submitGetFilterData(Constants.sku_filter_path,'_', item._id, '_', '_');
             item.sku_count = skus.data.length;
             await SubmitRequest.submitUpdateItem(this.state.page_name, item);
@@ -296,11 +296,13 @@ export default class IngredientsPage extends React.Component {
         switch (option) {
             case Constants.details_create:
                 newData.push(item);
+                console.log('hello2323');
                 res = await SubmitRequest.submitCreateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_save:
                 let toSave = newData.findIndex(obj => {return obj._id === item._id});
                 newData[toSave] = item;
+                console.log('hello23234');
                 res = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
                 break;
             case Constants.details_delete:
@@ -315,7 +317,7 @@ export default class IngredientsPage extends React.Component {
                 res = {success: true}
                 break;
         }
-        console.log(res);
+        console.log(JSON.stringify(res));
         if (!res.success) alert(res.error);
         else {
             this.setState({ 
