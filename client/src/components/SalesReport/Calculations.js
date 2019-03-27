@@ -294,6 +294,8 @@ export default class Calculations{
         profit_marg = Math.round(profit_marg);
 
 
+        avg_manu_run_size = Math.round((avg_manu_run_size*100))/100;
+
 
 
 

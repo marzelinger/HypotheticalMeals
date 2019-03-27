@@ -401,7 +401,9 @@ export default class ListPage extends React.Component {
                 if(resFormula.success){
                     item['formula']= resFormula.data._id;
                     resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item);
-                    SubmitRequest.addNewSkuRecords(resItem.data.num);
+                    if(resItem.success){
+                        SubmitRequest.addNewSkuRecords(resItem.data.num);
+                    }
                 } 
                 else {
                     resItem = { success: false, error: 'Formula Quantity is not entered correctly'}
