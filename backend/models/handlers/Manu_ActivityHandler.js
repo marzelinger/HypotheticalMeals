@@ -137,16 +137,21 @@ class Manu_ActivityHandler{
     static async getManufacturingActivitiesBySKU(req, res){
         try {
             var target_sku_id = req.params.sku_id;
+            // var sku_res = await SKU.find({ _id : target_sku_id }).populate('formula').populate({
+            //     path: 'formula',
+            //     populate: { path: 'ingredients' }
+            //   }).populate('prod_line');
+            // if(sku_res.length == 0) {
+            //     return res.json({success: false, error: 'No SKU'});
+            // }            
             var target_start_date = req.params.start;
             var target_end_date = req.params.end;
             console.log("TARGET_START: "+target_start_date);
             console.log("TARGET_END: "+target_end_date);
 
             var complete = [];
-            let to_return = await Manu_Activity.find({ sku : target_sku_id, start: {$gte: target_start_date}}).populate('sku').populate('manu_line').populate({
-                path: 'sku',
-                populate: { path: 'formula' }
-              });
+            // let to_return = await Manu_Activity.find({ sku : sku_res[0]._id, start: {$gte: target_start_date}})
+            let to_return = await Manu_Activity.find({ sku: target_sku_id, start: {$gte: target_start_date}});
             console.log("TO_RETURN LENGTH: "+to_return.length);
             if(to_return.length == 0) {
                 return res.json({success: false, error: '404'});

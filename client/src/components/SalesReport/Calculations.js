@@ -124,7 +124,7 @@ export default class Calculations{
 
         //get all the activities for that sku
         //get the quantities and then find the average
-        var res = await SubmitRequest.submitGetManufacturingActivitiesBySKU(sku, start_date, end_date);
+        var res = await SubmitRequest.submitGetManufacturingActivitiesBySKU(sku._id, start_date, end_date);
         console.log("this is the response here in get avg: "+JSON.stringify(res));
         if(res.success){
             console.log("res success HERE");
