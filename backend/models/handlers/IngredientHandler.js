@@ -58,7 +58,7 @@ class IngredientHandler{
     }
 
     static async updateIngredientByID(req, res){
-        try {
+  //      try {
             var target_id = req.params.ingredient_id;
             if (!target_id) {
                 return res.json({ success: false, error: 'No ingredient name provided'});
@@ -69,25 +69,33 @@ class IngredientHandler{
             var new_pkg_size = req.body.pkg_size;
 
             var sanitized_ingr_unit = UnitConversion.getCleanUnitForm(new_pkg_size);
+            console.log('hello');
             if(sanitized_ingr_unit.success == false) return res.json({ success: false, error: "Please enter a valid unit. Options are: oz, ounce, lb, pound, ton, g, gram, kg, kilogram, floz, fluidounce, pt, pint, qt, quart, gal, gallon, ml, milliliter, l, liter, ct, count"});
+            console.log('hello2');
             new_pkg_size = sanitized_ingr_unit.data;
 
-            var new_pkg_cost = req.body.pkg_cost;
-
+            var new_pkg_cost = req.body.pkg_cost + "";
+            console.log(new_pkg_cost);
             var isValid = /^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/.test(new_pkg_cost);
+            console.log('hello3');
             if(!isValid) return res.json({ success: false, error: "Please enter a valid currency valid (i.e. $5.00, $ 5.00, 5.00 USD"});
+            console.log('hello4');
             var cost_arr = new_pkg_cost.match(/^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/);
+            console.log(cost_arr);
             new_pkg_cost = cost_arr[1];
 
+            console.log('hello21');
             var new_sku_count = req.body.sku_count
             var new_comment = req.body.comment;
+            console.log('hello12');
 
             let conflict = await Ingredient.find({ num : new_ingredient_num });
             if(conflict.length > 0 && conflict[0]._id != target_id) return res.json({ success: false, error: 'CONFLICT'});
-            
+            console.log('hello123456');
             let conflict2 = await Ingredient.find({ name : new_ingredient_name});
             if(conflict2.length > 0 && conflict2[0]._id != target_id) return res.json({ success: false, error: 'CONFLICT'});
 
+            console.log('hell3332');
             let updated_ingredient = await Ingredient.findOneAndUpdate({ _id: target_id},
                 {$set: {name: new_ingredient_name, num : new_ingredient_num, vendor_info: new_vendor_info, pkg_size : new_pkg_size,
                      pkg_cost : new_pkg_cost, sku_count: new_sku_count, comment: new_comment}}, {upsert: true, new: true});
@@ -97,14 +105,15 @@ class IngredientHandler{
                     success: true, error: 'This document does not exist'
                 });
             }
+            console.log('hello67');
             return res.json({
                 success: true, data: updated_ingredient
             });    
         }
-        catch (err) {
-            return res.json({ success: false, error: err});
-        }
-    }
+ //       catch (err) {
+  //          return res.json({ success: false, error: err});
+   //     }
+ //   }
 
     static async getAllIngredients(req, res){
         try{
