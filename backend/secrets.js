@@ -1,6 +1,6 @@
 // secrets.js
 const secrets = {    
-    dbUri: "mongodb://admin:testtest123@ds211083.mlab.com:11083/meta-meals-ev3-testing",
+    dbUri: "mongodb://admin:testtest123@ds135592.mlab.com:35592/meta-meals-prod-ev3",
     secretOrKey: "secret",
     client_secret: "zHMB4Sl*o*Awu*mjZv$VEa+fX=QACLIWuRNWyNe@kNtTYLd*4E"
   };
@@ -14,3 +14,6 @@ const secrets = {
 
 //backup/dump testing
 //mongodb://admin:testtest123@ds129651.mlab.com:29651/meta-meals-backup-testing-ev3
+
+//ev3prod
+//mongodb://admin:testtest123@ds135592.mlab.com:35592/meta-meals-prod-ev3
