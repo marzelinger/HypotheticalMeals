@@ -198,9 +198,6 @@ router.get('/users/:user_id', (req, res) => UserHandler.getUserByID(req, res));
 // @access Public
 router.get('/users', (req, res) => UserHandler.getAllUsers(req, res));
 
-
-
-
 // Gives constant name to long directory home page.
  const appPage = path.join(__dirname, '../client/build/index.html');
 
@@ -213,7 +210,12 @@ router.get('/users', (req, res) => UserHandler.getAllUsers(req, res));
  })
 
 
-/*
+
+ app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
+
+
+
+ /*
 router.get('*', (req,res) => {
   res.sendFile(path.join(__dirname, './../client/public/index.html'))
 });*/
@@ -225,4 +227,3 @@ https.createServer({
 }, app)
 .listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
 */
- app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
