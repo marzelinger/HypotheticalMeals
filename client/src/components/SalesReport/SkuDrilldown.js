@@ -55,6 +55,7 @@ export default class SkuDrilldown extends React.Component {
 
         this.onSelectSku = this.onSelectSku.bind(this);
         this.onSelectCustomer = this.onSelectCustomer.bind(this);
+        // this.checkPriceLength = this.checkPriceLength.bind(this);
     }
 
     componentDidMount() {
@@ -88,6 +89,7 @@ export default class SkuDrilldown extends React.Component {
             }
         }
     }
+
 
     async getTotalRowData(records){
         var recordsCalcs = await Calculations.getSalesTotals(records);
@@ -188,7 +190,7 @@ export default class SkuDrilldown extends React.Component {
                  <tr >
                     {this.state.sku_totals_props.map(prop => {
                         if (['sum_yearly_rev', 'ingr_cost_per_case', 'avg_manu_setup_cost_per_case', 'manu_run_cost_per_case', 'total_COGS_per_case', 'avg_rev_per_case', 'avg_profit_per_case'].includes(prop)){
-                            var toDisplay = '$' + this.state.totalRowData[prop]
+                            var toDisplay = '$' + Calculations.checkPriceLength(this.state.totalRowData[prop])
                         } 
                         else var toDisplay = this.state.totalRowData[prop]
                         return <td>{toDisplay}</td>
@@ -218,7 +220,7 @@ export default class SkuDrilldown extends React.Component {
             axisY:{
                 title: "Revenue (USD)",
                 labelFormatter: function ( e ) {
-                    return "$" + e.value;  
+                    return "$" + Calculations.checkPriceLength(e.value);  
                 }  
             },
             data: [{				
@@ -236,10 +238,10 @@ export default class SkuDrilldown extends React.Component {
                     var prop_return = rec.date[prop]
                 }
                 else if (prop === 'revenue') {
-                    var prop_return =  '$' + parseInt(rec.sales) * parseFloat(rec.ppc)
+                    var prop_return =  '$' + Calculations.checkPriceLength(parseInt(rec.sales) * parseFloat(rec.ppc))
                 }
                 else if (prop === 'ppc') {
-                    var prop_return =  '$' + rec[prop]
+                    var prop_return =  '$' + Calculations.checkPriceLength(rec[prop])
                 }
                 else {
                     var prop_return =  rec[prop]

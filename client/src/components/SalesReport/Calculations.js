@@ -98,6 +98,22 @@ export default class Calculations{
         return val;
     }
 
+    static checkPriceLength(val){
+        var val_str = ""+val;
+        var split_val = val_str.split(".");
+        if(split_val.length==2){
+            if (split_val[1].length==1){
+                //want to round.
+                return val+""+0;
+            }
+            if (split_val[1].length==0){
+                //want to round.
+                return val+""+0+""+0;
+            }
+        }
+        return val;
+    }
+
     static async formatDate(start_date, end_date){
 
         console.log("START DATE: "+start_date);
