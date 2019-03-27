@@ -48,7 +48,6 @@ export default class Filter extends React.Component {
     }
 
     getNewOptions = (input) => {
-        console.log("getting new options here.");
         if(input == ""){
             this.setState({options: []})
             return;
@@ -64,8 +63,8 @@ export default class Filter extends React.Component {
                         this.handleResponse(response)
                     })
                     break;
-                case Constants.prod_line_page_name:
-                    SubmitRequest.submitGetProductLinesByNameSubstring(input).then((response) => {
+                case Constants.prod_lines_page_name:
+                    SubmitRequest.submitGetProductLinesByNameSubstring(input,0,0).then((response) => {
                         this.handleResponse(response)
                     });
                     break;
@@ -79,11 +78,17 @@ export default class Filter extends React.Component {
                         this.handleResponse(response)
                     });
                     break;
+                case Constants.customers_page_name:
+                    SubmitRequest.submitGetCustomersByNameSubstring(input).then((response) => {
+                        this.handleResponse(response)
+                    });
+                    break;
 
             }
     }
 
     getDetailsPlaceholder = () => {
+        console.log(this.props.place_holder)
         return (this.props.place_holder != undefined ? this.props.place_holder.name : `Add ${this.getLabel(this.props.type)}`);
     }
 
@@ -128,7 +133,6 @@ export default class Filter extends React.Component {
 }
 
 Filter.propTypes = {
-    value: PropTypes.string,
     currItems: PropTypes.arrayOf(PropTypes.object),
     handleFilterValueChange: PropTypes.func,
     handleFilterValueSelection: PropTypes.func,

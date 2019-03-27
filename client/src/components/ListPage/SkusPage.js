@@ -67,7 +67,7 @@ export default class ListPage extends React.Component {
             filters: {
                 'keyword': '',
                 'ingredients': [],
-                'products': [],
+                'product lines': [],
                 'formula' : [],
             },
             filterChange: false,
@@ -79,6 +79,9 @@ export default class ListPage extends React.Component {
                 this.state.user = jwt_decode(localStorage.getItem("jwtToken")).username;
             }
         }
+        this.pollInterval = null;
+
+        this.loadDataFromServer = this.loadDataFromServer.bind(this);
         this.toggle = this.toggle.bind(this);
         this.onFilterValueSelection = this.onFilterValueSelection.bind(this);
         this.onFilterValueChange = this.onFilterValueChange.bind(this);
@@ -110,16 +113,30 @@ export default class ListPage extends React.Component {
                 this.setState({manu_lines_modal: !this.state.manu_lines_modal})
                 break;
         }
-    }   
+    }
+    
+    componentWillUnmount() {
+        if (this.pollInterval) clearInterval(this.pollInterval);
+        this.pollInterval = null;
+    }
 
     async componentDidMount() {
         if (this.props.default_ing_filter !== undefined){
             await this.onFilterValueSelection([{ value: { _id : this.props.default_ing_filter._id }}], null, 'ingredients');
         }
-        if( this.props.default_formula_filter !== undefined){
+        if(this.props.default_formula_filter !== undefined){
             await this.onFilterValueSelection([{ value: { _id : this.props.default_formula_filter._id }}], null, 'formula');
         }
-        this.loadDataFromServer();
+        // var now = new Date();
+        // var millisTill10 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16, 19, 0, 0) - now;
+        // if (millisTill10 < 0) {
+        //     millisTill10 += 86400000; // it's after 10am, try 10am tomorrow.
+        // }
+        // setTimeout(() => this.updateRecords(), millisTill10);
+        await this.loadDataFromServer();
+        if (!this.pollInterval) {
+            this.pollInterval = setInterval(this.loadDataFromServer, 3000);
+        }
     }
 
     async componentDidUpdate (prevProps, prevState) {
@@ -131,18 +148,19 @@ export default class ListPage extends React.Component {
     updateDataState = async () => {
         var {data: ingredients} = await SubmitRequest.submitGetData(Constants.ingredients_page_name);
         var {data: productlines} = await SubmitRequest.submitGetData(Constants.prod_line_page_name);
-        this.setState({ingredients: ingredients, product_lines: productlines});
+        await this.setState({ingredients: ingredients, product_lines: productlines});
     }
 
 
     async loadDataFromServer() {
+        console.log('loading data')
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
+        console.log(allData)
         var final_ing_filter = this.state.filters['ingredients'].join(',');
         var final_keyword_filter = this.state.filters['keyword'];
-        var final_prod_line_filter = this.state.filters['products'].join(',');
-        console.log(final_prod_line_filter);
+        var final_prod_line_filter = this.state.filters['product lines'].join(',');
         var final_formula_filter = this.state.filters['formula'].join(',');
-        console.log(final_formula_filter);
+        console.log("final formula filter is" + final_formula_filter);
         //Check how the filter state is being set 
         if (final_ing_filter === '') final_ing_filter = '_';
         if (final_keyword_filter === '') final_keyword_filter = '_';
@@ -157,12 +175,16 @@ export default class ListPage extends React.Component {
             res.data = [];
             resALL.data = [];
         }
+        console.log(res);
         await this.setState({
             data: res.data,
             exportData: resALL.data,
             filterChange: false
         })
-        this.updateDataState();
+        console.log('here???')
+        console.log(this.state.data)
+        await this.updateDataState();
+
     }
 
     async checkCurrentPageInBounds(dataResAll){
@@ -235,10 +257,12 @@ export default class ListPage extends React.Component {
     }
 
     onFilterValueSelection (vals, e, type)  {
+        console.log(vals);
         var filters = this.state.filters;
         filters[type] = []
         vals.map((item) => {
             filters[type].push(item.value._id);
+            console.log("the item is" + JSON.stringify(item));
         })
         this.setState({
             filters: filters,
@@ -261,7 +285,7 @@ export default class ListPage extends React.Component {
             exportData: newExportData,
             detail_view_item: new_item,
             detail_view_formula_item: new_formula_item,
-            detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel],
+            detail_view_options: [Constants.details_create, Constants.details_cancel],
             detail_view_action: Constants.details_create
         })
         this.toggle(Constants.details_modal);
@@ -291,6 +315,7 @@ export default class ListPage extends React.Component {
     onAddManuGoals =  async() => {
         this.toggle(Constants.manu_goals_modal);
         let res = await SubmitRequest.submitGetManuGoalsData(this.state.user);
+        console.log(res)
         this.setState({ manu_goals_data: res.data});
     }
 
@@ -329,17 +354,16 @@ export default class ListPage extends React.Component {
         else if(rowIndexes == 'none'){
             rowIndexes = [];
         }
-        console.log(rowIndexes);
         var newState = [];
         rowIndexes.forEach( index => {
             newState.push(this.state.data[index]);
         });
         await this.setState({ selected_items: newState, selected_indexes: rowIndexes});
+
     };
 
      onDetailViewSelect = async (event, item) => {
         let formula_item = await SubmitRequest.submitGetFormulaByID(item.formula._id);
-        console.log("this is the ondetailview: "+JSON.stringify(formula_item));
         this.setState({
             detail_view_item: item,
             detail_view_formula_item: formula_item.data[0]
@@ -352,7 +376,7 @@ export default class ListPage extends React.Component {
         }
         else{
             this.setState({ 
-                detail_view_options: [Constants.details_cancel],
+                detail_view_options: [Constants.details_exit],
                 detail_view_action: Constants.details_view
                 });
         }
@@ -360,42 +384,36 @@ export default class ListPage extends React.Component {
     };
 
     async onDetailViewSubmit(event, item, formula_item, option) {
-        console.log("made it to the ondetailviewsubmit");
-        // var res = {};
         var resItem = {};
         var resFormula = {};
         var newData = this.state.data.splice();
-        console.log("this is the item  state."+ JSON.stringify(item));
 
         switch (option) {
             case Constants.details_create:
-                newData.push(item);
                 //need to create the new formula and get the id of the newly created formula and then put that in the 
                 //item equal to the formula section of item.
-                console.log("this is the formula_item: "+JSON.stringify(formula_item));
-                resFormula = await SubmitRequest.submitCreateItem(Constants.formulas_page_name, formula_item);
+                
+                var success = await SubmitRequest.submitGetFormulaByID(formula_item._id);
+                if(success.success == false) resFormula = await SubmitRequest.submitCreateItem(Constants.formulas_page_name, formula_item);
+                else resFormula = await SubmitRequest.submitUpdateItem(Constants.formulas_page_name, formula_item);
 
                 // var newSKUitem = this.formatNewSKUFormula(item, resFormula);
                 console.log(resFormula)
                 if(resFormula.success){
                     item['formula']= resFormula.data._id;
                     resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item);
+                    SubmitRequest.addNewSkuRecords(resItem.data.num);
                 } 
                 else {
                     resItem = { success: false, error: 'Formula Quantity is not entered correctly'}
                 }
-
+                newData.push(item);
                 break;
             case Constants.details_save:
                 let toSave = newData.findIndex(obj => {return obj._id === item._id});
                 newData[toSave] = item;
                 resFormula = await SubmitRequest.submitUpdateItem(Constants.formulas_page_name, formula_item);
                 resItem = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
-                
-                console.log("this is the save res."+ JSON.stringify(resItem));
-                console.log("this is the save res."+ JSON.stringify(resFormula));
-
-
                 break;
             case Constants.details_delete:
                 let toDelete = newData.findIndex(obj => {return obj._id === item._id});
@@ -412,8 +430,10 @@ export default class ListPage extends React.Component {
             case Constants.details_cancel:
                 resItem = {success: true}
                 break;
+            case Constants.details_exit:
+                resItem = {success: true}
+                break;
         }
-        console.log(resItem)
         if (!resItem.success) alert(resItem.error);
         else {
             this.setState({ 
@@ -431,6 +451,14 @@ export default class ListPage extends React.Component {
     getButtons = () => {
         return (
         <div className = "ingbuttons"> 
+            {/* <div className = "manugoalbutton hoverable"
+                            onClick={() => SubmitRequest.addAllCustomers()}
+                            primary={true}
+                            > Add Customers </div>
+            <div className = "manugoalbutton hoverable"
+                            onClick={() => SubmitRequest.updateSkuRecords()}
+                            primary={true}
+                            > Add All Records </div> */}
             {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) ? null : 
                             (<div className = "manugoalbutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}
@@ -450,7 +478,7 @@ export default class ListPage extends React.Component {
 
         return (
             <div className="list-page">
-            {this.props.default_ing_filter === undefined && this.props.default_formula_filter === undefined ? <GeneralNavBar></GeneralNavBar> : null}
+            {this.props.default_ing_filter === undefined && this.props.default_formula_filter === undefined ? <GeneralNavBar title={Constants.SkuTitle}></GeneralNavBar> : null}
                 <div className = "sku-table">
                     <PageTable 
                         columns={this.state.table_columns} 
@@ -465,6 +493,7 @@ export default class ListPage extends React.Component {
                         selectable = {this.props.simple !=undefined ? !this.props.simple : true}
                         sortable = {this.props.simple != undefined ? !this.props.simple : true}
                         title = {this.state.page_title}
+                        showLoading = {this.props.simple ? false : true}
                         showHeader = {true}
                         simple = {this.props.simple}
                         filters = {this.state.filters}

@@ -7,7 +7,8 @@ import ItemStore from './../client/src/helpers/ItemStore';
 import * as Constants from './../client/src/resources/Constants';
 import CheckDigit from "./../client/src/helpers/CheckDigit";
 import UnitConversion from "./../client/src/helpers/UnitConversion";
-
+import ScraperHandler from './models/handlers/Scraper';
+import { SlowBuffer } from 'buffer';
 const csv = require('csvtojson');
 const fs = require('fs');
 
@@ -15,7 +16,7 @@ const fs = require('fs');
 export default class CSV_parser{
 
     static async parseProdLineCSV (req, res){
-        try{
+        try {
             // Extracts all prod lines from database
             var db_prod_lines = new Set();
             let all_prod_lines = await Prod_Line.find()
@@ -40,19 +41,25 @@ export default class CSV_parser{
 
             // For each CSV to potentially add, check if it would cause a collision
             // If it doesn't, add it to a set indicating it will be added
+            var prod_lines_already_seen = new Set();
             var added = 0;
             var ignored = 0;
             for(var i = 0; i < jsonArray.length; i++){
                 var obj = jsonArray[i];
-                if(db_prod_lines.has(obj.Name)){
+
+                if(prod_lines_already_seen.has(obj.Name)){
+                    return res.json({success: false, duplicate: i+2});
+                }
+                else if(db_prod_lines.has(obj.Name)){
                     ignored = ignored + 1;
                 }
                 else if(!prod_lines_to_add.has(obj.Name)){
                     added = added + 1;
                     prod_lines_to_add.add(obj.Name);
                 } else {
-                    return res.json({ success: false, collision: i});
+                    return res.json({ success: false, collision: i+2});
                 }
+                prod_lines_already_seen.add(obj.Name);
             }
 
             // Creates the product line to save to the database 
@@ -83,12 +90,9 @@ export default class CSV_parser{
     static async checkColumns(obj, correctColumnNames, correctColumnNum){
         var toReturn = {};
         var count = 0; 
-        console.log(obj);
-        console.log(correctColumnNames.length);
+
         for(var key in obj){
-            console.log(key);
-            console.log(count);
-            console.log(correctColumnNames[count]);
+
             if(count >= correctColumnNum){
                 toReturn.success = false;
                 toReturn.colCountIncorrect = true;
@@ -104,10 +108,9 @@ export default class CSV_parser{
             }
             count++;
         }
-        console.log(count);
-        console.log(correctColumnNum);
+    
         if(count != correctColumnNum){
-            console.log('gest here');
+  
             toReturn.success = false;
             toReturn.colCountIncorrect = true;
             return toReturn;
@@ -168,7 +171,7 @@ export default class CSV_parser{
                 return res.json({ success: false, empty: true});
             }
 
-            var requiredNumFields = 12;
+            var requiredNumFields = 14;
             var columnsObj = await this.checkColumns(jsonArray[0], 
                 [Constants.csv_sku_num,
                     Constants.csv_sku_name,
@@ -181,6 +184,8 @@ export default class CSV_parser{
                     Constants.csv_sku_formula_factor,
                     Constants.csv_sku_ml,
                     Constants.csv_sku_rate,
+                    Constants.csv_sku_mfg_setup,
+                    Constants.csv_sku_mfg_run,
                     Constants.csv_sku_comment], requiredNumFields);
             if(columnsObj.success == false){
                 return this.indicateColumnFailure(res, columnsObj, requiredNumFields);
@@ -194,18 +199,16 @@ export default class CSV_parser{
             var skus_to_ignore = new Set();
             for(var i = 0; i < jsonArray.length; i++){
                 var obj = jsonArray[i];
+           
                 //Validate required fields
 
                 var dataValidationObj = await this.validateDataSKUs(obj, all_skus);
                 if(dataValidationObj.success == false){
-                    console.log('fails here 1');
-                    console.log(dataValidationObj);
                     return await this.indicateSKUDataFailure(res, dataValidationObj, i+2);
                 }
                 
                 var collisionObj = await this.searchForSKUCollision(obj, db_prod_lines, skus_to_add_num, skus_to_add_caseUPC, db_skus, db_caseUPCs, skus_to_update, skus_to_ignore, db_formulas, db_Manu_Line)
                 if(collisionObj.success == false){
-                    console.log(collisionObj);
                     return await this.indicateSKUCollisionFailure(res, collisionObj, i+2);
                 }
             }
@@ -222,7 +225,6 @@ export default class CSV_parser{
             var skus_to_update_old = [];
             var skus_to_ignore_arr = []
             for(var i =0; i < jsonArray.length; i++){
-                console.log(i);
                 var obj = jsonArray[i];
                 if(skus_to_update.has(obj[Constants.csv_sku_num])){
                     updated = updated + 1;
@@ -231,6 +233,7 @@ export default class CSV_parser{
                     old_sku_to_show.name = old_sku[0].name;
                     old_sku_to_show.num = old_sku[0].num;
                     old_sku_to_show.case_upc = old_sku[0].case_upc;
+                    old_sku_to_show.unit_size = old_sku[0].unit_size;
                     old_sku_to_show.unit_upc = old_sku[0].unit_upc;
                     old_sku_to_show.cpc = old_sku[0].cpc;
                     
@@ -239,23 +242,27 @@ export default class CSV_parser{
                     old_sku_to_show.prod_line_to_show = prod_line[0].name;
 
                     old_sku_to_show.formula = old_sku[0].formula;
-                    old_sku_to_show.formula_to_show = 
+                    var formula = await Formula.find({ _id: old_sku[0].formula._id })
+                    old_sku_to_show.formula_to_show = formula[0].num;
 
                     old_sku_to_show.scale_factor = old_sku[0].scale_factor;
 
                     old_sku_to_show.manu_lines = old_sku[0].manu_lines;
                     var manu_lines_to_show_string = "";
+                
                     for(var j = 0; j < old_sku[0].manu_lines.length; j++){
                         var manu_line = await Manu_Line.find({ _id: old_sku[0].manu_lines[j] });
-                        manu_lines_to_show_string = manu_lines_to_show_string + manu_line.short_name + ",";
+                        manu_lines_to_show_string = manu_lines_to_show_string + manu_line[0].short_name + ",";
                     }
-                    old_sku_to_show.manu_lines_to_show = manu_lines_to_show_string;
+                    old_sku_to_show.manu_lines_to_show = manu_lines_to_show_string.substring(0, manu_lines_to_show_string.length - 1);
 
                     old_sku_to_show.manu_rate = old_sku[0].manu_rate;
+
+                    old_sku_to_show.setup_cost = old_sku[0].setup_cost;
+                    old_sku_to_show.run_cpc = old_sku[0].run_cpc;
                     old_sku_to_show.comment = old_sku[0].comment;
 
                     var newObj = {};
-                    console.log('her23e');
                     var reformattedSKUS = await this.reformatSKU(newObj, obj);
                     skus_to_update_new.push(reformattedSKUS[0]);
                     skus_to_update_old.push(old_sku_to_show);
@@ -264,7 +271,7 @@ export default class CSV_parser{
                 else if(skus_to_add_num.has(obj[Constants.csv_sku_num])){
                     added = added + 1;
                     var newObj = {};
-                    console.log('break here2');
+
                     var reformattedSKUS = await this.reformatSKU(newObj, obj);
                     intermediate_skus_added.push(reformattedSKUS[0]);
                     intermediate_unformatted_skus_added.push(reformattedSKUS[1]);
@@ -272,17 +279,18 @@ export default class CSV_parser{
                 else {
                     ignored = ignored + 1;
                     var newObj = {};
-                    console.log('her23weee');
+
                     var reformattedSKUS = await this.reformatSKU(newObj, obj);
                     skus_to_ignore_arr.push(reformattedSKUS[0]);
                 }
             }  
 
             if(updated == 0) {
+                var toscrape = [];
                 for(var i = 0; i < intermediate_unformatted_skus_added.length; i++){
                     var sku = new SKU();
                     var toShow = {};
-                    console.log('break here');
+
                     var reformattedSKUS = await this.reformatSKU(toShow, intermediate_unformatted_skus_added[i]);
                     sku.name = reformattedSKUS[0].name;
                     sku.num = reformattedSKUS[0].num;
@@ -296,12 +304,15 @@ export default class CSV_parser{
                     sku.scale_factor = reformattedSKUS[0].scale_factor;
                     sku.manu_lines = reformattedSKUS[0].manu_lines;
                     sku.manu_rate = reformattedSKUS[0].manu_rate;
+                    sku.setup_cost = reformattedSKUS[0].setup_cost;
+                    sku.run_cpc = reformattedSKUS[0].run_cpc;
                     sku.comment = reformattedSKUS[0].comment;
-                    console.log('gets here');
-
                     let new_sku = await sku.save();
+                    toscrape.push(new_sku.num)
                     skus_added.push(toShow);
                 }
+                console.log('done adding')
+                ScraperHandler.bulkUpdateSkus({body: {sku_nums: toscrape}}, {});
                 return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: skus_added, showImport: true, new_data: skus_to_update_new, ignored_data: skus_to_ignore_arr});
             } else{
                 return res.json({ success: true, added: added, ignored: ignored, updated: updated, data: intermediate_skus_added, old_data: skus_to_update_old, new_data: skus_to_update_new, ignored_data: skus_to_ignore_arr});
@@ -312,24 +323,38 @@ export default class CSV_parser{
     }
 
     static async indicateSKUDataFailure(res, dataValidationObj, row){
+  
         if(dataValidationObj.missingRequiredField){
             return res.json({ success: false,
                               missingRequiredField: row});
         } else if(dataValidationObj.nameIssue){
             return res.json({ success: false,
-                badData: row});
+                skuNameIssue: row});
         } else if(dataValidationObj.skuNumIssue){
             return res.json({ success: false,
-                badData: row});
+                skuNumIssue: row});
         } else if(dataValidationObj.caseUPCIssue){
             return res.json({ success: false,
-                badData: row});
+                caseUPCIssue: row});
         } else if(dataValidationObj.unitUPCIssue){
             return res.json({ success: false,
-                badData: row});
+                unitUPCIssue: row});
         } else if(dataValidationObj.cpcIssue){
+          
             return res.json({ success: false,
-                badData: row});
+                cpcIssue: row});
+        } else if(dataValidationObj.mfgRunIssue){
+   
+            return res.json({ success: false,
+                mfgRunIssue: row});
+        } else if(dataValidationObj.mfgSetupIssue){
+  
+            return res.json({ success: false,
+                mfgSetupIssue:row});
+        } else if(dataValidationObj.formulaFactorIssue){
+            return res.json({ success: false, formulaFactorIssue: row});
+        } else if(dataValidationObj.mfgRateIssue){
+            return res.json({ succss: false, mfgRateIssue: row});
         }
     }
 
@@ -338,6 +363,7 @@ export default class CSV_parser{
         // Checks to make sure we have all required fields
         if(!obj[Constants.csv_sku_name] || !obj[Constants.csv_sku_caseUPC] || !obj[Constants.csv_sku_unitUPC] ||
         !obj[Constants.csv_sku_unitsize] || !obj[Constants.csv_sku_cpc] || !obj[Constants.csv_sku_pl]) {
+         
             toReturn.success = false;
             toReturn.missingRequiredField = true;
             return toReturn;
@@ -387,6 +413,34 @@ export default class CSV_parser{
             return toReturn;
         }
 
+        var isNum5 = /^\d{0,20}(\.\d{1,20})?$/.test(obj[Constants.csv_sku_formula_factor]);
+        if(!isNum5){
+            toReturn.success = false;
+            toReturn.formulaFactorIssue = true;
+            return toReturn;
+        }
+
+        var isNum6 = /^\d{0,20}(\.\d{1,20})?$/.test(obj[Constants.csv_sku_rate]);
+        if(!isNum6){
+            toReturn.success = false;
+            toReturn.mfgRateIssue = true;
+            return toReturn;
+        }
+
+        var mfgRunCostCurrencyObj = await this.extractNumFromCurrency(obj[Constants.csv_sku_mfg_run]);
+        if(typeof mfgRunCostCurrencyObj.currencyIssue != 'undefined'){
+            toReturn.success = false;
+            toReturn.mfgRunIssue = true;
+            return toReturn;
+        }
+
+        var mfgSetupCostCurrencyObj = await this.extractNumFromCurrency(obj[Constants.csv_sku_mfg_setup]);
+        if(typeof mfgSetupCostCurrencyObj.currencyIssue != 'undefined'){
+            toReturn.success = false;
+            toReturn.mfgSetupIssue = true;
+            return toReturn;
+        }
+
         toReturn.success = true;
         return toReturn;
     }
@@ -408,7 +462,7 @@ export default class CSV_parser{
         }
 
         var sku_MLs_string = obj[Constants.csv_sku_ml].substring(1, obj[Constants.csv_sku_ml].length - 1);
-        console.log("string is : " + sku_MLs_string);
+
         var sku_MLs_arr = sku_MLs_string.split(",");
         for(var i = 0 ; i < sku_MLs_arr.length; i++){
             if(!db_Manu_Line.has(sku_MLs_arr[i])) {
@@ -459,7 +513,7 @@ export default class CSV_parser{
             {
                 var good = true;
                 var ML_array = obj[Constants.csv_sku_ml].substring(1, obj[Constants.csv_sku_ml].length - 2).split(',');
-                console.log(ML_array);
+                
                 for(var i = 0; i < ML_array.length; i++){
                     if(!all_manu_lines.has(ML_array[i])){
                         good = false;
@@ -498,8 +552,7 @@ export default class CSV_parser{
     }
 
     static async reformatSKU(objNew, objOld){
-        console.log("objOld is " + objOld);
-        console.log("objNew is " + objNew);
+
         objNew.name = objOld.Name;
         objNew.num = objOld[Constants.csv_sku_num];
         objNew.case_upc = objOld[Constants.csv_sku_caseUPC];
@@ -510,6 +563,7 @@ export default class CSV_parser{
         objNew.prod_line_to_show = objOld[Constants.csv_sku_pl];
         let prod_line = await Prod_Line.find({ name : objOld[Constants.csv_sku_pl]});
         objNew.prod_line = prod_line[0]._id;
+      
 
         objNew.formula_to_show = objOld[Constants.csv_sku_formula];
         let formula = await Formula.find({ num : objOld[Constants.csv_sku_formula]});
@@ -523,11 +577,19 @@ export default class CSV_parser{
 
         var manu_lines_to_add = [];
         for(var i = 0; i < manu_lines_arr.length; i++){
+
             let manu_line = await Manu_Line.find({ short_name : manu_lines_arr[i] });
+
             manu_lines_to_add.push(manu_line[0]._id);
         }
+
         objNew.manu_lines_to_show = manu_lines_string;
         objNew.manu_lines = manu_lines_to_add;
+
+        var intermediate_setup = await this.extractNumFromCurrency(objOld[Constants.csv_sku_mfg_setup]);
+        var intermediate_run = await this.extractNumFromCurrency(objOld[Constants.csv_sku_mfg_run]);
+        objNew.setup_cost = intermediate_setup.data;
+        objNew.run_cpc = intermediate_run.data;
         
         objNew.manu_rate = objOld[Constants.csv_sku_rate];
         objNew.comment = objOld[Constants.csv_sku_comment];
@@ -560,6 +622,7 @@ export default class CSV_parser{
                         manu_lines: updateArray[i].manu_lines, manu_rate: updateArray[i].manu_rate, comment : updateArray[i].comment}}, {upsert : true, new : true});
                         returningUpdate.push(updateArray[i]);
         }
+        var toscrape = []
         for(var i = 0; i < addArray.length; i++){
             var sku = new SKU();
             sku.name = addArray[i].name;
@@ -573,12 +636,19 @@ export default class CSV_parser{
             sku.scale_factor = addArray[i].scale_factor;
             sku.manu_lines = addArray[i].manu_lines;
             sku.manu_rate = addArray[i].manu_rate;
+            sku.setup_cost = addArray[i].setup_cost;
+            sku.run_cpc = addArray[i].run_cpc;
             sku.comment = addArray[i].comment;
             let new_sku = await sku.save();
+            console.log('here')
+            console.log(new_sku)
             console.log("add array is: ");
             console.log(addArray[i]);
             returningAdd.push(addArray[i]);
+            toscrape.push(new_sku.num)
         }
+        console.log('here')
+        ScraperHandler.bulkUpdateSkus({body: {sku_nums: toscrape}}, {});
         return res.json({ success: true, adds: returningAdd, updates: returningUpdate, ignores: ignoreArray});
         } catch(err){
             return res.json({ success: false, error: "Catch all error"});
@@ -586,7 +656,7 @@ export default class CSV_parser{
     }
 
     static async parseIngredientsCSV(req, res){
-        try {
+      try {
             //Extract the primary key (num) & unique identifier(case_upc) for each entry
             var db_ingredients_nums = new Map();
             var db_ingredients_name = new Set();
@@ -604,7 +674,6 @@ export default class CSV_parser{
             }
             
             var requiredNumFields = 6;
-            console.log("the constants file is getting : " + Constants.csv_ingr_cost)
             var columnsObj = await this.checkColumns(jsonArray[0], 
                 [Constants.csv_ingr_num, 
                 Constants.csv_ingr_name, 
@@ -632,10 +701,10 @@ export default class CSV_parser{
 
                 var collisionObj = await this.searchForIngrCollision(obj, ingrs_to_add_nums, ingrs_to_add_names, db_ingredients_name, db_ingredients_nums, ingrs_to_update, ingrs_to_ignore);
                 if(collisionObj.success == false){
-                    console.log(collisionObj);
+                  
                     return await this.indicateIngrCollisionFailure(res, collisionObj, i+2);
                 }  
-                console.log('data validation checks out');
+
             }
 
             var added = 0;
@@ -702,34 +771,59 @@ export default class CSV_parser{
             toReturn.ingrNumIssue = true;
             return toReturn;
         } 
-        var isValid = obj[Constants.csv_ingr_cost].search(/^\$?\d+(,\d{3})*(\.\d*)?$/) >= 0;
+
+ /*  var isValid = obj[Constants.csv_ingr_cost].search(/^\$?\d+(,\d{3})*(\.\d*)?$/) >= 0;
         if(!isValid) {
+
+            toReturn.success = false;
+            toReturn.costIssue = true;
+            return toReturn;
+        }*/
+
+        var intermediate_units = await UnitConversion.getCleanUnitForm(obj[Constants.csv_ingr_size]);
+        if(intermediate_units.success == true) obj[Constants.csv_ingr_size] = intermediate_units.data;
+        else {
+            
+            toReturn.success = false;
+            toReturn.unitIssue = true;
+            return toReturn;
+        }
+
+        var isValid2 = await UnitConversion.getUnitType(obj[Constants.csv_ingr_size]);
+        if(isValid2 == -1){
+            // TODO: FIX THIS 
+            
+            toReturn.success = false;
+            toReturn.unitIssue = true;
+            return toReturn;
+        }
+
+        var moneyConversionSuccessObj = await this.extractNumFromCurrency(obj[Constants.csv_ingr_cost]);
+        if(moneyConversionSuccessObj.success != true){
             toReturn.success = false;
             toReturn.costIssue = true;
             return toReturn;
         }
-        obj[Constants.csv_ingr_size] = UnitConversion.getCleanUnitForm(obj[Constants.csv_ingr_size]).data;
-        var isValid2 = await this.findUnit(obj[Constants.csv_ingr_size]);
-        if(isValid2 == -1){
-            // TODO: FIX THIS 
-            toReturn.costIssue = true;
-            return toReturn;
-        }
+        obj[Constants.csv_ingr_cost] = moneyConversionSuccessObj.data;
         //var isValid2 = obj[Constants.csv_ingr_size]
         toReturn.success = true;
+        console.log('returns successfully');
         return toReturn;
     }
 
     static async indicateIngrDataFailure(res, dataValidationObj, row){
         if(dataValidationObj.missingRequiredField){
             return res.json({ success: false,
-                              badData: row});
+                              missingRequiredField: row});
         } else if(dataValidationObj.ingrNumIssue){
             return res.json({ success: false,
-                badData: row});
+                ingrNumIssue: row});
         } else if(dataValidationObj.costIssue){
             return res.json({ success: false,
-                badData: row});
+                ingrCostIssue: row});
+        } else if(dataValidationObj.unitIssue){
+            return res.json({ success: false,
+                ingrUnitIssue: row});
         }
     }
 
@@ -744,8 +838,7 @@ export default class CSV_parser{
         else if(db_ingredients_name.has(obj[Constants.csv_ingr_name]) && !db_ingredients_nums.has(obj[Constants.csv_ingr_num])){
             toReturn.ambiguousCollision = true;
             toReturn.success = false;
-            console.log(obj[Constants.csv_ingr_name]);
-            console.log('1 collsion');
+
             return toReturn;
         // Check for a collision based on the primary key
         } else if(db_ingredients_nums.has(obj[Constants.csv_ingr_num])) {
@@ -763,7 +856,7 @@ export default class CSV_parser{
             else if(db_ingredients_nums.get(obj[Constants.csv_ingr_num]) != obj[Constants.csv_ingr_name] && db_ingredients_name.has(obj[Constants.csv_ingr_name])) {
                 toReturn.ambiguousCollision = true;
                 toReturn.success = false;
-                console.log('2 collsion');
+
                 return toReturn;
             } // If it is neither, indicate that it will be updated, its added to *_to_add_* to indicate it exists in the file
             else {
@@ -804,12 +897,34 @@ export default class CSV_parser{
         return toReturn;
     }
 
+    static async extractNumFromCurrency(qty){
+        var toReturn = {};
+        var isValid = /^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/.test(qty);
+        if(!isValid){
+
+            toReturn.currencyIssue = true;
+            return toReturn;
+        }
+
+        var qty_arr = qty.match(/^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/);
+        var numeric_value = qty_arr[1];
+        if(numeric_value <= 0){
+
+            toReturn.currencyIssue = true;
+            return toReturn;
+        }
+
+        toReturn.data = numeric_value;
+        toReturn.success = true;
+        return toReturn;
+    }
+
 
     static async parseUpdateIngredients(req, res){
         try{
         var returningAdds = [];
         var returningUpdates = [];
-        console.log(req.body);
+
         var ignoreArray = JSON.parse(req.body.ignores);
         var updateArray = JSON.parse(req.body.updates);
         var addArray = JSON.parse(req.body.adds);
@@ -818,7 +933,7 @@ export default class CSV_parser{
                 {$set: {name: updateArray[i].name, vendor_info : updateArray[i].vendor_info, pkg_size: updateArray[i].pkg_size, 
                         pkg_cost: updateArray[i].pkg_cost, comment: updateArray[i].comment}}, 
                         {upsert : true, new : true});
-            console.log(updated_ingr);
+           
             returningUpdates.push(updated_ingr);
         }
         for(var i = 0; i < addArray.length; i++){
@@ -879,7 +994,7 @@ export default class CSV_parser{
             // Checks to see formula name is under 32 digits and the ingredient units are all correct
             var dataValidationObj = await this.validateDataFormulas(obj, all_formulas, db_ingredients_num);
             if(dataValidationObj.success == false){
-                console.log(dataValidationObj);
+              
                 return await this.indicateFormulaDataValidationFailure(res, dataValidationObj, i+2);
 
             }
@@ -907,7 +1022,7 @@ export default class CSV_parser{
                 updated = updated + 1;
                 var newObj ={};
                 var reformattedFormulas = await this.reformatFormula(newObj, obj, formulas_to_update, formulas_to_comments);
-                console.log(reformattedFormulas[0]);
+          
                 formulas_to_update_new.push(reformattedFormulas[0]);
                 formulas_dealt_with.add(obj[Constants.csv_formula_num]);
             }
@@ -921,14 +1036,14 @@ export default class CSV_parser{
         }
         
         for (var i = 0; i < formulas_added.length; i++){
-            console.log("gets here");
+         
             var formula = new Formula();
             formula.name = formulas_added[i].name;
             formula.num = formulas_added[i].num;
             formula.ingredients = formulas_added[i].ingredients;
             formula.ingredient_quantities = formulas_added[i].ingredient_quantities;
             formula.comment = formulas_added[i].comment;
-            console.log(formula);
+  
             let new_formula = await formula.save();
         }
         for (var i = 0; i < formulas_to_update_new.length; i++){
@@ -936,7 +1051,7 @@ export default class CSV_parser{
                 {$set: {name: formulas_to_update_new[i].name, num: formulas_to_update_new[i].num, 
                         ingredients: formulas_to_update_new[i].ingredients, ingredient_quantities: formulas_to_update_new[i].ingredient_quantities,
                         comment: formulas_to_update_new[i].comment}}, {upsert: true, new: true});
-            console.log(updated_formula);
+    
         }
         return res.json({ success: true, showImport: true, adds: formulas_added, updates: formulas_to_update_new, ignores: formulas_to_ignore});
         } catch (err){
@@ -950,11 +1065,11 @@ export default class CSV_parser{
         newObj.name = oldObj[Constants.csv_formula_name];
         newObj.num = oldObj[Constants.csv_formula_num];
         var ingredient_map = formulasMap.get(oldObj[Constants.csv_formula_num]);
-        console.log("gets here");
+  
         for(var ingredient_key of ingredient_map.keys()){
-            console.log(ingredient_key);
+   
             var ingredient = await Ingredient.find({ num: ingredient_key });
-            console.log(ingredient.length);
+
             var ingredient_id = ingredient[0]._id; 
             ingredients.push(ingredient_id);
             quantities.push(ingredient_map.get(ingredient_key));
@@ -996,30 +1111,26 @@ export default class CSV_parser{
             return toReturn;
         }
 
-        var santizedEntry = UnitConversion.getCleanUnitForm(obj[Constants.csv_formula_quantity]).data;
-        obj[Constants.csv_formula_quantity] = santizedEntry;
- 
-        var isUnitNum = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$/.test(obj[Constants.csv_formula_quantity]);
-        if(!isUnitNum){
-            console.log('maybe here');
+        var sanitizedEntry = UnitConversion.getCleanUnitForm(obj[Constants.csv_formula_quantity]);
+        if(sanitizedEntry.success == false){
             toReturn.success = false;
             toReturn.unitIssue = true;
             return toReturn;
         }
+        obj[Constants.csv_formula_quantity] = sanitizedEntry.data;
+    
         var ingr = await Ingredient.find({ num: obj[Constants.csv_formula_ingr] });
 
-        var unitType = await this.findUnit(ingr[0].pkg_size);
-        var unitType2 = await this.findUnit(obj[Constants.csv_formula_quantity]);
+        var unitType = await UnitConversion.getUnitType(ingr[0].pkg_size);
+        var unitType2 = await UnitConversion.getUnitType(obj[Constants.csv_formula_quantity]);
+
         if(unitType2 == -1) {
-            console.log('why this');
             toReturn.success = false;
             toReturn.unitIssue = true;
             return toReturn;
         }
         if(unitType != unitType2){
-            console.log(unitType);
-            console.log(unitType2);
-            console.log('here?');
+
             toReturn.success = false;
             toReturn.unitIssue = true;
             return toReturn;
@@ -1029,24 +1140,17 @@ export default class CSV_parser{
         return toReturn;
     }
 
-    static async findUnit(ingredient_pkg_size){
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg)$/.test(ingredient_pkg_size)) return 1;
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (floz|pt|qt|gal|ml|l)$/.test(ingredient_pkg_size)) return 2;
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count)$/.test(ingredient_pkg_size)) return 3;
-        return -1;
-    }
-
     static async indicateFormulaDataValidationFailure(res, dataValidationObj, row){
         if(dataValidationObj.missingRequiredField){
-            return res.json({ success: false, badData: row});
+            return res.json({ success: false, missingRequiredField: row});
         } else if(dataValidationObj.formulaNumIssue){
-            return res.json({ success: false, badData: row});
+            return res.json({ success: false, formulaNumIssue: row});
         } else if(dataValidationObj.formulaNameIssue){
-            return res.json({ success: false, badData: row});
+            return res.json({ success: false, formulaNameIssue: row});
         } else if(dataValidationObj.formulaIngrIssue){
-            return res.json({ success: false, badData: row});
+            return res.json({ success: false, formulaIngrIssue: row});
         } else if(dataValidationObj.unitIssue){
-            return res.json({ success: false, badData: row});
+            return res.json({ success: false, formulaUnitIssue: row});
         }
     }
 

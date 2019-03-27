@@ -12,12 +12,10 @@ const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 export default class TableActions extends React.Component {
   constructor(props) {
     super(props);
-    console.log(props)
     this.state = {
       simple: props.simple,
       page_name: this.props.page_name
     };
-    console.log("this is the tableactions props: "+JSON.stringify(this.props));
   }
 
   render() {
@@ -43,7 +41,7 @@ export default class TableActions extends React.Component {
         Object.keys(this.props.filters).map( (type) => {
           if(type == 'keyword' || type == 'formula')return 
           return (
-            <Filter data = {this.props[type]} 
+            <Filter 
                 handleFilterValueChange = {this.props.onFilterValueChange}
                 handleFilterValueSelection = {this.props.onFilterValueSelection} 
                 handleRemoveFilter = {this.props.onRemoveFilter} 
@@ -52,7 +50,7 @@ export default class TableActions extends React.Component {
 
         )})
       }
-      {(currentUserIsAdmin().isValid && (this.state.page_name != Constants.users_page_name))? 
+      {(currentUserIsAdmin().isValid && (this.state.page_name != Constants.users_page_name) && !this.props.reportSelect)? 
       (<AddIcon style = {{width: '50px', height: '50px', cursor: 'pointer'}} onClick = {() => {this.props.onTableOptionSelection(null, Constants.create_item)}}></AddIcon>)
       :(<div/>)}
       </div>

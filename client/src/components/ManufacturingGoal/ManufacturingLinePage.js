@@ -6,7 +6,6 @@ import * as Constants from '../../resources/Constants';
 import '../../style/ManufacturingGoalsStyle.css';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import { Modal } from 'reactstrap';
-import ManuLineDetails from './Lines/ManufacturingLineDetails';
 
 import ManufacturingScheduleReportDetails from './ManufacturingScheduleReportDetails';
 import ManufacturingReport from './ManufacturingReport';
@@ -89,7 +88,7 @@ export default class ManufacturingLinePage extends React.Component {
     switch(modalType){
         case Constants.manu_report_modal:
             this.setState({manu_report_modal: !this.state.manu_report_modal})
-            console.log("the toggle of manu_report_modal is: "+this.state.manu_report_modal);
+            // console.log("the toggle of manu_report_modal is: "+this.state.manu_report_modal);
             break;
         case Constants.manu_report_data_modal:
             this.setState({manu_report_data_modal: !this.state.manu_report_data_modal})
@@ -100,9 +99,9 @@ export default class ManufacturingLinePage extends React.Component {
   onManuReportSelect = async (e, manu_line_id) => {
     //want to set the selected manu_line and then toggle the thing open.
     //do we also want to get all the SKUS scheduled for that?
-    console.log("manureportselected: "+manu_line_id);
+    // console.log("manureportselected: "+manu_line_id);
     var new_manu_line = await SubmitRequest.submitGetManufacturingLineByID(manu_line_id);
-    console.log("new_manu_line: "+JSON.stringify(new_manu_line));
+    // console.log("new_manu_line: "+JSON.stringify(new_manu_line));
 
     await this.setState({
       selected_manu_line: new_manu_line.data[0],
@@ -115,48 +114,52 @@ export default class ManufacturingLinePage extends React.Component {
   }
 
   onDetailViewSubmitReport= async (event, manuData, option) => {
-    //console.log("this is the item  state."+ JSON.stringify(reportData));
-
     switch (option) {
+        case Constants.details_cancel:
+              await this.setState({ 
+                selected_manu_line: null,
+                detail_view_options: [],
+                detail_view_action: '',
+                manu_report_modal: false
+              });
+            break;
         case Constants.details_export:
-          // let {
-          //   complete,
-          //   beg_cut,
-          //   end_cut,
-          //   all_cut,
-          //   summation} = await exportManuScheduleReport(reportData);
-          //   this.setState({
-          //     complete: complete,
-          //     beg_cut: beg_cut,
-          //     end_cut: end_cut,
-          //     all_cut: all_cut,
-          //     summation: summation
-          //   });
-            let { reportData} = await exportManuScheduleReport(manuData);
+            let reportData = await exportManuScheduleReport(manuData);
               await this.setState({
                 reportData: reportData,
                 manuData: manuData
               });
             console.log("this is the reportData: "+JSON.stringify(this.state.reportData));
-            console.log("this is the summ: "+JSON.stringify(this.state.reportData));
+            await this.setState({ 
+              selected_manu_line: null,
+              detail_view_options: [Constants.details_export, Constants.details_cancel],
+              detail_view_action: '',
+              manu_report_modal: false,
+              manu_report_data_modal: true
 
-            this.toggle(Constants.manu_report_data_modal);
+            });
             break;
         };
-
-        await this.setState({ 
-            selected_manu_line: null,
-            detail_view_options: [],
-            detail_view_action: ''
-        });
-        this.toggle(Constants.manu_report_modal);
-    
   }
+
+  onDetailViewDataSubmit= async (event, manuData, option) => {
+    switch (option) {
+        case Constants.details_cancel:
+              await this.setState({ 
+                selected_manu_line: null,
+                detail_view_options: [],
+                detail_view_action: '',
+                manu_report_data_modal: false
+              });
+            break;
+        };
+  }
+
 
   render() {
     return (
       <div>
-        <GeneralNavBar></GeneralNavBar>
+        <GeneralNavBar title={Constants.ManuLineTitle}></GeneralNavBar>
         <ManufacturingLineBox
         handleManuScheduleReportSelect = {this.onManuReportSelect}
         ></ManufacturingLineBox>
@@ -172,6 +175,8 @@ export default class ManufacturingLinePage extends React.Component {
                     <ManufacturingReport
                             data = {this.state.reportData}
                             manuData = {this.state.manuData}
+                            detail_view_options = {this.state.detail_view_options}
+                            handleDetailViewSubmit={this.onDetailViewDataSubmit}
                     />
         </Modal>
       </div>

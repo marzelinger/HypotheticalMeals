@@ -56,7 +56,7 @@ export default class ManuSchedulePalette extends Component {
             return ((activityEnd >= timelineStart) &&  (activityStart <= timelineEnd))
         })
         var error_info = [];
-        // console.log(current_activities);
+         console.log("current act"+current_activities);
         for(var i = 0; i < current_activities.length; i ++){
             if(moved) await CheckErrors.updateActivityErrors(current_activities[i])
             let info = await CheckErrors.getErrorMessages(current_activities[i])

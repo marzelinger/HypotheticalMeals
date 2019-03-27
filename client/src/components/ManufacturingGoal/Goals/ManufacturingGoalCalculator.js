@@ -25,6 +25,7 @@ export default class ManufacturingGoalCalculator extends React.Component{
   }
 
   toggle = async () => {
+    console.log('toggling')
     this.setState({
       modal: !this.state.modal
     });
@@ -34,54 +35,26 @@ export default class ManufacturingGoalCalculator extends React.Component{
   }
 
   addIngredientInfo = async (ingredient, quantity) => {
-
-    let ingData = await this.parseIngUnit(ingredient.quantity);
-    console.log("ingData; "+JSON.stringify(ingData));
-    var ingVal = ingData['val'];
-    var ingUnit = ingData['unit'];
-    console.log("quantityVal: "+ingVal);
-    console.log("quantityUnit: "+ingUnit);
-
     let ingPckgData = await this.parseIngUnit(ingredient.pkg_size);
-
     var ingValPCK = ingPckgData['val'];
-    var ingUnitPCK = ingPckgData['unit'];
-    console.log("ingunitpackage: "+ingUnitPCK);
-
     //convert ingVal to be same unit as ingValpck
     var convertVal= 0;
-    var convertUnit= '';
-
     let {success,func} = UnitConversion.getConversionFunction(ingredient.pkg_size);
     if(success){
       var result = func(ingredient.quantity);
-      console.log("resultOBJ: "+result);
-
-      console.log("result: "+JSON.stringify(result));
       let resData = await this.parseIngUnit(result);
       var convertVal = resData['val'];
-      var convertUnit = resData['unit'];
     }
-    // var res = getConversionFunction(ingredient.quantity)
-    // //give back a func
-    // //
-
-
-
+    else {console.log('failure in getConversionFunction ' + ingredient.name)}
     if(this.state.current_ingredient_ids.includes(ingredient._id)){
        var index =  this.state.current_ingredient_ids.indexOf(ingredient._id);
-       var currentData = this.state.ingredients_info;      
-
+       var currentData = this.state.ingredients_info;
        currentData[index].unitQuantity = currentData[index].unitQuantity + (quantity * convertVal);
        currentData[index].pckgQuant = currentData[index].pckgQuant + (quantity * convertVal)/ingValPCK;
-
-
        await this.setState({ingredients_info: currentData});
     }   
     else{
       // also need package quantity which is quantity * ingredient quantity (total amount of ingredients in formula units / total number of ingredient in a package in package units)
-        console.log('setting state');
-        console.log(ingredient.quantity);
         var newIngredient = {
             ...ingredient, 
             unitQuantity: (quantity * convertVal),
@@ -118,12 +91,10 @@ export default class ManufacturingGoalCalculator extends React.Component{
   }
 
   parseIngUnit = (unit_string) => {
-    console.log("unit_sting: "+unit_string);
-    var str = ""+unit_string;
-
-    let match = str.match('^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|ounce|lb|pound|ton|g|gram|kg|kilogram|' + 'floz|fluidounce|pt|pint|qt|quart|gal|gallon|ml|milliliter|l|liter|ct|count)$');
+    let match = unit_string.match('^([0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|lb|pound|ton|g|gram|kg|kilogram|' + 
+    'floz|fluidounce|pt|pint|qt|quart|gal|gallon|ml|milliliter|l|liter|ct|count)$')
     if (match === null) {
-      console.log("Incorrect String Format in the parseIngUnit in Calculator");
+      console.log('no match for ' + unit_string)
       return {};
     }
   
@@ -139,10 +110,10 @@ export default class ManufacturingGoalCalculator extends React.Component{
     return (
       <div>
         <img id = "button" src={calculatorButton} onClick={this.toggle}></img>
-        <Modal size = {'lg'} isOpen={this.state.modal} toggle={this.toggle} id="popup">
+        <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup">
           <ModalHeader toggle={this.toggle}>Calculator Results</ModalHeader>
           <ModalBody class = "modal">
-              <ManuGoalsCalculatorTable data = {this.state.ingredients_info}></ManuGoalsCalculatorTable>
+              <ManuGoalsCalculatorTable toggle = {this.toggle} data = {this.state.ingredients_info}></ManuGoalsCalculatorTable>
           </ModalBody>
         </Modal>
       </div>

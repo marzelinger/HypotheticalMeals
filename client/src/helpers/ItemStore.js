@@ -89,7 +89,9 @@ export default class ItemStore{
           formula: {},
           scale_factor: 1,
           manu_lines: [],
-          manu_rate: ''
+          manu_rate: '',
+          setup_cost: '',
+          run_cpc: ''
         };
       case Constants.manugoals_page_name:
         return {
@@ -109,6 +111,7 @@ export default class ItemStore{
       var res = await SubmitRequest.submitGetData(page_name);
       var new_id = await ItemStore.getUniqueNumber(res.data);
       return {
+        _id: 'unassigned',
         name: '',
         num: new_id,
         ingredients: [],

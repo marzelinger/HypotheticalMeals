@@ -4,6 +4,7 @@
 import Ingredient from '../databases/ingredient';
 import SKU from '../databases/sku';
 import Formula from '../databases/formula';
+import UnitConversion from '../../../client/src/helpers/UnitConversion';
 
 class IngredientHandler{
 
@@ -34,8 +35,16 @@ class IngredientHandler{
             ingredient.name = new_ingredient_name;
             ingredient.num = new_ingredient_num;
             ingredient.vendor_info = new_vendor_info;
-            ingredient.pkg_size = new_pkg_size;
-            if(await this.findUnit(new_pkg_size == -1)) return res.json({ success: false, error: "Please enter one of the following units: oz, lb, ton, g, kg, floz, pt, qt, gal, mL, L, count"});
+
+            var sanitized_ingr_unit = await UnitConversion.getCleanUnitForm(new_pkg_size);
+            if(sanitized_ingr_unit.success == false) return res.json({ success: false, error: "Please enter a valid unit. Options are: oz, ounce, lb, pound, ton, g, gram, kg, kilogram, floz, fluidounce, pt, pint, qt, quart, gal, gallon, ml, milliliter, l, liter, ct, count"});
+            ingredient.pkg_size = sanitized_ingr_unit.data;
+
+            var isValid = /^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/.test(new_pkg_cost);
+            if(!isValid) return res.json({ success: false, error: "Please enter a valid currency valid (i.e. $5.00, $ 5.00, 5.00 USD"});
+            var cost_arr = new_pkg_cost.match(/^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/);
+            new_pkg_cost = cost_arr[1];
+
             ingredient.pkg_cost = new_pkg_cost;
             ingredient.sku_count = new_sku_count;
             ingredient.comment = new_comment; 
@@ -48,13 +57,6 @@ class IngredientHandler{
         }
     }
 
-    static async findUnit(ingredient_pkg_size){
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg)$/.test(ingredient_pkg_size)) return 1;
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (floz|pt|qt|gal|ml|l)$/.test(ingredient_pkg_size)) return 2;
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count)$/.test(ingredient_pkg_size)) return 3;
-        return -1;
-    }
-
     static async updateIngredientByID(req, res){
         try {
             var target_id = req.params.ingredient_id;
@@ -65,9 +67,18 @@ class IngredientHandler{
             var new_ingredient_num = req.body.num;
             var new_vendor_info = req.body.vendor_info;
             var new_pkg_size = req.body.pkg_size;
-            console.log(new_pkg_size);
-            if(await this.findUnit(new_pkg_size) == -1) return res.json({ success: false, error: "Please enter one of the following units: oz, lb, ton, g, kg, floz, pt, qt, gal, mL, L, count"});
+
+            var sanitized_ingr_unit = UnitConversion.getCleanUnitForm(new_pkg_size);
+            if(sanitized_ingr_unit.success == false) return res.json({ success: false, error: "Please enter a valid unit. Options are: oz, ounce, lb, pound, ton, g, gram, kg, kilogram, floz, fluidounce, pt, pint, qt, quart, gal, gallon, ml, milliliter, l, liter, ct, count"});
+            new_pkg_size = sanitized_ingr_unit.data;
+
             var new_pkg_cost = req.body.pkg_cost;
+
+            var isValid = /^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/.test(new_pkg_cost);
+            if(!isValid) return res.json({ success: false, error: "Please enter a valid currency valid (i.e. $5.00, $ 5.00, 5.00 USD"});
+            var cost_arr = new_pkg_cost.match(/^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/);
+            new_pkg_cost = cost_arr[1];
+
             var new_sku_count = req.body.sku_count
             var new_comment = req.body.comment;
 
@@ -121,15 +132,11 @@ class IngredientHandler{
             var target_id = req.params.ingredient_id;
 
             let all_formulas = await Formula.find();
-            console.log(all_formulas);
-            console.log("the length of all formulas is :" + all_formulas.length);
             for(var i = 0; i < all_formulas.length; i++){
                 var curr_formula = all_formulas[i];
                 var curr_ingrs_array = curr_formula.ingredients;
-                console.log(curr_ingrs_array);
                 for(var j = 0; j < curr_ingrs_array.length; j++){
                     if(curr_ingrs_array[j]._id == target_id){
-                        console.log('this worked');
                         return res.json({ success: false, error: "This ingredient is still tied to a formula"});
                     }
                 }

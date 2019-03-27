@@ -11,9 +11,15 @@ export const manu_line_title="Manufacturing Lines"
 
 //List Pages
 export const IngTitle = "INGREDIENTS"
-export const SkuTitle = "SKUs"
+export const SkuTitle = "SKUS"
 export const ManuGoalTitle = "MANUFACTURING GOALS"
 export const FormulaTitle = "FORMULAS"
+export const SalesReportTitle = 'SALES REPORTS'
+export const ImportTitle = 'IMPORT'
+export const UserTitle = 'USERS'
+export const ManuLineTitle = 'MANUFACTURING LINES'
+export const ManuScheduleTitle = 'MANUFACTURING SCHEDULE'
+export const ProductLineTitle = 'PRODUCT LINES'
 
 export const ingredients_page_name = 'ingredients';
 export const users_page_name = 'users';
@@ -25,8 +31,12 @@ export const skus_page_name = 'skus';
 export const manugoals_page_name = 'manugoals';
 export const manu_line_page_name = 'manulines';
 export const prod_line_page_name = 'products';
+export const prod_lines_page_name = 'product lines';
 export const manu_activity_page_name = 'manuactivities';
 export const formulas_page_name = 'formulas';
+export const customers_page_name = 'customers';
+export const sku_drilldown_page_name = 'customers_sku';
+export const general_report_page_name = 'general_report';
 
 export const options = 'Options'
 export const keyword_label = "Keyword"
@@ -34,6 +44,7 @@ export const sku_label = "SKU"
 export const ingredient_label = "Ingredient"
 export const user_label = "User"
 export const prod_line_label = 'Product Line'
+export const customer_label = 'Customer'
 export const formula_label = 'Formula'
 
 export const undefined = 'Undefined'
@@ -78,6 +89,7 @@ export const edit_manu_lines = 'Bulk Edit Manufacturing Lines'
 export const manu_lines_modal = 'manu_lines'
 export const details_modal = 'details'
 export const manu_report_data_modal = 'manu_report'
+export const create_sum_sales_report = 'Create Summary Sales Report'
 
 
 // CSV parsing constants
@@ -92,6 +104,8 @@ export const csv_sku_formula = "Formula#";
 export const csv_sku_formula_factor = "Formula factor";
 export const csv_sku_ml = "ML Shortnames";
 export const csv_sku_rate = "Rate";
+export const csv_sku_mfg_setup = "Mfg setup cost"
+export const csv_sku_mfg_run = "Mfg run cost"
 export const csv_sku_comment = "Comment";
 
 export const csv_ingr_num = "Ingr#";
@@ -112,3 +126,9 @@ export const csv_formula_comment = "Comment";
 export const manu_report_modal = 'manu_report_modal'
 export const modify_manu_lines_label = 'Modify Manufacturing Lines'
 export const modify_formula_label = 'Modify Formula'
+
+
+
+
+export const gen_report_no_prod_line_selected = "Please select a product line to create a summary sales report!"
+export const sku_dependency_exists = "This manufacturing line cannot be deleted because the following sku(s) are dependent on it: "

@@ -1,4 +1,5 @@
 import { bool } from "prop-types";
+import Calculations from "../components/SalesReport/Calculations";
 
 // Unit conversion for Ingredients units
 
@@ -8,33 +9,53 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'oz':
-                return val;
+                var number = Calculations.checkValLength(num);
+                return number + ' oz';
+            case 'ounce':
+                var number = Calculations.checkValLength(num);
+                return number + ' oz';            
             case 'lb':
-                return num*16 + ' oz'
+            case 'pound':
+                var number = Calculations.checkValLength(num*16);
+                return number + ' oz'
             case 'ton':
-                return num*32000 + ' oz'
+                var number = Calculations.checkValLength(num*32000);
+                return number + ' oz';
             case 'g':
-                return num*0.035274 + ' oz'
+            case 'gram':
+                var number = Calculations.checkValLength(num*0.035274);
+                return number + ' oz'
             case 'kg':
-                return num*35.274 + ' oz'
+            case 'kilogram':
+                var number = Calculations.checkValLength(num*35.274);
+                return number + ' oz'
             default:
-                return 'invalid unit'
+                return 'invalid unit';
         }
     }
     static toPound(val){
         let num = parseFloat(val.split(' ')[0]);
         let unit = val.split(' ')[1];
         switch (unit){
+            case 'ounce':
             case 'oz':
-                return num/16 + ' lb'
+                var number = Calculations.checkValLength(num/16);
+                return number + ' lb'
             case 'lb':
-                return val
+            case 'pound':
+                var number = Calculations.checkValLength(num);
+                return number + ' lb'
             case 'ton':
-                return num*2000 + ' lb'
+                var number = Calculations.checkValLength(num*2000);
+                return number + ' lb'
             case 'g':
-                return num*0.00220462 + ' lb'
+            case 'gram':
+                var number = Calculations.checkValLength(num*0.00220462);
+                return number + ' lb'
             case 'kg':
-                return num*2.20462 + ' lb'
+            case 'kilogram':
+                var number = Calculations.checkValLength(num*2.20462);
+                return number + ' lb'
             default:
                 return 'invalid unit'
         }
@@ -45,15 +66,25 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'oz':
-                return num/16 + ' ton'
+            case 'ounce':
+                var number = Calculations.checkValLength(num/16);
+                return number + ' ton'
             case 'lb':
-                return num/32000 + ' ton'
+            case 'pound':
+                var number = Calculations.checkValLength(num/32000);
+
+                return number + ' ton'
             case 'ton':
-                return val
+                var number = Calculations.checkValLength(num);
+                return number + ' ton'
             case 'g':
-                return num/907185 + ' ton'
+            case 'gram':
+                var number = Calculations.checkValLength(num/907185);
+                return number + ' ton'
             case 'kg':
-                return num/907.185 + ' ton'
+            case 'kilogram':
+                var number = Calculations.checkValLength(num/907.185);
+                return number + ' ton'
             default:
                 return 'invalid unit'
         }
@@ -64,15 +95,24 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'oz':
-                return num*28.3495 + ' g'
+            case 'ounce':
+                var number = Calculations.checkValLength(num*28.3495);
+                return number + ' g'
             case 'lb':
-                return num*453.592 + ' g'
+            case 'pound':
+                var number = Calculations.checkValLength(num*453.592);
+                return number + ' g'
             case 'ton':
-                return num*907185 + ' g'
+                var number = Calculations.checkValLength(num*907185);
+                return number + ' g'
             case 'g':
-                return val
+            case 'gram':
+                var number = Calculations.checkValLength(num);
+                return number + ' g'
             case 'kg':
-                return num*1000 + ' g'
+            case 'kilogram':
+                var number = Calculations.checkValLength(num*1000);
+                return number + ' g'
             default:
                 return 'invalid unit'
         }
@@ -83,15 +123,24 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'oz':
-                return num/35.274 + ' kg'
+            case 'ounce':
+                var number = Calculations.checkValLength(num/35.274);
+                return number + ' kg'
             case 'lb':
-                return num/2.20462 + ' kg'
+            case 'pound':
+                var number = Calculations.checkValLength(num/2.20462);
+                return number + ' kg'
             case 'ton':
-                return num*907.185 + ' kg'
+                var number = Calculations.checkValLength(num*907.185);
+                return number + ' kg'
             case 'g':
-                return num/1000 + ' kg'
+            case 'gram':
+                var number = Calculations.checkValLength(num/1000);
+                return number + ' kg'
             case 'kg':
-                return val
+            case 'kilogram':
+                var number = Calculations.checkValLength(num);
+                return number + ' kg'            
             default:
                 return 'invalid unit'
         }
@@ -102,17 +151,29 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'floz':
-                return val
+            case 'fluidounce':
+                var number = Calculations.checkValLength(num);
+                return number + ' floz'
             case 'pt':
-                return  num/0.0625  + ' floz'
+            case 'pint':
+                var number = Calculations.checkValLength(num/0.0625);
+                return  number  + ' floz'
             case 'qt':
-                return  num/0.03125  + ' floz'
+            case 'quart':
+                var number = Calculations.checkValLength(num/0.03125);
+                return  number  + ' floz'
             case 'gal':
-                return  num/0.0078125  + ' floz'
+            case 'gallon':
+                var number = Calculations.checkValLength(num/0.0078125);
+                return  number  + ' floz'
             case 'ml':
-                return  num/29.5735  + ' floz'
+            case "milliliter":
+                var number = Calculations.checkValLength(num/29.5735);
+                return  number  + ' floz'
             case 'l':
-                return  num/0.0295735  + ' floz'
+            case "liter":
+                var number = Calculations.checkValLength(num/0.0295735);
+                return  number  + ' floz'
             default:
                 return 'invalid unit'
         }
@@ -123,17 +184,29 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'floz':
-                return  num/16  + ' pt'
+            case 'fluidounce':
+                var number = Calculations.checkValLength(num/16);
+                return  number  + ' pt'
             case 'pt':
-                return val
+            case 'pint':
+                var number = Calculations.checkValLength(num);
+                return number + ' pt'
             case 'qt':
-                return  num/0.5  + ' pt'
+            case 'quart':
+                var number = Calculations.checkValLength(num/0.5);
+                return  number + ' pt'
             case 'gal':
-                return  num/0.125  + ' pt'
+            case 'gallon':
+                var number = Calculations.checkValLength(num/0.125);
+                return  number  + ' pt'
             case 'ml':
-                return  num/473.176  + ' pt'
+            case 'milliliter':
+                var number = Calculations.checkValLength(num/473.176);
+                return  number  + ' pt'
             case 'l':
-                return  num/0.473176  + ' pt'
+            case 'liter':
+                var number = Calculations.checkValLength(num/0.473176);
+                return  number + ' pt'
             default:
                 return 'invalid unit'
         }
@@ -144,17 +217,29 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'floz':
-                return  num*0.03125  + ' qt'
+            case 'fluidounce':
+                var number = Calculations.checkValLength(num*0.03125);
+                return  number  + ' qt'
             case 'pt':
-                return  num*0.5  + ' qt'
+            case 'pint':
+                var number = Calculations.checkValLength(num*0.5);
+                return  number  + ' qt'
             case 'qt':
-                return val
+            case 'quart':
+                var number = Calculations.checkValLength(num);
+                return number + ' qt'
             case 'gal':
-                return  num*4  + ' qt'
+            case 'gallon':
+                var number = Calculations.checkValLength(num*4);
+                return  number  + ' qt'
             case 'ml':
-                return  num*0.00105669  + ' qt'
+            case 'milliliter':
+                var number = Calculations.checkValLength(num*0.00105669);
+                return  number  + ' qt'
             case 'l':
-                return  num*1.05669  + ' qt'
+            case 'liter':
+                var number = Calculations.checkValLength(num*1.05669);
+                return  number  + ' qt'
             default:
                 return 'invalid unit'
         }
@@ -165,17 +250,29 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'floz':
-                return  num*0.0078125  + ' gal'
+            case 'fluidounce':
+                var number = Calculations.checkValLength(num*0.0078125);
+                return  number  + ' gal'
             case 'pt':
-                return  num*0.125  + ' gal'
+            case 'pint':
+                var number = Calculations.checkValLength(num*0.125);
+                return  number  + ' gal'
             case 'qt':
-                return  num*0.25  + ' gal'
+            case 'quart': 
+                var number = Calculations.checkValLength(num*0.25);
+                return  number  + ' gal'
             case 'gal':
-                return val
+            case 'gallon':
+                var number = Calculations.checkValLength(num);
+                return  number  + ' gal'
             case 'ml':
-                return  num*0.000264172  + ' gal'
+            case 'milliliter':
+                var number = Calculations.checkValLength(num*0.000264172);
+                return  number  + ' gal'
             case 'l':
-                return  num*0.264172  + ' gal'
+            case 'liter':
+                var number = Calculations.checkValLength(num*0.264172);
+                return  number  + ' gal'
             default:
                 return 'invalid unit'
         }
@@ -186,17 +283,29 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'floz':
-                return  num*29.5735  + ' ml'
+            case 'fluidounce':
+                var number = Calculations.checkValLength(num*29.5735);
+                return  number  + ' ml'
             case 'pt':
-                return  num*473.176  + ' ml'
+            case 'pint':
+                var number = Calculations.checkValLength(num*473.176);
+                return  number  + ' ml'
             case 'qt':
-                return  num*946.353  + ' ml'
+            case 'quart':
+                var number = Calculations.checkValLength(num*946.353);
+                return  number  + ' ml'
             case 'gal':
-                return  num*3785.41  + ' ml'
+            case 'gallon':
+                var number = Calculations.checkValLength(num*3785.41);
+                return  number  + ' ml'
             case 'ml':
-                return val
+            case 'milliliter':
+                var number = Calculations.checkValLength(num);
+                return  number  + ' ml'
             case 'l':
-                return  num*1000  + ' ml'
+            case 'liter':
+                var number = Calculations.checkValLength(num*1000);
+                return  number  + ' ml'
             default:
                 return 'invalid unit'
         }
@@ -207,17 +316,29 @@ export default class UnitConversion {
         let unit = val.split(' ')[1];
         switch (unit){
             case 'floz':
-                return  num*0.0295735  + ' l'
+            case 'fluidounce':
+                var number = Calculations.checkValLength(num*0.0295735);
+                return  number + ' l'
             case 'pt':
-                return  num*0.473176  + ' l'
+            case 'pint':
+                var number = Calculations.checkValLength(num*0.473176);
+                return  number  + ' l'
             case 'qt':
-                return  num*0.946353  + ' l'
+            case 'quart':
+                var number = Calculations.checkValLength(num*0.946353);
+                return  number  + ' l'
             case 'gal':
-                return  num*3.78541  + ' l'
+            case 'gallon':
+                var number = Calculations.checkValLength(num*3.78541);
+                return  number  + ' l'
             case 'ml':
-                return  num*0.001  + ' l'
+            case 'milliliter':
+                var number = Calculations.checkValLength(num*0.001);
+                return  number  + ' l'
             case 'l':
-                return val
+            case 'liter':
+                var number = Calculations.checkValLength(num);
+                return  number  + ' l'
             default:
                 return 'invalid unit'
         }
@@ -225,7 +346,7 @@ export default class UnitConversion {
 
     static toCount(val){
         let unit = val.split(' ')[1];
-        if (unit === 'ct'){
+        if (unit === 'ct' || unit === 'count'){
             return val
         }
         return 'invalid unit'
@@ -236,15 +357,15 @@ export default class UnitConversion {
     t.func(val)*/
 
     static getConversionFunction(unit_string) {
-        console.log(unit_string)
-        let match = unit_string.match('^([0-9]+(?:[\.][0-9]{0,10})?|\.[0-9]{1,10}) (oz|ounce|lb|pound|ton|g|gram|kg|kilogram|' + 
+        
+        let match = unit_string.match('^([0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|lb|pound|ton|g|gram|kg|kilogram|' + 
                                       'floz|fluidounce|pt|pint|qt|quart|gal|gallon|ml|milliliter|l|liter|ct|count)$')
         if (match === null) {
             return { success: false, error: 'Incorrect String Format'}
         }
         let val = match[1]
         let unit = match[2]
-        console.log(match)
+      
         switch (unit) {
             case 'oz':
             case 'ounce': 
@@ -287,8 +408,16 @@ export default class UnitConversion {
         }
     }
 
+    static getUnitType(unit_string){
+        if(/^([0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg)$/.test(unit_string)) return 1;
+        if(/^([0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (floz|fluidounce|pint|pt|quart|qt|gallon|gal|ml|milliliter|liter|l)$/.test(unit_string)) return 2;
+        if(/^([0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (ct|count)$/.test(unit_string)) return 3;
+        return -1;
+    }
+
     static getCleanUnitForm(unit_string) {
-        let reg = unit_string.match('^([0-9]+(?:[\.][0-9]{0,10})?|\.[0-9]{1,10}) ?(.*)')
+        let reg = unit_string.match('^([0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) ?(.*)')
+      
         let num = reg[1]
         unit_string = reg[2]
         unit_string = unit_string.replace(/ /g, '')
@@ -305,4 +434,5 @@ export default class UnitConversion {
         }
         return { success: false, error: 'Incorrect String Format' }
     }
+
 }

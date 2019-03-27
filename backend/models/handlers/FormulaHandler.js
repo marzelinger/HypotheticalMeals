@@ -4,6 +4,7 @@
 import Formula from '../databases/formula';
 import SKU from '../databases/sku';
 import Ingredient from '../databases/ingredient';
+import UnitConversion from '../../../client/src/helpers/UnitConversion';
 
 class FormulaHandler{
 
@@ -19,17 +20,19 @@ class FormulaHandler{
             if(new_formula_ingredients.length != new_ingredient_quantities.length) return res.json({ success: false, error: 'Mismatch in parallel arrays'});
             for(var i = 0; i < new_formula_ingredients.length; i++){
                 var curr_ingredient_quantity = new_ingredient_quantities[i];
-                var satisfiesRegex = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$/.test(curr_ingredient_quantity);
-                if(!satisfiesRegex) return res.json({ success: false, error: 'Please provide a quantity with the appropriate units'});
-                
+
+                var sanitized_quantity = UnitConversion.getCleanUnitForm(curr_ingredient_quantity);
+                if(sanitized_quantity.success == false) return res.json({ success: false, error: "Please check the units of ingredient " + i + " of this formula. Options are: oz, ounce, lb, pound, ton, g, gram, kg, kilogram, floz, fluidounce, pt, pint, qt, quart, gal, gallon, ml, milliliter, l, liter, ct, count"});
+
                 var curr_ingredient_id = new_formula_ingredients[i];
                 var curr_ingredient_arr = await Ingredient.find({ _id: curr_ingredient_id });
                 var curr_ingredient = curr_ingredient_arr[0];
 
-                var typeOfUnit = await this.findUnit(curr_ingredient.pkg_size);
-                var otherTypeOfUnit = await this.findUnit(curr_ingredient_quantity);
+                var typeOfUnit = await UnitConversion.getUnitType(curr_ingredient.pkg_size);
+                var otherTypeOfUnit = await UnitConversion.getUnitType(curr_ingredient_quantity);
                 if(otherTypeOfUnit == -1) return res.json({ success: false, error: "Please enter one of the following units: oz, lb, ton, g, kg, floz, pt, qt, gal, mL, L, count"});
                 if(typeOfUnit != otherTypeOfUnit) return res.json({ success: false, error: 'Ingredient unit mismatch'});
+
             }
 
             var new_comment = req.body.comment;
@@ -58,13 +61,6 @@ class FormulaHandler{
         }
     }
 
-    static async findUnit(ingredient_pkg_size){
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg)$/.test(ingredient_pkg_size)) return 1;
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (floz|pt|qt|gal|ml|l)$/.test(ingredient_pkg_size)) return 2;
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count)$/.test(ingredient_pkg_size)) return 3;
-        return -1;
-    }
-
     static async updateFormulaByID(req, res){
         try {
             var target_id = req.params.formula_id;
@@ -80,18 +76,17 @@ class FormulaHandler{
 
             for(var i = 0; i < new_formula_ingredients.length; i++){
                 var curr_ingredient_quantity = new_ingredient_quantities[i];
-                console.log(curr_ingredient_quantity);
-                console.log(" ");
-                var satisfiesRegex = /^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz.|lb.|ton|g|kg|fl.oz.|pt.|qt.|gal.|ml|l|count)$/.test(curr_ingredient_quantity);
-                if(!satisfiesRegex) return res.json({ success: false, error: 'Please provide a quantity with the appropriate units'});
-                
+
+                var sanitized_quantity = UnitConversion.getCleanUnitForm(curr_ingredient_quantity);
+                if(sanitized_quantity.success == false) return res.json({ success: false, error: "Pl2ease check the units of ingredient " + i + " of this formula. Options are: oz, ounce, lb, pound, ton, g, gram, kg, kilogram, floz, fluidounce, pt, pint, qt, quart, gal, gallon, ml, milliliter, l, liter, ct, count"});
+
                 var curr_ingredient_id = new_formula_ingredients[i];
                 var curr_ingredient_arr = await Ingredient.find({ _id: curr_ingredient_id });
                 var curr_ingredient = curr_ingredient_arr[0];
 
-                var typeOfUnit = await this.findUnit(curr_ingredient.pkg_size);
-                var otherTypeOfUnit = await this.findUnit(curr_ingredient_quantity);
-                if(otherTypeOfUnit == -1) return res.json({ success: false, error: "Please enter one of the following units: oz, lb, ton, g, kg, floz, pt, qt, gal, mL, L, count"});
+                var typeOfUnit = await UnitConversion.getUnitType(curr_ingredient.pkg_size);
+                var otherTypeOfUnit = await UnitConversion.getUnitType(curr_ingredient_quantity);
+                if(otherTypeOfUnit == -1) return res.json({ success: false, error: "Pl2ease enter one of the following units: oz, lb, ton, g, kg, floz, pt, qt, gal, mL, L, count"});
                 if(typeOfUnit != otherTypeOfUnit) return res.json({ success: false, error: 'Ingredient unit mismatch'});
             }
 
@@ -153,8 +148,8 @@ class FormulaHandler{
                     {$set: {ingredients : sku.ingredients, ingredient_quantities: sku.ingredient_quantities}}, 
                     {upsert : true, new : true});
             })*/
-            if(skus.length > 1) return res.json({ success: false, error: 'Formula still tied to at least one SKU'});
-            console.log(target_id);
+            if(skus.length >= 1) return res.json({ success: false, error: 'Formula still tied to at least one SKU'});
+            //console.log(target_id);
             let to_remove = await Formula.findOneAndDelete({ _id: target_id});
             if(!to_remove) return res.json({ success: true, error: '404'});
             return res.json({ success: true, data: to_remove });

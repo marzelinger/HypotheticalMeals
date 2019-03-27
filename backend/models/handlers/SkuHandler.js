@@ -21,8 +21,11 @@ class SkuHandler{
             var new_scale_factor = req.body.scale_factor
             var new_manu_lines = req.body.manu_lines
             var new_manu_rate = req.body.manu_rate
+            var new_setup_cost = req.body.setup_cost
+            var new_run_cpc = req.body.run_cpc
 
-            if(!new_name || !new_sku_num || !new_case_upc || !new_unit_upc || !new_unit_size || !new_cpc || !new_prod_line){
+            if(!new_name || !new_sku_num || !new_case_upc || !new_unit_upc || !new_unit_size || !new_cpc || !new_prod_line ||
+                !new_formula || !new_scale_factor || ! new_manu_rate || !new_setup_cost || !new_run_cpc){
                 return res.json({
                     success: false, error: 'You must provide all required fields'
                 });
@@ -56,8 +59,10 @@ class SkuHandler{
             sku.scale_factor = new_scale_factor
             sku.manu_lines = new_manu_lines
             sku.manu_rate = new_manu_rate
+            sku.setup_cost = new_setup_cost
+            sku.run_cpc = new_run_cpc
+            sku.status = 'queued';
             let new_sku = await sku.save();
-            // console.log('Sku added to database');
             return res.json({ success: true, data: new_sku});
         }
         catch (err) {
@@ -77,12 +82,10 @@ class SkuHandler{
 
     static async updateSkuByID(req, res){
         try{
-            // console.log('trying to update')
             var target_id = req.params.sku_id;
             if (!target_id) {
                 return res.json({ success: false, error: 'No sku id provided' });
             }
-            // console.log('here')
             var new_name = req.body.name;
             var new_sku_num = req.body.num;
             var new_case_upc = req.body.case_upc;
@@ -95,6 +98,8 @@ class SkuHandler{
             var new_scale_factor = req.body.scale_factor
             var new_manu_lines = req.body.manu_lines
             var new_manu_rate = req.body.manu_rate
+            var new_setup_cost = req.body.setup_cost
+            var new_run_cpc = req.body.run_cpc
             // SkuHandler.checkForZeroQtys(new_ingredients, new_ingredient_quantities);
 
             let conflict = await SKU.find({ num: new_sku_num });
@@ -107,7 +112,8 @@ class SkuHandler{
                 {$set: {name : new_name, num : new_sku_num, case_upc : new_case_upc, unit_upc : new_unit_upc,
                         unit_size : new_unit_size, cpc: new_cpc, prod_line: new_prod_line,
                         comment : new_comment, formula : new_formula, scale_factor : new_scale_factor, 
-                        manu_lines : new_manu_lines, manu_rate : new_manu_rate}}, {upsert : true, new : true});
+                        manu_lines : new_manu_lines, manu_rate : new_manu_rate, setup_cost : new_setup_cost,
+                        run_cpc : new_run_cpc}}, {upsert : true, new : true});
             if(!updated_sku) {
                 return res.json({
                     success: true, error: 'This document does not exist'
@@ -125,7 +131,10 @@ class SkuHandler{
 
     static async getAllSkus(req, res){
         try {
-            let all_skus = await SKU.find().populate('ingredients').populate('prod_line');
+            let all_skus = await SKU.find().populate('formula').populate({
+                path: 'formula',
+                populate: { path: 'ingredients' }
+              }).populate('prod_line');
             return res.json({ success: true, data: all_skus});
         }
         catch (err) {
@@ -137,10 +146,10 @@ class SkuHandler{
     static async getSkuByID(req, res){
         try {
             var target_id = req.params.sku_id;
-            // console.log("this is the targetid: "+target_id);
-
-            let to_return = await SKU.find({ _id : target_id });
-            // console.log("this is the to_return: "+to_return);
+            let to_return = await SKU.find({ _id : target_id }).populate('formula').populate({
+                path: 'formula',
+                populate: { path: 'ingredients' }
+              }).populate('prod_line');
             if(to_return.length == 0) return res.json({ success: false, error: '404'});
             return res.json({ success: true, data: to_return});
         } catch (err) {
@@ -148,6 +157,42 @@ class SkuHandler{
             return res.json({ success: false, error: err});
         }
     }
+
+
+    
+    static async getSkuByManuLineID(req, res){
+        try {
+
+            var target_manu_line_id = req.params.manu_line_id;
+            // console.log("target_manu_line: "+target_manu_line_id);
+            let to_return = await SKU.find({ manu_lines : target_manu_line_id }).populate('formula').populate({
+                path: 'formula',
+                populate: { path: 'ingredients' }
+              }).populate('prod_line');
+            //if(to_return.length == 0) return res.json({ success: false, error: '404'});
+            return res.json({ success: true, data: to_return});
+        } catch (err) {
+            console.log(err)
+            return res.json({ success: false, error: err});
+        }
+    }
+
+    static async getSkusByProdLine(req, res){
+        try {
+            var target_prod = req.params.prod_line_id;
+
+            let to_return = await SKU.find({ prod_line : target_prod }).populate('formula').populate({
+                path: 'formula',
+                populate: { path: 'ingredients' }
+              }).populate('prod_line');
+            if(to_return.length == 0) return res.json({ success: false, error: '404'});
+            return res.json({ success: true, data: to_return});
+        } catch (err) {
+            console.log(err)
+            return res.json({ success: false, error: err});
+        }
+    }
+
 
 
     static async deleteSkuByID(req, res){
@@ -178,7 +223,6 @@ class SkuHandler{
                 populate: { path: 'ingredients' }
               });
             let sku = response[0];
-            // console.log(response);
             return res.json({ success: true, data: sku});
         }
         catch (err) {
@@ -187,12 +231,12 @@ class SkuHandler{
         }
     }
 
-    static async getSkusBySkuKeyword(req, res){
+    static async getSkusBySkuNumer(req, res){
         try{
-            var target_id = req.params.sku_id;
-            let sku = await SKU.find({ _id : target_id }).populate('ingredients');
+            var target_num = req.params.sku_num;
+            let sku = await SKU.find({ num: target_num });
             if (sku.length == 0) return res.json({success: false, error: '404'})
-            return res.json({ success: true, data: sku[0].formula.ingredients});
+            return res.json({ success: true, data: sku[0]});
         }
         catch (err) {
             return res.json({ success: false, error: err});

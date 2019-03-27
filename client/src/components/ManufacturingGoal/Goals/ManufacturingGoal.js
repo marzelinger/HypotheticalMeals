@@ -12,6 +12,7 @@ import CheckErrors from '../../../helpers/CheckErrors';
 import ManufacturingGoalDetails from './ManufacturingGoalDetails';
 import * as Constants from '../../../resources/Constants';
 import editButton from '../../../resources/edit.png';
+import ExportSimple from'../../export/ExportSimple'
 
 export default class ManufacturingGoal extends React.Component{
   constructor(props){
@@ -63,6 +64,11 @@ export default class ManufacturingGoal extends React.Component{
         return false;
       }
       else{
+        for(var i = 0; i < this.props.activities.length; i ++){
+          console.log('deleting activity')
+          await SubmitRequest.submitDeleteItem('manuactivities', this.props.activities[i]);
+          this.props.activities.splice(i, 1);
+        }
         this.props.handleDeleteGoal(this.props.id)
         return true;
       }
@@ -84,6 +90,7 @@ export default class ManufacturingGoal extends React.Component{
   }
 
   handleDetailViewSubmit = async(event, item, option)=> {
+    console.log("this is the handle detail view submit: "+JSON.stringify(item));
     if(option == Constants.details_delete){
       return await this.handleDeleteGoal();
     }else{
@@ -114,6 +121,7 @@ export default class ManufacturingGoal extends React.Component{
                 <Card>
                     <CardBody>
                         <ManuGoalsTables handleDeleteActivities = {this.handleDeleteActivities} onQuantityChange = {this.onQuantityChange} activities = {this.props.activities}></ManuGoalsTables>
+                        <ExportSimple data = {this.props.activities} fileTitle = {this.props.name + '_goal'}/>
                     </CardBody>
                 </Card>
             </UncontrolledCollapse>

@@ -7,6 +7,40 @@ import printFuncFront from '../printFuncFront';
 
 export default class SubmitRequest{
 
+  static async addAllCustomers() {
+    var customers = await fetch('/api/scrape_customers', { method: 'GET' })
+    .then(data => data.json())
+    .then((res) => {
+      if (!res.success) return { success: res.success, error: res.error };
+      else return{ 
+        success: res.success,
+        data: res.data
+      };
+    });
+    customers.data.forEach((customer) => {
+      SubmitRequest.submitCreateItem('customers', customer);
+    })
+  }
+
+  // TODO: make this understand time limits
+  static async addNewSkuRecords(sku_num) {
+    fetch(`/api/scrape_new_sku`, { method: 'PUT' , headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({sku_num})})
+
+  }
+
+  static async addNewSkuRecordsBulk(sku_nums) {
+    fetch(`/api/scrape_new_sku_bulk`, { method: 'PUT' , headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({sku_nums})})
+  }
+
+  static async updateSkuRecords() {
+    console.log('here')
+    fetch(`/api/update_all`, { method: 'GET' })
+  }
+
+  static async submitReset() {
+    fetch(`/api/trigger_reset`, { method: 'GET' });
+  }
+
   static submitQueryString(query) {
     return fetch(query, { method: 'GET' })
           .then(data => data.json())
@@ -14,7 +48,8 @@ export default class SubmitRequest{
             if (!res.success) return { success: res.success, error: res.error };
             else return{ 
               success: res.success,
-              data: res.data
+              data: res.data,
+              status: res.status
             };
             
           });
@@ -77,7 +112,7 @@ export default class SubmitRequest{
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
       }).then(res => res.json()).then((res) => {
-        console.log(res);
+        //console.log(res);
         if (!res.success) return { success: res.success, error: res.error };
         else return { success: res.success, data: res.data};
       });
@@ -121,6 +156,43 @@ export default class SubmitRequest{
     }
   }
 
+  static async submitGetSkusByProductLineID(id) {
+    try {
+      //console.log("this is the id in request: "+id);
+      return fetch('/api/skus/prodline/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+  
+
+  static async submitGetCustomerByID(id) {
+    try {
+      return fetch('/api/customers/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
+
   static async submitGetFormulaByID(id) {
     try {
       return fetch('/api/formulas/' + id)
@@ -156,9 +228,9 @@ export default class SubmitRequest{
     }
   }
 
-  static async submitGetProductLinesByNameSubstring(substr) {
+  static async submitGetProductLinesByNameSubstring(substr, currentPage, pageSize) {
     try {
-      return fetch('/api/products_name/' + substr)
+      return fetch('/api/products_name/' + substr +'/'+currentPage+'/'+pageSize)
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error };
@@ -176,6 +248,26 @@ export default class SubmitRequest{
   static async submitGetFormulasByNameSubstring(substr) {
     try {
       return fetch('/api/formulas_name/' + substr)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return {
+          success: res.success,
+          data: res.data
+        }
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
+
+
+  static async submitGetCustomersByNameSubstring(substr) {
+    //console.log("this is the sub here: "+substr);
+    try {
+      return fetch('/api/customers_name/' + substr)
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error };
@@ -224,8 +316,60 @@ export default class SubmitRequest{
     }
   }
 
+  static async submitGetSkuByID(id) {
+    try {
+      return fetch('/api/skus/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
+  static async submitGetUserByID(id) {
+    try {
+      return fetch('/api/users/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
+
   static submitGetManuGoalsByFilter = (name_filter, username_filter, user) => {
     return fetch(`/api/manugoals_filter/${name_filter || '_'}/${username_filter || '_'}/${user}`, {method: 'GET'})
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return ({ 
+            success: res.success,
+            data: res.data
+          }
+        )
+      }
+    )
+  }
+
+  static submitGetSaleRecordsByFilter = (sort_field, customer_id, prod_line_ids, sku_id, date_range_start, date_range_end, currentPage, pageSize) => {
+    //console.log("path is: "+ sort_field + '/' + customer_id + '/' + prod_line_ids + '/' + sku_id + '/' + 
+    //date_range_start + '/' + date_range_end + '/' + currentPage + '/' + pageSize);
+    return fetch('/api/records_filter/' + sort_field + '/' + customer_id + '/' + prod_line_ids + '/' + sku_id + '/' + 
+                  date_range_start + '/' + date_range_end + '/' + currentPage + '/' + pageSize, {method: 'GET'})
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error };
@@ -345,9 +489,47 @@ export default class SubmitRequest{
   }
 
 
+  static async submitGetSKUsByManuLine(id) {
+    // console.log("this is the id: "+id);
+    try {
+      return fetch('/api/skus/manu_line_id/' + id)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
+
+  static async submitGetManufacturingActivitiesBySKU(sku_id, start, end) {
+    try {
+      // console.log("THIS IS THE SKU: "+JSON.stringify(sku_id));
+      console.log("sku: "+sku_id+"     start;    "+start+"       end: "+end);
+      return fetch('/api/manuactivities/' + sku_id+'/'+start+'/'+end)
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
+
   static async submitGetManufacturingActivitiesForReport(reportData) {
     try {
-      console.log("here in the submitrequest for report");
       return fetch(`/api/manuactivities/${reportData.manu_line._id}/${reportData.start_date}/${reportData.end_date}/${reportData.duration}`)
       .then(data => data.json())
       .then((res) => {
@@ -362,5 +544,29 @@ export default class SubmitRequest{
       return { success: false, error: err };
     }
   }
+
+  static submitGetDataPaginated = (page_name, currentPage, pageSize) => {
+    try {
+      return fetch('/api/' + page_name+'/'+currentPage+'/'+pageSize, { method: 'GET' })
+        .then(data => data.json())
+        .then((res) => {
+          if (!res.success) return { success: res.success, error: res.error };
+          else return ({ 
+              success: res.success,
+              data: res.data
+          });
+        });
+      }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
+
+
+
+
+
+
 }
 

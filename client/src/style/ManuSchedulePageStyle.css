@@ -14,6 +14,11 @@
     color: #f8f9fa;
 }
 
+.vis-drag-left,
+.vis-drag-right {
+  pointer-events: none;
+}
+
 .palette-container, .errors-container{
     width: 100%;
     padding: 10px;

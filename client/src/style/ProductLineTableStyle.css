@@ -1,7 +1,12 @@
 
 
 .prod-line-table tr {
+    height: 40px !important;
     grid-template-columns:  minmax(50px, 1fr) minmax(100px, 2fr) minmax(50px,1fr) minmax(100px,2fr) minmax(100px,2fr);
+}
+
+.prod-line-table tbody {
+    grid-auto-rows: 40px;
 }
 
 .prod-line-table #complex {
@@ -9,5 +14,34 @@
 }
 
 .prod-line-table .css-vj8t7z {
+    min-height: 20px;
+}
+
+
+
+.report-line-table tr {
+    height: 40px !important;
+    grid-template-columns:  minmax(50px, 1fr) minmax(50px,1fr) minmax(50px,2fr);
+}
+
+.report-line-table #complex {
+    grid-template-columns: minmax(200px, 1fr) minmax(200px , 1fr) minmax(200px, 1fr) minmax(200px, 1fr) 50px;
+}
+
+.report-line-table .css-vj8t7z {
+    min-height: 20px;
+}
+
+
+.total-report-line-table tr {
+    height: 40px !important;
+    grid-template-columns:  minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr);
+}
+
+.total-report-line-table #complex {
+    grid-template-columns:  minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr) minmax(20px, 1fr);
+}
+
+.total-report-line-table .css-vj8t7z {
     min-height: 20px;
 }

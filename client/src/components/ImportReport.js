@@ -14,8 +14,8 @@ export class ImportReport extends React.Component{
         if(this.props.label==="SKUs"){
             this.state = {
                 page_title: "SKUs",
-                table_columns: ['Name', 'Number','Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line', "Formula #", "Formula Factor", "Manufacturing Line", "Manufacturing Rate", "Comment"],
-                table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', "formula", "scale_factor", "manu_lines", "manu_rate", "comment"],
+                table_columns: ['Name', 'Number','Case UPC', 'Unit UPC', 'Unit Size', 'Cost per Case', 'Product Line', "Formula #", "Formula Factor", "Manufacturing Line", "Manufacturing Rate", "Manufacturing Setup Cost", "Manufacturing Run Cost", "Comment"],
+                table_properties: ['name', 'num', 'case_upc', 'unit_upc', 'unit_size', 'cpc', 'prod_line', "formula", "scale_factor", "manu_lines", "manu_rate", "setup_cost", "run_cpc", "comment"],
                 added_items: this.props.added_items,
                 updated_items: this.props.updated_items,
                 ignored_items: this.props.ignored_items,

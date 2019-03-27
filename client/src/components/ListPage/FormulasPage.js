@@ -208,14 +208,18 @@ export default class FormulasPage extends React.Component {
             data: newData,
             exportData: newExportData,
             detail_view_item: item,
-            detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
+            detail_view_options: [Constants.details_create, Constants.details_cancel]
         })
-        this.toggle(Constants.details_modal);
+        this.toggle();
         this.loadDataFromServer();
     }
 
     onTableOptionSelection = async(e, opt) => {
-        this.onCreateNewItem();
+        switch (opt){
+            case Constants.create_item:
+                this.onCreateNewItem();
+                break;
+        }
     }
 
     async onSort(event, sortKey){
@@ -241,10 +245,10 @@ export default class FormulasPage extends React.Component {
         else{
             this.setState({ 
                 detail_view_item: item ,
-                detail_view_options: [Constants.details_cancel]
+                detail_view_options: [Constants.details_exit]
                 });
         }
-        this.toggle(Constants.details_modal);
+        this.toggle();
     };
 
     async onDetailViewSubmit(event, item, option) {
@@ -268,6 +272,9 @@ export default class FormulasPage extends React.Component {
             case Constants.details_cancel:
                 res = {success: true}
                 break;
+            case Constants.details_exit:
+                res = {success: true}
+                break;
         }
         if (!res.success) alert(res.error);
         else {
@@ -282,15 +289,20 @@ export default class FormulasPage extends React.Component {
     }
 
     getButtons = () => {
-        
-        return;
+        return (
+            <div className = "ingbuttons"> 
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) ? 
+                null : 
+                (<ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> )}
+            </div>
+                );   
     }
 
 
     render(){
         return(
             <div className="list-page">
-            <GeneralNavBar></GeneralNavBar>
+            <GeneralNavBar title={Constants.FormulaTitle}></GeneralNavBar>
                 <div className = 'formula-table'>
                     <PageTable
                         columns={this.state.table_columns} 

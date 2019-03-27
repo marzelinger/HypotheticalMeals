@@ -133,6 +133,7 @@ class ManufacturingGoalsBox extends Component {
   async submitNewGoal() {
     console.log('submitting new goal')
     const { name, activities, user, deadline } = this.state;
+    console.log(user);
     let created_activities = await this.submitNewActivity(activities);
     let res = await SubmitRequest.submitCreateItem(Constants.manugoals_page_name, { name, activities:created_activities, user, deadline });
     if (!res.success) {
@@ -180,9 +181,7 @@ class ManufacturingGoalsBox extends Component {
   }
 
   async loadGoalsFromServer() {
-    // let res = await SubmitRequest.submitGetManuGoalsData(this.state.user);
-    // pass in the actual user if the current user is NOT an admin.
-    var res = await SubmitRequest.submitGetManuGoalsByFilter(this.state.filters.name,this.state.filters.username, this.state.isAdmin ? '_' : this.state.user);
+    var res = await SubmitRequest.submitGetManuGoalsByFilter(this.state.filters.name,this.state.filters.username, this.state.isAdmin.isValid ? '_' : this.state.user);
     if (!res.success) {
       this.setState({ error: res.error });
     }
@@ -237,9 +236,9 @@ class ManufacturingGoalsBox extends Component {
   render() {
     return (
       <div className = "goalsbox">
-      <h1 id = "manufacturing_goals_title">{Constants.MANUFACTURING_TITLE}</h1>
+      <h1 id = "manufacturing_goals_title">{''}</h1>
       <div className = "searches">
-      {this.state.isAdmin ? 
+      {this.state.isAdmin.isValid ? 
       (<div className = "searchfield">
       <SearchIcon style = {{width: '20px', height: '20px'}}></SearchIcon>
       <TextField

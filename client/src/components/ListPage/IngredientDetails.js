@@ -29,7 +29,7 @@ export default class IngredientDetails extends React.Component {
             item_property_field_type } = DataStore.getIngredientData();
 
         this.state = {
-            item: props.item,
+            item: Object.assign({}, props.item),
             item_properties,
             item_property_labels,
             item_property_patterns,
@@ -77,6 +77,14 @@ export default class IngredientDetails extends React.Component {
                     this.onPropChange(clean_res.data, this.props.item, prop)
                 }
                 else {
+                    inv_in.push(prop);
+                }
+            }
+            else if(prop === 'pkg_cost'){
+                console.log('gets here belal')
+                var isValid = /^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/.test(this.props.item[prop])
+                if(!isValid){
+                    console.log('this is the eror belal is looking for');
                     inv_in.push(prop);
                 }
             }

@@ -15,6 +15,7 @@ import ItemSearchInput from './ItemSearchInput';
 import ItemSearchModifyListQuantity from './ItemSearchModifyListQuantity';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import DetailsViewSkuTable from './DetailsViewSkuTable';
+import UnitConversion from '../../helpers/UnitConversion';
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
@@ -80,19 +81,25 @@ export default class FormulaDetails extends React.Component {
         }
     }
 
-    async removeIngredient(item, value, qty) {
-        
+    async removeIngredient(item, value, qty) { 
         let ind = -1;
 
         let ingr = await SubmitRequest.submitGetIngredientByID(value._id);
         console.log(ingr);
         console.log('gets here');
-        var ingrType = await this.findUnit(qty);
-        var ingrType2 = await this.findUnit(ingr.data[0].pkg_size);
+        var sanitizedUnits = await UnitConversion.getCleanUnitForm(qty);
+
+        if(sanitizedUnits.success == false) {
+            alert("Please enter one of the following units: oz, ounce, lb, pound, ton, g, gram, kilogram, kg, floz, fluidounce, pt, pint, qt, quart, gal, gallon, ml, milliliter, l, liter, ct, count");
+            return;
+        }
+
+        var ingrType = await UnitConversion.getUnitType(sanitizedUnits.data);
+        var ingrType2 = await UnitConversion.getUnitType(ingr.data[0].pkg_size);
         console.log("here" + ingrType)
         console.log("here" + ingrType2)
         if(ingrType == -1){
-            alert("Please enter one of the following units: oz, lb, ton, g, kg, floz, pt, qt, gal, mL, L, count");
+            alert("Please enter one of the following units: oz, ounce, lb, pound, ton, g, gram, kilogram, kg, floz, fluidounce, pt, pint, qt, quart, gal, gallon, ml, milliliter, l, liter, ct, count");
             return;
         }
         var positive = await this.validatePositive(qty);
@@ -110,12 +117,9 @@ export default class FormulaDetails extends React.Component {
         });
         if (ind > -1) {
             let curr_qty = item.ingredient_quantities[ind];
-            var sameUnits = await this.verifySameUnits(curr_qty, qty);
-            if(!sameUnits){
-                alert("Please enter the same exact unit of measurement for this ingredient as is already present in the formula");
-            }
+
             curr_qty = await this.subtractTwoUnits(curr_qty, qty)
-            var curr_qty_num_arr = curr_qty.match(/^(-?[0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$/);
+            var curr_qty_num_arr = curr_qty.match(/^(-?[0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg|floz|fluidounce|pint|pt|quart|qt|gallon|gal|milliliter|ml|liter|l|ct|count)$/);
             if (Number(curr_qty_num_arr[1]) > 0) item.ingredient_quantities[ind] = curr_qty;
             else {
                 item.ingredients.splice(ind,1);
@@ -125,48 +129,63 @@ export default class FormulaDetails extends React.Component {
         this.setState({ item: item })
     }
 
-    findUnit(ingredient_pkg_size){
-        console.log(ingredient_pkg_size)
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg)$/.test(ingredient_pkg_size)) return 1;
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (floz|pt|qt|gal|ml|l)$/.test(ingredient_pkg_size)) return 2;
-        if(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (count)$/.test(ingredient_pkg_size)) return 3;
-        return -1;
-    }
-
     validatePositive(qty){
-        var qty_arr = qty.match(/^(-?[0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$/);
+        var qty_arr = qty.match(/^(-?[0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg|floz|fluidounce|pint|pt|quart|qt|gallon|gal|milliliter|ml|liter|l|ct|count)$/);
         if(Number(qty_arr[1]) < 0) return false;
         return true;
     }
 
     subtractTwoUnits(qty1, qty2){
-        var qty1_arr = qty1.match(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$/);
-        var qty2_arr = qty2.match(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$/);
-        var new_num = Number(qty1_arr[1]) - Number(qty2_arr[1]);
-        console.log(new_num);
+        var qty1_type = UnitConversion.getUnitType(qty1);
+        var qty2_type = UnitConversion.getUnitType(qty2);
 
-        var output = "" + new_num + " " + qty1_arr[2];
-        return output;
+        if(qty1_type != qty2_type || qty1_type == -1 || qty2_type == -2) return { success: false, error: "One or more provided ingredient type is invalid"};
+
+        var conversionFuncObj = UnitConversion.getConversionFunction(qty1);
+        var convertedToAdd = conversionFuncObj.func(qty2);
+        console.log(convertedToAdd);
+
+        var qty1_arr = qty1.match(/^(-?[0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg|floz|fluidounce|pint|pt|quart|qt|gallon|gal|milliliter|ml|liter|l|ct|count)$/);
+        var qty2_arr = convertedToAdd.match(/^(-?[0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg|floz|fluidounce|pint|pt|quart|qt|gallon|gal|milliliter|ml|liter|l|ct|count)$/);
+        
+        var split_array = qty2_arr[1].split(".");
+        console.log(split_array);
+        if(split_array.length > 1 && split_array[1].length > 5){
+            qty2_arr[1] = Number(qty2_arr[1]).toFixed(5) + "";
+        }
+        
+        var new_num = Number(qty1_arr[1]) - Number(qty2_arr[1]);
+        new_num = new_num.toFixed(5);
+        var output = "" + Math.round((new_num*100000))/100000 + " " + qty1_arr[2];
+        return output
     }
 
     addTwoUnits(qty1, qty2){
-        var qty1_arr = qty1.match(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$/);
-        var qty2_arr = qty2.match(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$/);
+        //qty1 is database 
+        var qty1_type = UnitConversion.getUnitType(qty1);
+        var qty2_type = UnitConversion.getUnitType(qty2);
+
+        if(qty1_type != qty2_type || qty1_type == -1 || qty2_type == -2) return { success: false, error: "One or more provided ingredient type is invalid"};
+
+        var conversionFuncObj = UnitConversion.getConversionFunction(qty1);
+        var convertedToAdd = conversionFuncObj.func(qty2);
+        console.log(convertedToAdd);
+
+        var qty1_arr = qty1.match(/^(-?[0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg|floz|fluidounce|pint|pt|quart|qt|gallon|gal|milliliter|ml|liter|l|ct|count)$/);
+        var qty2_arr = convertedToAdd.match(/^(-?[0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg|floz|fluidounce|pint|pt|quart|qt|gallon|gal|milliliter|ml|liter|l|ct|count)$/);
+    
+        var split_array = qty2_arr[1].split(".");
+        console.log(split_array);
+        if(split_array.length > 1 && split_array[1].length > 5){
+            qty2_arr[1] = Number(qty2_arr[1]).toFixed(5) + "";
+        }
+        
         var new_num = Number(qty1_arr[1]) + Number(qty2_arr[1]);
-        var output = "" + new_num + " " + qty1_arr[2];
+        new_num = new_num.toFixed(5);
+        var output = "" + Math.round((new_num*100000))/100000 + " " + qty1_arr[2];
         return output;
     }
 
-    verifySameUnits(qty1, qty2){
-        var qty1_arr = qty1.match(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$/);
-        var qty2_arr = qty2.match(/^([0-9]+(?:[\.][0-9]{0,2})?|\.[0-9]{1,2}) (oz|lb|ton|g|kg|floz|pt|qt|gal|ml|l|count)$/);
-        console.log(qty1);
-        console.log(qty2);
-        console.log(qty1_arr);
-        console.log(qty2_arr);
-        if(qty1_arr[2] === qty2_arr[2]) return true;
-        return false;
-    }
 
     async addIngredient(item, value, qty) {
         let ind = -1;
@@ -174,12 +193,20 @@ export default class FormulaDetails extends React.Component {
         let ingr = await SubmitRequest.submitGetIngredientByID(value._id);
         console.log(ingr);
         console.log('gets here');
-        var ingrType = await this.findUnit(qty);
-        var ingrType2 = await this.findUnit(ingr.data[0].pkg_size);
-        console.log("here" + ingrType)
-        console.log("here" + ingrType2)
+
+        var sanitizedUnits = await UnitConversion.getCleanUnitForm(qty);
+
+        if(sanitizedUnits.success == false) {
+            alert("Please enter one of the following units: oz, ounce, lb, pound, ton, g, gram, kilogram, kg, floz, fluidounce, pt, pint, qt, quart, gal, gallon, ml, milliliter, l, liter, ct, count");
+            return;
+        }
+
+        var ingrType = await UnitConversion.getUnitType(sanitizedUnits.data);
+        var ingrType2 = await UnitConversion.getUnitType(ingr.data[0].pkg_size);
+
         if(ingrType == -1){
-            alert("Please enter one of the following units: oz, lb, ton, g, kg, floz, pt, qt, gal, mL, L, count");
+            //TODO: fix this alert message
+            alert("Please enter one of the following units: oz, ounce, lb, pound, ton, g, gram, kilogram, kg, floz, fluidounce, pint, pt, quart, qt, gal, gallon, ml, milliliter, l, liter, count, ct");
             return;
         }
 
@@ -206,10 +233,6 @@ export default class FormulaDetails extends React.Component {
             console.log(curr_qty);
             console.log(qty);
 
-            var sameUnits = await this.verifySameUnits(curr_qty, qty);
-            if(!sameUnits){
-                alert("Please enter the same exact unit of measurement for this ingredient as is already present in the formula");
-            }
             item.ingredient_quantities[ind] = await this.addTwoUnits(curr_qty, qty);
         }
         else {
@@ -234,8 +257,10 @@ export default class FormulaDetails extends React.Component {
         let inv = this.state.invalid_inputs;
         if (inv.length === 0) this.props.handleDetailViewSubmit(e, this.state.item, opt)
         else {
-            if(inv.includes('name')){
-                alert_string += '\nThe formula name provided is too long';
+            if(inv.includes('name_long')){
+                alert_string += '\nThe formula name provided is too . Must be between 1 and 32 characters.';
+            } else if(inv.includes('name_short')){
+                alert_string += '\nThe formula name provided is too short. Must be between 1 and 32 characters.';
             }
             alert(alert_string);
         } 
@@ -246,7 +271,13 @@ export default class FormulaDetails extends React.Component {
         this.state.item_properties.map(prop => {
             if (!this.state.item[prop].toString().match(this.getPropertyPattern(prop))) inv_in.push(prop);
         })
-        if (this.state.item['name'].length > 32) inv_in.push('name');
+        console.log(this.state.item.name.length);
+        if(this.state.item.name.length == 0){
+            inv_in.push("name_short");
+        }
+        if (this.state.item.name.length > 32) {
+            inv_in.push('name_long');
+        }
         await this.setState({ invalid_inputs: inv_in });
     }
 

@@ -12,7 +12,7 @@ class Manu_ActivityHandler{
             var new_quantity = req.body.quantity;
             var new_scheduled = req.body.scheduled || false
             var new_start = req.body.start
-            var new_duration = new_sku.manu_rate * new_quantity;
+            var new_duration = Math.round(new_quantity / new_sku.manu_rate);
             var new_manu_line = req.body.manu_line;
             var new_overwritten = false;
             var new_orphaned= false;
@@ -72,14 +72,13 @@ class Manu_ActivityHandler{
             if(!target_id){
                 return res.json({ success: false, error: 'No manufacturing actvity named provided'});
             }
-            console.log("here");
             var new_sku = req.body.sku;
             var new_quantity = req.body.quantity;
             var new_scheduled = req.body.scheduled;
             var new_start = req.body.start
             var new_overwritten = req.body.overwritten
-            if (new_overwritten) var new_duration = req.body.duration;
-            else var new_duration = new_sku.manu_rate * new_quantity;
+            if (new_overwritten) var new_duration = Math.round(req.body.duration);
+            else var new_duration = Math.round(new_sku.manu_rate * new_quantity);
             var new_manu_line = req.body.manu_line;
             var new_orphaned= req.body.orphaned;
             var new_over_deadline = req.body.over_deadline;
@@ -92,7 +91,6 @@ class Manu_ActivityHandler{
                         path: 'sku',
                         populate: { path: 'formula' }
                       });
-            console.log(updated_manu_activity)
             if(!updated_manu_activity){
                 return res.json({
                     success: true, error: 'This document does not exist'
@@ -126,7 +124,7 @@ class Manu_ActivityHandler{
             var target_id = req.params.manu_activity_id;
             let to_return = await Manu_Activity.find({ _id : target_id}).populate('sku').populate('manu_line').populate({
                 path: 'sku',
-                populate: { path: 'ingredients' }
+                populate: { path: 'formula' }
               });
 
             if(to_return.length == 0) return res.json({success: false, error: '404'});
@@ -136,32 +134,72 @@ class Manu_ActivityHandler{
         }
     }
 
+    static async getManufacturingActivitiesBySKU(req, res){
+        try {
+            var target_sku_id = req.params.sku_id;
+            // var sku_res = await SKU.find({ _id : target_sku_id }).populate('formula').populate({
+            //     path: 'formula',
+            //     populate: { path: 'ingredients' }
+            //   }).populate('prod_line');
+            // if(sku_res.length == 0) {
+            //     return res.json({success: false, error: 'No SKU'});
+            // }            
+            var target_start_date = req.params.start;
+            var target_end_date = req.params.end;
+            console.log("TARGET_START: "+target_start_date);
+            console.log("TARGET_END: "+target_end_date);
+
+            var complete = [];
+            // let to_return = await Manu_Activity.find({ sku : sku_res[0]._id, start: {$gte: target_start_date}})
+            let to_return = await Manu_Activity.find({ sku: target_sku_id, start: {$gte: target_start_date}});
+            console.log("TO_RETURN LENGTH: "+to_return.length);
+            if(to_return.length == 0) {
+                return res.json({success: false, error: '404'});
+            }
+            else{
+                var givenSTART = new Date(target_start_date);
+                var givenEND = new Date(target_end_date);
+                for(let i = 0; i<to_return.length; i++){
+                    var curAct = to_return[i];
+                    var startAct = new Date(curAct.start);
+                    var endAct = new Date(startAct);
+                    endAct.setMilliseconds(endAct.getMilliseconds() + Math.floor(curAct.duration/10)*24*60*60*1000 + (curAct.duration%10 * 60 * 60 * 1000));
+                    //startAct>=startRep && endAct=<endRep: complete
+                    if(startAct>=givenSTART && endAct<=givenEND){
+                        //WANT TO USE THIS ACTIVITIY.
+                        complete.push(curAct);
+                        continue;
+                    }
+                }
+            }
+            return res.json({ success: true, data: complete});
+        } catch (err){
+            return res.json({ success: false, error: err});
+        }
+    }
+
     static async getManufacturingActivitiesForReport(req, res){
         try{
-            console.log("here in the submitrequest for back report");
 
             var target_manu_line_id = req.params.manu_line_id;
-            console.log("here in the getManuREport. id is: "+(target_manu_line_id));
-            // var manu_target = {
-            //     _id: 
-            // }
             var target_start_date = req.params.start_date;
             var target_end_date = req.params.end_date;
-            var target_duration = req.params.duration;
-            console.log("start_date: "+target_start_date);
-            console.log("target_end_date: "+target_end_date);
-            // console.log("target manu line id: "+target)
 
+            //console.log("TARGET_START: "+target_start_date);
+            //console.log("TARGET_END: "+target_end_date);
+
+
+            var target_duration = req.params.duration;
             // let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id , scheduled: true, start: {$gte: target_start_date, $lt: target_end_date}})
             let to_return = await Manu_Activity.find({ manu_line : target_manu_line_id , scheduled: true})
             .populate('sku').populate('manu_line').populate({
                 path: 'sku',
                 populate: { path: 'formula', populate: {path: 'ingredients'} }
             });
-            if(to_return.length == 0) {
-                return res.json({success: false, error: '404'});
-            }
-            else{
+            // if(to_return.length == 0) {
+            //     return res.json({success: false, error: '404'});
+            // }
+            // else{
                 //to-return is the activities with starts between the start and end date.
                 //go through each of these activities and if the start+duration of activity is less than our end,
                 //classified as a good activity
@@ -183,40 +221,139 @@ class Manu_ActivityHandler{
                     // var end_act = new Date(endAct);
                     var diffStart = startAct-startRep; //should be positive
                     var diffEnd = endRep-endAct; //the endRep should be greater than end of activity so should be positive
-                    console.log("startAct: "+startAct);
-                    console.log("endact: "+endAct);
 
-                    if(diffEnd>=0 && diffStart>=0){
-                        //this is a valid activity.
-                        //the start is greater than the rep
-                        //the end is less than the rep
-                        complete_activities.push(curAct);
-                        console.log("complete: "+complete_activities.length);
+                    //if the startAct greater than the end Rep --> should not be included
+                    //if the start report greater than end act --> should not be included.
 
+                    //if start Act greater than start rep and end act less than end rep : complete
+                    //if start act less than start report and end act greater than end rep: all sides cut
+                    //if start act less than start report and endt act less than end rep: beginning cut
+                    //if start act greater than start report and end act greater than end rep: end cut
+                    //startAct<startRep && endAct=<endRep: beg cut 
+                    //startAct<startRep && endAct>endRep: beg cut, end cut
+                    //startAct>=startRep && endAct=<endRep: complete
+                    //startAct>=startRep && endAct>endRep: end cut
+                    console.log("START_REP: "+startRep);
+                    console.log("END_REP: "+endRep);
+                    console.log("START_ACT: "+startAct);
+                    console.log("END_ACT: "+endAct);
+                    console.log("COMPLETE: startAct>=startRep && endAct<=endRep"+ startAct>=startRep && endAct<=endRep);
+                    console.log("COMPLETE: startAct>=startRep && endAct<=endRep"+ startAct>=startRep && endAct<=endRep);
+                    
+                    //SOMETHING WRONG IN END CUT
+                    if(endAct<=startRep){
+                        //this activity shouldn't be anywhere. happens before schedule.
                         continue;
                     }
-                    else if(diffEnd<0 && diffStart<0){
-                        //this activity is larger than the span
-                        all_cut.push(curAct);
-                        console.log("allcut: "+all_cut.length);
+                    else if(startAct>=endRep){
+                        //this activity shouldn't be anywhere. happends after schedule.
+                        continue;
+                    }
+                    else if(startAct>=startRep){
+                        //The activity ends after the start of the report
+                        //which is good
+                        if(endAct<=endRep){
+                            //activity ends before report ends
+                            //complete here
+                            console.log("comp");
+                            complete_activities.push(curAct);
+    
+                            continue;
 
-                        continue;
-                    }
-                    else if(diffEnd<0 && diffStart>=0){
-                        // activity starts after report
-                        //but tail cuttoff
-                        ending_cut.push(curAct);
-                        console.log("ending: "+ending_cut.length);
+                        }
+                        else if(endAct>endRep){
+                            //the activity ends after the report
+                            //end cut
+                            console.log("end");
 
-                        continue;
+                            ending_cut.push(curAct);
+                            // console.log("ending: "+ending_cut.length);
+                        }
                     }
-                    else if(diffEnd>=0 && diffStart<0){
-                        //activity starts before report,
-                        //front cut
-                        beginning_cut.push(curAct);
-                        console.log("begginging: "+beginning_cut.length);
-                        continue;
+                    else if(startAct<startRep){
+                        //the activity starts before the report does. bad
+                        if(endAct<=endRep){
+                            //the activity ends before report ends
+                            //beginning cut
+                            console.log("beg");
+
+                            beginning_cut.push(curAct);
+                            // console.log("begginging: "+beginning_cut.length);
+                            continue;
+                        }
+                        else if(endAct>endRep){
+                            //the activity ends after the report
+                            //all cut
+                                                   //this activity is larger than the span
+                            console.log("all");
+
+                            all_cut.push(curAct);
+                            // console.log("allcut: "+all_cut.length);
+
+                            continue;
+                        }
                     }
+
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    // if(diffEnd>=0 && diffStart>=0){
+                    // // else if(startAct>=startRep && endAct<=endRep){
+
+                    //     //this is a valid activity.
+                    //     //the start is greater than the rep
+                    //     //the end is less than the rep
+                    //     console.log("comp");
+                    //     complete_activities.push(curAct);
+
+                    //     continue;
+                    // }
+                    // else if(diffEnd<0 && diffStart<0){
+                    // // else if(startAct<startRep && endAct>endRep){
+
+                    //     //this activity is larger than the span
+                    //     console.log("all");
+
+                    //     all_cut.push(curAct);
+                    //     // console.log("allcut: "+all_cut.length);
+
+                    //     continue;
+                    // }
+                    // else if(diffEnd<0 && diffStart>=0){
+                    // // else if(startAct>=startRep && endAct>endRep){
+
+                    //     // activity starts after report
+                    //     //but tail cuttoff
+                    //     console.log("end");
+
+                    //     ending_cut.push(curAct);
+                    //     // console.log("ending: "+ending_cut.length);
+
+                    //     continue;
+                    // }
+                    // else if(diffEnd>=0 && diffStart<0){
+                    // //var diffStart = startAct-startRep; //should be positive
+                    // // var diffEnd = endRep-endAct;
+                    // // else if(startAct<startRep && endAct<=endRep){
+                    //     //activity starts before report,
+                    //     //front cut
+                    //     console.log("beg");
+
+                    //     beginning_cut.push(curAct);
+                    //     // console.log("begginging: "+beginning_cut.length);
+                    //     continue;
+                    // }
+                    // // else if(startAct>endRep || startRep>EndAct){
+                    // //     //this activity should not be included.
+                    // //     complete_activities.push({});
+                    // //     continue;
+                    // // }
                 }
 
             return res.json({ success: true, data: 
@@ -226,8 +363,7 @@ class Manu_ActivityHandler{
                         all_cut:all_cut
                     }
                     });
-        }
-            
+        //}          
     } 
     catch (err){
             return res.json({ success: false, error: err});   

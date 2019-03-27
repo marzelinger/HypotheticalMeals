@@ -18,4 +18,19 @@
 #usermenu {
    float: right;
    margin-left: auto;
+   margin: auto;
 }
+
+#menu-title #page-title {
+    color: #424242;
+    float: left;
+    margin-top: -7px;
+}
+
+#menu-title {
+    display: flex;
+    flex-direction: row;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+

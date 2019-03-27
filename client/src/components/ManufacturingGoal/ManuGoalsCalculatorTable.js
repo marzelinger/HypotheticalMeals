@@ -22,8 +22,8 @@ export default class ManuGoalsCalculatorTable extends React.Component {
         this.state = {
             data: props.data,
             page_title: 'calculator',
-            table_columns: ['Name', 'Number', 'Vendor Information', 'Package Size', 'Package Cost', 'Unit Quantity'],
-            table_properties: ['name', 'num', 'vendor_info', 'pkg_size', 'pkg_cost', 'unitQuantity']
+            table_columns: ['Name', 'Number',  'Package Size', 'Package Cost', 'Package Quantity','Unit Quantity'],
+            table_properties: ['name', 'num', 'pkg_size', 'pkg_cost', 'pckgQuant', 'unitQuantity']
         };
         this.print = this.print.bind(this);
     }
@@ -62,10 +62,9 @@ export default class ManuGoalsCalculatorTable extends React.Component {
                         position: 'absolute'
                     }}></iframe>  
             <ModalBody id = "printarea">
-                <div id = "table">
+                <div id = "table" className = 'calculator-table'>
                     <Table selectable={this.state.selectable}
-                        multiSelectable={this.state.multiSelectable}
-                        onRowSelection = {(res) => this.props.handleSelect(res)}
+                        multiSelectable={false}
                          >
                     <TableHeader
                         displaySelectAll={false}
@@ -97,6 +96,7 @@ export default class ManuGoalsCalculatorTable extends React.Component {
             <ModalFooter>
                 <ExportSimple name = {'Export'} data = {this.state.data} fileTitle = {this.state.page_title}/>
                 <div className = "exportbutton pdfbutton hoverable" onClick = {() => this.print()}>Export PDF</div>
+                <div className = "exportbutton pdfbutton hoverable" onClick = {this.props.toggle}>Exit</div>
             </ModalFooter>                 
             </div>
         );

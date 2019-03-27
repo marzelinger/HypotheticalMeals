@@ -292,7 +292,7 @@ export default class UserPage extends React.Component {
             printFuncFront("This is the new item being saved: "+JSON.stringify(item));
             this.setState({ 
             detail_view_item: item ,
-            detail_view_options: [Constants.details_save, Constants.details_cancel]
+            detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
             });
         }
         else{
@@ -344,7 +344,7 @@ export default class UserPage extends React.Component {
         return (
         <div className = "usersbuttons">     
             {/* <DependencyReport data = {this.state.exportData} /> */}
-            <ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> 
+            {/* <ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/>  */}
         </div>
         );
     }
@@ -352,7 +352,7 @@ export default class UserPage extends React.Component {
     render() {
         return (
             <div className="list-page">
-                        <GeneralNavBar></GeneralNavBar>
+                        <GeneralNavBar title={Constants.UserTitle}></GeneralNavBar>
 
                 <div className = 'user-table'>
                     <PageTable 
