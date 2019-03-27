@@ -220,7 +220,7 @@ export default class ManufacturingReport extends React.Component {
                                         <tr>
                                             <td>{this.props.data.reportData.summation.summation.ingredientNames[index]}</td>
                                             <td>{this.props.data.reportData.summation.summation.ingredientQuantities[index]}</td>
-                                            <td>{this.props.data.reportData.summation.summation.ingredientPckgCounts[index]}</td>
+                                            <td>{Math.round((this.props.data.reportData.summation.summation.ingredientPckgCounts[index]*100000))/100000}</td>
                                         </tr>
                                     )}
                                 </tbody>
