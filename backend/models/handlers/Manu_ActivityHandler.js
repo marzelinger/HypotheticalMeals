@@ -137,13 +137,34 @@ class Manu_ActivityHandler{
     static async getManufacturingActivitiesBySKU(req, res){
         try {
             var target_sku_id = req.params.sku_id;
-            let to_return = await Manu_Activity.find({ sku : target_sku_id}).populate('sku').populate('manu_line').populate({
+            var target_start_date = req.params.start;
+            var target_end_date = req.params.end;
+            var complete = [];
+            let to_return = await Manu_Activity.find({ sku : target_sku_id, start: {$gte: target_start_date}}).populate('sku').populate('manu_line').populate({
                 path: 'sku',
                 populate: { path: 'ingredients' }
               });
 
-            if(to_return.length == 0) return res.json({success: false, error: '404'});
-            return res.json({ success: true, data: to_return});
+            if(to_return.length == 0) {
+                return res.json({success: false, error: '404'});
+            }
+            else{
+                var givenSTART = new Date(target_start_date);
+                var givenEND = new Date(target_end_date);
+                for(let i = 0; i<to_return.length; i++){
+                    var curAct = to_return[i];
+                    var startAct = new Date(curAct.start);
+                    var endAct = new Date(startAct);
+                    endAct.setMilliseconds(endAct.getMilliseconds() + Math.floor(curAct.duration/10)*24*60*60*1000 + (curAct.duration%10 * 60 * 60 * 1000));
+                    //startAct>=startRep && endAct=<endRep: complete
+                    if(startAct>=givenSTART && endAct<=givenEND){
+                        //WANT TO USE THIS ACTIVITIY.
+                        complete.push(curAct);
+                        continue;
+                    }
+                }
+            }
+            return res.json({ success: true, data: complete});
         } catch (err){
             return res.json({ success: false, error: err});
         }

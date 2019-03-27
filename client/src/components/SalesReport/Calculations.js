@@ -14,6 +14,18 @@ export default class Calculations{
         let tenYRSKUsdata = {
             skus: []
         }
+        var len = dateRanges.length;
+        var start = dateRanges[0];
+        var end = dateRanges[len-1];
+        console.log("start: "+start);
+        console.log("end: "+end);
+
+        console.log("start _dif : "+new Date(start));
+        console.log("end _dif: "+new Date(end));
+
+
+
+
         if (skus.length>0){
             for (let s = 0; s<skus.length; s++){
                 // //need to go through all the prodlines. and then through all the skus.
@@ -35,7 +47,7 @@ export default class Calculations{
 
                 }
                 cur_ten_yr_avg_case = cur_ten_yr_avg_case/10;
-                var skuTotalData = await this.calcTotalData(skus[s], cur_ten_yr_rev, cur_ten_yr_sales, cur_ten_yr_avg_case);
+                var skuTotalData = await this.calcTotalData(skus[s], cur_ten_yr_rev, cur_ten_yr_sales, cur_ten_yr_avg_case, start, end);
                 tenYRSKUsdata.skus.push({sku: skus[s], skuData: curSkuData, totalData: skuTotalData});
             }
         }
@@ -68,12 +80,12 @@ export default class Calculations{
         };
     }
 
-    static async getAvgManuRunSize(sku){
+    static async getAvgManuRunSize(sku, start_date, end_date){
         var avg_manu_run_size = sku.manu_rate * 10;
         var tot_cases = 0;
         //get all the activities for that sku
         //get the quantities and then find the average
-        var res = await SubmitRequest.submitGetManufacturingActivitiesBySKU(sku);
+        var res = await SubmitRequest.submitGetManufacturingActivitiesBySKU(sku, start_date, end_date);
         if(res.success){
             if(res.data.length>0){
                 var manu_activities = res.data;
@@ -133,7 +145,7 @@ export default class Calculations{
         return ingr_cost_per_case;
     }
 
-    static async calcTotalData(sku, totalTimeRev, totalTimeSales, tenYRcaseavg){
+    static async calcTotalData(sku, totalTimeRev, totalTimeSales, tenYRcaseavg, start, end){
 
         console.log("sku here: "+JSON.stringify(sku));
         // console.log("sku here: "+JSON.stringify(sku));
@@ -141,7 +153,7 @@ export default class Calculations{
 
        
         var sum_yearly_rev = totalTimeRev;
-        var avg_manu_run_size = await this.getAvgManuRunSize(sku); //find the run size for all the activities for this sku and then divide by the number of activities
+        var avg_manu_run_size = await this.getAvgManuRunSize(sku, start, end); //find the run size for all the activities for this sku and then divide by the number of activities
         var ingr_cost_per_case = await this.getIngrCostPerCase(sku);
         var avg_manu_setup_cost_per_case = 0;
         if(avg_manu_run_size!=0){

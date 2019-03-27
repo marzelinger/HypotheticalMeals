@@ -507,9 +507,9 @@ export default class SubmitRequest{
   }
 
 
-  static async submitGetManufacturingActivitiesBySKU(sku) {
+  static async submitGetManufacturingActivitiesBySKU(sku, start, end) {
     try {
-      return fetch('/api/manuactivities/' + sku._id)
+      return fetch('/api/manuactivities/sku/' + sku._id+'/'+start+'/'+end)
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error };

@@ -108,7 +108,7 @@ router.get('/manuactivities', (req, res) => Manu_ActivityHandler.getAllManufactu
 router.get('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.getManufacturingActivityByID(req, res));
 router.delete('/manuactivities/:manu_activity_id', (req, res) => Manu_ActivityHandler.deleteManufacturingActivityByID(req, res));
 router.get('/manuactivities/:manu_line_id/:start_date/:end_date/:duration', (req, res) => Manu_ActivityHandler.getManufacturingActivitiesForReport(req, res));
-router.get('/manuactivities/:sku_id', (req, res) => Manu_ActivityHandler.getManufacturingActivitiesBySKU(req, res));
+router.get('/manuactivities/sku/:sku_id/:start/:end', (req, res) => Manu_ActivityHandler.getManufacturingActivitiesBySKU(req, res));
 
 
 // Ingredient database APIs

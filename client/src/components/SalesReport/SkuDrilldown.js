@@ -93,7 +93,7 @@ export default class SkuDrilldown extends React.Component {
         var recordsCalcs = await Calculations.getSalesTotals(records);
         console.log("recordCalcs: "+JSON.stringify(recordsCalcs));
         if(recordsCalcs != undefined){
-            var total_data = await Calculations.calcTotalData(this.props.sku, recordsCalcs.revenue, recordsCalcs.sales, recordsCalcs.avg_rev_per_case);
+            var total_data = await Calculations.calcTotalData(this.props.sku, recordsCalcs.revenue, recordsCalcs.sales, recordsCalcs.avg_rev_per_case, this.props.dateRange.startdate, this.props.dateRange.enddate);
             await this.setState({
                 totalRowData : total_data
             });
@@ -108,6 +108,7 @@ export default class SkuDrilldown extends React.Component {
         let dataPoints = []
         await datares.data.map(rec => {
             let date = moment().year(rec.date.year).week(rec.date.week).startOf('isoweek').toDate();
+            console.log("this is the date: "+date);
             let rev = 0;
             let ind = dataPoints.findIndex(r => {
                 let rx = new Date(r.x)
