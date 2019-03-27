@@ -37,7 +37,7 @@ process.on('message', (message) => {
         if(sku_queue.length != 0){
             setTimeout( () => {
             updateRecords()
-            }, 200)
+            }, 500)
         } 
         else{
             awake = false;
@@ -45,7 +45,7 @@ process.on('message', (message) => {
     }
 
     async function update_sku(sku_num, status){
-        await process.send({type: 'status', sku_num: sku_num, status:status});
+        process.send({type: 'status', sku_num: sku_num, status:status});
     }
 
     async function scrape_record(sku_num, sku_year){

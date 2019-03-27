@@ -6,6 +6,8 @@ import * as Constants from '../../resources/Constants';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import '../../style/ManufacturingGoalsBox.css'
 import ExportSimple from '../export/ExportSimple';
+import addButton from '../../resources/add.png';
+import ProductLineDetails from './ProductLineDetails';
 
 class ProductLinesBox extends Component {
   constructor() {
@@ -205,11 +207,11 @@ class ProductLinesBox extends Component {
           />
         </div>
         <div className="form">
-          <ProductLineForm
-            name={this.state.name}
-            handleChangeText={this.onChangeText}
-            handleSubmit={this.submitProdLine}
-          />
+        <ProductLineDetails
+                buttonImage = {addButton}
+                handleDetailViewSubmit = {this.handleDetailViewSubmit}
+                options = {[Constants.details_create]}
+                ></ProductLineDetails>
           <ExportSimple data = {this.state.data} fileTitle = {"productLines"}/> 
 
         </div>
