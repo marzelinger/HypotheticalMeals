@@ -74,18 +74,30 @@ export default class SkuDrilldown extends React.Component {
             if(datares.success){
                 await this.getTotalRowData(datares.data);
             }
-            let newDataPoints = (datares.data.length > 0) ? await this.processDataPoints(datares) : []
-            let newMessage = (datares.data.length > 0) ? (<Alert color='primary'>Please select a SKU</Alert>) : 
-                                                         (<Alert color='secondary'>No results...</Alert>)
-            await this.setState({ 
-                data: datares.data,
-                dataPoints: newDataPoints,
-                message: newMessage,
-                new_data: false,
-            })
-            if (datares.data.length > 0) {
-                this.chart.render()
-                await this.getTotalRowData(datares.data)
+            if(datares.data!=undefined){
+                let newDataPoints = (datares.data.length > 0) ? await this.processDataPoints(datares) : []
+                let newMessage = (datares.data.length > 0) ? (<Alert color='primary'>Please select a SKU</Alert>) : 
+                                                            (<Alert color='secondary'>No results...</Alert>)
+                await this.setState({ 
+                    data: datares.data,
+                    dataPoints: newDataPoints,
+                    message: newMessage,
+                    new_data: false,
+                })
+                if (datares.data.length > 0) {
+                    this.chart.render()
+                    await this.getTotalRowData(datares.data)
+                }
+            }
+            if(datares.data==undefined){
+                let newDataPoints = []
+                let newMessage = (<Alert color='secondary'>No results...</Alert>)
+                await this.setState({ 
+                    data: datares.data,
+                    dataPoints: newDataPoints,
+                    message: newMessage,
+                    new_data: false,
+                })
             }
         }
     }
@@ -232,24 +244,26 @@ export default class SkuDrilldown extends React.Component {
     }
 
     injectTable() {
-        return this.state.data.map( rec => {
-            let rec_return = this.state.item_properties.map( prop => {
-                if (prop === 'year' || prop === 'week') {
-                    var prop_return = rec.date[prop]
-                }
-                else if (prop === 'revenue') {
-                    var prop_return =  '$' + Calculations.checkPriceLength(parseInt(rec.sales) * parseFloat(rec.ppc))
-                }
-                else if (prop === 'ppc') {
-                    var prop_return =  '$' + Calculations.checkPriceLength(rec[prop])
-                }
-                else {
-                    var prop_return =  rec[prop]
-                }
-                return (<td>{prop_return}</td>)
+        if(this.state.data!=undefined){
+            return this.state.data.map( rec => {
+                let rec_return = this.state.item_properties.map( prop => {
+                    if (prop === 'year' || prop === 'week') {
+                        var prop_return = rec.date[prop]
+                    }
+                    else if (prop === 'revenue') {
+                        var prop_return =  '$' + Calculations.checkPriceLength(parseInt(rec.sales) * parseFloat(rec.ppc))
+                    }
+                    else if (prop === 'ppc') {
+                        var prop_return =  '$' + Calculations.checkPriceLength(rec[prop])
+                    }
+                    else {
+                        var prop_return =  rec[prop]
+                    }
+                    return (<td>{prop_return}</td>)
+                })
+                return (<tr>{rec_return}</tr>)
             })
-            return (<tr>{rec_return}</tr>)
-        })
+        }
     }
 
     injectReportPreview() {
@@ -337,7 +351,13 @@ export default class SkuDrilldown extends React.Component {
                     />
                 </FormGroup>
             </div>
-            {this.state.data.length > 0 ? this.injectReportPreview() : this.state.message}
+            {this.state.data!=undefined ?
+                (<div>
+                {this.state.data.length > 0 ? this.injectReportPreview() : this.state.message}
+                </div>)
+                :
+                <div></div>
+            }
         </div>
         );
     }
