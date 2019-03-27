@@ -508,9 +508,11 @@ export default class SubmitRequest{
   }
 
 
-  static async submitGetManufacturingActivitiesBySKU(sku) {
+  static async submitGetManufacturingActivitiesBySKU(sku_id, start, end) {
     try {
-      return fetch('/api/manuactivities/' + sku._id)
+      // console.log("THIS IS THE SKU: "+JSON.stringify(sku_id));
+      console.log("sku: "+sku_id+"     start;    "+start+"       end: "+end);
+      return fetch('/api/manuactivities/' + sku_id+'/'+start+'/'+end)
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error };

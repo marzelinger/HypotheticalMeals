@@ -59,6 +59,8 @@ export default class GeneralReport extends React.Component {
         this.calculateYears = this.calculateYears.bind(this);
         this.onSelectProductLine = this.onSelectProductLine.bind(this);
         this.onSelectCustomer = this.onSelectCustomer.bind(this);
+        this.checkPriceLength = this.checkPriceLength.bind(this);
+
         console.log("gen data constructor: "+JSON.stringify(this.state.prod_lines));
         console.log("gen data constructor2: "+JSON.stringify(this.state.prod_lines_indices));
 
@@ -130,6 +132,23 @@ export default class GeneralReport extends React.Component {
         );
     }
 
+
+    checkPriceLength(val){
+        var val_str = ""+val;
+        var split_val = val_str.split(".");
+        if(split_val.length==2){
+            if (split_val[1].length==1){
+                //want to round.
+                return val+""+0;
+            }
+            if (split_val[1].length==0){
+                //want to round.
+                return val+""+0+""+0;
+            }
+        }
+        return val;
+    }
+
     updateReportData = async () => {
         if(this.state.prod_lines.length==0){
             alert(Constants.gen_report_no_prod_line_selected);
@@ -196,28 +215,28 @@ export default class GeneralReport extends React.Component {
             <div>
                  <TableRow  class= "cols trselect">
                         <TableRowColumn>
-                            {'$'+cur_sku.totalData.sum_yearly_rev}
+                            {'$'+this.checkPriceLength(cur_sku.totalData.sum_yearly_rev)}
                         </TableRowColumn>
                         <TableRowColumn>
                             {cur_sku.totalData.avg_manu_run_size}
                         </TableRowColumn>
                         <TableRowColumn>
-                            {'$'+cur_sku.totalData.ingr_cost_per_case}
+                            {'$'+this.checkPriceLength(cur_sku.totalData.ingr_cost_per_case)}
                         </TableRowColumn>
                         <TableRowColumn>
-                            {'$'+cur_sku.totalData.avg_manu_setup_cost_per_case}
+                            {'$'+this.checkPriceLength(cur_sku.totalData.avg_manu_setup_cost_per_case)}
                         </TableRowColumn>
                         <TableRowColumn>
-                            {'$'+cur_sku.totalData.manu_run_cost_per_case}
+                            {'$'+this.checkPriceLength(cur_sku.totalData.manu_run_cost_per_case)}
                         </TableRowColumn>
                         <TableRowColumn>
-                            {'$'+cur_sku.totalData.total_COGS_per_case}
+                            {'$'+this.checkPriceLength(cur_sku.totalData.total_COGS_per_case)}
                         </TableRowColumn>
                         <TableRowColumn>
-                            {'$'+cur_sku.totalData.avg_rev_per_case}
+                            {'$'+this.checkPriceLength(cur_sku.totalData.avg_rev_per_case)}
                         </TableRowColumn>
                         <TableRowColumn>
-                            {'$'+cur_sku.totalData.avg_profit_per_case}
+                            {'$'+this.checkPriceLength(cur_sku.totalData.avg_profit_per_case)}
                         </TableRowColumn>
                         <TableRowColumn>
                             {cur_sku.totalData.profit_marg}
@@ -240,10 +259,10 @@ export default class GeneralReport extends React.Component {
                                             {cur_sku.skuData[ind].yr}
                                         </TableRowColumn>
                                         <TableRowColumn>
-                                        {'$'+cur_sku.skuData[ind].salesData.rev_round}
+                                        {'$'+this.checkPriceLength(cur_sku.skuData[ind].salesData.rev_round)}
                                         </TableRowColumn>
                                         <TableRowColumn>
-                                        {'$'+cur_sku.skuData[ind].salesData.avg_rev_per_case_round}
+                                        {'$'+this.checkPriceLength(cur_sku.skuData[ind].salesData.avg_rev_per_case_round)}
                                         </TableRowColumn>
                                     </TableRow>
                                 )} 
@@ -276,10 +295,10 @@ export default class GeneralReport extends React.Component {
                     {cur_sku.sku.cpc}
                     </TableRowColumn>
                     <TableRowColumn>
-                    {'$'+cur_sku.sku.setup_cost}
+                    {'$'+this.checkPriceLength(cur_sku.sku.setup_cost)}
                     </TableRowColumn>
                     <TableRowColumn>
-                    {'$'+cur_sku.sku.run_cpc}
+                    {'$'+this.checkPriceLength(cur_sku.sku.run_cpc)}
                     </TableRowColumn>
                 </TableRow>
             </div>

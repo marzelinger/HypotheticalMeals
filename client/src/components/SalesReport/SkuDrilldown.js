@@ -55,6 +55,7 @@ export default class SkuDrilldown extends React.Component {
 
         this.onSelectSku = this.onSelectSku.bind(this);
         this.onSelectCustomer = this.onSelectCustomer.bind(this);
+        // this.checkPriceLength = this.checkPriceLength.bind(this);
     }
 
     componentDidMount() {
@@ -89,11 +90,22 @@ export default class SkuDrilldown extends React.Component {
         }
     }
 
+
     async getTotalRowData(records){
         var recordsCalcs = await Calculations.getSalesTotals(records);
         console.log("recordCalcs: "+JSON.stringify(recordsCalcs));
         if(recordsCalcs != undefined){
-            var total_data = await Calculations.calcTotalData(this.props.sku, recordsCalcs.revenue, recordsCalcs.sales, recordsCalcs.avg_rev_per_case);
+            //format dates.
+            //into ISO
+            var start_date = new Date(this.props.dateRange.startdate);
+            start_date.setHours(start_date.getHours() + 8);
+            var end_date = new Date(this.props.dateRange.enddate)
+            end_date.setHours(end_date.getHours() + 8);
+
+            console.log("start_sku: "+ start_date.toISOString());
+            console.log("end_sku: "+ start_date.toISOString());
+
+            var total_data = await Calculations.calcTotalData(this.props.sku, recordsCalcs.revenue, recordsCalcs.sales, recordsCalcs.avg_rev_per_case, start_date.toISOString(), end_date.toISOString());
             await this.setState({
                 totalRowData : total_data
             });
@@ -108,6 +120,7 @@ export default class SkuDrilldown extends React.Component {
         let dataPoints = []
         await datares.data.map(rec => {
             let date = moment().year(rec.date.year).week(rec.date.week).startOf('isoweek').toDate();
+            console.log("this is the date: "+date);
             let rev = 0;
             let ind = dataPoints.findIndex(r => {
                 let rx = new Date(r.x)
@@ -177,7 +190,7 @@ export default class SkuDrilldown extends React.Component {
                  <tr >
                     {this.state.sku_totals_props.map(prop => {
                         if (['sum_yearly_rev', 'ingr_cost_per_case', 'avg_manu_setup_cost_per_case', 'manu_run_cost_per_case', 'total_COGS_per_case', 'avg_rev_per_case', 'avg_profit_per_case'].includes(prop)){
-                            var toDisplay = '$' + this.state.totalRowData[prop]
+                            var toDisplay = '$' + Calculations.checkPriceLength(this.state.totalRowData[prop])
                         } 
                         else var toDisplay = this.state.totalRowData[prop]
                         return <td>{toDisplay}</td>
@@ -207,7 +220,7 @@ export default class SkuDrilldown extends React.Component {
             axisY:{
                 title: "Revenue (USD)",
                 labelFormatter: function ( e ) {
-                    return "$" + e.value;  
+                    return "$" + Calculations.checkPriceLength(e.value);  
                 }  
             },
             data: [{				
@@ -225,10 +238,10 @@ export default class SkuDrilldown extends React.Component {
                     var prop_return = rec.date[prop]
                 }
                 else if (prop === 'revenue') {
-                    var prop_return =  '$' + parseInt(rec.sales) * parseFloat(rec.ppc)
+                    var prop_return =  '$' + Calculations.checkPriceLength(parseInt(rec.sales) * parseFloat(rec.ppc))
                 }
                 else if (prop === 'ppc') {
-                    var prop_return =  '$' + rec[prop]
+                    var prop_return =  '$' + Calculations.checkPriceLength(rec[prop])
                 }
                 else {
                     var prop_return =  rec[prop]
