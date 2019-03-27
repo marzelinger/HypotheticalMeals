@@ -2,6 +2,7 @@
 
 import SKU from '../databases/sku';
 import Sale_Record from '../databases/sale_record'
+import Customer from '../databases/customer'
 // import worker from './scraper_worker';
 const { fork } = require('child_process');
 const process = fork ('./models/handlers/scraper_worker.js');
@@ -88,12 +89,35 @@ export default class ScraperHandler{
         record.date = date
         record.sales = sales
         record.ppc = ppc
+
+        this.addCustomer(cust_name, cust_num);
         let conflict = await Sale_Record.find({cust_name, cust_num, sku_num, date, sales, ppc});
         if(conflict.length > 0){
           return;
         }
         record.save();
       }
+
+
+      static async addCustomer(name, num){
+        console.log("maybe customer");
+        console.log("NAME: "+name);
+        let conflict = await Customer.find({name: name, number: num});
+        if(conflict.length > 0){
+          return;
+        }
+        console.log("maybe customer");
+
+        var customer = new Customer();
+        customer.name = name
+        customer.number = num
+        customer.save();
+
+    }
+
+
+
+
 }
 process.on('message', async (message) => {
     if(message.type == 'status'){
