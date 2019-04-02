@@ -1,6 +1,6 @@
 // config.js
 module.exports = {
-  mongoURI: "mongodb://admin:testtest123@ds135592.mlab.com:35592/meta-meals-prod-ev3",
+  mongoURI: "mongodb://admin:testtest123@ds139725.mlab.com:39725/meta-meals-ev4-testing",
     //:mongodb://marzelinger:metameals123@ds227255.mlab.com:27255/meta-meals-testing//the above db is used to test the database for the login stuff.
     //dbUri: "mongodb://madeline:madeline32897@ds111025.mlab.com:11025/login_auth_app"
     secretOrKey: "secret",
@@ -19,3 +19,6 @@ module.exports = {
 
 //EV3 Production database: 
 //mongodb://admin:testtest123@ds135592.mlab.com:35592/meta-meals-prod-ev3
+
+//EV4 testing db:
+//mongodb://admin:testtest123@ds139725.mlab.com:39725/meta-meals-ev4-testing
