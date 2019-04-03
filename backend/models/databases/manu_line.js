@@ -7,10 +7,10 @@ const Manu_linesSchema = new Schema({
   name: String,
   short_name: String,
   comment: String,
-  manager: {
+  manager: [{ 
     type: Schema.Types.ObjectId,
     ref: 'User'
-  }
+  }]
 }, { timestamps: true });
 
 // export our module to use in server.js

@@ -125,6 +125,7 @@ export const csv_formula_comment = "Comment";
 
 export const manu_report_modal = 'manu_report_modal'
 export const modify_manu_lines_label = 'Modify Manufacturing Lines'
+export const select_manu_lines_label = 'Select Manufacturing Lines for Plant Manager'
 export const modify_formula_label = 'Modify Formula'
 
 

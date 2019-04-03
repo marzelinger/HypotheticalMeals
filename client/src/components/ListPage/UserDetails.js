@@ -18,17 +18,10 @@ import DetailsViewSkuTable from './DetailsViewSkuTable'
 import { Form, FormText } from 'reactstrap';
 import printFuncFront from '../../printFuncFront';
 import Checkbox from './Checkbox';
-
+import ModifyManuLines from '../ListPage/ModifyManuLines'; 
+import AuthRoleValidation from '../auth/AuthRoleValidation';
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
-
-
-// const items = [
-//     'One',
-//     'Two',
-//     'Three',
-//   ];
-  
 
 export default class UserDetails extends React.Component {
     constructor(props) {
@@ -102,6 +95,7 @@ export default class UserDetails extends React.Component {
         })
         await this.setState({ invalid_inputs: inv_in });
     }
+
     onAdminCheckBoxClick = () => {
 
         var new_item = this.state.item
@@ -111,6 +105,16 @@ export default class UserDetails extends React.Component {
         })
     };
 
+
+
+    onModifyManuLines = (list) => {
+        var newItem = Object.assign({}, this.state.item);
+        console.log("newitem in mod manu: "+newItem);
+        newItem['manu_lines'] = list;
+        this.setState({
+            item: newItem
+        })
+    }
 
 
     injectProperties = () => {
@@ -129,6 +133,43 @@ export default class UserDetails extends React.Component {
         }
         return null;
     }
+
+    onAnalystClick = () => {
+        var new_item = this.state.item
+        var new_roles = new_item.roles;
+        if(new_roles.includes(Constants.analyst)){
+            var ind = new_roles.indexOf(Constants.analyst);
+            new_roles.splice(ind, 1);
+        }
+        else{
+            new_roles.push(Constants.analyst);
+        }
+
+        new_item.roles = new_roles;
+        this.setState({
+            item: new_item
+        })
+    };
+
+    onCheckBoxClick = (role) => {
+        var new_item = this.state.item
+        var new_roles = new_item.roles;
+        if(new_roles.includes(role)){
+            var ind = new_roles.indexOf(role);
+            new_roles.splice(ind, 1);
+        }
+        else{
+            new_roles.push(role);
+        }
+
+        new_item.roles = new_roles;
+        this.setState({
+            item: new_item
+        })
+
+
+    };
+
     
     render() {
         return (
@@ -148,15 +189,22 @@ export default class UserDetails extends React.Component {
             </FormGroup>
             <Form>
                 <FormGroup>
-                <Label for="exampleCheckbox">Checkboxes</Label>
+                <Label for="exampleCheckbox">User Roles</Label>
                 <div>
-                    <CustomInput type="checkbox" id="exampleCustomCheckbox" label="Check this custom checkbox" />
-                    <CustomInput type="checkbox" id="exampleCustomCheckbox2" label="Or this one" />
-                    <CustomInput type="checkbox" id="exampleCustomCheckbox3" label="But not this disabled one" disabled />
-                    <CustomInput type="checkbox" id="exampleCustomCheckbox4" label="Can't click this label to check!" htmlFor="exampleCustomCheckbox4_X" disabled />
+                    <CustomInput type="checkbox" id="analyst" label="Analyst" checked={AuthRoleValidation.checkUserIsRole(this.state.item,Constants.analyst)} onChange={() => this.onCheckBoxClick(Constants.analyst)} />
+                    <CustomInput type="checkbox" id="product_manager" label="Product Manager" checked={AuthRoleValidation.checkUserIsRole(this.state.item,Constants.product_manager)} disabled = {false} onChange={() => this.onCheckBoxClick(Constants.product_manager)}/>
+                    <CustomInput type="checkbox" id="business_manager" label="Business Manager" checked={AuthRoleValidation.checkUserIsRole(this.state.item,Constants.business_manager)} disabled = {false} onChange={() => this.onCheckBoxClick(Constants.business_manager)}/>
+                    <CustomInput type="checkbox" id="plant_manager" label="Plant Manager" checked={AuthRoleValidation.checkUserIsRole(this.state.item,Constants.plant_manager)} disabled = {false} onChange={() => this.onCheckBoxClick(Constants.plant_manager)}/>
+                    {/* <CustomInput type="checkbox" id="admin" label="Admin" disabled = {false} /> */}
                 </div>
                 </FormGroup>
             </Form>
+            <ModifyManuLines
+                    item={this.state.item}
+                    label={Constants.select_manu_lines_label}
+                    handleModifyManuLines={this.onModifyManuLines}
+                    disabled = {!currentUserIsAdmin().isValid}
+            />
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
                     <Button 

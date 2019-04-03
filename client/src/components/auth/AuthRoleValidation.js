@@ -1,6 +1,8 @@
 // AuthRoleValidation.js
 import SubmitRequest from '../../helpers/SubmitRequest';
 import * as Constants from '../../resources/Constants';
+const jwt_decode = require('jwt-decode');
+const isEmpty = require("is-empty");
 
 export default class AuthRoleValidation{
 
@@ -17,12 +19,14 @@ export default class AuthRoleValidation{
           return null;
     }
 
-    static async checkIsRole(role){
-        var res = SubmitRequest.submitGetUserByID(getUserID());
+    static async checkCurrentUserIsRole(role){
+        console.log("checking role: "+role);
+        var res = SubmitRequest.submitGetUserByID(this.getUserID());
         if(res.success){
             if(res.data!=null){
                 if(res.data.roles!=null){
                     if (res.data.roles.includes(role)) {
+                        console.log("res_data_roles: "+res.data.roles);
                         return true;
                     }
                 }
@@ -31,8 +35,24 @@ export default class AuthRoleValidation{
         return false;
     }
 
-    static async IsPlantMForX(manu_line){
-        var res = SubmitRequest.submitGetUserByID(getUserID());
+    static async checkUserIsRole(user, role){
+        console.log("checking role: "+role);
+        var res = SubmitRequest.submitGetUserByID(user._id);
+        if(res.success){
+            if(res.data!=null){
+                if(res.data.roles!=null){
+                    if (res.data.roles.includes(role)) {
+                        console.log("res_data_roles: "+res.data.roles);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    static async IsCurrentUserPlantMForX(manu_line){
+        var res = SubmitRequest.submitGetUserByID(this.getUserID());
         if(res.success){
             if(res.data!=null){
                 if(res.data.roles!=null){
