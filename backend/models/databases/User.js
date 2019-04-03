@@ -12,7 +12,14 @@ const UserSchema = new Schema({
     admin_creator : String,
     comment : String,
     isAdmin : Boolean,
-    isNetIDLogin: Boolean
+    isNetIDLogin: Boolean,
+    roles : [String],
+    manu_lines: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Manu_Line'
+      }
+    ]
   });
 // export our module to use in server.js
 export default mongoose.model('User', UserSchema);

@@ -6,7 +6,11 @@ const Schema = mongoose.Schema;
 const Manu_linesSchema = new Schema({
   name: String,
   short_name: String,
-  comment: String
+  comment: String,
+  manager: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  }
 }, { timestamps: true });
 
 // export our module to use in server.js

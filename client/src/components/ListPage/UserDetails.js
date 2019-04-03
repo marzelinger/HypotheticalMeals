@@ -12,6 +12,7 @@ import {
     FormGroup,
     Label,
     CustomInput } from 'reactstrap';
+
 import DataStore from '../../helpers/DataStore'
 import DetailsViewSkuTable from './DetailsViewSkuTable'
 import { Form, FormText } from 'reactstrap';
@@ -139,13 +140,23 @@ export default class UserDetails extends React.Component {
                 { this.injectProperties() }
             </div>
             <div className= 'privilege'>
-            </div>
-            
+            </div> 
             <FormGroup>
                 <Label>Administrator</Label>
                 <br></br>
                 <Switch onChange={() => this.onAdminCheckBoxClick()} checked={this.state.item.isAdmin} disabled = {this.state.item.username ==="admin"}/>
             </FormGroup>
+            <Form>
+                <FormGroup>
+                <Label for="exampleCheckbox">Checkboxes</Label>
+                <div>
+                    <CustomInput type="checkbox" id="exampleCustomCheckbox" label="Check this custom checkbox" />
+                    <CustomInput type="checkbox" id="exampleCustomCheckbox2" label="Or this one" />
+                    <CustomInput type="checkbox" id="exampleCustomCheckbox3" label="But not this disabled one" disabled />
+                    <CustomInput type="checkbox" id="exampleCustomCheckbox4" label="Can't click this label to check!" htmlFor="exampleCustomCheckbox4_X" disabled />
+                </div>
+                </FormGroup>
+            </Form>
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
                     <Button 
