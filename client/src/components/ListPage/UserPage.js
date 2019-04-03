@@ -100,7 +100,7 @@ export default class UserPage extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
-        console.log(this.state.data)
+        //console.log(this.state.data)
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }
@@ -308,7 +308,7 @@ export default class UserPage extends React.Component {
         console.log(item)
         var res = {};
         var newData = this.state.data.splice();
-        //
+        console.log("new data: "+JSON.stringify(newData));
         switch (option) {
             // case Constants.details_create:
             //     newData.push(item);
@@ -317,7 +317,9 @@ export default class UserPage extends React.Component {
             case Constants.details_save:
                 let toSave = newData.findIndex(obj => {return obj._id === item._id});
                 newData[toSave] = item;
+                console.log("new data222: "+JSON.stringify(newData));
                 res = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
+                console.log("res in save: "+JSON.stringify(res));
                 break;
             case Constants.details_delete:
                 let toDelete = newData.findIndex(obj => {return obj._id === item._id});

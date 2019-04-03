@@ -20,6 +20,7 @@ import printFuncFront from '../../printFuncFront';
 import Checkbox from './Checkbox';
 import ModifyManuLines from '../ListPage/ModifyManuLines'; 
 import AuthRoleValidation from '../auth/AuthRoleValidation';
+import { constants } from 'fs';
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
@@ -154,6 +155,7 @@ export default class UserDetails extends React.Component {
     onCheckBoxClick = (role) => {
         var new_item = this.state.item
         var new_roles = new_item.roles;
+        console.log("new_item: "+JSON.stringify(new_item));
         if(new_roles.includes(role)){
             var ind = new_roles.indexOf(role);
             new_roles.splice(ind, 1);
@@ -163,6 +165,8 @@ export default class UserDetails extends React.Component {
         }
 
         new_item.roles = new_roles;
+        console.log("new_item with new roles: "+JSON.stringify(new_item));
+
         this.setState({
             item: new_item
         })
@@ -170,8 +174,18 @@ export default class UserDetails extends React.Component {
 
     };
 
+    isChecked(role) {
+        var roles = this.state.item.roles;
+        if(roles.includes(role)){
+            return true;
+        }
+        return false;
+    };
+
     
     render() {
+        console.log("item here: "+JSON.stringify(this.state.item));
+        console.log("this is a check: "+(this.state.item.roles).includes[Constants.product_manager]);
         return (
         <div className='item-details'>
             <div className='item-title'>
@@ -191,10 +205,10 @@ export default class UserDetails extends React.Component {
                 <FormGroup>
                 <Label for="exampleCheckbox">User Roles</Label>
                 <div>
-                    <CustomInput type="checkbox" id="analyst" label="Analyst" checked={AuthRoleValidation.checkUserIsRole(this.state.item,Constants.analyst)} onChange={() => this.onCheckBoxClick(Constants.analyst)} />
-                    <CustomInput type="checkbox" id="product_manager" label="Product Manager" checked={AuthRoleValidation.checkUserIsRole(this.state.item,Constants.product_manager)} disabled = {false} onChange={() => this.onCheckBoxClick(Constants.product_manager)}/>
-                    <CustomInput type="checkbox" id="business_manager" label="Business Manager" checked={AuthRoleValidation.checkUserIsRole(this.state.item,Constants.business_manager)} disabled = {false} onChange={() => this.onCheckBoxClick(Constants.business_manager)}/>
-                    <CustomInput type="checkbox" id="plant_manager" label="Plant Manager" checked={AuthRoleValidation.checkUserIsRole(this.state.item,Constants.plant_manager)} disabled = {false} onChange={() => this.onCheckBoxClick(Constants.plant_manager)}/>
+                    <CustomInput type="checkbox" id="analyst" label="Analyst" checked={this.isChecked(Constants.analyst)} onChange={() => this.onCheckBoxClick(Constants.analyst)} />
+                    <CustomInput type="checkbox" id="product_manager" label="Product Manager" checked={this.isChecked(Constants.product_manager)}  disabled = {false} onChange={() => this.onCheckBoxClick(Constants.product_manager)}/>
+                    <CustomInput type="checkbox" id="business_manager" label="Business Manager" checked={this.isChecked(Constants.business_manager)} disabled = {false} onChange={() => this.onCheckBoxClick(Constants.business_manager)}/>
+                    <CustomInput type="checkbox" id="plant_manager" label="Plant Manager" checked={this.isChecked(Constants.plant_manager)} disabled = {false} onChange={() => this.onCheckBoxClick(Constants.plant_manager)}/>
                     {/* <CustomInput type="checkbox" id="admin" label="Admin" disabled = {false} /> */}
                 </div>
                 </FormGroup>

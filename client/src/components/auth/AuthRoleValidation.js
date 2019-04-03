@@ -37,7 +37,9 @@ export default class AuthRoleValidation{
 
     static async checkUserIsRole(user, role){
         console.log("checking role: "+role);
+        console.log("this is user: "+JSON.stringify(user));
         var res = SubmitRequest.submitGetUserByID(user._id);
+        console.log("this is res: "+JSON.stringify(res));
         if(res.success){
             if(res.data!=null){
                 if(res.data.roles!=null){

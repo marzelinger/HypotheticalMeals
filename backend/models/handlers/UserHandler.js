@@ -193,10 +193,12 @@ class UserHandler{
           var new_username = req.body.username;
           var new_isAdmin = req.body.isAdmin;
           var new_comment = req.body.comment;
+          var new_roles = req.body.roles;
+          var new_lines = req.body.manu_lines;
           printFuncBack("new stuff: "+new_username+new_isAdmin+new_comment);
 
           let updated_user = await User.findOneAndUpdate({ _id: target_id},
-              {$set: {username: new_username, isAdmin : new_isAdmin, comment: new_comment}}, {upsert: true, new: true});
+              {$set: {username: new_username, isAdmin : new_isAdmin, comment: new_comment, roles: new_roles, manu_lines: new_lines}}, {upsert: true, new: true});
           //let test_user = await User.find(target_id);
           printFuncBack("new updateduser: "+updated_user);
           printFuncBack("new stringifty: "+JSON.stringify(updated_user));
@@ -225,10 +227,9 @@ class UserHandler{
   static async getUserByID(req, res){
     try {
         var target_id = req.params.user_id;
-        // console.log("this is the targetid: "+target_id);
-
+        console.log("this is the targetid: "+target_id);
         let to_return = await User.find({ _id : target_id }).populate('manu_lines');
-        // console.log("this is the to_return: "+to_return);
+        console.log("this is the to_return: "+to_return);
         if(to_return.length == 0) return res.json({ success: false, error: '404'});
         return res.json({ success: true, data: to_return});
     } catch (err) {

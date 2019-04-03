@@ -338,6 +338,7 @@ export default class SubmitRequest{
       return fetch('/api/users/' + id)
       .then(data => data.json())
       .then((res) => {
+        console.log("THIS IS THE RES IN SUBMIT; "+JSON.stringify(res));
         if (!res.success) return { success: res.success, error: res.error };
         else return { 
           success: res.success,
