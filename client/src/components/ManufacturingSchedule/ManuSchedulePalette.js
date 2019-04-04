@@ -106,7 +106,7 @@ export default class ManuSchedulePalette extends Component {
     render() {
         return (
             <div>
-                <Accordion accordian={false}>
+                <Accordion accordian={false} allowMultipleExpanded={true}>
                     {this.props.goals.map((goal, g_index) => 
                         <AccordionItem key={goal.name}>
                             <AccordionItemTitle>

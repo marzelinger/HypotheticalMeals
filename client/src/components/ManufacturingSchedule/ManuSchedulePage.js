@@ -26,10 +26,15 @@ export default class ManuSchedulePage extends Component {
         this.range = {};
         
         let today = new Date()
-        today.setHours(12)
+        today.setHours(8)
         today.setMinutes(0)
         today.setSeconds(0)
+        today.setMilliseconds(0)
         let tomorrow = new Date(today.getTime())
+        tomorrow.setHours(18)
+        tomorrow.setMinutes(0)
+        tomorrow.setSeconds(0)
+        tomorrow.setMilliseconds(0)
         tomorrow.setDate(today.getDate() + 1)
 
         this.state = {
@@ -66,6 +71,7 @@ export default class ManuSchedulePage extends Component {
         this.toggleAutoschedule = this.toggleAutoschedule.bind(this);
         this.onDateRangeSelect = this.onDateRangeSelect.bind(this)
         this.handleSelect = this.handleSelect.bind(this);
+        this.generateAutoschedule = this.generateAutoschedule.bind(this);
     }
 
     async componentDidMount() {
@@ -129,8 +135,7 @@ export default class ManuSchedulePage extends Component {
                         start: start,
                         end: end,
                         content: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity,
-                        title: 'Goal: ' + assoc_goal.name + '<br>Deadline: ' + (parseInt(dl.getMonth())+1) + '/' + dl.getDate() + '/' + 
-                            dl.getFullYear() + ' ' + dl.getHours() + ':' + (dl.getMinutes()<10 ? ('0'+dl.getMinutes()) : dl.getMinutes()),
+                        title: 'Goal: ' + assoc_goal.name + '<br>Deadline: ' + (parseInt(dl.getMonth())+1) + '/' + dl.getDate() + '/' + dl.getFullYear(),
                         group: act.manu_line._id,
                         className: cName,
                         _id: act._id
@@ -425,20 +430,109 @@ export default class ManuSchedulePage extends Component {
             oldDate.setDate(newDate.getDate())
             newRange[type] = oldDate
         }
-        else {
-            let oldDate = newRange[type.substr(0,type.length-4) + 'date']
-            oldDate.setHours(event.target.value.substr(0,2))
-            oldDate.setMinutes(event.target.value.substr(3,5))
-            newRange[type.substr(0,type.length-4) + 'date'] = oldDate
-        }
+        // else {
+        //     let oldDate = newRange[type.substr(0,type.length-4) + 'date']
+        //     oldDate.setHours(event.target.value.substr(0,2))
+        //     oldDate.setMinutes(event.target.value.substr(3,5))
+        //     newRange[type.substr(0,type.length-4) + 'date'] = oldDate
+        // }
         console.log(newRange)
         this.setState({
             dateRange: newRange
         })
     }
 
-    generateAutoschedule() {
-        console.log('ride')
+    async generateAutoschedule() {
+        let TEMP_acts = []
+        this.state.unscheduled_goals.map(goal => {
+            goal.activities.map(act => {
+                if (!act.scheduled) {
+                    act['deadline'] = goal.deadline
+                    TEMP_acts.push(act)
+                }
+            })
+        })
+        TEMP_acts.sort(function(a, b){
+            let aDate = new Date(a.deadline)
+            let bDate = new Date(b.deadline)
+            if (aDate.getTime() !== bDate.getTime()) return aDate.getTime() - bDate.getTime()
+            else return a.duration - b.duration
+        })
+        console.log(TEMP_acts)
+        let start = this.state.autoschedule_dateRange.startdate
+        let end = this.state.autoschedule_dateRange.enddate
+        // filter to only items that end after range_start
+        let rel_items= items.filter(it => {
+            let it_end = new Date(it.end)
+            return it_end.getTime() > start.getTime()
+        })
+        // sort items by end time, earliest to latest
+        rel_items.sort(function(a,b) {
+            let aDate = new Date(a.end)
+            let bDate = new Date(b.end)
+            return aDate.getTime() - bDate.getTime()
+        })
+        console.log(rel_items)
+        let newItems = []
+        while (TEMP_acts.length > 0) {
+            let curr = TEMP_acts[0]
+            let mlines = Object.assign([], curr.sku.manu_lines) //need to filter out lines not owned by self
+            let final_item = null
+            //try placing items at start of time range
+            mlines.some(ml => {
+                final_item = this.verifyPlacement(curr, start, mlines[0], rel_items, end)
+                if (final_item !== null) return
+            })
+            console.log(final_item)
+
+            // while (final_item === null) {
+
+            // }
+
+
+            break
+
+            // let mlines = await Promise.all(curr.sku.manu_lines.map(async(ml) => {
+            //     let res = await SubmitRequest.submitGetManufacturingLineByID(ml)
+            //     if (!res.success) {
+            //         alert('Received failed DB call')
+            //         return;
+            //     }
+            //     return res.data[0]
+            // }))
+            break
+            
+        }
+    }
+
+    verifyPlacement(act, start, mline, rel_items, auto_end) {
+        let end = new Date(start.getTime() + Math.floor(act.duration/10)*24*60*60*1000 + (act.duration%10 * 60 * 60 * 1000));
+        let item = {
+            start: start,
+            end: end,
+            content: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity,
+            title: 'Uncommitted',
+            group: mline,
+            className: 'uncommitted',
+            _id: act._id
+        };
+        console.log(item)
+        if (item.start.getHours() < 8 || (item.end.getHours() === 18 && item.end.getMinutes() > 0) || (item.end.getHours() > 18)) {
+            return null;
+        }
+        if (end.getTime() > auto_end.getTime()) return null //this needs to be tested
+        let toReturn = item
+        console.log(rel_items) 
+        rel_items.map(i => {
+            if (item.group === i.group && item.id !== i.id) {
+                if ((i.start < item.end && i.start > item.start) ||
+                    (i.end > item.start && i.end < item.end) ||
+                    (i.start <= item.start && i.end >= item.end)){
+                        toReturn = null
+                    }
+            }
+        })
+        return toReturn
     }
 
     handleSelect = async (rowIndexes, g_index) => {

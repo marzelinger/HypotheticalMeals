@@ -41,7 +41,7 @@ export default class ManuAutoSchedule extends Component {
                         onChange = {(e) => this.props.handleDateRangeSelect(e, 'startdate')}
                         max={moment(this.props.dateRange.enddate).format("YYYY-MM-DD")}
                     />
-                    <Input
+                    {/* <Input
                         type="time"
                         name="time"
                         id="starttime"
@@ -49,7 +49,7 @@ export default class ManuAutoSchedule extends Component {
                                       this.leadingZero(this.props.dateRange.startdate.getMinutes())}
                         onChange = {(e) => this.props.handleDateRangeSelect(e, 'starttime')}
                         max={moment(this.props.dateRange.enddate).format("HH:mm")}
-                    />
+                    /> */}
                 </FormGroup>
                 <FormGroup className='autoschedule-filter'>
                     <Label for="enddate">End</Label>
@@ -61,7 +61,7 @@ export default class ManuAutoSchedule extends Component {
                         onChange = {(e) => this.props.handleDateRangeSelect(e, 'enddate')}
                         // max={moment(this.props.dateRange.enddate).format("YYYY-MM-DD")}
                     />
-                    <Input
+                    {/* <Input
                         type="time"
                         name="time"
                         id="endtime"
@@ -69,7 +69,7 @@ export default class ManuAutoSchedule extends Component {
                                       this.leadingZero(this.props.dateRange.enddate.getMinutes())}
                         onChange = {(e) => this.props.handleDateRangeSelect(e, 'endtime')}
                         // max={moment(this.props.dateRange.enddate).format("HH:mm")}
-                    />
+                    /> */}
                 </FormGroup>
             </div>
         )
