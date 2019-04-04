@@ -199,7 +199,7 @@ export default class PageTable extends Component {
             stripedRows={this.state.stripedRows}
           >
               {this.props.list_items.map((item, index) => 
-                <TableRow className = {`myrow ${this.state.showCheckboxes ? " trselect":""}`} selected = {this.determineSelected(index)} key={index}>
+                <TableRow className = {`myrow ${this.state.showCheckboxes ? " trselect":""} ${item.enabled ? 'enabled' : ''}`} selected = {this.determineSelected(index)} key={index}>
                   {this.props.table_properties.map(prop => 
                     <TableRowColumn
                       key={prop}

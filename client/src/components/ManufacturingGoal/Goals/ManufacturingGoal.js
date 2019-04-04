@@ -128,7 +128,7 @@ export default class ManufacturingGoal extends React.Component{
         </div>
           <div className="singleGoalButtons">
             {/* <img className = "hoverable" id ="deleteButton" onClick={() => {this.handleDeleteGoal()}} src= {deleteButton}></img> */}
-            <div className = "editform" className="form">
+            {/* <div className = "editform" className="form">
               <ManufacturingGoalDetails
               onEnabled = {this.onEnabled}
               enabled = {this.props.goal.enabled}
@@ -137,7 +137,7 @@ export default class ManufacturingGoal extends React.Component{
               handleDetailViewSubmit = {this.handleDetailViewSubmit}
               options = {[Constants.details_save, Constants.details_delete, Constants.details_cancel]}
               ></ManufacturingGoalDetails>
-            </div>
+            </div> */}
             <ManufacturingGoalCalculator name = {this.props.name} activities = {this.props.activities}></ManufacturingGoalCalculator>
           </div>
       </div>

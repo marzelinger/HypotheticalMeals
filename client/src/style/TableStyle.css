@@ -4,8 +4,8 @@ th, td {
     align-items: center;
     justify-content: flex-start;
     width: 100% !important;
-    margin-left: 5px;
-    margin-right: 5px;
+    /* margin-left: 5px;
+    margin-right: 5px; */
     height: 30px !important;
     align-self: center;
 }
@@ -26,8 +26,8 @@ tbody {
 
 tr {
     height: 30px !important;
-    padding-left: 25px !important;
-    padding-right: 25px !important;
+    margin-left: 25px !important;
+    margin-right: 25px !important;
     display: grid;
 }
 
