@@ -10,6 +10,15 @@ import {
     Label,
     Button
 } from 'reactstrap'
+    
+import {
+    TableBody,
+    TableFooter,
+    TableHeader,
+    TableHeaderColumn,
+    TableRow,
+    TableRowColumn
+  } from 'material-ui/Table';
 import {
     Accordion,
     AccordionItem,
@@ -58,38 +67,32 @@ export default class ManuSchedulePalette extends Component {
         this.props.handleToggleActivity(act)
     }
 
-    populateSelected(act) {
-        if (this.state.selected[act._id] === undefined) {
-            let sel = Object.assign({}, this.state.selected)
-            sel[act._id] = false
-            this.setState({ selected: sel })
+    determineSelected= (a_index, g_index) => {
+        console.log('Determine Selected: ' + a_index + ' ' + g_index)
+        if(this.props.selected_indexes[g_index]){
+            return this.props.selected_indexes[g_index].includes(a_index);
         }
+        return false;
     }
     
-    injectActivityData(act) {
+    injectActivityData(act, a_index, g_index) {
         console.log(this.state.selected)
         return (
-            <tr>
-                <Checkbox
-                    checked={this.state.selected[act._id]}
-                    onChange={() => console.log('change')}//{(e) => this.onToggle(act, e)}
-                    value={act._id}
-                    color="primary"
-                />
+            <TableRow selected = {this.determineSelected(a_index, g_index)}>
                 {this.state.item_properties.map(prop => {
                 if (prop === 'sku'){
                     return (<td>{act[prop].name + ': ' + act[prop].unit_size + ' * ' + act.quantity}</td>)
                 }
                 if (prop === 'add_to_schedule'){
                     return (
-                        <td>
+                        <TableRowColumn>
                             <div 
                                 onClick={(e) => this.props.prepareAddActivity(act)}
                                 style = {{backgroundColor: this.props.activity_to_schedule ? (this.props.activity_to_schedule._id === act._id ? '#98edf3' : '#d7fbfd') : '#d7fbfd'}}
                                 className='add_to_schedule'
                                 disabled={this.props.activity_to_schedule ? (this.props.activity_to_schedule._id === act._id ? false : true) : false}
                             >{this.props.activity_to_schedule ? (this.props.activity_to_schedule._id === act._id ? 'x' : '+') : '+'}</div>
-                        </td>
+                        </TableRowColumn>
                     )
                 }
                 // change how this is shown
@@ -97,36 +100,41 @@ export default class ManuSchedulePalette extends Component {
                     return (<td>{act[prop] + ' hours'}</td>)
                 }
             })}
-            </tr>)
+            </TableRow>)
     }
 
     render() {
         return (
             <div>
                 <Accordion accordian={false}>
-                    {this.props.goals.map(goal => 
+                    {this.props.goals.map((goal, g_index) => 
                         <AccordionItem key={goal.name}>
                             <AccordionItemTitle>
                                 <ManuSchedulePaletteGoal goal={goal} />
                             </AccordionItemTitle>
                             <AccordionItemBody>
-                                <Table borderless size="sm" className='accordian-table goal-table'>
-                                    <thead>
-                                    <tr>
-                                        <th>
+                                <Table borderless size="sm" className='accordian-table goal-table' 
+                                    multiSelectable={true}
+                                    onRowSelection = {(res) => this.props.handleSelect(res, g_index)}
+                                >
+                                    <TableHeader  
+                                    displaySelectAll={true}
+                                    adjustForCheckbox={true}
+                                    enableSelectAll={true}>
+                                    <TableRow>
+                                        <TableHeaderColumn>
                                             <Input type="checkbox" />
-                                        </th>
+                                        </TableHeaderColumn>
                                         {this.state.item_properties.map(prop =>
-                                            <th>{this.getPropertyLabel(prop)}</th>
+                                            <TableHeaderColumn>{this.getPropertyLabel(prop)}</TableHeaderColumn>
                                         )}
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {goal.activities.map(act => {
-                                        this.populateSelected(act)
-                                        if (!act.scheduled) return this.injectActivityData(act)
+                                    </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                    {goal.activities.map((act, a_index) => {
+                                        if (!act.scheduled) return this.injectActivityData(act, a_index, g_index)
                                     })}
-                                    </tbody>
+                                    </TableBody>
                                 </Table>
                             </AccordionItemBody>
                         </AccordionItem>

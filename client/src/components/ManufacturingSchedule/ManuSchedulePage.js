@@ -49,7 +49,10 @@ export default class ManuSchedulePage extends Component {
                 'startdate': today, 
                 'enddate': tomorrow 
             },
-            autoschedule_toggle_button: 'Autoschedule'
+            autoschedule_toggle_button: 'Autoschedule',
+            selected_indexes: {},
+            selected_items: [],
+            all_selected: false
         }
 
         this.prepareAddActivity = this.prepareAddActivity.bind(this);
@@ -62,6 +65,7 @@ export default class ManuSchedulePage extends Component {
         this.onSelectAutoselectActivities = this.onSelectAutoselectActivities.bind(this);
         this.toggleAutoschedule = this.toggleAutoschedule.bind(this);
         this.onDateRangeSelect = this.onDateRangeSelect.bind(this)
+        this.handleSelect = this.handleSelect.bind(this);
     }
 
     async componentDidMount() {
@@ -437,6 +441,29 @@ export default class ManuSchedulePage extends Component {
         console.log('ride')
     }
 
+    handleSelect = async (rowIndexes, g_index) => {
+        console.log(rowIndexes)
+        var selected = this.state.selected_indexes;
+        if(rowIndexes == 'all'){
+            var indexes = []
+            for(var i = 0; i < this.state.unscheduled_goals[g_index].activities.length; i ++){
+                indexes.push(i);
+            }
+            selected[g_index] = indexes;
+           
+        }
+        else if(rowIndexes == 'none'){
+            selected[g_index] = [];
+        }
+        else{
+            selected[g_index] = rowIndexes
+        }
+
+        await this.setState({selected_indexes: selected});
+        console.log(this.state.selected_indexes);
+        return;
+    };
+
     render() {
         return (
         <div>
@@ -482,6 +509,9 @@ export default class ManuSchedulePage extends Component {
                                 goals={this.state.unscheduled_goals}
                                 activities={this.state.activities}
                                 lines={this.state.lines}
+                                handleSelect = {this.handleSelect}
+                                selected_indexes = {this.state.selected_indexes}
+                                selected_items = {this.state.selected_items}
                                 activity_to_schedule={this.state.activity_to_schedule}
                                 prepareAddActivity={this.prepareAddActivity}
                                 selected_activities={this.state.autoselect_activities}
