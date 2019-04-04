@@ -70,6 +70,7 @@ export default class ManuSchedulePalette extends Component {
     determineSelected= (a_index, g_index) => {
         console.log('Determine Selected: ' + a_index + ' ' + g_index)
         if(this.props.selected_indexes[g_index]){
+            console.log('here')
             return this.props.selected_indexes[g_index].includes(a_index);
         }
         return false;
@@ -103,6 +104,18 @@ export default class ManuSchedulePalette extends Component {
             </TableRow>)
     }
 
+    getActivities = (goal, g_index) => {
+        var rowI = 0;
+        return goal.activities.map((act) => {
+            console.log(goal)
+            if (!act.scheduled){
+                var data = this.injectActivityData(act, rowI, g_index);
+                rowI++;
+                return data;
+            } 
+        })
+    }
+
     render() {
         return (
             <div>
@@ -131,9 +144,7 @@ export default class ManuSchedulePalette extends Component {
                                     </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                    {goal.activities.map((act, a_index) => {
-                                        if (!act.scheduled) return this.injectActivityData(act, a_index, g_index)
-                                    })}
+                                    {this.getActivities(goal, g_index)}
                                     </TableBody>
                                 </Table>
                             </AccordionItemBody>
