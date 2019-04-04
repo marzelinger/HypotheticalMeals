@@ -123,7 +123,7 @@ router.get('/ingredients_name/:search_substr', (req, res) => IngredientHandler.g
 // Manufacturing Goals database APIs
 router.post('/manugoals', (req, res) => Manu_GoalHandler.createManufacturingGoal(req, res));
 router.put('/manugoals/:user_id/:manu_goal_id', (req, res) => Manu_GoalHandler.updateManufacturingGoalByID(req, res));
-router.get('/manugoals/:user_id', (req, res) => Manu_GoalHandler.getAllManufacturingGoals(req, res));
+router.get('/manugoals', (req, res) => Manu_GoalHandler.getAllManufacturingGoals(req, res));
 router.get('/manugoals/:user_id/:manu_goal_id', (req, res) => Manu_GoalHandler.getManufacturingGoalByID(req, res));
 router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteManufacturingGoalByID(req, res));
 router.get('/manugoals/:user_id/:manu_goal_id/skus', (req, res) => Manu_GoalHandler.getManufacturingGoalByIDSkus(req, res));
