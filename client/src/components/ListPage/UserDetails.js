@@ -22,6 +22,7 @@ import ModifyManuLines from '../ListPage/ModifyManuLines';
 import ManuLineSelect from './ManuLineSelect';
 import AuthRoleValidation from '../auth/AuthRoleValidation';
 import { constants } from 'fs';
+import SubmitRequest from '../../helpers/SubmitRequest';
 
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
@@ -120,7 +121,7 @@ export default class UserDetails extends React.Component {
         return null;
     }
 
-    onCheckBoxClick = (role) => {
+    onCheckBoxClick = async (role) => {
         var new_item = this.state.item;
         var new_roles = new_item.roles;
         console.log("new_item: "+JSON.stringify(new_item));
@@ -130,6 +131,10 @@ export default class UserDetails extends React.Component {
             new_roles.splice(ind, 1);
 
             //TODO: MAYBE SEND AN ALERT IF THEY TRY TO UNSELECT ONE THAT ISN'T UNSELECTABLE?
+            if(role==Constants.plant_manager){
+                var new_manu_lines = [];
+                new_item.manu_lines = new_manu_lines;
+            }
         }
         else{
             //adding this role.
@@ -142,6 +147,16 @@ export default class UserDetails extends React.Component {
                 if(!new_roles.includes(Constants.plant_manager)) new_roles.push(Constants.plant_manager);
                 //want to add all the manulines to the user.
                 //TODO
+                var manu_res = await SubmitRequest.submitGetData(Constants.manu_line_page_name);
+                var new_manu_lines = [];
+                if(manu_res.success){
+                    if(manu_res.data!=null){
+                        for(let i = 0; i<manu_res.data.length; i++){
+                            new_manu_lines.push(manu_res.data[i]._id);
+                        }
+                    }
+                }
+                new_item.manu_lines = new_manu_lines;
             }
             else if(role==Constants.product_manager){
                 //want to add analyst role to the user.
@@ -161,7 +176,7 @@ export default class UserDetails extends React.Component {
         new_item.roles = new_roles;
         console.log("new_item with new roles: "+JSON.stringify(new_item));
 
-        this.setState({
+        await this.setState({
             item: new_item
         })
 
@@ -217,14 +232,19 @@ export default class UserDetails extends React.Component {
                 </div>
                 </FormGroup>
             </Form>
-            <ManuLineSelect
-                    className = 'select-manu-lines'
-                    handleSelectManuLines= {this.onSelectManuLines}
-                    simple = {false}
-                    manu_lines = {this.state.item.manu_lines}
-                    manu_lines_indices = {this.state.manu_lines_indices}
-                >
-            </ManuLineSelect>
+            {this.isChecked(Constants.plant_manager) ?
+                <div>
+                    <ManuLineSelect
+                            className = 'select-manu-lines'
+                            handleSelectManuLines= {this.onSelectManuLines}
+                            simple = {false}
+                            manu_lines = {this.state.item.manu_lines}
+                            // manu_lines_indices = {this.state.manu_lines_indices}
+                        >
+                    </ManuLineSelect>
+                </div>
+            : <div></div>
+            }
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
                     <Button 

@@ -238,6 +238,7 @@ export default class ManuLineSelect extends React.Component {
                         handleDetailViewSelect={this.onDetailViewSelect}
                         showDetails = {false}
                         selectable = {true}
+                        // enableSelect = {this.props.enableSelect}
                         sortable = {false}
                         title = {this.state.page_title}
                         showHeader = {true}
@@ -249,6 +250,7 @@ export default class ManuLineSelect extends React.Component {
                         onRemoveFilter = {this.onRemoveFilter}
                         onTableOptionSelection = {this.onTableOptionSelection}
                         reportSelect = {true}
+
 
                     />                              
                     <TablePagination
@@ -268,5 +270,6 @@ ManuLineSelect.propTypes = {
     handleSelectManuLines: PropTypes.func,
     simple: PropTypes.bool,
     manu_lines: PropTypes.arrayOf(PropTypes.object),
-    manu_lines_indices: PropTypes.arrayOf(PropTypes.number)
+    // manu_lines_indices: PropTypes.arrayOf(PropTypes.number),
+    enableSelect: PropTypes.bool
 }
