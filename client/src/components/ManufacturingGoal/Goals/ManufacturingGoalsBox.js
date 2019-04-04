@@ -206,7 +206,7 @@ class ManufacturingGoalsBox extends Component {
 
   async loadGoalsFromServer() {
     console.log(this.state.page_name)
-    var res = await SubmitRequest.submitGetData(this.state.page_name);
+    var res = await SubmitRequest.submitGetData(`${this.state.page_name}/${this.state.sort_field}`);
     if (!res.success) {
       this.setState({ error: res.error });
     }

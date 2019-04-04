@@ -66,7 +66,7 @@ export default class SubmitRequest{
               data: res.data
           });
         });
-      }
+    }
     catch (err){
       return { success: false, error: err };
     }
