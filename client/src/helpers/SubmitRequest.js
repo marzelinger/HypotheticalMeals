@@ -438,9 +438,9 @@ export default class SubmitRequest{
     });
   }
 
-  static submitGetManufacturingLinesByNameSubstring(substr) {
+  static submitGetManufacturingLinesByNameSubstring(substr, currentPage, pageSize) {
     try {
-      return fetch('/api/manulines_name/' + substr)
+      return fetch('/api/manulines_name/' + substr +'/'+currentPage+'/'+pageSize)
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error };

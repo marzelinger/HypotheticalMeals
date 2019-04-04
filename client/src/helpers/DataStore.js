@@ -111,7 +111,18 @@ export default class DataStore{
       table_properties: ['name'],
       table_options: [Constants.add_keyword_filter],
     };
-}
+  }
+
+  static getUserManuLineData() {
+    return {
+      page_name: Constants.manu_line_page_name,
+      page_title: 'Manufacturing Lines',
+      filter_options: [Constants.keyword_label],
+      table_columns: ['Name'],
+      table_properties: ['name'],
+      table_options: [Constants.add_keyword_filter],
+    };
+  }
 
   static getSkuFormulaDetailsData(){
     return {
