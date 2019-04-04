@@ -16,6 +16,7 @@ import './../../style/ManuSchedulePageStyle.css';
 import GeneralNavBar from '../GeneralNavBar';
 import ManuActivityErrors from './ManuActivityErrors';
 import ManuSchedHelp from '../../resources/ManuSchedHelp.png'
+import ManuAutoSchedule from "./ManuAutoShedule";
 const jwt_decode = require('jwt-decode');
 const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
@@ -24,6 +25,13 @@ export default class ManuSchedulePage extends Component {
         super(props)
         this.range = {};
         
+        let today = new Date()
+        today.setHours(12)
+        today.setMinutes(0)
+        today.setSeconds(0)
+        let tomorrow = new Date(today.getTime())
+        tomorrow.setDate(today.getDate() + 1)
+
         this.state = {
             user: '',
             options: {},
@@ -35,13 +43,15 @@ export default class ManuSchedulePage extends Component {
             loaded: false,
             modal: false,
             modal_type : '',
-            error_change: false
+            error_change: false,
+            autoschedule: false,
+            autoschedule_dateRange: { 
+                'startdate': today, 
+                'enddate': tomorrow 
+            },
+            autoschedule_toggle_button: 'Autoschedule'
         }
-        if(localStorage != null){
-            if(localStorage.getItem("jwtToken")!= null){
-                this.state.user = jwt_decode(localStorage.getItem("jwtToken")).username;
-            }
-        }
+
         this.prepareAddActivity = this.prepareAddActivity.bind(this);
         this.doubleClickHandler = this.doubleClickHandler.bind(this);
         this.onMove = this.onMove.bind(this);
@@ -49,7 +59,9 @@ export default class ManuSchedulePage extends Component {
         this.onAdd = this.onAdd.bind(this);
         this.updateRange = this.updateRange.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
-        this.onToggleAutoselectActivities = this.onToggleAutoselectActivities.bind(this);
+        this.onSelectAutoselectActivities = this.onSelectAutoselectActivities.bind(this);
+        this.toggleAutoschedule = this.toggleAutoschedule.bind(this);
+        this.onDateRangeSelect = this.onDateRangeSelect.bind(this)
     }
 
     async componentDidMount() {
@@ -367,7 +379,7 @@ export default class ManuSchedulePage extends Component {
 
     updateRange =  (event) => {
         // this.setState({start: event.start})
-        this.range['start'] = event.start
+        this.range.start = event.start
         this.range.end = event.end;
     }
 
@@ -375,7 +387,7 @@ export default class ManuSchedulePage extends Component {
         await this.setState({error_change: false})
     }
 
-    onToggleAutoselectActivities(act) {
+    onSelectAutoselectActivities(act) {
         console.log(act)
         let asa = Object.assign([], this.state.autoselect_activities)
         let ind = asa.find(res => res._id === act._id)
@@ -389,6 +401,40 @@ export default class ManuSchedulePage extends Component {
         this.setState({
             autoselect_activities: asa
         })
+    }
+
+    toggleAutoschedule() {
+        let str = this.state.autoschedule ? 'Autoschedule' : 'Cancel' 
+        this.setState({ 
+            autoschedule: !this.state.autoschedule,
+            autoschedule_toggle_button: str
+        })
+    }
+
+    onDateRangeSelect(event, type) {
+        let newRange = Object.assign({}, this.state.autoschedule_dateRange)
+        if (['startdate', 'enddate'].includes(type)) {
+            let oldDate = newRange[type]
+            let newDate = new Date(event.target.value)
+            oldDate.setFullYear(newDate.getFullYear())
+            oldDate.setMonth(newDate.getMonth())
+            oldDate.setDate(newDate.getDate())
+            newRange[type] = oldDate
+        }
+        else {
+            let oldDate = newRange[type.substr(0,type.length-4) + 'date']
+            oldDate.setHours(event.target.value.substr(0,2))
+            oldDate.setMinutes(event.target.value.substr(3,5))
+            newRange[type.substr(0,type.length-4) + 'date'] = oldDate
+        }
+        console.log(newRange)
+        this.setState({
+            dateRange: newRange
+        })
+    }
+
+    generateAutoschedule() {
+        console.log('ride')
     }
 
     render() {
@@ -418,15 +464,30 @@ export default class ManuSchedulePage extends Component {
                             className = "info-modal-button" 
                             onClick={(e) => this.toggleModal('palette')}
                         >?</div>
-                        <ManuSchedulePalette
-                            goals={this.state.unscheduled_goals}
-                            activities={this.state.activities}
-                            lines={this.state.lines}
-                            activity_to_schedule={this.state.activity_to_schedule}
-                            prepareAddActivity={this.prepareAddActivity}
-                            selected_activities={this.state.autoselect_activities}
-                            handleToggleActivity={this.onToggleAutoselectActivities}
-                        />
+                        <Button
+                            onClick={this.toggleAutoschedule}
+                        >
+                            {this.state.autoschedule_toggle_button}
+                        </Button>
+                        {this.state.autoschedule ? 
+                        <Button
+                            onClick={this.generateAutoschedule}
+                        >Generate Autoschedule</Button> : null}
+                        {this.state.autoschedule ? 
+                            <ManuAutoSchedule
+                                dateRange={this.state.autoschedule_dateRange}
+                                handleDateRangeSelect={this.onDateRangeSelect}
+                            /> : 
+                            <ManuSchedulePalette
+                                goals={this.state.unscheduled_goals}
+                                activities={this.state.activities}
+                                lines={this.state.lines}
+                                activity_to_schedule={this.state.activity_to_schedule}
+                                prepareAddActivity={this.prepareAddActivity}
+                                selected_activities={this.state.autoselect_activities}
+                                handleToggleActivity={this.onSelectAutoselectActivities}
+                            />
+                        }
                     </div>
                     <div className='errors-container'>
                         <h6 className='errors-title'>Activity Errors</h6>
