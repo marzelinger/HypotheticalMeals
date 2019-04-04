@@ -7,7 +7,8 @@ import {
     Table,
     Input,
     FormGroup,
-    Label
+    Label,
+    Button
 } from 'reactstrap'
 import {
     Accordion,
@@ -102,6 +103,9 @@ export default class ManuSchedulePalette extends Component {
     render() {
         return (
             <div>
+                <Button>
+                    Autoschedule
+                </Button>
                 <Accordion accordian={false}>
                     {this.props.goals.map(goal => 
                         <AccordionItem key={goal.name}>

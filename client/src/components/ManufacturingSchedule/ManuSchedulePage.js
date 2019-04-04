@@ -61,6 +61,7 @@ export default class ManuSchedulePage extends Component {
         items.length = 0;
         groups.length = 0;
         let initial_activities = await SubmitRequest.submitGetData(Constants.manu_activity_page_name);
+        console.log(initial_activities)
         let activities = []
         for(var i = 0; i < initial_activities.data.length; i ++){
             let activity = initial_activities.data[i];
