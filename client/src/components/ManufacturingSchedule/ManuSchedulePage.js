@@ -31,7 +31,7 @@ export default class ManuSchedulePage extends Component {
             activities: [],
             unscheduled_goals: [],
             activity_to_schedule: null,
-            selected_activities: [],
+            autoselect_activities: [],
             loaded: false,
             modal: false,
             modal_type : '',
@@ -44,12 +44,12 @@ export default class ManuSchedulePage extends Component {
         }
         this.prepareAddActivity = this.prepareAddActivity.bind(this);
         this.doubleClickHandler = this.doubleClickHandler.bind(this);
-        this.selectHandler = this.selectHandler.bind(this);
         this.onMove = this.onMove.bind(this);
         this.onRemove = this.onRemove.bind(this);
         this.onAdd = this.onAdd.bind(this);
         this.updateRange = this.updateRange.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
+        this.onToggleAutoselectActivities = this.onToggleAutoselectActivities.bind(this);
     }
 
     async componentDidMount() {
@@ -166,11 +166,6 @@ export default class ManuSchedulePage extends Component {
                 alert('Duration must be an integer!')
             }
         }
-    }
-
-    async selectHandler(items, event) {
-        await this.setState({ selected_activities: items })
-        return(items)
     }
 
     prepareAddActivity(activity) {
@@ -379,6 +374,22 @@ export default class ManuSchedulePage extends Component {
         await this.setState({error_change: false})
     }
 
+    onToggleAutoselectActivities(act) {
+        console.log(act)
+        let asa = Object.assign([], this.state.autoselect_activities)
+        let ind = asa.find(res => res._id === act._id)
+        if (ind > -1) {
+            asa.splice(ind, 1)
+        }
+        else {
+            asa.push(act)
+        }
+        console.log(asa)
+        this.setState({
+            autoselect_activities: asa
+        })
+    }
+
     render() {
         return (
         <div>
@@ -397,7 +408,6 @@ export default class ManuSchedulePage extends Component {
                         groups={groups}
                         doubleClickHandler={this.doubleClickHandler.bind(this)}
                         rangechangeHandler = {this.updateRange}
-                        // selectHandler={this.selectHandler.bind(this)}
                     />) : null}
                 </div>
                 <div className = "belowTimeline">
@@ -413,6 +423,8 @@ export default class ManuSchedulePage extends Component {
                             lines={this.state.lines}
                             activity_to_schedule={this.state.activity_to_schedule}
                             prepareAddActivity={this.prepareAddActivity}
+                            selected_activities={this.state.autoselect_activities}
+                            handleToggleActivity={this.onToggleAutoselectActivities}
                         />
                     </div>
                     <div className='errors-container'>
