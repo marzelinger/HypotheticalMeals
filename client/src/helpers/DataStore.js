@@ -58,7 +58,11 @@ export default class DataStore{
         item_properties: ['name'],
         item_property_labels: ['Name'],
         item_property_patterns: ['.+'],
-        item_property_field_type: ['text']  
+        item_property_field_type: ['text'],
+        page_name: 'manugoals',
+        table_columns: ['Title', 'Author', 'Last Edit'], 
+        table_properties: ['name', 'user', 'updatedAt'], 
+        table_options: [Constants.create_item]
       };
     }
 

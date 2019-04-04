@@ -23,10 +23,10 @@ export default class TableActions extends React.Component {
       width: 10,
       height: 10,
     }
-  
+    console.log(this.state.page_name)
     return (
       <div id={this.state.simple ? "simple" : "complex"}>
-      {(this.state.page_name != Constants.users_page_name)? 
+      {(this.state.page_name != Constants.users_page_name && this.state.page_name != Constants.manugoals_page_name)? 
       (<div>
       <SearchIcon style = {{width: '20px', height: '20px'}}></SearchIcon>
       

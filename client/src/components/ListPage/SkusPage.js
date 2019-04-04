@@ -290,7 +290,6 @@ export default class ListPage extends React.Component {
         })
         this.toggle(Constants.details_modal);
         this.loadDataFromServer();
-
     }
 
     onTableOptionSelection = async(e, opt) => {

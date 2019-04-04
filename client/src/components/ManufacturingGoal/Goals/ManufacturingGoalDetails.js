@@ -23,7 +23,6 @@ const currentUserIsAdmin = require("../../../components/auth/currentUserIsAdmin"
 export default class ManufacturingGoalDetails extends React.Component {
     constructor(props) {
         super(props);
-
         let {
             item_properties, 
             item_property_labels,
@@ -31,18 +30,16 @@ export default class ManufacturingGoalDetails extends React.Component {
             item_property_field_type } = DataStore.getGoalData();
 
         this.state = {
+            item: Object.assign({}, props.item),
             item_properties,
             item_property_labels,
             item_property_patterns,
             item_property_field_type,
             invalid_inputs: [],
-            modal: false,
-            detail_view_options: this.props.options,
-            item: {},
             page_title: 'SKUs',
             data: [],
         }
-        this.toggle = this.toggle.bind(this);
+
         this.onModifyList = this.onModifyList.bind(this);
         this.removeSku = this.removeSku.bind(this);
         this.addSku = this.addSku.bind(this);
@@ -144,7 +141,7 @@ export default class ManufacturingGoalDetails extends React.Component {
             var return_val = await this.props.handleDetailViewSubmit(e, this.state.item, opt);
             console.log(return_val)
             if(return_val){
-                await this.setState({modal: false})
+                this.props.toggle();
             };
             return;
         }
@@ -157,7 +154,8 @@ export default class ManufacturingGoalDetails extends React.Component {
             var return_val = await this.props.handleDetailViewSubmit(e, item, opt)
             console.log(return_val)
             if(return_val.success){
-                await this.setState({modal: false, errorText: ''})
+                await this.setState({errorText: ''})
+                this.props.toggle();
             }
             else{
                 alert(`${alert_string}, ${return_val.error}`)
@@ -200,7 +198,7 @@ export default class ManufacturingGoalDetails extends React.Component {
             var item = this.state.item
             await this.setState({
                 item: {...item, enabled: !this.state.item.enabled}
-            })
+            });
         }
     }
     injectProperties = () => {
@@ -218,7 +216,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                     <FormFeedback invalid>{this.state.errorText}</FormFeedback>
                 </FormGroup>));
 
-            var enable = this.state.detail_view_options.includes(Constants.details_save) && currentUserIsAdmin().isValid ? 
+            var enable = this.props.detail_view_options.includes(Constants.details_save) && currentUserIsAdmin().isValid ? 
             <FormGroup>
                 <Label>Enabled</Label>
                 <br></br>
@@ -251,45 +249,9 @@ export default class ManufacturingGoalDetails extends React.Component {
 
     }
 
-    pad(n, length) {
-        let s = '' + n;
-        while(s.length < length){
-            s = '0' + s;
-        }
-        return s;
-    }
-
-    toggle = async () => {
-        try{
-            var item = this.props.item || await ItemStore.getEmptyItem(Constants.manugoals_page_name);
-            if(item.deadline != " "){
-                var deadline = new Date(item.deadline)
-                var localDate = deadline
-                var day = localDate.getDate();
-                var month = localDate.getMonth(); 
-                var year = localDate.getFullYear();
-                var yyyymmdd = this.pad(year, 4) +  "-" + this.pad(month + 1, 2) + "-" + this.pad(day, 2);
-                var hours = this.pad(''+localDate.getHours(), 2);
-                var minutes = this.pad(''+localDate.getMinutes(), 2);
-                var dateString = `${yyyymmdd}T${hours}:${minutes}`
-                item.deadline = dateString;
-            }
-            await this.setState({ 
-                modal: !this.state.modal,
-                item: item,
-                detail_view_options: this.props.options
-            })
-            console.log("this is the item: "+JSON.stringify(this.state.item));
-        } catch (e){
-            console.log(e);
-        }
-    }
-
     render() {
         return (
-        <div>
-        <img id = "button" src={this.props.buttonImage} onClick={this.toggle}></img>
-            <Modal style = {{border: this.state.item.enabled ? 'solid thick #98FB98' : 'solid thick grey'}} isOpen={this.state.modal} toggle={this.toggle} id="popup" className='item-details'>
+        <div className = 'details' style = {{border: this.state.item.enabled ? 'solid thick #98FB98' : 'solid thick grey'}}>
             <div className='item-details'>
                 <div className='item-title'>
                     <h1>{ this.state.item  ? this.state.item.name : Constants.undefined }</h1>
@@ -307,7 +269,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                     ></SimpleGoalTable>
                 </div>
                 <div className='item-options'>
-                    { this.state.detail_view_options.map(opt => 
+                    { this.props.detail_view_options.map(opt => 
                         <Button 
                             className = "detailButtons"
                             key={opt} 
@@ -316,7 +278,6 @@ export default class ManufacturingGoalDetails extends React.Component {
                     )}
                 </div>
             </div>
-            </Modal>
         </div>
         );
     }
