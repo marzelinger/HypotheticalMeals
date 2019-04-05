@@ -4,9 +4,6 @@
   font-family: Roboto, sans-serif;
 }
 
-.enabled {
-  background-color: rgb(210, 231, 176);
-}
 
 .disabled {
   background-color: rgb(145, 145, 145);
@@ -73,7 +70,12 @@
   }
 
   .modal-content {
+    padding: 0px !important;
     overflow-wrap: break-word; 
+  }
+
+  .details {
+    padding: 24px;
   }
 
   .singleGoalContent {
@@ -196,6 +198,11 @@
   .enabled{
     background-color: #98FB98;
   }
+
+  /* tbody > tr {
+    border-bottom: 1px solid rgb(224, 224, 224);
+    border-top: 1px solid rgb(224, 224, 224);
+  } */
 
   .disabled {
     background-color: lightgrey;

@@ -68,7 +68,10 @@ export default class ManuLineSelect extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
-        if (this.state.filterChange) {
+        if (this.state.filterChange || this.state.selected_items!=this.props.manu_lines) {
+            this.setState ({
+                selected_items: this.props.manu_lines
+            });
             await this.loadDataFromServer();
         }
     }
@@ -194,6 +197,7 @@ export default class ManuLineSelect extends React.Component {
     };
 
     onSelect = async (rowIndexes) => {
+        console.log("rowIndexes: "+JSON.stringify(rowIndexes));
         if(rowIndexes == 'all'){
             var indexes = []
             for(var i = 0; i < this.state.data.length; i ++){

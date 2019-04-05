@@ -77,6 +77,7 @@ export default class PageTable extends Component {
   }
 
   determineSelected= (index, item) => {
+
     console.log("index: "+ index+"     item: "+JSON.stringify(item));
     console.log("props selected_items: "+JSON.stringify(this.props.selected_items));
     console.log("this.state.selectable: "+this.state.selectable);
@@ -85,6 +86,8 @@ export default class PageTable extends Component {
     } 
     return false;
   }
+
+
 
   determineColumns = () => {
     return this.props.table_properties.length + (this.state.showDetails ? 1 : 0);
@@ -171,6 +174,7 @@ export default class PageTable extends Component {
 
 
   render() {
+    // console.log("this is the manu_lines: ")
     return (
       <div className = "table-container">
         <Table
@@ -202,7 +206,7 @@ export default class PageTable extends Component {
             stripedRows={this.state.stripedRows}
           >
               {this.props.list_items.map((item, index) => 
-                <TableRow className = {`myrow ${this.state.showCheckboxes ? " trselect":""}`} selected = {this.determineSelected(index,item)} key={index}>
+                <TableRow className = {`myrow ${this.state.showCheckboxes ? " trselect":""} ${item.enabled ? 'enabled' : ''}`} selected = {this.determineSelected(index, item)} key={index}>
                   {this.props.table_properties.map(prop => 
                     <TableRowColumn
                       key={prop}

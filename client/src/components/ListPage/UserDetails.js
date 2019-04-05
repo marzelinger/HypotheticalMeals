@@ -174,11 +174,11 @@ export default class UserDetails extends React.Component {
             }
         }
         new_item.roles = new_roles;
-        console.log("new_item with new roles: "+JSON.stringify(new_item));
 
         await this.setState({
             item: new_item
         })
+        console.log("new_item with new roles: "+JSON.stringify(this.state.item));
 
 
 
@@ -203,6 +203,30 @@ export default class UserDetails extends React.Component {
             new_data: true,
         })
     }
+
+    // onSelect = async (rowIndexes) => {
+    //     if(rowIndexes == 'all'){
+    //         var indexes = []
+    //         for(var i = 0; i < this.state.data.length; i ++){
+    //             indexes.push(i);
+    //         }
+    //         await this.setState({selected_items: this.state.data, selected_indexes: indexes});
+    //         this.onSelectManuLines(this.state.selected_items, this.state.selected_indexes);
+    //         return;
+    //     }
+    //     else if(rowIndexes == 'none'){
+    //         rowIndexes = [];
+    //     }
+    //     var newState = [];
+    //     rowIndexes.forEach( index => {
+    //         newState.push(this.state.data[index]);
+    //     });
+    //     await this.setState({ selected_items: newState, selected_indexes: rowIndexes});
+    //     this.onSelectManuLines(this.state.selected_items, this.state.selected_indexes);
+    // };
+
+
+
 
     render() {
         return (
