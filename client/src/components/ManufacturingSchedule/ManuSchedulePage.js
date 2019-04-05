@@ -427,7 +427,7 @@ export default class ManuSchedulePage extends Component {
             let newDate = new Date(event.target.value)
             oldDate.setFullYear(newDate.getFullYear())
             oldDate.setMonth(newDate.getMonth())
-            oldDate.setDate(newDate.getDate())
+            oldDate.setDate(newDate.getDate()+1)
             newRange[type] = oldDate
         }
         // else {
@@ -436,7 +436,6 @@ export default class ManuSchedulePage extends Component {
         //     oldDate.setMinutes(event.target.value.substr(3,5))
         //     newRange[type.substr(0,type.length-4) + 'date'] = oldDate
         // }
-        console.log(newRange)
         this.setState({
             dateRange: newRange
         })
@@ -461,10 +460,11 @@ export default class ManuSchedulePage extends Component {
         console.log(TEMP_acts)
         let start = this.state.autoschedule_dateRange.startdate
         let end = this.state.autoschedule_dateRange.enddate
+        console.log(start)
         // filter to only items that end after range_start
         let rel_items= items.filter(it => {
             let it_end = new Date(it.end)
-            return it_end.getTime() > start.getTime()
+            return (it_end.getTime() > start.getTime())
         })
         // sort items by end time, earliest to latest
         rel_items.sort(function(a,b) {
@@ -473,7 +473,8 @@ export default class ManuSchedulePage extends Component {
             return aDate.getTime() - bDate.getTime()
         })
         console.log(rel_items)
-        let newItems = []
+        let new_items = []
+        let unscheduled_activities = []
         while (TEMP_acts.length > 0) {
             let curr = TEMP_acts[0]
             let mlines = Object.assign([], curr.sku.manu_lines) //need to filter out lines not owned by self
@@ -481,28 +482,26 @@ export default class ManuSchedulePage extends Component {
             //try placing items at start of time range
             mlines.some(ml => {
                 final_item = this.verifyPlacement(curr, start, mlines[0], rel_items, end)
-                if (final_item !== null) return
+                if (final_item !== null) return true
             })
             console.log(final_item)
-
-            // while (final_item === null) {
-
-            // }
-
-
-            break
-
-            // let mlines = await Promise.all(curr.sku.manu_lines.map(async(ml) => {
-            //     let res = await SubmitRequest.submitGetManufacturingLineByID(ml)
-            //     if (!res.success) {
-            //         alert('Received failed DB call')
-            //         return;
-            //     }
-            //     return res.data[0]
-            // }))
-            break
-            
+            //if that didn't work, iterate through sorted list of items
+            if (final_item === null) {
+                rel_items.some(it => {
+                    if (curr.sku.manu_lines.includes(it.group)) {
+                        final_item = this.verifyPlacement(curr, new Date(it.end), it.group, rel_items, end)
+                        console.log(final_item)
+                        if (final_item !== null) return true
+                    }
+                })
+            }
+            //if that didn't work, push to unscheduled items
+            if (final_item === null) unscheduled_activities.push(curr)
+            else new_items.push(final_item)
+            TEMP_acts.splice(0, 1)
         }
+        console.log(new_items)
+        console.log(unscheduled_activities)
     }
 
     verifyPlacement(act, start, mline, rel_items, auto_end) {
@@ -525,13 +524,16 @@ export default class ManuSchedulePage extends Component {
         console.log(rel_items) 
         rel_items.map(i => {
             if (item.group === i.group && item.id !== i.id) {
+                console.log(1)
                 if ((i.start < item.end && i.start > item.start) ||
                     (i.end > item.start && i.end < item.end) ||
                     (i.start <= item.start && i.end >= item.end)){
+                        console.log('wtf')
                         toReturn = null
                     }
             }
         })
+        console.log(toReturn)
         return toReturn
     }
 
