@@ -6,7 +6,30 @@ const isEmpty = require("is-empty");
 
 export default class AuthRoleValidation{
 
-    static async getUserID(){
+    constructor() {
+        this.state = {
+            current_user: {}
+          };
+        //this.determineUser();
+      }
+
+
+    static async determineUser () {
+        var res = await SubmitRequest.submitGetUserByID(this.getUserID());
+        if(res.success){
+            if(res.data!=null){
+                return res.data[0];
+                // await this.setState({
+                //     current_user: res.data[0]
+                // })
+                // console.log("this is the user: "+this.state.current_user);
+            }
+        }
+        return null;
+    }
+    
+
+    static getUserID(){
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!= null){
               const decoded = jwt_decode(localStorage.getItem("jwtToken"));
@@ -21,12 +44,31 @@ export default class AuthRoleValidation{
 
     static async checkCurrentUserIsRole(role){
         console.log("checking role: "+role);
-        var res = SubmitRequest.submitGetUserByID(this.getUserID());
+        var res = await SubmitRequest.submitGetUserByID(this.getUserID());
+        console.log("response "+JSON.stringify(res));
+
         if(res.success){
             if(res.data!=null){
-                if(res.data.roles!=null){
-                    if (res.data.roles.includes(role)) {
-                        console.log("res_data_roles: "+res.data.roles);
+                if(res.data[0].roles!=null){
+                    var roles = res.data[0].roles;
+                    if (roles.includes(role)) {
+                        console.log("returning true");
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+ 
+
+    static async checkUserIsRole(user, role){
+        var res = await SubmitRequest.submitGetUserByID(user._id);
+        if(res.success){
+            if(res.data!=null){
+                if(res.data[0].roles!=null){
+                    var roles = res.data[0].roles;
+                    if (roles.includes(role)) {
                         return true;
                     }
                 }
@@ -35,16 +77,24 @@ export default class AuthRoleValidation{
         return false;
     }
 
-    static async checkUserIsRole(user, role){
-        console.log("checking role: "+role);
-        console.log("this is user: "+JSON.stringify(user));
-        var res = SubmitRequest.submitGetUserByID(user._id);
-        console.log("this is res: "+JSON.stringify(res));
+    static checkRole (user, role){
+
+        if (user.roles!=undefined){
+          return user.roles.includes(role);
+        }
+        return false;
+      }
+
+
+    //THIS ONE WORKS
+    static async checkUserIDIsRole(user_id, role){
+        var res = await SubmitRequest.submitGetUserByID(user_id);
         if(res.success){
             if(res.data!=null){
-                if(res.data.roles!=null){
-                    if (res.data.roles.includes(role)) {
-                        console.log("res_data_roles: "+res.data.roles);
+                if(res.data[0].roles!=null){
+                    var roles = res.data[0].roles;
+                    if (roles.includes(role)) {
+                        console.log("this is this role: yes");
                         return true;
                     }
                 }
@@ -54,12 +104,12 @@ export default class AuthRoleValidation{
     }
 
     static async IsCurrentUserPlantMForX(manu_line){
-        var res = SubmitRequest.submitGetUserByID(this.getUserID());
+        var res = await SubmitRequest.submitGetUserByID(this.getUserID());
         if(res.success){
             if(res.data!=null){
-                if(res.data.roles!=null){
-                    if (res.data.roles.includes(Constants.plant_manager)) {
-                        if(res.data.manu_lines.includes(manu_line)){
+                if(res.data[0].roles!=null){
+                    if (res.data[0].roles.includes(Constants.plant_manager)) {
+                        if(res.data[0].manu_lines.includes(manu_line)){
                             return true;
                         }
                     }
@@ -69,49 +119,7 @@ export default class AuthRoleValidation{
         return false;
     }
 
-    // static async getXForPlantM(user, manu_line){
 
-    //     return false;
-    // }
-
-
-    // static async IsAdmin(){
-    //     var res = SubmitRequest.submitGetUserByID(getUserID());
-    //     if(res.success){
-    //         if(res.data!=null){
-    //             if(res.data.roles!=null){
-    //                 if (res.data.roles.includes(opt)) {
-
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return false;
-    // }
-    // static async IsNormal(user){
-
-    //     return false;
-    // }
-
-    // static async IsAnalyst(user){
-
-    //     return false;
-    // }
-
-    // static async IsPM(user){
-
-    //     return false;
-    // }
-
-    // static async IsBM(user){
-
-    //     return false;
-    // }
-
-    // static async IsPlantM(user){
-
-    //     return false;
-    // }
 
 
     

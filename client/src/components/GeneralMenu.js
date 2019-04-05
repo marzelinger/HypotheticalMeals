@@ -8,6 +8,9 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
+import AuthRoleValidation from './auth/AuthRoleValidation';
+import * as Constants from '../resources/Constants';
+
 
 const currentUserIsAdmin = require("./auth/currentUserIsAdmin");
 
@@ -16,9 +19,32 @@ export default class GeneralMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false
+      open: false,
+      current_user: {}
     };
+
+    this.determineUser();
+    // console.log("this is the user: "+JSON.stringify(this.state.current_user));
   }
+
+  async determineUser() {
+    var user = await AuthRoleValidation.determineUser();
+    await this.setState({
+        current_user: user
+    })
+    console.log("this is the user: "+JSON.stringify(this.state.current_user));
+  }
+
+  // checkRole (role){
+  //   // var res = await AuthRoleValidation.checkCurrentUserIsRole(role);
+  //   // console.log("this is CHECKROLE: "+res);
+
+  //   if (this.state.current_user.roles!=undefined){
+  //     return this.state.current_user.roles.includes(role);
+  //   }
+  //   return false;
+  // }
+
 
   handleToggle = () => this.setState({open: !this.state.open});
 
@@ -40,7 +66,9 @@ export default class GeneralMenu extends React.Component {
           <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Manufacturing Lines'}></MenuItem>
         </Link>
         {
-          currentUserIsAdmin().isValid ? 
+          // currentUserIsAdmin().isValid ? 
+          // this.state.current_user.roles.includes(Constants.admin) ?
+           AuthRoleValidation.checkRole(this.state.current_user, Constants.admin) ?
           (
             <Link to="/manu_schedule" >
               <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Manufacturing Schedule'}></MenuItem>

@@ -197,7 +197,6 @@ export default class ManuLineSelect extends React.Component {
     };
 
     onSelect = async (rowIndexes) => {
-        console.log("rowIndexes: "+JSON.stringify(rowIndexes));
         if(rowIndexes == 'all'){
             var indexes = []
             for(var i = 0; i < this.state.data.length; i ++){

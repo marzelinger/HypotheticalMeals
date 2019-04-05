@@ -77,10 +77,6 @@ export default class PageTable extends Component {
   }
 
   determineSelected= (index, item) => {
-
-    console.log("index: "+ index+"     item: "+JSON.stringify(item));
-    console.log("props selected_items: "+JSON.stringify(this.props.selected_items));
-    console.log("this.state.selectable: "+this.state.selectable);
     if(this.state.selectable){
       return this.props.selected_indexes.includes(index) || this.props.selected_items.includes(item._id);
     } 
@@ -174,7 +170,6 @@ export default class PageTable extends Component {
 
 
   render() {
-    // console.log("this is the manu_lines: ")
     return (
       <div className = "table-container">
         <Table

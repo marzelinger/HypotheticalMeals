@@ -58,8 +58,12 @@ class App extends React.Component{
         const token = localStorage.jwtToken;
         //check user still exists
         const decoded = jwt_decode(token);
+        console.log("THIS IS TOKEN22: "+JSON.stringify(decoded));
+
         var user_id = decoded.id;
         setAuthToken(token);
+        console.log("THIS IS TOKEN: "+JSON.stringify(decoded));
+
         
         // Decode token and get user info and exp
         if(decoded.admin==true){

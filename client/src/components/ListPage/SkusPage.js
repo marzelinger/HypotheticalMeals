@@ -153,14 +153,11 @@ export default class ListPage extends React.Component {
 
 
     async loadDataFromServer() {
-        console.log('loading data')
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        console.log(allData)
         var final_ing_filter = this.state.filters['ingredients'].join(',');
         var final_keyword_filter = this.state.filters['keyword'];
         var final_prod_line_filter = this.state.filters['product lines'].join(',');
         var final_formula_filter = this.state.filters['formula'].join(',');
-        console.log("final formula filter is" + final_formula_filter);
         //Check how the filter state is being set 
         if (final_ing_filter === '') final_ing_filter = '_';
         if (final_keyword_filter === '') final_keyword_filter = '_';
@@ -175,14 +172,11 @@ export default class ListPage extends React.Component {
             res.data = [];
             resALL.data = [];
         }
-        console.log(res);
         await this.setState({
             data: res.data,
             exportData: resALL.data,
             filterChange: false
         })
-        console.log('here???')
-        console.log(this.state.data)
         await this.updateDataState();
 
     }
@@ -240,7 +234,6 @@ export default class ListPage extends React.Component {
     }
 
     onFilterValueChange = (e, value, filterType) => {
-        console.log(this.state.filters)
         var filters = this.state.filters;
         if(filterType == 'keyword'){
             filters[filterType] = value;
@@ -257,12 +250,10 @@ export default class ListPage extends React.Component {
     }
 
     onFilterValueSelection (vals, e, type)  {
-        console.log(vals);
         var filters = this.state.filters;
         filters[type] = []
         vals.map((item) => {
             filters[type].push(item.value._id);
-            console.log("the item is" + JSON.stringify(item));
         })
         this.setState({
             filters: filters,
@@ -313,7 +304,6 @@ export default class ListPage extends React.Component {
     onAddManuGoals =  async() => {
         this.toggle(Constants.manu_goals_modal);
         let res = await SubmitRequest.submitGetManuGoalsData(this.state.user);
-        console.log(res)
         this.setState({ manu_goals_data: res.data});
     }
 
@@ -324,7 +314,6 @@ export default class ListPage extends React.Component {
                 await skus.map(async (sku) => {
                     newSkus[newSkus.findIndex(el => el._id === sku._id)] = sku;
                     var res = await SubmitRequest.submitUpdateItem(Constants.skus_page_name, sku);
-                    console.log(res)
                 });
                 break;
             case Constants.details_cancel:
@@ -396,7 +385,6 @@ export default class ListPage extends React.Component {
                 else resFormula = await SubmitRequest.submitUpdateItem(Constants.formulas_page_name, formula_item);
 
                 // var newSKUitem = this.formatNewSKUFormula(item, resFormula);
-                console.log(resFormula)
                 if(resFormula.success){
                     item['formula']= resFormula.data._id;
                     resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item);

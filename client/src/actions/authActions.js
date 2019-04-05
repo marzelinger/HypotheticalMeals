@@ -53,23 +53,15 @@ export const loginUser = userData => dispatch => {
     );
 };
 // Set logged in user
-export const setCurrentUser = decoded => {
+export const setCurrentUser = (decoded) => {
   return {
     type: SET_CURRENT_USER,
     payload: decoded
   };
 };
 
-// // Set logged in user
-// export const setCurrentUser = decoded => {
-//   return {
-//     type: SET_CURRENT_USER,
-//     payload: decoded
-//   };
-// };
 
-
-export const loginDukeUser = (userData) => dispatch => {
+export const loginDukeUser =  (userData) => dispatch => {
   axios
   .post("/api/users/loginDukeNetID", userData)
   .then(res => {
@@ -92,7 +84,7 @@ export const loginDukeUser = (userData) => dispatch => {
     }
     // Decode token to get user data
     // Set current user
-    dispatch(setCurrentUser(decoded));
+     dispatch(setCurrentUser(decoded));
   })
   .catch(err =>
     dispatch({
