@@ -4,7 +4,9 @@ import React, { Component } from "react";
 import { 
     FormGroup,
     Label,
-    Input } from 'reactstrap';
+    Input,
+    Alert,
+    Button } from 'reactstrap';
 import SubmitRequest from "../../helpers/SubmitRequest";
 import * as Constants from '../../resources/Constants';
 import PropTypes from "prop-types";
@@ -41,15 +43,6 @@ export default class ManuAutoSchedule extends Component {
                         onChange = {(e) => this.props.handleDateRangeSelect(e, 'startdate')}
                         max={moment(this.props.dateRange.enddate).format("YYYY-MM-DD")}
                     />
-                    {/* <Input
-                        type="time"
-                        name="time"
-                        id="starttime"
-                        defaultValue={this.leadingZero(this.props.dateRange.startdate.getHours()) + ':' + 
-                                      this.leadingZero(this.props.dateRange.startdate.getMinutes())}
-                        onChange = {(e) => this.props.handleDateRangeSelect(e, 'starttime')}
-                        max={moment(this.props.dateRange.enddate).format("HH:mm")}
-                    /> */}
                 </FormGroup>
                 <FormGroup className='autoschedule-filter'>
                     <Label for="enddate">End</Label>
@@ -61,16 +54,15 @@ export default class ManuAutoSchedule extends Component {
                         onChange = {(e) => this.props.handleDateRangeSelect(e, 'enddate')}
                         // max={moment(this.props.dateRange.enddate).format("YYYY-MM-DD")}
                     />
-                    {/* <Input
-                        type="time"
-                        name="time"
-                        id="endtime"
-                        defaultValue={this.leadingZero(this.props.dateRange.enddate.getHours()) + ':' + 
-                                      this.leadingZero(this.props.dateRange.enddate.getMinutes())}
-                        onChange = {(e) => this.props.handleDateRangeSelect(e, 'endtime')}
-                        // max={moment(this.props.dateRange.enddate).format("HH:mm")}
-                    /> */}
                 </FormGroup>
+                {this.props.uncommitted_items.length > 0 ? 
+                    <div>
+                        <Alert>idk</Alert>
+                        <Button onClick={() => this.props.handleAutoscheduleDecision(true)}>Approve Autoschedule</Button>
+                        <Button onClick={() => this.props.handleAutoscheduleDecision(false)}>Revert</Button>
+                    </div> :
+                    null
+                }
             </div>
         )
     }
@@ -78,5 +70,7 @@ export default class ManuAutoSchedule extends Component {
 
 ManuAutoSchedule.propTypes = {
     dateRange: PropTypes.object,
-    handleDateRangeSelect: PropTypes.func
+    handleDateRangeSelect: PropTypes.func,
+    uncommitted_items: PropTypes.array,
+    handleAutoscheduleDecision: PropTypes.func
 }

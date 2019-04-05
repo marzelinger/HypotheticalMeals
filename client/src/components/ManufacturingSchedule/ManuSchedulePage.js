@@ -57,7 +57,8 @@ export default class ManuSchedulePage extends Component {
             autoschedule_toggle_button: 'Autoschedule',
             selected_indexes: {},
             selected_items: [],
-            all_selected: false
+            all_selected: false,
+            uncommitted_items: []
         }
 
         this.prepareAddActivity = this.prepareAddActivity.bind(this);
@@ -72,6 +73,7 @@ export default class ManuSchedulePage extends Component {
         this.onDateRangeSelect = this.onDateRangeSelect.bind(this)
         this.handleSelect = this.handleSelect.bind(this);
         this.generateAutoschedule = this.generateAutoschedule.bind(this);
+        this.onAutoscheduleDecision = this.onAutoscheduleDecision.bind(this);
     }
 
     async componentDidMount() {
@@ -83,6 +85,10 @@ export default class ManuSchedulePage extends Component {
         items.length = 0;
         groups.length = 0;
         let initial_activities = await SubmitRequest.submitGetData(Constants.manu_activity_page_name);
+        let lines = await SubmitRequest.submitGetData(Constants.manu_line_page_name);
+        lines.data.map(line => {
+            groups.push({ id: line._id, content: line.name });
+        });
         console.log(initial_activities)
         let activities = []
         for(var i = 0; i < initial_activities.data.length; i ++){
@@ -93,6 +99,9 @@ export default class ManuSchedulePage extends Component {
         activities.map(act => {
             this.scheduleOrPalette(act, goals);
         });
+        this.state.uncommitted_items.map(ui => {
+            items.push(ui)
+        })
         let unscheduled_goals = goals.data.filter(goal => {
             let not_all_scheduled = false;
             goal.activities.map(act => {
@@ -100,16 +109,13 @@ export default class ManuSchedulePage extends Component {
             })
             return not_all_scheduled
         })
-        let lines = await SubmitRequest.submitGetData(Constants.manu_line_page_name);
-        lines.data.map(line => {
-            groups.push({ id: line._id, content: line.name });
-        });
         await this.setState({
             activities: activities,
             lines: lines.data,
             unscheduled_goals: unscheduled_goals,
             loaded: true
         });
+        console.log(items)
     }
 
     scheduleOrPalette(act, goals) {
@@ -396,7 +402,7 @@ export default class ManuSchedulePage extends Component {
         await this.setState({error_change: false})
     }
 
-    onSelectAutoselectActivities(act) {
+    async onSelectAutoselectActivities(act) {
         console.log(act)
         let asa = Object.assign([], this.state.autoselect_activities)
         let ind = asa.find(res => res._id === act._id)
@@ -407,20 +413,22 @@ export default class ManuSchedulePage extends Component {
             asa.push(act)
         }
         console.log(asa)
-        this.setState({
+        await this.setState({
             autoselect_activities: asa
         })
     }
 
-    toggleAutoschedule() {
+    async toggleAutoschedule() {
         let str = this.state.autoschedule ? 'Autoschedule' : 'Cancel' 
-        this.setState({ 
+        await this.setState({ 
             autoschedule: !this.state.autoschedule,
-            autoschedule_toggle_button: str
+            autoschedule_toggle_button: str,
+            uncommitted_items: []
         })
+        await this.loadScheduleData()
     }
 
-    onDateRangeSelect(event, type) {
+    async onDateRangeSelect(event, type) {
         let newRange = Object.assign({}, this.state.autoschedule_dateRange)
         if (['startdate', 'enddate'].includes(type)) {
             let oldDate = newRange[type]
@@ -436,7 +444,7 @@ export default class ManuSchedulePage extends Component {
         //     oldDate.setMinutes(event.target.value.substr(3,5))
         //     newRange[type.substr(0,type.length-4) + 'date'] = oldDate
         // }
-        this.setState({
+        await this.setState({
             dateRange: newRange
         })
     }
@@ -497,11 +505,23 @@ export default class ManuSchedulePage extends Component {
             }
             //if that didn't work, push to unscheduled items
             if (final_item === null) unscheduled_activities.push(curr)
-            else new_items.push(final_item)
+            else {
+                final_item.id = curr.id
+                new_items.push(final_item)
+            }
             TEMP_acts.splice(0, 1)
         }
         console.log(new_items)
         console.log(unscheduled_activities)
+        if (new_items.length === 0) {
+            alert('No selected activities could be scheduled!')
+        }
+        else {
+            await this.setState({
+                uncommitted_items: new_items
+            })
+            await this.loadScheduleData()
+        }
     }
 
     verifyPlacement(act, start, mline, rel_items, auto_end) {
@@ -524,11 +544,9 @@ export default class ManuSchedulePage extends Component {
         console.log(rel_items) 
         rel_items.map(i => {
             if (item.group === i.group && item.id !== i.id) {
-                console.log(1)
                 if ((i.start < item.end && i.start > item.start) ||
                     (i.end > item.start && i.end < item.end) ||
                     (i.start <= item.start && i.end >= item.end)){
-                        console.log('wtf')
                         toReturn = null
                     }
             }
@@ -559,6 +577,26 @@ export default class ManuSchedulePage extends Component {
         console.log(this.state.selected_indexes);
         return;
     };
+
+    async onAutoscheduleDecision(decision) {
+        if (decision) {
+            this.state.uncommitted_items.map(async (ui) => {
+                let ua = this.state.activities.find(a => a._id === ui._id)
+                Object.assign(ua, {
+                    scheduled: true,
+                    start: ui.start,
+                    manu_line: { _id: ui.group }
+                })
+                console.log(ua)
+                let res = await CheckErrors.updateActivityErrors(ua);
+                console.log(res)
+            })
+        }
+        await this.setState({
+            uncommitted_items: []
+        })
+        await this.loadScheduleData()
+    }
 
     render() {
         return (
@@ -593,13 +631,17 @@ export default class ManuSchedulePage extends Component {
                             {this.state.autoschedule_toggle_button}
                         </Button>
                         {this.state.autoschedule ? 
-                        <Button
-                            onClick={this.generateAutoschedule}
-                        >Generate Autoschedule</Button> : null}
+                            <Button
+                                onClick={this.generateAutoschedule}
+                            >Generate Autoschedule</Button> :
+                            null
+                        }
                         {this.state.autoschedule ? 
                             <ManuAutoSchedule
                                 dateRange={this.state.autoschedule_dateRange}
                                 handleDateRangeSelect={this.onDateRangeSelect}
+                                uncommitted_items={this.state.uncommitted_items}
+                                handleAutoscheduleDecision={this.onAutoscheduleDecision}
                             /> : 
                             <ManuSchedulePalette
                                 goals={this.state.unscheduled_goals}
