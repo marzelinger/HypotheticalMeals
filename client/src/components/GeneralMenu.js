@@ -24,7 +24,6 @@ export default class GeneralMenu extends React.Component {
     };
 
     this.determineUser();
-    // console.log("this is the user: "+JSON.stringify(this.state.current_user));
   }
 
   async determineUser() {
@@ -36,11 +35,9 @@ export default class GeneralMenu extends React.Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    var user_admin = await AuthRoleValidation.checkCurrentUserIsRole(Constants.admin);
-    console.log("user_admin: "+user_admin);
-    this.determineUser();
-
-
+    if(this.state.current_user._id != AuthRoleValidation.getUserID()){
+      await this.determineUser();
+    }
 }
 
 
@@ -48,13 +45,6 @@ export default class GeneralMenu extends React.Component {
   handleToggle = () => this.setState({open: !this.state.open});
 
   handleClose = () => this.setState({open: false});
-
-  handleUser = async () => {
-
-    // this.setState({open: false});
-
-    return await AuthRoleValidation.checkCurrentUserIsRole(Constants.admin); 
-  }
 
   render() {
     return (

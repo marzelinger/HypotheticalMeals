@@ -63,7 +63,7 @@ export default class IngredientsPage extends React.Component {
             },
             filterChange: false,
             skus: [],
-            // current_user: {}
+            current_user: {}
 
         };
         this.toggleModal = this.toggleModal.bind(this);
@@ -82,12 +82,12 @@ export default class IngredientsPage extends React.Component {
         });
     }   
 
-     async determineUser() {
-    //     var user = await AuthRoleValidation.determineUser();
-    //     await this.setState({
-    //         current_user: user
-    //     })
-    //     console.log("this is the user: "+JSON.stringify(this.state.current_user));
+    async determineUser() {
+        var user = await AuthRoleValidation.determineUser();
+        await this.setState({
+            current_user: user
+        })
+        console.log("this is the user: "+JSON.stringify(this.state.current_user));
       }
 
     async componentDidMount() {
@@ -100,6 +100,9 @@ export default class IngredientsPage extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
+        if(this.state.current_user._id != AuthRoleValidation.getUserID()){
+            await this.determineUser();
+          }
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }
@@ -287,8 +290,8 @@ export default class IngredientsPage extends React.Component {
 
     onDetailViewSelect = (event, item) => {
         // if(currentUserIsAdmin().isValid){
-        if (AuthRoleValidation.checkLocalUser(Constants.admin) 
-        || AuthRoleValidation.checkLocalUser(Constants.product_manager)){
+        if (AuthRoleValidation.checkRole(this.state.current_user, Constants.admin) 
+        || AuthRoleValidation.checkRole(this.state.current_user, Constants.product_manager) ){
             this.setState({ 
             detail_view_item: item ,
             detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
@@ -380,7 +383,7 @@ export default class IngredientsPage extends React.Component {
                         onRemoveFilter = {this.onRemoveFilter}
                         skus = {this.state.skus}
                         onTableOptionSelection = {this.onTableOptionSelection}
-                        user = {this.props.user}
+                        user = {this.state.current_user}
                     />
                 </div>
                 <Modal isOpen={this.state.modal} toggle={this.toggleModal} id="popup" className='item-details'>
@@ -389,7 +392,7 @@ export default class IngredientsPage extends React.Component {
                             item={this.state.detail_view_item}
                             detail_view_options={this.state.detail_view_options}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
-                            user = {this.props.user}
+                            user = {this.state.current_user}
                         />
                 </Modal>   
                 <TablePagination

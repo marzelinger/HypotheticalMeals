@@ -50,7 +50,8 @@ export default class TableActions extends React.Component {
 
         )})
       }
-      {(AuthRoleValidation.checkLocalUser(Constants.admin) || AuthRoleValidation.checkLocalUser(Constants.product_manager) && (this.state.page_name != Constants.users_page_name) && !this.props.reportSelect) ? 
+      {(AuthRoleValidation.checkRole(this.props.user, Constants.admin) 
+        || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) && (this.state.page_name != Constants.users_page_name) && !this.props.reportSelect) ? 
       (<AddIcon style = {{width: '50px', height: '50px', cursor: 'pointer'}} onClick = {() => {this.props.onTableOptionSelection(null, Constants.create_item)}}></AddIcon>)
       :(<div/>)}
       </div>

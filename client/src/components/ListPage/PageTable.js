@@ -91,12 +91,13 @@ export default class PageTable extends Component {
   }
 
   getDetailsCol = () => {
+    console.log("this is the user: "+JSON.stringify(this.props.user));
     {if(this.state.showDetails){
       return (
       <TableHeaderColumn> 
           {this.props.simple? 'Details' : 
-          (AuthRoleValidation.checkLocalUser(Constants.admin) 
-          || AuthRoleValidation.checkLocalUser(Constants.product_manager)?
+          (AuthRoleValidation.checkRole(this.props.user, Constants.admin) 
+          || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager)?
           'Edit Details' :
           'See More Details')
           } 
