@@ -15,7 +15,6 @@ export default class CheckErrors{
             over_deadline
         }
         let response =  await SubmitRequest.submitUpdateItem('manuactivities', new_activity);
-        console.log(response)
         return response.data;
     }
 
