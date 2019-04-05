@@ -7,10 +7,8 @@ import {
   SET_CURRENT_USER,
   USER_LOADING
 } from "./types";
-import printFuncFront from "../printFuncFront";
 
 const currentUserIsAdmin = require("../components/auth/currentUserIsAdmin");
-const adminHasInit = require("../../src/components/auth/adminHasInit");
 
 // Register New User
 export const registerUser = (userData, history) => dispatch => {
@@ -74,10 +72,6 @@ export const loginDukeUser =  (userData) => dispatch => {
     // Set token to Auth header
     setAuthToken(token);
     const decoded = jwt_decode(token);
-    printFuncFront("this is the token : "+ JSON.stringify(token));
-
-
-    printFuncFront("this is the token in loginDukeUser: "+ decoded);
 
     if(decoded.admin==true){
       setAdminToken(token);

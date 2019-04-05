@@ -8,10 +8,6 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     username: String,
     password: String,
-    //privileges : [String],
-    admin_creator : String,
-    comment : String,
-    isAdmin : Boolean,
     isNetIDLogin: Boolean,
     roles : [String],
     manu_lines: [
