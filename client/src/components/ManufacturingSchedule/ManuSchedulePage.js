@@ -301,6 +301,7 @@ export default class ManuSchedulePage extends Component {
                 start: item.start,
                 manu_line: { _id: item.group }
             })
+            console.log(activity)
             await CheckErrors.updateActivityErrors(activity);
             await this.loadScheduleData();
             await this.setState({ 
@@ -425,7 +426,6 @@ export default class ManuSchedulePage extends Component {
             autoschedule_toggle_button: str,
             uncommitted_items: []
         })
-        await this.loadScheduleData()
     }
 
     async onDateRangeSelect(event, type) {
@@ -593,7 +593,8 @@ export default class ManuSchedulePage extends Component {
             })
         }
         await this.setState({
-            uncommitted_items: []
+            uncommitted_items: [],
+            error_change: true
         })
         await this.loadScheduleData()
     }
@@ -630,7 +631,7 @@ export default class ManuSchedulePage extends Component {
                         >
                             {this.state.autoschedule_toggle_button}
                         </Button>
-                        {this.state.autoschedule ? 
+                        {this.state.autoschedule && this.state.loaded ? 
                             <Button
                                 onClick={this.generateAutoschedule}
                             >Generate Autoschedule</Button> :
