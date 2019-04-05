@@ -35,20 +35,26 @@ export default class GeneralMenu extends React.Component {
     console.log("this is the user: "+JSON.stringify(this.state.current_user));
   }
 
-  // checkRole (role){
-  //   // var res = await AuthRoleValidation.checkCurrentUserIsRole(role);
-  //   // console.log("this is CHECKROLE: "+res);
+  async componentDidUpdate(prevProps, prevState) {
+    var user_admin = await AuthRoleValidation.checkCurrentUserIsRole(Constants.admin);
+    console.log("user_admin: "+user_admin);
+    this.determineUser();
 
-  //   if (this.state.current_user.roles!=undefined){
-  //     return this.state.current_user.roles.includes(role);
-  //   }
-  //   return false;
-  // }
+
+}
+
 
 
   handleToggle = () => this.setState({open: !this.state.open});
 
   handleClose = () => this.setState({open: false});
+
+  handleUser = async () => {
+
+    // this.setState({open: false});
+
+    return await AuthRoleValidation.checkCurrentUserIsRole(Constants.admin); 
+  }
 
   render() {
     return (
@@ -69,6 +75,7 @@ export default class GeneralMenu extends React.Component {
           // currentUserIsAdmin().isValid ? 
           // this.state.current_user.roles.includes(Constants.admin) ?
            AuthRoleValidation.checkRole(this.state.current_user, Constants.admin) ?
+          // this.handleUser(Constants.admin) ?
           (
             <Link to="/manu_schedule" >
               <MenuItem onClick={this.handleClose} style = {{color: 'rgb(0, 188, 212)'}}className = "item" primaryText = {'Manufacturing Schedule'}></MenuItem>

@@ -48,6 +48,7 @@ class App extends React.Component{
     
     this.state = {
       navbar_items: [Constants.SkuTitle, Constants.IngTitle, Constants.ManuGoalTitle, Constants.FormulaTitle],
+      current_user: {}
     }
     this.determineUser();
   }
@@ -77,6 +78,7 @@ class App extends React.Component{
         // Check for expired token
         const currentTime = Date.now() / 1000; // to get in milliseconds
         var response = await SubmitRequest.submitGetUserByID(user_id);
+        console.log("this is RESPONSEEEEEE: "+JSON.stringify(response));
 
         if (decoded.exp < currentTime || !response.success) {
           // Logout user
@@ -87,6 +89,14 @@ class App extends React.Component{
       
           // Redirect to login
           window.location.href = "./login";
+        }
+        else{
+          if(response.data!=undefined){
+            this.setState({
+              current_user:response.data[0]
+            })
+          }
+
         }
     }
   }
@@ -101,12 +111,13 @@ class App extends React.Component{
                <Route exact path="/login" component={Login} />
                {/* <Route exact path="/adminregister" component={AdminRegister} />   */}
                <Route exact path= "/" component={Landing} />
-               <Route path= "/loginDuke" component = {DukeLogin}/>     
-              <Switch>
-                {/* <PrivateRoute component={GeneralNavBar}/> */}
+               <Route path= "/loginDuke" component = {DukeLogin}/>  
+               {/* <Route exact path="/dash" render = {() => <Dashboard title = {"hello"} />}/>    */}
+               <Switch>
                 <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
+                {/* <PrivateRoute exact path="/ingredients" render = {() => <IngredientsPage user = {this.state.current_user} />}/> */}
                 <AdminPrivateRoute exact path="/register" component={Register} />
-                <PrivateRoute exact path="/" component={Dashboard} />
+                {/* <PrivateRoute exact path="/" component={Dashboard} /> */}
                 <AdminPrivateRoute exact path="/manu_schedule" component={ManuSchedulePage} />
                 <PrivateRoute exact path="/skus" component={SkusPage} />
                 <PrivateRoute exact path="/trigger_reset" component={ResetPage} />

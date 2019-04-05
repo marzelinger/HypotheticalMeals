@@ -78,9 +78,10 @@ export default class AuthRoleValidation{
     }
 
     static checkRole (user, role){
-
-        if (user.roles!=undefined){
-          return user.roles.includes(role);
+        if(user!=undefined){
+            if (user.roles!=undefined){
+            return user.roles.includes(role);
+            }
         }
         return false;
       }
@@ -117,6 +118,17 @@ export default class AuthRoleValidation{
             }
         }
         return false;
+    }
+
+    static async checkLocalUser(role) {
+        if (localStorage != null) {
+            if(localStorage.getItem("jwtToken")!= null){
+                const decoded = jwt_decode(localStorage.getItem("jwtToken"));
+                var deco_role = decoded[role];
+                console.log("decod_rule: "+deco_role);
+                return decoded[role];
+            }
+        }
     }
 
 

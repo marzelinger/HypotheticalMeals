@@ -13,8 +13,8 @@ import {
 import DataStore from './../../helpers/DataStore'
 import DetailsViewSkuTable from './DetailsViewSkuTable'
 import UnitConversion from '../../helpers/UnitConversion';
+import AuthRoleValidation from '../auth/AuthRoleValidation';
 
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
 
 
@@ -106,7 +106,8 @@ export default class IngredientDetails extends React.Component {
                         value={ this.props.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
                         onChange={ (e) => this.onPropChange(e.target.value, this.props.item, prop) }
-                        disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
+                        disabled = { AuthRoleValidation.checkLocalUser(Constants.admin) 
+                            || AuthRoleValidation.checkLocalUser(Constants.product_manager) ? "" : "disabled"}
                     />
                 </FormGroup>));
         }

@@ -11,6 +11,7 @@ import {
   TableRow,
   TableRowColumn,
 } from 'material-ui/Table';
+import * as Constants from '../../resources/Constants';
 import { Input, Button } from 'reactstrap';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton';
@@ -21,7 +22,7 @@ import PropTypes from 'prop-types';
 import TableActions from './TableActions';
 import '../../style/TableStyle.css'
 import SubmitRequest from '../../helpers/SubmitRequest';
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
+import AuthRoleValidation from '../auth/AuthRoleValidation';
 
 
 /**
@@ -94,7 +95,8 @@ export default class PageTable extends Component {
       return (
       <TableHeaderColumn> 
           {this.props.simple? 'Details' : 
-          (currentUserIsAdmin().isValid ?
+          (AuthRoleValidation.checkLocalUser(Constants.admin) 
+          || AuthRoleValidation.checkLocalUser(Constants.product_manager)?
           'Edit Details' :
           'See More Details')
           } 
@@ -146,6 +148,7 @@ export default class PageTable extends Component {
                 onTableOptionSelection = {this.props.onTableOptionSelection}
                 page_name = {this.state.page_name}
                 reportSelect = {this.props.reportSelect}
+                user = {this.props.user}
               >
               </TableActions>
             
