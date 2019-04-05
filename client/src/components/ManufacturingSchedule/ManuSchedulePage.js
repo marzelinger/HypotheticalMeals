@@ -580,17 +580,21 @@ export default class ManuSchedulePage extends Component {
 
     async onAutoscheduleDecision(decision) {
         if (decision) {
-            this.state.uncommitted_items.map(async (ui) => {
+            console.log('before map')
+            for(var i = 0; i < this.state.uncommitted_items.length; i ++){
+                var ui = this.state.uncommitted_items[i];
                 let ua = this.state.activities.find(a => a._id === ui._id)
                 Object.assign(ua, {
                     scheduled: true,
                     start: ui.start,
                     manu_line: { _id: ui.group }
                 })
-                console.log(ua)
+                console.log(i);
                 let res = await CheckErrors.updateActivityErrors(ua);
-                console.log(res)
-            })
+                console.log(i);
+                console.log(res);
+            }
+            console.log('after map')
         }
         await this.setState({
             uncommitted_items: []

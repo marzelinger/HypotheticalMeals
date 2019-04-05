@@ -2,6 +2,7 @@ import SubmitRequest from './SubmitRequest'
 
 export default class CheckErrors{
     static async updateActivityErrors(activity){
+        console.log(activity)
         var { data } = await SubmitRequest.submitQueryString(`/api/manugoals_activity/${activity._id}`);
         var goal = data[0];
         var orphaned = CheckErrors.checkOrphaned(goal, activity)

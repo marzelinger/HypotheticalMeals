@@ -105,6 +105,7 @@ export default class ManuSchedulePalette extends Component {
     }
 
     getActivities = (goal, g_index) => {
+        console.log('here')
         var rowI = 0;
         return goal.activities.map((act) => {
             console.log(goal)
@@ -119,7 +120,7 @@ export default class ManuSchedulePalette extends Component {
     render() {
         return (
             <div>
-                <Accordion accordian={false} allowMultipleExpanded={true}>
+                <Accordion accordian={false}>
                     {this.props.goals.map((goal, g_index) => 
                         <AccordionItem key={goal.name}>
                             <AccordionItemTitle>
