@@ -58,7 +58,8 @@ export default class ManuSchedulePage extends Component {
             selected_indexes: {},
             selected_items: [],
             all_selected: false,
-            uncommitted_items: []
+            uncommitted_items: [],
+            autoschedule_warning: ''
         }
 
         this.prepareAddActivity = this.prepareAddActivity.bind(this);
@@ -517,8 +518,16 @@ export default class ManuSchedulePage extends Component {
             alert('No selected activities could be scheduled!')
         }
         else {
+            if (unscheduled_activities.length > 0) {
+                var str = 'The following activities could not be scheduled: '
+                unscheduled_activities.map(ua => {
+                    str += ua.sku.name + ': ' + ua.sku.unit_size + ' * ' + ua.quantity + ','
+                })
+                str.substr(0, str.length - 1)
+            }
             await this.setState({
-                uncommitted_items: new_items
+                uncommitted_items: new_items,
+                autoschedule_warning: str
             })
             await this.loadScheduleData()
         }
@@ -647,6 +656,7 @@ export default class ManuSchedulePage extends Component {
                                 handleDateRangeSelect={this.onDateRangeSelect}
                                 uncommitted_items={this.state.uncommitted_items}
                                 handleAutoscheduleDecision={this.onAutoscheduleDecision}
+                                warning={this.state.autoschedule_warning}
                             /> : 
                             <ManuSchedulePalette
                                 goals={this.state.unscheduled_goals}

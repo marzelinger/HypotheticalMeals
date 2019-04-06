@@ -57,7 +57,7 @@ export default class ManuAutoSchedule extends Component {
                 </FormGroup>
                 {this.props.uncommitted_items.length > 0 ? 
                     <div>
-                        <Alert>idk</Alert>
+                        {this.props.warning.length > 0 ? <Alert color='warning'>{this.props.warning}</Alert> : null}
                         <Button onClick={() => this.props.handleAutoscheduleDecision(true)}>Approve Autoschedule</Button>
                         <Button onClick={() => this.props.handleAutoscheduleDecision(false)}>Revert</Button>
                     </div> :
@@ -72,5 +72,6 @@ ManuAutoSchedule.propTypes = {
     dateRange: PropTypes.object,
     handleDateRangeSelect: PropTypes.func,
     uncommitted_items: PropTypes.array,
-    handleAutoscheduleDecision: PropTypes.func
+    handleAutoscheduleDecision: PropTypes.func,
+    warning: PropTypes.string
 }

@@ -60,7 +60,6 @@ export default class ManuSchedulePalette extends Component {
     }
 
     onToggle(act, e) {
-        console.log(e)
         let sel = Object.assign({}, this.state.selected)
         sel[act._id] = !sel[act._id]
         this.setState({ selected: sel })
@@ -68,16 +67,16 @@ export default class ManuSchedulePalette extends Component {
     }
 
     determineSelected= (a_index, g_index) => {
-        console.log('Determine Selected: ' + a_index + ' ' + g_index)
+        // console.log('Determine Selected: ' + a_index + ' ' + g_index)
         if(this.props.selected_indexes[g_index]){
-            console.log('here')
+            // console.log('here')
             return this.props.selected_indexes[g_index].includes(a_index);
         }
         return false;
     }
     
     injectActivityData(act, a_index, g_index) {
-        console.log(this.state.selected)
+        // console.log(this.state.selected)
         return (
             <TableRow selected = {this.determineSelected(a_index, g_index)}>
                 {this.state.item_properties.map(prop => {
@@ -105,10 +104,8 @@ export default class ManuSchedulePalette extends Component {
     }
 
     getActivities = (goal, g_index) => {
-        console.log('here')
         var rowI = 0;
         return goal.activities.map((act) => {
-            console.log(goal)
             if (!act.scheduled){
                 var data = this.injectActivityData(act, rowI, g_index);
                 rowI++;
@@ -120,7 +117,7 @@ export default class ManuSchedulePalette extends Component {
     render() {
         return (
             <div>
-                <Accordion accordian={false}>
+                <Accordion allowMultipleExpanded={true} allowZeroExpanded={true}>
                     {this.props.goals.map((goal, g_index) => 
                         <AccordionItem key={goal.name}>
                             <AccordionItemTitle>
