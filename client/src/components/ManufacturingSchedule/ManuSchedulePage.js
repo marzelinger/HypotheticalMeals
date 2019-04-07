@@ -143,7 +143,7 @@ export default class ManuSchedulePage extends Component {
                         start: start,
                         end: end,
                         content: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity,
-                        title: 'Name: ' + act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity + 
+                        title: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity + 
                             '<br>Goal: ' + assoc_goal.name + 
                             '<br>Deadline: ' + (parseInt(dl.getMonth())+1) + '/' + dl.getDate() + '/' + dl.getFullYear(),
                         group: act.manu_line._id,
@@ -541,7 +541,7 @@ export default class ManuSchedulePage extends Component {
                 alert = 'warning'
             }
             else {
-                str = 'All activities scheduled!'
+                str = 'Activities successfully scheduled!'
                 alert = 'success'
             }
             await this.setState({
@@ -574,13 +574,20 @@ export default class ManuSchedulePage extends Component {
 
     verifyPlacement(act, start, mline, rel_items, auto_end) {
         let end = this.determineEnd(start, act.duration)
+        let className = 'uncommitted'
+        if (end.getTime() > act.deadline.getTime()) {
+            className = className + ' over_deadline'
+        }
         let item = {
             start: new Date(start.getTime()),
             end: new Date(end.getTime()),
             content: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity,
-            title: 'Uncommitted',
+            title: '*UNCOMMITTED*<br>' +
+                    act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity + 
+                    '<br>Goal: ' + act.goal + 
+                    '<br>Deadline: ' + (parseInt(act.deadline.getMonth())+1) + '/' + act.deadline.getDate() + '/' + act.deadline.getFullYear(),
             group: mline,
-            className: 'uncommitted',
+            className: className,
             _id: act._id
         };
         console.log(item)
@@ -631,7 +638,7 @@ export default class ManuSchedulePage extends Component {
             var unscheduled_activities = goal.activities.filter((activity)=> activity.scheduled == false);
             unscheduled_activities.map(ua => {
                 ua.goal = goal.name
-                ua.deadline = goal.deadline
+                ua.deadline = new Date(goal.deadline)
             })
             return {...goal, activities: unscheduled_activities};
         });
