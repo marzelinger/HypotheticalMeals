@@ -324,7 +324,7 @@ export default class ManuSchedulePage extends Component {
         await CheckErrors.updateActivityErrors(act.data[0]);
         await this.loadScheduleData();
         callback(item)
-        await this.setState({error_change: true})
+        await this.setState({error_change: true, selected_indexes:[]});
     }
 
     snap(date, scale, step) {
