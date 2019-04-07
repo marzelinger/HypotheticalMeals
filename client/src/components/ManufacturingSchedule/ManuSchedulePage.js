@@ -59,7 +59,8 @@ export default class ManuSchedulePage extends Component {
             selected_items: [],
             all_selected: false,
             uncommitted_items: [],
-            autoschedule_warning: ''
+            autoschedule_warning: '',
+            autoschedule_warning_color: ''
         }
 
         this.prepareAddActivity = this.prepareAddActivity.bind(this);
@@ -438,11 +439,18 @@ export default class ManuSchedulePage extends Component {
         oldDate.setDate(newDate.getDate()+1)
         newRange[type] = oldDate
         await this.setState({
-            dateRange: newRange
+            dateRange: newRange,
+            uncommitted_items: []
         })
     }
 
     async generateAutoschedule() {
+        if (this.state.autoschedule_dateRange.startdate.getTime() > this.state.autoschedule_dateRange.enddate.getTime()) {
+            alert ('Start cannot be after End date!')
+            return
+        }
+        await this.setState({ uncommitted_items: [] })
+        await this.loadScheduleData()
         let TEMP_acts = []
         this.state.unscheduled_goals.map(goal => {
             goal.activities.map(act => {
@@ -508,20 +516,27 @@ export default class ManuSchedulePage extends Component {
         console.log(new_items)
         console.log(unscheduled_activities)
         if (new_items.length === 0) {
-            alert('No selected activities could be scheduled!')
+            alert('None of the selected activities could be scheduled!')
         }
         else {
             var str = ''
+            let alert = ''
             if (unscheduled_activities.length > 0) {
                 str = 'The following activities could not be scheduled: '
                 unscheduled_activities.map(ua => {
-                    str += ua.sku.name + ': ' + ua.sku.unit_size + ' * ' + ua.quantity + ','
+                    str += ua.sku.name + ': ' + ua.sku.unit_size + ' * ' + ua.quantity + ', '
                 })
-                str.substr(0, str.length - 1)
+                str = str.substr(0, str.length - 2)
+                alert = 'warning'
+            }
+            else {
+                str = 'All activities scheduled!'
+                alert = 'success'
             }
             await this.setState({
                 uncommitted_items: new_items,
-                autoschedule_warning: str
+                autoschedule_warning: str,
+                autoschedule_warning_color: alert
             })
             await this.loadScheduleData()
         }
@@ -549,8 +564,8 @@ export default class ManuSchedulePage extends Component {
     verifyPlacement(act, start, mline, rel_items, auto_end) {
         let end = this.determineEnd(start, act.duration)
         let item = {
-            start: start,
-            end: end,
+            start: new Date(start.getTime()),
+            end: new Date(end.getTime()),
             content: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity,
             title: 'Uncommitted',
             group: mline,
@@ -681,7 +696,7 @@ export default class ManuSchedulePage extends Component {
                         >
                             {this.state.autoschedule_toggle_button}
                         </Button>
-                        {this.state.autoschedule && this.state.loaded ? 
+                        {this.state.autoschedule && this.state.loaded === 0 ? 
                             <Button
                                 onClick={this.generateAutoschedule}
                             >Generate Autoschedule</Button> :
@@ -694,6 +709,7 @@ export default class ManuSchedulePage extends Component {
                                 uncommitted_items={this.state.uncommitted_items}
                                 handleAutoscheduleDecision={this.onAutoscheduleDecision}
                                 warning={this.state.autoschedule_warning}
+                                warning_color={this.state.autoschedule_warning_color}
                             /> : 
                             <ManuSchedulePalette
                                 goals={this.state.unscheduled_goals}
