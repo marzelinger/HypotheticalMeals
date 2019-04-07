@@ -474,7 +474,8 @@ export default class ManuSchedulePage extends Component {
         }
         await this.setState({ uncommitted_items: [] })
         await this.loadScheduleData()
-        let TEMP_acts = this.getSelectedActivities()
+        let TEMP_acts = this.getSelectedActivities();
+        this.deSelectAll();
         console.log(TEMP_acts)
         TEMP_acts.sort(function(a, b){
             let aDate = new Date(a.deadline)
@@ -720,11 +721,18 @@ export default class ManuSchedulePage extends Component {
         await this.loadScheduleData()
     }
 
-    selectAll = () => {
+    toggleSelectAll= () => {
         for(var i  = 0 ; i < this.state.unscheduled_goals.length; i ++){
             this.handleSelect(this.state.all_selected ? 'none': 'all', i);
         }
         this.setState({all_selected: !this.state.all_selected});
+    }
+
+    deSelectAll = () => {
+        for(var i  = 0 ; i < this.state.unscheduled_goals.length; i ++){
+            this.handleSelect('none', i);
+        }
+        this.setState({all_selected: false});
     }
 
     isEmpty(obj) {
@@ -764,7 +772,7 @@ export default class ManuSchedulePage extends Component {
                             :
                             <div 
                                     className = "select-all-button" 
-                                    onClick={(e) => this.selectAll()}
+                                    onClick={(e) => this.toggleSelectAll()}
                                 >{this.state.all_selected ? 'Deselect All' : 'Select All'}
                             </div>
                             }
