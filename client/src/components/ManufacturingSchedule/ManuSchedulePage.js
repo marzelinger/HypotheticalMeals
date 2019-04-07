@@ -509,6 +509,7 @@ export default class ManuSchedulePage extends Component {
             else {
                 final_item.id = curr.id
                 new_items.push(final_item)
+                this.insertItem(final_item, rel_items);
             }
             TEMP_acts.splice(0, 1)
         }
@@ -518,8 +519,9 @@ export default class ManuSchedulePage extends Component {
             alert('No selected activities could be scheduled!')
         }
         else {
+            var str = ''
             if (unscheduled_activities.length > 0) {
-                var str = 'The following activities could not be scheduled: '
+                str = 'The following activities could not be scheduled: '
                 unscheduled_activities.map(ua => {
                     str += ua.sku.name + ': ' + ua.sku.unit_size + ' * ' + ua.quantity + ','
                 })
@@ -530,6 +532,25 @@ export default class ManuSchedulePage extends Component {
                 autoschedule_warning: str
             })
             await this.loadScheduleData()
+        }
+    }
+
+    insertItem(final_item, rel_items) {
+        let last_end = new Date();
+        let curr_end = new Date(final_item.end);
+        let final_ind = -1;
+        rel_items.some((ri, ind) => {
+            let next_end = new Date(ri.end);
+            if (curr_end.getTime() >= last_end.getTime() && curr_end <= next_end.getTime()) {
+                final_ind = ind;
+            }
+            last_end = new Date(ri.end);
+        });
+        if (final_ind > -1) {
+            rel_items.splice(final_ind, 0, final_item);
+        }
+        else {
+            rel_items.push(final_item);
         }
     }
 
@@ -550,16 +571,21 @@ export default class ManuSchedulePage extends Component {
         }
         if (end.getTime() > auto_end.getTime()) return null //this needs to be tested
         let toReturn = item
-        console.log(rel_items) 
+        console.log('START') 
         rel_items.map(i => {
+            console.log(i)
             if (item.group === i.group && item.id !== i.id) {
-                if ((i.start < item.end && i.start > item.start) ||
-                    (i.end > item.start && i.end < item.end) ||
+                console.log(item.group + ': ' + item.id)
+                console.log(i.group + ': ' + i.id)
+                if ((i.start < item.end && i.start >= item.start) ||
+                    (i.end > item.start && i.end <= item.end) ||
                     (i.start <= item.start && i.end >= item.end)){
+                        console.log(2)
                         toReturn = null
                     }
             }
         })
+        console.log('END')
         console.log(toReturn)
         return toReturn
     }
