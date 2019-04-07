@@ -605,7 +605,9 @@ export default class ManuSchedulePage extends Component {
             selected[g_index] = [];
         }
         else{
+            console.log(selected);
             selected[g_index] = rowIndexes
+            console.log(selected);
         }
 
         await this.setState({selected_indexes: selected});
@@ -639,6 +641,7 @@ export default class ManuSchedulePage extends Component {
     }
 
     render() {
+        console.log('rendering page')
         return (
         <div>
             <GeneralNavBar title = {Constants.ManuScheduleTitle}></GeneralNavBar>
