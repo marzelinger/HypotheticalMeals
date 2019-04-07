@@ -431,20 +431,12 @@ export default class ManuSchedulePage extends Component {
 
     async onDateRangeSelect(event, type) {
         let newRange = Object.assign({}, this.state.autoschedule_dateRange)
-        if (['startdate', 'enddate'].includes(type)) {
-            let oldDate = newRange[type]
-            let newDate = new Date(event.target.value)
-            oldDate.setFullYear(newDate.getFullYear())
-            oldDate.setMonth(newDate.getMonth())
-            oldDate.setDate(newDate.getDate()+1)
-            newRange[type] = oldDate
-        }
-        // else {
-        //     let oldDate = newRange[type.substr(0,type.length-4) + 'date']
-        //     oldDate.setHours(event.target.value.substr(0,2))
-        //     oldDate.setMinutes(event.target.value.substr(3,5))
-        //     newRange[type.substr(0,type.length-4) + 'date'] = oldDate
-        // }
+        let oldDate = newRange[type]
+        let newDate = new Date(event.target.value)
+        oldDate.setFullYear(newDate.getFullYear())
+        oldDate.setMonth(newDate.getMonth())
+        oldDate.setDate(newDate.getDate()+1)
+        newRange[type] = oldDate
         await this.setState({
             dateRange: newRange
         })
