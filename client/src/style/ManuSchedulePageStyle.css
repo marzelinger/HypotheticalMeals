@@ -79,26 +79,30 @@ div.info-modal-button:hover {
 }
 
 div.vis-item.vis-selected {
-    background-color: rgb(252, 255, 65);
-    border-color: rgb(252, 255, 65);
+    background-color: rgb(252, 255, 65, 0.8);
+    border-color: rgb(252, 255, 65, 0.8);
     box-shadow: 0px 0px 3px;
 }
 
 .vis-item.orphaned {
-    background-color: rgb(158, 158, 158);
-    border-color: rgb(158, 158, 158);
+    background-color: rgb(248, 124, 124, 0.8);
+    border-color: rgb(158, 158, 158, 0.8);
+}
+.vis-item.uncommitted {
+    background-color: rgba(230, 128, 97, 0.5);
+    border-color: rgba(230, 128, 97, 0.5);
 }
 div.vis-item.over_deadline {
     border: 2px solid red;
 }
 .vis-item.overwritten {
-    background-color: rgb(255, 185, 55);
-    border-color: rgb(255, 185, 55);
+    background-color: rgb(255, 185, 55, 0.8);
+    border-color: rgb(255, 185, 55, 0.8);
 }
 
 .vis-item {
-    border-color: #98edf3;
-    background-color: #98edf3;
+    border-color: #98edf3c7;
+    background-color: #98edf3c7;
     max-height: 30px;
     font-size: .8rem;
 }
