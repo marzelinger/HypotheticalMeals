@@ -647,8 +647,8 @@ export default class ManuSchedulePage extends Component {
 
     }
 
-    getSelectedActivities = () => {
-        var unscheduled_goal_activities = this.state.unscheduled_goals.map((goal) => {
+    filterGoalActivities = () => {
+        var uscheduled_goal_activities = this.state.unscheduled_goals.map((goal) => {
             var unscheduled_activities = goal.activities.filter((activity)=> activity.scheduled == false);
             unscheduled_activities.map(ua => {
                 ua.goal = goal.name
@@ -656,6 +656,11 @@ export default class ManuSchedulePage extends Component {
             })
             return {...goal, activities: unscheduled_activities};
         });
+        return uscheduled_goal_activities
+    }
+
+    getSelectedActivities = () => {
+        var unscheduled_goal_activities = this.filterGoalActivities();
         var selected_activities = [];
         for(var goal_index in this.state.selected_indexes){
             var activity_indexes = this.state.selected_indexes[goal_index];
@@ -715,6 +720,13 @@ export default class ManuSchedulePage extends Component {
         await this.loadScheduleData()
     }
 
+    selectAll = () => {
+        for(var i  = 0 ; i < this.state.unscheduled_goals.length; i ++){
+            this.handleSelect(this.state.all_selected ? 'none': 'all', i);
+        }
+        this.setState({all_selected: !this.state.all_selected});
+    }
+    
     isEmpty(obj) {
         for(var key in obj) {
             if(obj.hasOwnProperty(key))
@@ -746,25 +758,19 @@ export default class ManuSchedulePage extends Component {
                 </div>
                 <div className = "belowTimeline">
                     <div className='palette-container'>
-                        <h6 className='palette-title'>Unscheduled Activities</h6>
-                        <div 
-                            className = "info-modal-button" 
-                            onClick={(e) => this.toggleModal('palette')}
-                        >?</div>
-                        {!this.isEmpty(this.state.selected_indexes) ?
-                            <Button
-                                onClick={this.toggleAutoschedule}
-                            > 
-                                {this.state.autoschedule_toggle_button}
-                            </Button> :
-                            null
-                        }
-                        {this.state.autoschedule && this.state.loaded ? 
-                            <Button
-                                onClick={this.generateAutoschedule}
-                            >Generate Autoschedule</Button> :
-                            null
-                        }
+                        <div className = 'palette-header'>
+                            <div 
+                                    className = "select-all-button" 
+                                    onClick={(e) => this.selectAll()}
+                                >{this.state.all_selected ? 'Deselect All' : 'Select All'}
+                            </div>
+                            <h6 className='palette-title'>Unscheduled Activities</h6>
+                            <div 
+                                className = "info-modal-button" 
+                                onClick={(e) => this.toggleModal('palette')}
+                            >?
+                            </div>
+                        </div>
                         {this.state.autoschedule ? 
                             <ManuAutoSchedule
                                 dateRange={this.state.autoschedule_dateRange}
@@ -786,6 +792,20 @@ export default class ManuSchedulePage extends Component {
                                 selected_activities={this.state.autoselect_activities}
                                 handleToggleActivity={this.onSelectAutoselectActivities}
                             />
+                        }
+                        {!this.isEmpty(this.state.selected_indexes) ?
+                            <Button
+                                onClick={this.toggleAutoschedule}
+                            > 
+                                {this.state.autoschedule_toggle_button}
+                            </Button> :
+                            null
+                        }
+                        {this.state.autoschedule && this.state.loaded ? 
+                            <Button
+                                onClick={this.generateAutoschedule}
+                            >Generate Autoschedule</Button> :
+                            null
                         }
                     </div>
                     <div className='errors-container'>
