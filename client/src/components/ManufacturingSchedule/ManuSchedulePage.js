@@ -726,7 +726,7 @@ export default class ManuSchedulePage extends Component {
         }
         this.setState({all_selected: !this.state.all_selected});
     }
-    
+
     isEmpty(obj) {
         for(var key in obj) {
             if(obj.hasOwnProperty(key))
@@ -759,11 +759,15 @@ export default class ManuSchedulePage extends Component {
                 <div className = "belowTimeline">
                     <div className='palette-container'>
                         <div className = 'palette-header'>
+                            {this.state.autoschedule ? 
+                            <div></div>
+                            :
                             <div 
                                     className = "select-all-button" 
                                     onClick={(e) => this.selectAll()}
                                 >{this.state.all_selected ? 'Deselect All' : 'Select All'}
                             </div>
+                            }
                             <h6 className='palette-title'>Unscheduled Activities</h6>
                             <div 
                                 className = "info-modal-button" 
