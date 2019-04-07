@@ -613,7 +613,7 @@ export default class ManuSchedulePage extends Component {
         if(rowIndexes == 'all'){
             var indexes = []
             var unscheduled_activities = this.state.unscheduled_goals[g_index].activities.filter((activity) => activity.scheduled == false);
-            for(var i = 0; i < this.state.unscheduled_activities.length; i ++){
+            for(var i = 0; i < unscheduled_activities.length; i ++){
                 indexes.push(i);
             }
             selected[g_index] = indexes;
