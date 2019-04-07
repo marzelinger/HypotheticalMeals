@@ -90,6 +90,17 @@ export default class ManuSchedulePage extends Component {
         let lines = await SubmitRequest.submitGetData(Constants.manu_line_page_name);
         lines.data.map(line => {
             groups.push({ id: line._id, content: line.name });
+            if (line.manager.includes("NEEDS MADDIE'S ISH")){ ///////Attention
+                console.log('WHATS UPPPPPPPPP')
+                items.push({
+                    id: "USER'S NAME HERE", ///////Attention
+                    content: '',
+                    start: new Date('01/01/1980'),
+                    end: new Date('01/01/2050'),
+                    type: 'background',
+                    group: line._id
+                })
+            }
         });
         console.log(initial_activities)
         let activities = []
@@ -573,6 +584,7 @@ export default class ManuSchedulePage extends Component {
     }
 
     verifyPlacement(act, start, mline, rel_items, auto_end) {
+        //if (ml.manager.includes('NEED MADDIES STUFF HERE')) return null //////ATTENTION
         let end = this.determineEnd(start, act.duration)
         let className = 'uncommitted'
         if (end.getTime() > act.deadline.getTime()) {
@@ -614,6 +626,8 @@ export default class ManuSchedulePage extends Component {
     }
 
     determineEnd(_start, duration) {
+        console.log(_start)
+        console.log(duration)
         /// end needs to calculate across multiple days !!!!!!!!!!!!!!
         let start = new Date(_start.getTime())
         let dur = Math.round(duration) + _start.getHours() - 8

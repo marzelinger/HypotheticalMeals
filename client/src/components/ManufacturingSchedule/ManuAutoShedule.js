@@ -59,7 +59,7 @@ export default class ManuAutoSchedule extends Component {
                     <div>
                         {this.props.warning.length > 0 ? <Alert color={this.props.warning_color}>{this.props.warning}</Alert> : null}
                         <Button onClick={() => this.props.handleAutoscheduleDecision(true)}>Approve Autoschedule</Button>
-                        <Button onClick={() => this.props.handleAutoscheduleDecision(false)}>Revert</Button>
+                        <Button onClick={() => this.props.handleAutoscheduleDecision(false)}>Undo</Button>
                     </div> :
                     null
                 }
