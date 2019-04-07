@@ -143,7 +143,9 @@ export default class ManuSchedulePage extends Component {
                         start: start,
                         end: end,
                         content: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity,
-                        title: 'Goal: ' + assoc_goal.name + '<br>Deadline: ' + (parseInt(dl.getMonth())+1) + '/' + dl.getDate() + '/' + dl.getFullYear(),
+                        title: 'Name: ' + act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity + 
+                            '<br>Goal: ' + assoc_goal.name + 
+                            '<br>Deadline: ' + (parseInt(dl.getMonth())+1) + '/' + dl.getDate() + '/' + dl.getFullYear(),
                         group: act.manu_line._id,
                         className: cName,
                         _id: act._id
@@ -451,15 +453,8 @@ export default class ManuSchedulePage extends Component {
         }
         await this.setState({ uncommitted_items: [] })
         await this.loadScheduleData()
-        let TEMP_acts = []
-        this.state.unscheduled_goals.map(goal => {
-            goal.activities.map(act => {
-                if (!act.scheduled) {
-                    act['deadline'] = goal.deadline
-                    TEMP_acts.push(act)
-                }
-            })
-        })
+        let TEMP_acts = this.getSelectedActivities()
+        console.log(TEMP_acts)
         TEMP_acts.sort(function(a, b){
             let aDate = new Date(a.deadline)
             let bDate = new Date(b.deadline)
@@ -581,13 +576,11 @@ export default class ManuSchedulePage extends Component {
         console.log('START') 
         rel_items.map(i => {
             console.log(i)
-            console.log(item.group + ': ' + item.id)
-            console.log(i.group + ': ' + i.id)
             if (item.group === i.group) {
                 if ((i.start < item.end && i.start >= item.start) ||
                     (i.end > item.start && i.end <= item.end) ||
                     (i.start <= item.start && i.end >= item.end)){
-                        console.log(2)
+                        console.log('***failed')
                         toReturn = null
                     }
             }
@@ -618,15 +611,19 @@ export default class ManuSchedulePage extends Component {
     }
 
     getSelectedActivities = () => {
-        var uscheduled_goal_activities = this.state.unscheduled_goals.map((goal) => {
+        var unscheduled_goal_activities = this.state.unscheduled_goals.map((goal) => {
             var unscheduled_activities = goal.activities.filter((activity)=> activity.scheduled == false);
+            unscheduled_activities.map(ua => {
+                ua.goal = goal.name
+                ua.deadline = goal.deadline
+            })
             return {...goal, activities: unscheduled_activities};
         });
         var selected_activities = [];
         for(var goal_index in this.state.selected_indexes){
             var activity_indexes = this.state.selected_indexes[goal_index];
             activity_indexes.forEach((index) => {
-                selected_activities.push(uscheduled_goal_activities[goal_index].activities[index]);
+                selected_activities.push(unscheduled_goal_activities[goal_index].activities[index]);
             })
         }
         return selected_activities;
@@ -660,7 +657,6 @@ export default class ManuSchedulePage extends Component {
 
     async onAutoscheduleDecision(decision) {
         if (decision) {
-            console.log('before map')
             for(var i = 0; i < this.state.uncommitted_items.length; i ++){
                 var ui = this.state.uncommitted_items[i];
                 let ua = this.state.activities.find(a => a._id === ui._id)
@@ -671,16 +667,21 @@ export default class ManuSchedulePage extends Component {
                 })
                 console.log(i);
                 let res = await CheckErrors.updateActivityErrors(ua);
-                console.log(i);
-                console.log(res);
             }
-            console.log('after map')
         }
         await this.setState({
             uncommitted_items: [],
             error_change: true
         })
         await this.loadScheduleData()
+    }
+
+    isEmpty(obj) {
+        for(var key in obj) {
+            if(obj.hasOwnProperty(key))
+                return false;
+        }
+        return true;
     }
 
     render() {
@@ -694,10 +695,10 @@ export default class ManuSchedulePage extends Component {
                     <Timeline 
                         options={this.getOptions()}
                         items={items.length ? items : [
-                            {
-                                start: new Date(),
-                                group: groups[0]._id,
-                            }
+                            // {
+                            //     start: new Date()
+                            //     group: groups[0]._id,
+                            // }
                         ]}
                         groups={groups}
                         doubleClickHandler={this.doubleClickHandler.bind(this)}
@@ -711,12 +712,15 @@ export default class ManuSchedulePage extends Component {
                             className = "info-modal-button" 
                             onClick={(e) => this.toggleModal('palette')}
                         >?</div>
-                        <Button
-                            onClick={this.toggleAutoschedule}
-                        >
-                            {this.state.autoschedule_toggle_button}
-                        </Button>
-                        {this.state.autoschedule && this.state.loaded === 0 ? 
+                        {!this.isEmpty(this.state.selected_indexes) ?
+                            <Button
+                                onClick={this.toggleAutoschedule}
+                            > 
+                                {this.state.autoschedule_toggle_button}
+                            </Button> :
+                            null
+                        }
+                        {this.state.autoschedule && this.state.loaded ? 
                             <Button
                                 onClick={this.generateAutoschedule}
                             >Generate Autoschedule</Button> :
