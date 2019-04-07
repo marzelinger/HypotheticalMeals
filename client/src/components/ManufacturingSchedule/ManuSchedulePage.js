@@ -614,6 +614,22 @@ export default class ManuSchedulePage extends Component {
         }
         console.log(start.toISOString())
         return start
+
+    }
+
+    getSelectedActivities = () => {
+        var uscheduled_goal_activities = this.state.unscheduled_goals.map((goal) => {
+            var unscheduled_activities = goal.activities.filter((activity)=> activity.scheduled == false);
+            return {...goal, activities: unscheduled_activities};
+        });
+        var selected_activities = [];
+        for(var goal_index in this.state.selected_indexes){
+            var activity_indexes = this.state.selected_indexes[goal_index];
+            activity_indexes.forEach((index) => {
+                selected_activities.push(uscheduled_goal_activities[goal_index].activities[index]);
+            })
+        }
+        return selected_activities;
     }
 
     handleSelect = async (rowIndexes, g_index) => {
@@ -631,11 +647,14 @@ export default class ManuSchedulePage extends Component {
             selected[g_index] = [];
         }
         else{
+            console.log(selected);
             selected[g_index] = rowIndexes
+            console.log(selected);
         }
 
         await this.setState({selected_indexes: selected});
         console.log(this.state.selected_indexes);
+        this.getSelectedActivities();
         return;
     };
 
@@ -665,6 +684,7 @@ export default class ManuSchedulePage extends Component {
     }
 
     render() {
+        console.log('rendering page')
         return (
         <div>
             <GeneralNavBar title = {Constants.ManuScheduleTitle}></GeneralNavBar>
