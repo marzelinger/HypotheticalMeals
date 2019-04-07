@@ -16,6 +16,7 @@ import DataStore from '../../helpers/DataStore'
 import TablePagination from './TablePagination'
 import SkuDetails from './SkuDetails';
 import GeneralNavBar from '../GeneralNavBar';
+import AuthRoleValidation from '../auth/AuthRoleValidation';
 
 import '../../style/SkusPage.css'
 import '../../style/SkuTableStyle.css'
@@ -72,7 +73,8 @@ export default class ListPage extends React.Component {
             },
             filterChange: false,
             ingredients: [], 
-            product_lines: []
+            product_lines: [],
+            current_user: {}
         };
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!= null){
@@ -115,6 +117,12 @@ export default class ListPage extends React.Component {
         }
     }
     
+    async determineUser() {
+        var user = await AuthRoleValidation.determineUser();
+        await this.setState({
+            current_user: user
+        })
+    }
     componentWillUnmount() {
         if (this.pollInterval) clearInterval(this.pollInterval);
         this.pollInterval = null;
@@ -140,6 +148,9 @@ export default class ListPage extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
+        if(this.state.current_user._id != AuthRoleValidation.getUserID()){
+            await this.determineUser();
+        }
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }
@@ -355,7 +366,8 @@ export default class ListPage extends React.Component {
             detail_view_item: item,
             detail_view_formula_item: formula_item.data[0]
         });
-        if(currentUserIsAdmin().isValid){
+        if(AuthRoleValidation.checkRole(this.state.current_user, Constants.admin) 
+        || AuthRoleValidation.checkRole(this.state.current_user, Constants.product_manager) ){
             this.setState({ 
             detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel],
             detail_view_action: Constants.details_edit
@@ -492,7 +504,7 @@ export default class ListPage extends React.Component {
                         onRemoveFilter = {this.onRemoveFilter}
                         ingredients = {this.state.ingredients}
                         products = {this.state.product_lines}
-                        onTableOptionSelection = {this.onTableOptionSelection}
+                        user = {this.state.current_user}
                     />
                 </div>
                 <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
@@ -502,6 +514,7 @@ export default class ListPage extends React.Component {
                             detail_view_options={this.state.detail_view_options}
                             detail_view_action = {this.state.detail_view_action}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
+                            user = {this.state.current_user}
                         />
                 </Modal>
                 <AddToManuGoal 

@@ -87,8 +87,7 @@ export default class IngredientsPage extends React.Component {
         await this.setState({
             current_user: user
         })
-        console.log("this is the user: "+JSON.stringify(this.state.current_user));
-      }
+    }
 
     async componentDidMount() {
         if (this.props.default_sku_filter !== undefined){
@@ -102,7 +101,7 @@ export default class IngredientsPage extends React.Component {
     async componentDidUpdate (prevProps, prevState) {
         if(this.state.current_user._id != AuthRoleValidation.getUserID()){
             await this.determineUser();
-          }
+        }
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }

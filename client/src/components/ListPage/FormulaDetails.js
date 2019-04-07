@@ -16,8 +16,8 @@ import ItemSearchModifyListQuantity from './ItemSearchModifyListQuantity';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import DetailsViewSkuTable from './DetailsViewSkuTable';
 import UnitConversion from '../../helpers/UnitConversion';
+import AuthRoleValidation from '../auth/AuthRoleValidation';
 
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
 
 export default class FormulaDetails extends React.Component {
@@ -65,7 +65,8 @@ export default class FormulaDetails extends React.Component {
     };
 
     onModifyList = (option, value, qty) => {
-        if(currentUserIsAdmin().isValid){
+        if(AuthRoleValidation.checkRole(this.props.user, Constants.admin) 
+        || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager)){
             var item = Object.assign({}, this.state.item);
             switch (option) {
                 case Constants.details_add:
@@ -291,7 +292,8 @@ export default class FormulaDetails extends React.Component {
                         value={ this.state.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
                         onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
-                        disabled = {currentUserIsAdmin().isValid ? "" : "disabled"}
+                        disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin) 
+                            || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) ? "" : "disabled"}
                    />
                 </FormGroup>));
         }
@@ -312,12 +314,14 @@ export default class FormulaDetails extends React.Component {
                     item_type={Constants.details_modify_ingredient}
                     options={[Constants.details_add, Constants.details_remove]}
                     handleModifyList={this.onModifyList}
-                    disabled = {currentUserIsAdmin().isValid ? false : true}
+                    disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin) 
+                        || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) ? false : true}
                 />
                 <IngredientsViewSimple 
                     formula={this.state.item} 
                     handlePropChange={this.onPropChange}
-                    disabled={currentUserIsAdmin().isValid ? false : true}
+                    disabled={AuthRoleValidation.checkRole(this.props.user, Constants.admin) 
+                        || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) ? false : true}
                 />
                 <DetailsViewSkuTable id='2' formula={this.state.item}/>
 

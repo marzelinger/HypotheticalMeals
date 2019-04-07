@@ -31,7 +31,6 @@ export default class GeneralMenu extends React.Component {
     await this.setState({
         current_user: user
     })
-    console.log("this is the user: "+JSON.stringify(this.state.current_user));
   }
 
   async componentDidUpdate(prevProps, prevState) {

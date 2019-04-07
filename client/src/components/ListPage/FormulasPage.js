@@ -15,6 +15,8 @@ import {Modal, ModalHeader} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import FormulaDetails from './FormulaDetails';
 import GeneralNavBar from '../GeneralNavBar';
+import AuthRoleValidation from '../auth/AuthRoleValidation';
+
 
 
 const jwt_decode = require('jwt-decode');
@@ -58,6 +60,7 @@ export default class FormulasPage extends React.Component {
             },
             filterChange: false,
             ingredients:[],
+            current_user:{}
         };
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!=null){
@@ -71,6 +74,7 @@ export default class FormulasPage extends React.Component {
         this.onSort = this.onSort.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
         this.setInitPages();
+        this.determineUser();
     }
 
     toggle = () => {
@@ -85,7 +89,17 @@ export default class FormulasPage extends React.Component {
         //await 
     }
 
+    async determineUser() {
+        var user = await AuthRoleValidation.determineUser();
+        await this.setState({
+            current_user: user
+        })
+      }
+
     async componentDidUpdate (prevProps, prevState){
+        if(this.state.current_user._id != AuthRoleValidation.getUserID()){
+            await this.determineUser();
+        }
         if(this.state.filterChange){
             await this.loadDataFromServer();
         }
@@ -236,7 +250,8 @@ export default class FormulasPage extends React.Component {
     };
 
     onDetailViewSelect = (event, item) => {
-        if(currentUserIsAdmin().isValid){
+        if(AuthRoleValidation.checkRole(this.state.current_user, Constants.admin) 
+        || AuthRoleValidation.checkRole(this.state.current_user, Constants.product_manager) ){
             this.setState({ 
             detail_view_item: item ,
             detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
@@ -327,6 +342,7 @@ export default class FormulasPage extends React.Component {
                         onRemoveFilter = {this.onRemoveFilter}
                         ingredients = {this.state.ingredients}
                         onTableOptionSelection = {this.onTableOptionSelection}
+                        user = {this.state.current_user}
                     />
                 </div>
                 <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
@@ -334,6 +350,7 @@ export default class FormulasPage extends React.Component {
                             item={this.state.detail_view_item}
                             detail_view_options={this.state.detail_view_options}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
+                            user = {this.state.current_user}
                         />
                 </Modal>
                 <TablePagination
