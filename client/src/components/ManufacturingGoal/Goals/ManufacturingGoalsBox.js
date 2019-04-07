@@ -340,7 +340,8 @@ class ManufacturingGoalsBox extends Component {
       var yyyymmdd = this.pad(year, 4) +  "-" + this.pad(month + 1, 2) + "-" + this.pad(day, 2);
       var hours = this.pad(''+localDate.getHours(), 2);
       var minutes = this.pad(''+localDate.getMinutes(), 2);
-      var dateString = `${yyyymmdd}T${hours}:${minutes}`
+      console.log(`${hours}:${minutes}`);
+      var dateString = `${yyyymmdd}`
       item.deadline = dateString;
     }
     console.log(item);
