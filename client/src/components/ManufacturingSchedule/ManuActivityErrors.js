@@ -71,7 +71,6 @@ export default class ManuSchedulePalette extends Component {
         let errors;
         // console.log(this.state.error_info)
         var messages = this.state.error_info.map((info) => {
-            console.log(info.error_messages)
             return (
                 <div className = "error_messages" key = {info.name}>
                     <h3 className = "activityname"> {info.name}</h3>

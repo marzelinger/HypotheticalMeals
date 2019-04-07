@@ -419,13 +419,6 @@ export default class ListPage extends React.Component {
                 let toDelete = newData.findIndex(obj => {return obj._id === item._id});
                 newData.splice(toDelete, 1);
                 resItem = await SubmitRequest.submitDeleteItem(this.state.page_name, item);
-                // console.log(resItem)
-                // let activities_to_delete = resItem.data.activities
-                // console.log(activities_to_delete)
-                // activities_to_delete.map(async(act) => {
-                //     let resAct = await SubmitRequest.submitDeleteItem(Constants.manu_activity_page_name, act)
-                //     console.log(resAct)
-                // })
                 break;
             case Constants.details_cancel:
                 resItem = {success: true}
