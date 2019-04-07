@@ -602,6 +602,7 @@ export default class ManuSchedulePage extends Component {
                 selected_activities.push(uscheduled_goal_activities[goal_index].activities[index]);
             })
         }
+        console.log(selected_activities);
         return selected_activities;
 
     }
@@ -611,7 +612,8 @@ export default class ManuSchedulePage extends Component {
         var selected = this.state.selected_indexes;
         if(rowIndexes == 'all'){
             var indexes = []
-            for(var i = 0; i < this.state.unscheduled_goals[g_index].activities.length; i ++){
+            var unscheduled_activities = this.state.unscheduled_goals[g_index].activities.filter((activity) => activity.scheduled == false);
+            for(var i = 0; i < this.state.unscheduled_activities.length; i ++){
                 indexes.push(i);
             }
             selected[g_index] = indexes;
