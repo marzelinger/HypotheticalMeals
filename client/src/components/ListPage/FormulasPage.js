@@ -20,7 +20,6 @@ import AuthRoleValidation from '../auth/AuthRoleValidation';
 
 
 const jwt_decode = require('jwt-decode');
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
 export default class FormulasPage extends React.Component {
     constructor(props){
@@ -60,7 +59,8 @@ export default class FormulasPage extends React.Component {
             },
             filterChange: false,
             ingredients:[],
-            current_user:{}
+            current_user:{},
+            token: ''
         };
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!=null){
@@ -73,6 +73,7 @@ export default class FormulasPage extends React.Component {
         this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
+        this.determineUser = this.determineUser.bind(this);
         this.setInitPages();
         this.determineUser();
     }
@@ -90,13 +91,30 @@ export default class FormulasPage extends React.Component {
     }
 
     async determineUser() {
-        var user = await AuthRoleValidation.determineUser();
-        await this.setState({
-            current_user: user
-        })
-      }
+        var res = await AuthRoleValidation.determineUser();
+        if(res!=null){
+            var user = res.user;
+            var token = res.token;
+            await this.setState({
+                current_user: user,
+                token: token
+            })
+        }
+    }
 
     async componentDidUpdate (prevProps, prevState){
+
+        if(localStorage != null){
+            if(localStorage.getItem("jwtToken")!= null){
+                var token = localStorage.getItem("jwtToken");
+                if(this.state.token!=null){
+                    if(this.state.token != token){
+                        await this.determineUser();
+                    }
+                }
+            }
+        }
+
         if(this.state.current_user._id != AuthRoleValidation.getUserID()){
             await this.determineUser();
         }

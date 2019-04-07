@@ -9,6 +9,11 @@ import {
   const initialState = {
     isAuthenticated: false,
     isAdmin: false,
+    isAdmin: false,
+    isPM: false,
+    isAnalyst: false,
+    isBM: false,
+    isPlantM: false,
     user: {},
     loading: false
   };

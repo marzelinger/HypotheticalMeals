@@ -68,7 +68,7 @@ export default class PageTable extends Component {
       case 'pkg_cost':
         return '$' + (item[prop] === '') ? item[prop] : item[prop].toFixed(2);
       case 'isAdmin':
-        if(item[prop]) return 'true';
+        if(item.roles.includes(Constants.admin)) return 'true';
         else return 'false';
       default:
         return item[prop];
@@ -91,7 +91,6 @@ export default class PageTable extends Component {
   }
 
   getDetailsCol = () => {
-    console.log("this is the user: "+JSON.stringify(this.props.user));
     {if(this.state.showDetails){
       return (
       <TableHeaderColumn> 

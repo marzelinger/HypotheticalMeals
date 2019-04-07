@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import 'whatwg-fetch';
 import ProductLineList from './ProductLineList';
-import ProductLineForm from './ProductLineForm';
 import * as Constants from '../../resources/Constants';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import '../../style/ManufacturingGoalsBox.css'

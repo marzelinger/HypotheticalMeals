@@ -8,11 +8,8 @@ import {
   USER_LOADING
 } from "./types";
 
-const currentUserIsAdmin = require("../components/auth/currentUserIsAdmin");
-
 // Register New User
 export const registerUser = (userData, history) => dispatch => {
-      if(currentUserIsAdmin().isValid){
         axios
         .post("/api/users/register", userData)
         .then(res => history.push("/skus")) //re-direct to skus on successful register.
@@ -22,7 +19,6 @@ export const registerUser = (userData, history) => dispatch => {
             payload: err.response.data
           })
         );
-      }
 };
 
 // Login - get user token

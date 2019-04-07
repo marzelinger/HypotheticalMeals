@@ -16,11 +16,6 @@ import {Form, FormText } from 'reactstrap';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import TextField from '@material-ui/core/TextField';
 
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
-
-
-
-
 export default class ManufacturingScheduleReportDetails extends React.Component {
     constructor(props) {
         super(props);

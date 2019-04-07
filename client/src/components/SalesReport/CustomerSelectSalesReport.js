@@ -19,8 +19,6 @@ import SubmitRequest from '../../helpers/SubmitRequest';
 
 import ItemSearchInput from '../ListPage/ItemSearchInput';
 
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
-
 export default class CustomerSelectSalesReport extends React.Component {
     constructor(props) {
         super(props);

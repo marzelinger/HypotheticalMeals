@@ -10,7 +10,7 @@ export default class AuthRoleValidation{
         this.state = {
             current_user: {}
           };
-        //this.determineUser();
+          this.determineUser = this.determineUser.bind(this);
       }
 
 
@@ -18,11 +18,15 @@ export default class AuthRoleValidation{
         var res = await SubmitRequest.submitGetUserByID(this.getUserID());
         if(res.success){
             if(res.data!=null){
-                return res.data[0];
-                // await this.setState({
-                //     current_user: res.data[0]
-                // })
-                // console.log("this is the user: "+this.state.current_user);
+                if(localStorage != null){
+                    if(localStorage.getItem("jwtToken")!= null){
+                        var token = localStorage.getItem("jwtToken");
+                        return {
+                        user: res.data[0],
+                        token: token
+                        };
+                    }
+                }
             }
         }
         return null;

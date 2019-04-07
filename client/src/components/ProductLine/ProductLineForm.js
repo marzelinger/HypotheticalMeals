@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import addButton from '../../resources/add.png';
-const currentUserIsAdmin = require("../../components/auth/currentUserIsAdmin");
+import AuthRoleValidation from '../auth/AuthRoleValidation';
 
 
 class ProductLineForm extends React.Component{
@@ -22,7 +22,7 @@ class ProductLineForm extends React.Component{
   render(){
     return (
       <div>
-          {currentUserIsAdmin().isValid ? (<img className = "hoverable" id = "button" src={addButton} onClick={this.toggle}></img>):(<div/>)}
+          {AuthRoleValidation.checkRole(this.props.user, Constants.admin) ? (<img className = "hoverable" id = "button" src={addButton} onClick={this.toggle}></img>):(<div/>)}
         <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup" className={this.props.className}>
           <ModalHeader toggle={this.toggle}>Create New Product Line</ModalHeader>
           <form onSubmit={this.props.handleSubmit}>

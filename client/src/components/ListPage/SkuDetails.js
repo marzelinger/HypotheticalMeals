@@ -20,9 +20,7 @@ import ModifyManuLines from './ModifyManuLines';
 import SkuFormulaDetails from './SkuFormulaDetails';
 import ItemStore from '../../helpers/ItemStore';
 import UnitConversion from '../../helpers/UnitConversion';
-
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
-
+import AuthRoleValidation from '../auth/AuthRoleValidation';
 
 
 export default class SKUDetails extends React.Component {
@@ -101,7 +99,7 @@ export default class SKUDetails extends React.Component {
     }
 
     onSelectProductLine = (pl) => {
-        if(currentUserIsAdmin().isValid){
+        if(AuthRoleValidation.checkRole(this.props.user, Constants.admin)){
             var newItem = Object.assign({}, this.state.item);
             newItem['prod_line'] = pl._id;
             this.setState({
@@ -119,24 +117,22 @@ export default class SKUDetails extends React.Component {
         var new_formula_item = await SubmitRequest.submitGetFormulaByID(formula._id);
         console.log("the formula from the call: "+ JSON.stringify(new_formula_item));
         if(new_formula_item.success){
-        if(currentUserIsAdmin().isValid){
-            var newItem = Object.assign({}, this.state.item);
-            newItem['formula'] = formula._id;
-            await this.setState({
-                item: newItem,
-                formula_item: new_formula_item.data[0],
-                existingFormulaSelected: true
-            })
-            console.log("the formula is existingFormula.: "+this.state.existingFormulaSelected);
-            console.log("the state of item the state: "+ JSON.stringify(this.state.item));
-
-
-        }
+            if(AuthRoleValidation.checkRole(this.props.user, Constants.admin)){
+                var newItem = Object.assign({}, this.state.item);
+                newItem['formula'] = formula._id;
+                await this.setState({
+                    item: newItem,
+                    formula_item: new_formula_item.data[0],
+                    existingFormulaSelected: true
+                })
+                console.log("the formula is existingFormula.: "+this.state.existingFormulaSelected);
+                console.log("the state of item the state: "+ JSON.stringify(this.state.item));
+            }
         }
     }
 
     onModifyManuLines = (list) => {
-        if(currentUserIsAdmin().isValid){
+        if(AuthRoleValidation.checkRole(this.props.user, Constants.admin)){
             var newItem = Object.assign({}, this.state.item);
             console.log(newItem);
             newItem['manu_lines'] = list;
@@ -184,7 +180,7 @@ export default class SKUDetails extends React.Component {
         console.log("in on modify list qty: "+ JSON.stringify(qty));
 
 
-        if(currentUserIsAdmin().isValid){
+        if(AuthRoleValidation.checkRole(this.props.user, Constants.admin)){
             var formula_item = Object.assign({}, this.state.formula_item);
             console.log("this is the current formula"+ JSON.stringify(formula_item));
             console.log("this is the option"+ JSON.stringify(option));
@@ -440,15 +436,6 @@ export default class SKUDetails extends React.Component {
         if (this.state.formula_item.name === undefined) inv_in.push('formula');
         if (this.state.formula_item['name'].length > 32) inv_in.push('formula_name_length');
         if (this.state.formula_item['name'].length == 0) inv_in.push('formula_name_length_short');
-
-        /*console.log(this.state.item);
-        console.log(/^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/.test(this.state.item['setup_cost']));
-        if ( !(/^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/.test(this.state.item['setup_cost']) )) {
-            console.log('gets here2323');
-            inv_in.push('setup_cost');
-        }
-        if ( !(/^\s*\$?\s*([+-]?\d*\.?\d+)\D*$/.test(this.state.item['run_cpc'])) ) inv_in.push('run_cpc');*/
-
         await this.setState({ invalid_inputs: inv_in });
     }
 
@@ -462,7 +449,7 @@ export default class SKUDetails extends React.Component {
                         value={ this.state.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
                         onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
-                        disabled = {(currentUserIsAdmin().isValid) && this.isNewSku(prop) ? "" : "disabled"}
+                        disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin) && this.isNewSku(prop) ? "" : "disabled"}
                    />
                 </FormGroup>
             )
@@ -484,14 +471,16 @@ export default class SKUDetails extends React.Component {
                     item={this.state.item}
                     label={Constants.modify_manu_lines_label}
                     handleModifyManuLines={this.onModifyManuLines}
-                    disabled = {!currentUserIsAdmin().isValid}
+                    disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin)}
+                    user = {this.props.user}
                 />
                 <ItemSearchInput
                     curr_item={this.state.prod_line_item}
                     item_type={Constants.prod_line_label}
                     invalid_inputs={this.state.invalid_inputs}
                     handleSelectItem={this.onSelectProductLine}
-                    disabled = {!currentUserIsAdmin().isValid}
+                    disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin)}
+                    user = {this.props.user}
                 />
                 <SkuFormulaDetails
                     item = {this.state.item}
@@ -502,6 +491,7 @@ export default class SKUDetails extends React.Component {
                     handleSelectFormulaItem = {this.onSelectFormula}
                     existingFormulaSelected = {this.state.existingFormulaSelected}
                     invalid_inputs={this.state.invalid_inputs}
+                    user = {this.props.user}
                 />
 
             </div>

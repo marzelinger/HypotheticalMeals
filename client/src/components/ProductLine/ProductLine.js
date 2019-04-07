@@ -8,7 +8,6 @@ import SubmitRequest from '../../helpers/SubmitRequest';
 import editButton from '../../resources/edit.png';
 import * as Constants from '../../resources/Constants';
 import ProductLineDetails from './ProductLineDetails';
-const currentUserIsAdmin = require("../../components/auth/currentUserIsAdmin");
 
 
 

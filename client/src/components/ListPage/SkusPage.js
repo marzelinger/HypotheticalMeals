@@ -23,9 +23,6 @@ import '../../style/SkuTableStyle.css'
 import BulkEditManuLines from './BulkEditManuLines';
 const jwt_decode = require('jwt-decode');
 
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
-
-
 
 export default class ListPage extends React.Component {
     constructor(props) {
@@ -74,7 +71,8 @@ export default class ListPage extends React.Component {
             filterChange: false,
             ingredients: [], 
             product_lines: [],
-            current_user: {}
+            current_user: {},
+            token: ''
         };
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!= null){
@@ -92,6 +90,8 @@ export default class ListPage extends React.Component {
         this.handlePageClick=this.handlePageClick.bind(this);
         this.onSelect = this.onSelect.bind(this)
         this.onBulkManuLineSubmit = this.onBulkManuLineSubmit.bind(this);
+        this.determineUser = this.determineUser.bind(this);
+        this.determineUser();
         this.setInitPages();
     }
 
@@ -118,11 +118,17 @@ export default class ListPage extends React.Component {
     }
     
     async determineUser() {
-        var user = await AuthRoleValidation.determineUser();
-        await this.setState({
-            current_user: user
-        })
+        var res = await AuthRoleValidation.determineUser();
+        if(res!=null){
+            var user = res.user;
+            var token = res.token;
+            await this.setState({
+                current_user: user,
+                token: token
+            })
+        }
     }
+
     componentWillUnmount() {
         if (this.pollInterval) clearInterval(this.pollInterval);
         this.pollInterval = null;
@@ -148,6 +154,18 @@ export default class ListPage extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
+
+        if(localStorage != null){
+            if(localStorage.getItem("jwtToken")!= null){
+                var token = localStorage.getItem("jwtToken");
+                if(this.state.token!=null){
+                    if(this.state.token != token){
+                        await this.determineUser();
+                    }
+                }
+            }
+        }
+        
         if(this.state.current_user._id != AuthRoleValidation.getUserID()){
             await this.determineUser();
         }
@@ -459,12 +477,12 @@ export default class ListPage extends React.Component {
                             onClick={() => SubmitRequest.updateSkuRecords()}
                             primary={true}
                             > Add All Records </div> */}
-            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) ? null : 
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || !AuthRoleValidation.checkRole(this.state.current_user, Constants.product_manager) ? null : 
                             (<div className = "manugoalbutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}
                             primary={true}
                             > {Constants.add_to_manu_goals} </div>)}
-            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || !currentUserIsAdmin().isValid ? null : 
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || !AuthRoleValidation.checkRole(this.state.current_user, Constants.business_manager) ? null : 
                             (<div className = "manulinebutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.edit_manu_lines)}
                             primary={true}

@@ -24,8 +24,6 @@ import AuthRoleValidation from '../auth/AuthRoleValidation';
 import { constants } from 'fs';
 import SubmitRequest from '../../helpers/SubmitRequest';
 
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
-
 export default class UserDetails extends React.Component {
     constructor(props) {
         super(props);

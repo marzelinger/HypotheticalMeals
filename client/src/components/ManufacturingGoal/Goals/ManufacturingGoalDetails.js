@@ -17,7 +17,7 @@ import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import SubmitRequest from '../../../helpers/SubmitRequest';
 import Switch from "react-switch";
-const currentUserIsAdmin = require("../../../components/auth/currentUserIsAdmin");
+import AuthRoleValidation from '../../auth/AuthRoleValidation';
 
 
 export default class ManufacturingGoalDetails extends React.Component {
@@ -216,7 +216,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                     <FormFeedback invalid>{this.state.errorText}</FormFeedback>
                 </FormGroup>));
 
-            var enable = this.props.detail_view_options.includes(Constants.details_save) && currentUserIsAdmin().isValid ? 
+            var enable = this.props.detail_view_options.includes(Constants.details_save) && AuthRoleValidation.checkRole(this.props.user, Constants.admin)? 
             <FormGroup>
                 <Label>Enabled</Label>
                 <br></br>

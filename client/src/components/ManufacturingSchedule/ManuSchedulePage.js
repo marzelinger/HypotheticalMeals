@@ -17,7 +17,6 @@ import GeneralNavBar from '../GeneralNavBar';
 import ManuActivityErrors from './ManuActivityErrors';
 import ManuSchedHelp from '../../resources/ManuSchedHelp.png'
 const jwt_decode = require('jwt-decode');
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
 export default class ManuSchedulePage extends Component {
     constructor(props) {
