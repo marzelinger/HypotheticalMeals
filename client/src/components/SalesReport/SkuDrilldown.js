@@ -74,9 +74,9 @@ export default class SkuDrilldown extends React.Component {
             if(datares.success){
                 await this.getTotalRowData(datares.data);
             }
-            if(datares.data!=undefined){
+            if(datares.data !== undefined){
                 let newDataPoints = (datares.data.length > 0) ? await this.processDataPoints(datares) : []
-                let newMessage = (datares.data.length > 0) ? (<Alert color='primary'>Please select a SKU</Alert>) : 
+                let newMessage = (datares.data.length > 0) ? (<Alert color='primary'>Please seleect a SKU</Alert>) : 
                                                             (<Alert color='secondary'>No results...</Alert>)
                 await this.setState({ 
                     data: datares.data,
@@ -84,7 +84,8 @@ export default class SkuDrilldown extends React.Component {
                     message: newMessage,
                     new_data: false,
                 })
-                if (datares.data.length > 0) {
+                console.log(this.props.dateRange_valid)
+                if (datares.data.length > 0 && this.props.dateRange_valid) {
                     this.chart.render()
                     await this.getTotalRowData(datares.data)
                 }
@@ -311,6 +312,10 @@ export default class SkuDrilldown extends React.Component {
             </div>)
     }
 
+    handleDateChangeRaw = (e) => {
+        e.preventDefault();
+      }
+
     render() {
         return (
         <div className='sku-drilldown'>
@@ -337,6 +342,7 @@ export default class SkuDrilldown extends React.Component {
                         defaultValue={this.props.dateRange.startdate}
                         onChange = {(e) => this.onInputChange(e, 'startdate')}
                         max={moment(this.props.dateRange.enddate).format("YYYY-MM-DD")}
+                        invalid={!this.props.dateRange_valid}
                     />
                 </FormGroup>
                 <FormGroup className='sku-drilldown-filter'>
@@ -348,10 +354,11 @@ export default class SkuDrilldown extends React.Component {
                         defaultValue={this.props.dateRange.enddate}
                         onChange = {(e) => this.onInputChange(e, 'enddate')}
                         max={moment().format("YYYY-MM-DD")}
+                        invalid={!this.props.dateRange_valid}
                     />
                 </FormGroup>
             </div>
-            {this.state.data!=undefined ?
+            {this.state.data !== undefined && this.props.dateRange_valid ?
                 (<div>
                 {this.state.data.length > 0 ? this.injectReportPreview() : this.state.message}
                 </div>)
@@ -369,5 +376,6 @@ SkuDrilldown.propTypes = {
     handleSelectSku: PropTypes.func,
     handleSelectCustomer: PropTypes.func,
     handleDateRangeSelect: PropTypes.func,
-    dateRange: PropTypes.object
+    dateRange: PropTypes.object,
+    dateRange_valid: PropTypes.bool
 };
