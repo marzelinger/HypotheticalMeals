@@ -59,7 +59,8 @@ export default class ManuSchedulePage extends Component {
             selected_items: [],
             all_selected: false,
             uncommitted_items: [],
-            autoschedule_warning: ''
+            autoschedule_warning: '',
+            autoschedule_warning_color: ''
         }
 
         this.prepareAddActivity = this.prepareAddActivity.bind(this);
@@ -89,6 +90,17 @@ export default class ManuSchedulePage extends Component {
         let lines = await SubmitRequest.submitGetData(Constants.manu_line_page_name);
         lines.data.map(line => {
             groups.push({ id: line._id, content: line.name });
+            if (line.manager.includes("NEEDS MADDIE'S ISH")){ ///////Attention
+                console.log('WHATS UPPPPPPPPP')
+                items.push({
+                    id: "USER'S NAME HERE", ///////Attention
+                    content: '',
+                    start: new Date('01/01/1980'),
+                    end: new Date('01/01/2050'),
+                    type: 'background',
+                    group: line._id
+                })
+            }
         });
         console.log(initial_activities)
         let activities = []
@@ -142,7 +154,9 @@ export default class ManuSchedulePage extends Component {
                         start: start,
                         end: end,
                         content: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity,
-                        title: 'Goal: ' + assoc_goal.name + '<br>Deadline: ' + (parseInt(dl.getMonth())+1) + '/' + dl.getDate() + '/' + dl.getFullYear(),
+                        title: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity + 
+                            '<br>Goal: ' + assoc_goal.name + 
+                            '<br>Deadline: ' + (parseInt(dl.getMonth())+1) + '/' + dl.getDate() + '/' + dl.getFullYear(),
                         group: act.manu_line._id,
                         className: cName,
                         _id: act._id
@@ -216,6 +230,11 @@ export default class ManuSchedulePage extends Component {
     }
 
     async onMove(item, callback) {
+        if (item.className.includes('uncommitted')) {
+            alert('Uncommitted Autoschedule items cannot be edited!')
+            callback(null)
+            return
+        }
         let act = await SubmitRequest.submitGetManufacturingActivityByID(item._id)
         let end = new Date(item.end)
         let start = new Date(item.start)
@@ -316,6 +335,11 @@ export default class ManuSchedulePage extends Component {
     }
 
     async onRemove(item, callback) {
+        if (item.className.includes('uncommitted')) {
+            alert('Uncommitted Autoschedule items cannot be edited!')
+            callback(null)
+            return
+        }
         let act = await SubmitRequest.submitGetManufacturingActivityByID(item._id)
         act.data[0].start = null;
         act.data[0].scheduled = false;
@@ -431,35 +455,27 @@ export default class ManuSchedulePage extends Component {
 
     async onDateRangeSelect(event, type) {
         let newRange = Object.assign({}, this.state.autoschedule_dateRange)
-        if (['startdate', 'enddate'].includes(type)) {
-            let oldDate = newRange[type]
-            let newDate = new Date(event.target.value)
-            oldDate.setFullYear(newDate.getFullYear())
-            oldDate.setMonth(newDate.getMonth())
-            oldDate.setDate(newDate.getDate()+1)
-            newRange[type] = oldDate
-        }
-        // else {
-        //     let oldDate = newRange[type.substr(0,type.length-4) + 'date']
-        //     oldDate.setHours(event.target.value.substr(0,2))
-        //     oldDate.setMinutes(event.target.value.substr(3,5))
-        //     newRange[type.substr(0,type.length-4) + 'date'] = oldDate
-        // }
+        let oldDate = newRange[type]
+        let newDate = new Date(event.target.value)
+        oldDate.setFullYear(newDate.getFullYear())
+        oldDate.setMonth(newDate.getMonth())
+        oldDate.setDate(newDate.getDate()+1)
+        newRange[type] = oldDate
         await this.setState({
-            dateRange: newRange
+            dateRange: newRange,
+            uncommitted_items: []
         })
     }
 
     async generateAutoschedule() {
-        let TEMP_acts = []
-        this.state.unscheduled_goals.map(goal => {
-            goal.activities.map(act => {
-                if (!act.scheduled) {
-                    act['deadline'] = goal.deadline
-                    TEMP_acts.push(act)
-                }
-            })
-        })
+        if (this.state.autoschedule_dateRange.startdate.getTime() > this.state.autoschedule_dateRange.enddate.getTime()) {
+            alert ('Start cannot be after End date!')
+            return
+        }
+        await this.setState({ uncommitted_items: [] })
+        await this.loadScheduleData()
+        let TEMP_acts = this.getSelectedActivities()
+        console.log(TEMP_acts)
         TEMP_acts.sort(function(a, b){
             let aDate = new Date(a.deadline)
             let bDate = new Date(b.deadline)
@@ -498,7 +514,7 @@ export default class ManuSchedulePage extends Component {
             if (final_item === null) {
                 rel_items.some(it => {
                     if (curr.sku.manu_lines.includes(it.group)) {
-                        final_item = this.verifyPlacement(curr, new Date(it.end), it.group, rel_items, end)
+                        final_item = this.verifyPlacement(curr, this.determineNextStart(it.end), it.group, rel_items, end)
                         console.log(final_item)
                         if (final_item !== null) return true
                     }
@@ -509,27 +525,40 @@ export default class ManuSchedulePage extends Component {
             else {
                 final_item.id = curr.id
                 new_items.push(final_item)
-                this.insertItem(final_item, rel_items);
+                rel_items.push(final_item)
+                rel_items.sort(function(a,b) {
+                    let aDate = new Date(a.end)
+                    let bDate = new Date(b.end)
+                    return aDate.getTime() - bDate.getTime()
+                })
+                // this.insertItem(final_item, rel_items);
             }
             TEMP_acts.splice(0, 1)
         }
         console.log(new_items)
         console.log(unscheduled_activities)
         if (new_items.length === 0) {
-            alert('No selected activities could be scheduled!')
+            alert('None of the selected activities could be scheduled!')
         }
         else {
             var str = ''
+            let alert = ''
             if (unscheduled_activities.length > 0) {
                 str = 'The following activities could not be scheduled: '
                 unscheduled_activities.map(ua => {
-                    str += ua.sku.name + ': ' + ua.sku.unit_size + ' * ' + ua.quantity + ','
+                    str += ua.sku.name + ': ' + ua.sku.unit_size + ' * ' + ua.quantity + ', '
                 })
-                str.substr(0, str.length - 1)
+                str = str.substr(0, str.length - 2)
+                alert = 'warning'
+            }
+            else {
+                str = 'Activities successfully scheduled!'
+                alert = 'success'
             }
             await this.setState({
                 uncommitted_items: new_items,
-                autoschedule_warning: str
+                autoschedule_warning: str,
+                autoschedule_warning_color: alert
             })
             await this.loadScheduleData()
         }
@@ -555,14 +584,22 @@ export default class ManuSchedulePage extends Component {
     }
 
     verifyPlacement(act, start, mline, rel_items, auto_end) {
-        let end = new Date(start.getTime() + Math.floor(act.duration/10)*24*60*60*1000 + (act.duration%10 * 60 * 60 * 1000));
+        //if (ml.manager.includes('NEED MADDIES STUFF HERE')) return null //////ATTENTION
+        let end = this.determineEnd(start, act.duration)
+        let className = 'uncommitted'
+        if (end.getTime() > act.deadline.getTime()) {
+            className = className + ' over_deadline'
+        }
         let item = {
-            start: start,
-            end: end,
+            start: new Date(start.getTime()),
+            end: new Date(end.getTime()),
             content: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity,
-            title: 'Uncommitted',
+            title: '*UNCOMMITTED*<br>' +
+                    act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity + 
+                    '<br>Goal: ' + act.goal + 
+                    '<br>Deadline: ' + (parseInt(act.deadline.getMonth())+1) + '/' + act.deadline.getDate() + '/' + act.deadline.getFullYear(),
             group: mline,
-            className: 'uncommitted',
+            className: className,
             _id: act._id
         };
         console.log(item)
@@ -574,13 +611,11 @@ export default class ManuSchedulePage extends Component {
         console.log('START') 
         rel_items.map(i => {
             console.log(i)
-            if (item.group === i.group && item.id !== i.id) {
-                console.log(item.group + ': ' + item.id)
-                console.log(i.group + ': ' + i.id)
+            if (item.group === i.group) {
                 if ((i.start < item.end && i.start >= item.start) ||
                     (i.end > item.start && i.end <= item.end) ||
                     (i.start <= item.start && i.end >= item.end)){
-                        console.log(2)
+                        console.log('***failed')
                         toReturn = null
                     }
             }
@@ -590,26 +625,51 @@ export default class ManuSchedulePage extends Component {
         return toReturn
     }
 
+    determineEnd(_start, duration) {
+        console.log(_start)
+        console.log(duration)
+        /// end needs to calculate across multiple days !!!!!!!!!!!!!!
+        let start = new Date(_start.getTime())
+        let dur = Math.round(duration) + _start.getHours() - 8
+        start.setHours(8)
+        console.log(new Date(start.getTime() + Math.floor(dur/10)*24*60*60*1000 + (dur%10 * 60 * 60 * 1000)).toISOString())
+        return new Date(start.getTime() + Math.floor(dur/10)*24*60*60*1000 + (dur%10 * 60 * 60 * 1000));
+    }
+
+    determineNextStart(item_end) {
+        let start = new Date(item_end)
+        if (start.getHours() === 18) {
+            start.setDate(start.getDate() + 1)
+            start.setHours(8)
+        }
+        console.log(start.toISOString())
+        return start
+
+    }
+
     filterGoalActivities = () => {
         var uscheduled_goal_activities = this.state.unscheduled_goals.map((goal) => {
             var unscheduled_activities = goal.activities.filter((activity)=> activity.scheduled == false);
+            unscheduled_activities.map(ua => {
+                ua.goal = goal.name
+                ua.deadline = new Date(goal.deadline)
+            })
             return {...goal, activities: unscheduled_activities};
         });
         return uscheduled_goal_activities
     }
 
     getSelectedActivities = () => {
-        var uscheduled_goal_activities = this.filterGoalActivities();
+        var unscheduled_goal_activities = this.filterGoalActivities();
         var selected_activities = [];
         for(var goal_index in this.state.selected_indexes){
             var activity_indexes = this.state.selected_indexes[goal_index];
             activity_indexes.forEach((index) => {
-                selected_activities.push(uscheduled_goal_activities[goal_index].activities[index]);
+                selected_activities.push(unscheduled_goal_activities[goal_index].activities[index]);
             })
         }
         console.log(selected_activities);
         return selected_activities;
-
     }
 
     handleSelect = async (rowIndexes, g_index) => {
@@ -641,7 +701,6 @@ export default class ManuSchedulePage extends Component {
 
     async onAutoscheduleDecision(decision) {
         if (decision) {
-            console.log('before map')
             for(var i = 0; i < this.state.uncommitted_items.length; i ++){
                 var ui = this.state.uncommitted_items[i];
                 let ua = this.state.activities.find(a => a._id === ui._id)
@@ -652,10 +711,7 @@ export default class ManuSchedulePage extends Component {
                 })
                 console.log(i);
                 let res = await CheckErrors.updateActivityErrors(ua);
-                console.log(i);
-                console.log(res);
             }
-            console.log('after map')
         }
         await this.setState({
             uncommitted_items: [],
@@ -670,6 +726,14 @@ export default class ManuSchedulePage extends Component {
         }
         this.setState({all_selected: !this.state.all_selected});
     }
+    
+    isEmpty(obj) {
+        for(var key in obj) {
+            if(obj.hasOwnProperty(key))
+                return false;
+        }
+        return true;
+    }
 
     render() {
         console.log('rendering page')
@@ -682,10 +746,10 @@ export default class ManuSchedulePage extends Component {
                     <Timeline 
                         options={this.getOptions()}
                         items={items.length ? items : [
-                            {
-                                start: new Date(),
-                                group: groups[0]._id,
-                            }
+                            // {
+                            //     start: new Date()
+                            //     group: groups[0]._id,
+                            // }
                         ]}
                         groups={groups}
                         doubleClickHandler={this.doubleClickHandler.bind(this)}
@@ -714,6 +778,7 @@ export default class ManuSchedulePage extends Component {
                                 uncommitted_items={this.state.uncommitted_items}
                                 handleAutoscheduleDecision={this.onAutoscheduleDecision}
                                 warning={this.state.autoschedule_warning}
+                                warning_color={this.state.autoschedule_warning_color}
                             /> : 
                             <ManuSchedulePalette
                                 goals={this.state.unscheduled_goals}
@@ -728,14 +793,19 @@ export default class ManuSchedulePage extends Component {
                                 handleToggleActivity={this.onSelectAutoselectActivities}
                             />
                         }
-                        <Button onClick={this.toggleAutoschedule}>
+                        {!this.isEmpty(this.state.selected_indexes) ?
+                            <Button
+                                onClick={this.toggleAutoschedule}
+                            > 
                                 {this.state.autoschedule_toggle_button}
-                        </Button>
+                            </Button> :
+                            null
+                        }
                         {this.state.autoschedule && this.state.loaded ? 
-                                <Button
-                                    onClick={this.generateAutoschedule}
-                                >Generate Autoschedule</Button> :
-                                null
+                            <Button
+                                onClick={this.generateAutoschedule}
+                            >Generate Autoschedule</Button> :
+                            null
                         }
                     </div>
                     <div className='errors-container'>
