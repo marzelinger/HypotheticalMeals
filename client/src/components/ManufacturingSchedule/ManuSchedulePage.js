@@ -219,6 +219,11 @@ export default class ManuSchedulePage extends Component {
     }
 
     async onMove(item, callback) {
+        if (item.className.includes('uncommitted')) {
+            alert('Uncommitted Autoschedule items cannot be edited!')
+            callback(null)
+            return
+        }
         let act = await SubmitRequest.submitGetManufacturingActivityByID(item._id)
         let end = new Date(item.end)
         let start = new Date(item.start)
@@ -319,6 +324,11 @@ export default class ManuSchedulePage extends Component {
     }
 
     async onRemove(item, callback) {
+        if (item.className.includes('uncommitted')) {
+            alert('Uncommitted Autoschedule items cannot be edited!')
+            callback(null)
+            return
+        }
         let act = await SubmitRequest.submitGetManufacturingActivityByID(item._id)
         act.data[0].start = null;
         act.data[0].scheduled = false;
@@ -504,7 +514,13 @@ export default class ManuSchedulePage extends Component {
             else {
                 final_item.id = curr.id
                 new_items.push(final_item)
-                this.insertItem(final_item, rel_items);
+                rel_items.push(final_item)
+                rel_items.sort(function(a,b) {
+                    let aDate = new Date(a.end)
+                    let bDate = new Date(b.end)
+                    return aDate.getTime() - bDate.getTime()
+                })
+                // this.insertItem(final_item, rel_items);
             }
             TEMP_acts.splice(0, 1)
         }
