@@ -498,7 +498,7 @@ export default class ManuSchedulePage extends Component {
             if (final_item === null) {
                 rel_items.some(it => {
                     if (curr.sku.manu_lines.includes(it.group)) {
-                        final_item = this.verifyPlacement(curr, new Date(it.end), it.group, rel_items, end)
+                        final_item = this.verifyPlacement(curr, this.determineNextStart(it.end), it.group, rel_items, end)
                         console.log(final_item)
                         if (final_item !== null) return true
                     }
@@ -555,7 +555,7 @@ export default class ManuSchedulePage extends Component {
     }
 
     verifyPlacement(act, start, mline, rel_items, auto_end) {
-        let end = new Date(start.getTime() + Math.floor(act.duration/10)*24*60*60*1000 + (act.duration%10 * 60 * 60 * 1000));
+        let end = this.determineEnd(start, act.duration)
         let item = {
             start: start,
             end: end,
@@ -574,9 +574,9 @@ export default class ManuSchedulePage extends Component {
         console.log('START') 
         rel_items.map(i => {
             console.log(i)
-            if (item.group === i.group && item.id !== i.id) {
-                console.log(item.group + ': ' + item.id)
-                console.log(i.group + ': ' + i.id)
+            console.log(item.group + ': ' + item.id)
+            console.log(i.group + ': ' + i.id)
+            if (item.group === i.group) {
                 if ((i.start < item.end && i.start >= item.start) ||
                     (i.end > item.start && i.end <= item.end) ||
                     (i.start <= item.start && i.end >= item.end)){
@@ -588,6 +588,25 @@ export default class ManuSchedulePage extends Component {
         console.log('END')
         console.log(toReturn)
         return toReturn
+    }
+
+    determineEnd(_start, duration) {
+        /// end needs to calculate across multiple days !!!!!!!!!!!!!!
+        let start = new Date(_start.getTime())
+        let dur = Math.round(duration) + _start.getHours() - 8
+        start.setHours(8)
+        console.log(new Date(start.getTime() + Math.floor(dur/10)*24*60*60*1000 + (dur%10 * 60 * 60 * 1000)).toISOString())
+        return new Date(start.getTime() + Math.floor(dur/10)*24*60*60*1000 + (dur%10 * 60 * 60 * 1000));
+    }
+
+    determineNextStart(item_end) {
+        let start = new Date(item_end)
+        if (start.getHours() === 18) {
+            start.setDate(start.getDate() + 1)
+            start.setHours(8)
+        }
+        console.log(start.toISOString())
+        return start
     }
 
     handleSelect = async (rowIndexes, g_index) => {
