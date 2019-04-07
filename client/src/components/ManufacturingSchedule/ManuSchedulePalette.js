@@ -3,15 +3,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import DataStore from "../../helpers/DataStore"
+
 import {
     Table,
-    Input,
-    FormGroup,
-    Label,
-    Button
-} from 'reactstrap'
-    
-import {
     TableBody,
     TableFooter,
     TableHeader,
@@ -67,10 +61,11 @@ export default class ManuSchedulePalette extends Component {
     }
 
     determineSelected= (a_index, g_index) => {
-        // console.log('Determine Selected: ' + a_index + ' ' + g_index)
+        console.log('Determine Selected: ' + g_index + ' ' + a_index)
         if(this.props.selected_indexes[g_index]){
-            // console.log('here')
-            return this.props.selected_indexes[g_index].includes(a_index);
+            var resp =  this.props.selected_indexes[g_index].includes(a_index);
+            console.log(resp)
+            return resp;
         }
         return false;
     }
@@ -81,7 +76,7 @@ export default class ManuSchedulePalette extends Component {
             <TableRow selected = {this.determineSelected(a_index, g_index)}>
                 {this.state.item_properties.map(prop => {
                 if (prop === 'sku'){
-                    return (<td>{act[prop].name + ': ' + act[prop].unit_size + ' * ' + act.quantity}</td>)
+                    return (<TableRowColumn>{act[prop].name + ': ' + act[prop].unit_size + ' * ' + act.quantity}</TableRowColumn>)
                 }
                 if (prop === 'add_to_schedule'){
                     return (
@@ -97,7 +92,7 @@ export default class ManuSchedulePalette extends Component {
                 }
                 // change how this is shown
                 if (prop === 'duration'){
-                    return (<td>{act[prop] + ' hours'}</td>)
+                    return (<TableRowColumn>{act[prop] + ' hours'}</TableRowColumn>)
                 }
             })}
             </TableRow>)
@@ -133,15 +128,14 @@ export default class ManuSchedulePalette extends Component {
                                     adjustForCheckbox={true}
                                     enableSelectAll={true}>
                                     <TableRow>
-                                        <TableHeaderColumn>
-                                            <Input type="checkbox" />
-                                        </TableHeaderColumn>
                                         {this.state.item_properties.map(prop =>
                                             <TableHeaderColumn>{this.getPropertyLabel(prop)}</TableHeaderColumn>
                                         )}
                                     </TableRow>
                                     </TableHeader>
-                                    <TableBody>
+                                    <TableBody
+                                    deselectOnClickaway={false}
+                                    >
                                     {this.getActivities(goal, g_index)}
                                     </TableBody>
                                 </Table>
