@@ -7,14 +7,9 @@ import {
   SET_CURRENT_USER,
   USER_LOADING
 } from "./types";
-import printFuncFront from "../printFuncFront";
-
-const currentUserIsAdmin = require("../components/auth/currentUserIsAdmin");
-const adminHasInit = require("../../src/components/auth/adminHasInit");
 
 // Register New User
 export const registerUser = (userData, history) => dispatch => {
-      if(currentUserIsAdmin().isValid){
         axios
         .post("/api/users/register", userData)
         .then(res => history.push("/skus")) //re-direct to skus on successful register.
@@ -24,7 +19,6 @@ export const registerUser = (userData, history) => dispatch => {
             payload: err.response.data
           })
         );
-      }
 };
 
 // Login - get user token
@@ -48,28 +42,20 @@ export const loginUser = userData => dispatch => {
     .catch(err =>
       dispatch({
         type: GET_ERRORS,
-        payload: err.response.data
+        payload: err.res.data
       })
     );
 };
 // Set logged in user
-export const setCurrentUser = decoded => {
+export const setCurrentUser = (decoded) => {
   return {
     type: SET_CURRENT_USER,
     payload: decoded
   };
 };
 
-// // Set logged in user
-// export const setCurrentUser = decoded => {
-//   return {
-//     type: SET_CURRENT_USER,
-//     payload: decoded
-//   };
-// };
 
-
-export const loginDukeUser = (userData) => dispatch => {
+export const loginDukeUser =  (userData) => dispatch => {
   axios
   .post("/api/users/loginDukeNetID", userData)
   .then(res => {
@@ -82,17 +68,13 @@ export const loginDukeUser = (userData) => dispatch => {
     // Set token to Auth header
     setAuthToken(token);
     const decoded = jwt_decode(token);
-    printFuncFront("this is the token : "+ JSON.stringify(token));
-
-
-    printFuncFront("this is the token in loginDukeUser: "+ decoded);
 
     if(decoded.admin==true){
       setAdminToken(token);
     }
     // Decode token to get user data
     // Set current user
-    dispatch(setCurrentUser(decoded));
+     dispatch(setCurrentUser(decoded));
   })
   .catch(err =>
     dispatch({

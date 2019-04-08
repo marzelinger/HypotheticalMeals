@@ -132,7 +132,9 @@ class Manu_LineHandler{
   static async getManufacturingLinesByNameSubstring(req, res){
     try{
         var search_substr = req.params.search_substr;
-        let results = await Manu_Line.find({ name: { $regex: search_substr, $options: 'i' } });
+        var currentPage = Number(req.params.currentPage);
+        var pageSize = Number(req.params.pageSize);
+        let results = await Manu_Line.find({ name: { $regex: search_substr, $options: 'i' } }).skip(currentPage*pageSize).limit(pageSize);
         if (results.length == 0) return res.json({success: false, error: '404'})
         return res.json({ success: true, data: results});
     }
@@ -141,6 +143,19 @@ class Manu_LineHandler{
     }
 }
 
+
+static async getAllManuLinesPag(req, res){
+  try {
+
+    var currentPage = Number(req.params.currentPage);
+    var pageSize = Number(req.params.pageSize);
+    let all_manu_lines = await Manu_Line.find().skip(currentPage*pageSize).limit(pageSize);
+    return res.json({ success: true, data: all_manu_lines});
+  }
+  catch (err) {
+    return res.json({ success: false, error: err});
+  }
+}
 }
 
 export default Manu_LineHandler;

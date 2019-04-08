@@ -6,16 +6,16 @@ import ResetPage from "./ListPage/ResetPage";
 import FormulasPage from "./ListPage/FormulasPage";
 import Landing from "./layout/Landing";
 import Register from "./auth/Register";
-// import AdminRegister from "./auth/AdminRegister";
 import Login from "./auth/Login";
 import DukeLogin from "./auth/DukeLogin";
 import PrivateRoute from "./private-route/PrivateRoute";
 import AdminPrivateRoute from "./private-route/AdminPrivateRoute";
+import AnalystPrivateRoute from "./private-route/AnalystPrivateRoute";
+import ProductManagerPrivateRoute from "./private-route/ProductManagerPrivateRoute";
 import Dashboard from "./dashboard/Dashboard";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "../utils/setAuthToken";
 import setAdminToken from "../utils/setAdminToken";
-import GeneralNavBar from "./GeneralNavBar";
 import ManufacturingPage from "./ManufacturingGoal/ManufacturingPage";
 import ManufacturingLinePage from "./ManufacturingGoal/ManufacturingLinePage";
 import ImportPage from "./ImportPage";
@@ -31,9 +31,6 @@ import { setCurrentUser, logoutUser, getAllUsers } from "../actions/authActions"
 import { Provider } from "react-redux";
 import configureStore from '../store/configureStore';
 
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { Link, withRouter } from "react-router-dom";
 import SubmitRequest from '../helpers/SubmitRequest';
 
 //const getAllUsers = require("../actions/authActions");
@@ -48,7 +45,9 @@ class App extends React.Component{
     
     this.state = {
       navbar_items: [Constants.SkuTitle, Constants.IngTitle, Constants.ManuGoalTitle, Constants.FormulaTitle],
+      current_user: {}
     }
+    this.determineUser = this.determineUser.bind(this);
     this.determineUser();
   }
 
@@ -58,8 +57,12 @@ class App extends React.Component{
         const token = localStorage.jwtToken;
         //check user still exists
         const decoded = jwt_decode(token);
+        console.log("THIS IS TOKEN22: "+JSON.stringify(decoded));
+
         var user_id = decoded.id;
         setAuthToken(token);
+        console.log("THIS IS TOKEN: "+JSON.stringify(decoded));
+
         
         // Decode token and get user info and exp
         if(decoded.admin==true){
@@ -73,6 +76,7 @@ class App extends React.Component{
         // Check for expired token
         const currentTime = Date.now() / 1000; // to get in milliseconds
         var response = await SubmitRequest.submitGetUserByID(user_id);
+        console.log("this is RESPONSEEEEEE: "+JSON.stringify(response));
 
         if (decoded.exp < currentTime || !response.success) {
           // Logout user
@@ -83,6 +87,14 @@ class App extends React.Component{
       
           // Redirect to login
           window.location.href = "./login";
+        }
+        else{
+          if(response.data!=undefined){
+            this.setState({
+              current_user:response.data[0]
+            })
+          }
+
         }
     }
   }
@@ -95,24 +107,22 @@ class App extends React.Component{
           <Router>
             <div className="App">
                <Route exact path="/login" component={Login} />
-               {/* <Route exact path="/adminregister" component={AdminRegister} />   */}
                <Route exact path= "/" component={Landing} />
-               <Route path= "/loginDuke" component = {DukeLogin}/>     
-              <Switch>
-                {/* <PrivateRoute component={GeneralNavBar}/> */}
+               <Route path= "/loginDuke" component = {DukeLogin}/>  
+               <Switch>
                 <PrivateRoute exact path="/ingredients" component={IngredientsPage} />
                 <AdminPrivateRoute exact path="/register" component={Register} />
                 <PrivateRoute exact path="/" component={Dashboard} />
-                <AdminPrivateRoute exact path="/manu_schedule" component={ManuSchedulePage} />
+                <AnalystPrivateRoute exact path="/manu_schedule" component={ManuSchedulePage} />
                 <PrivateRoute exact path="/skus" component={SkusPage} />
                 <PrivateRoute exact path="/trigger_reset" component={ResetPage} />
-                <PrivateRoute exact path="/manu_goals" component={ManufacturingPage} />
+                <AnalystPrivateRoute exact path="/manu_goals" component={ManufacturingPage} />
                 <PrivateRoute exact path="/manu_lines" component={ManufacturingLinePage} />
                 <PrivateRoute exact path="/prod_lines" component={ProductLinePage} />
-                <AdminPrivateRoute exact path="/import" component={ImportPage} />
+                <ProductManagerPrivateRoute exact path="/import" component={ImportPage} />
                 <AdminPrivateRoute exact path="/users" component={UserPage}/>
                 <PrivateRoute exact path="/formulas" component={FormulasPage} />
-                <PrivateRoute exact path="/salesreport" component={SalesReportPage} />
+                <AnalystPrivateRoute exact path="/salesreport" component={SalesReportPage} />
               </Switch>
             </div>
           </Router>

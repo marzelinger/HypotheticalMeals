@@ -47,6 +47,7 @@ export default class ProductLineTables extends React.Component {
                         list_items={this.props.data}
                         handleSort={this.onSort}
                         options = {this.props.prod_lines}
+                        user = {this.props.user}
                     />
                 </div>              
             </div>

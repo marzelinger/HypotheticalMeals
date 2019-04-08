@@ -1,4 +1,4 @@
-// ProductLineSelectSalesReport.js
+// ManuLineSelect.js
 
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -15,7 +15,7 @@ import '../../style/GeneralReport.css'
 import { Label } from 'reactstrap';
 const jwt_decode = require('jwt-decode');
 
-export default class ProductLineSelectSalesReport extends React.Component {
+export default class ManuLineSelect extends React.Component {
     constructor(props) {
         super(props);
 
@@ -24,7 +24,7 @@ export default class ProductLineSelectSalesReport extends React.Component {
             page_title,
             table_columns, 
             table_properties, 
-            table_options,  } = DataStore.getProdLineReportData();
+            table_options,  } = DataStore.getUserManuLineData();
 
          
         this.state = {
@@ -33,20 +33,13 @@ export default class ProductLineSelectSalesReport extends React.Component {
             table_columns,
             table_properties,
             table_options,
-            selected_items: Object.assign([], props.prod_lines),
-            selected_indexes: Object.assign([], props.prod_lines_indices),
-            detail_view_item: {},
-            detail_view_formula_item: {},
-            detail_view_options: [],
-            detail_view_action:'',
+            // selected_items: Object.assign([], props.manu_lines),
+            selected_items: [],
+            // selected_indexes: [Object.assign([], props.manu_lines_indices)],
+            selected_indexes: [],
             data: [],
             sort_field: '_',
             error: null,
-            details_modal: false,
-            manu_goals_modal: false,
-            manu_goals_data: [],
-            manu_lines_modal: false,
-            manu_lines_data: [],
             simple: props.simple || false,
             user:'',
             currentPage: 0,
@@ -56,8 +49,7 @@ export default class ProductLineSelectSalesReport extends React.Component {
             filters: {
                 'keyword': '',
             },
-            filterChange: false,
-            product_lines: []
+            filterChange: false
         };
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!= null){
@@ -68,48 +60,48 @@ export default class ProductLineSelectSalesReport extends React.Component {
         this.onFilterValueChange = this.onFilterValueChange.bind(this);
         this.onSort = this.onSort.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
-        this.onSelect = this.onSelect.bind(this)
+        this.onSelect = this.onSelect.bind(this);
+        this.setInitManuLines = this.setInitManuLines.bind(this);
+        this.setInitManuLines();
         this.setInitPages();
     }  
 
     async componentDidMount() {
-        // if (this.props.default_ing_filter !== undefined){
-        //     await this.onFilterValueSelection([{ value: { _id : this.props.default_ing_filter._id }}], null, 'ingredients');
-        // }
         this.loadDataFromServer();
     }
 
+    async setInitManuLines() {
+        if(this.props.manu_lines!=undefined){
+            this.setState({
+                selected_items: this.props.manu_lines
+            })
+        }
+    }
     async componentDidUpdate (prevProps, prevState) {
-        if (this.state.filterChange) {
+        if (this.state.filterChange || this.state.selected_items!=this.props.manu_lines) {
+            this.setState ({
+                selected_items: this.props.manu_lines
+            });
             await this.loadDataFromServer();
         }
     }
 
     updateDataState = async () => {
-        //var {data: productlines} = await SubmitRequest.submitGetData(Constants.prod_line_page_name);
-        //this.setState({product_lines: productlines});
     }
 
 
     async loadDataFromServer() {
         var final_keyword_filter = this.state.filters['keyword'];
-        //Check how the filter state is being set   
-        // console.log("loading data from the server. substring: "+final_keyword_filter);  
         if(final_keyword_filter != ''){
-            var resALL = await SubmitRequest.submitGetProductLinesByNameSubstring(final_keyword_filter, 0, 0);
-            // console.log("loading resALL: "+JSON.stringify(resALL));  
+            var resALL = await SubmitRequest.submitGetManufacturingLinesByNameSubstring(final_keyword_filter, 0, 0);
             await this.checkCurrentPageInBounds(resALL);  
-            var res = await SubmitRequest.submitGetProductLinesByNameSubstring(final_keyword_filter, this.state.currentPage, this.state.pageSize);
-            
+            var res = await SubmitRequest.submitGetManufacturingLinesByNameSubstring(final_keyword_filter, this.state.currentPage, this.state.pageSize);
         }
         else{
-            var resALL = await SubmitRequest.submitGetDataPaginated(Constants.prod_line_page_name, 0, 0);
-            // console.log("loading in the general get: "+JSON.stringify(resALL));  
-    
+            var resALL = await SubmitRequest.submitGetDataPaginated(Constants.manu_line_page_name, 0, 0);    
             await this.checkCurrentPageInBounds(resALL);  
-            var res = await SubmitRequest.submitGetDataPaginated(Constants.prod_line_page_name, this.state.currentPage, this.state.pageSize);
+            var res = await SubmitRequest.submitGetDataPaginated(Constants.manu_line_page_name, this.state.currentPage, this.state.pageSize);
         }
-
         if (res === undefined || !res.success) {
             res.data = [];
             resALL.data = [];
@@ -174,7 +166,6 @@ export default class ProductLineSelectSalesReport extends React.Component {
     }
 
     onFilterValueChange = (e, value, filterType) => {
-        // console.log(this.state.filters)
         var filters = this.state.filters;
         if(filterType == 'keyword'){
             filters[filterType] = value;
@@ -216,48 +207,44 @@ export default class ProductLineSelectSalesReport extends React.Component {
     };
 
     onSelect = async (rowIndexes) => {
+        console.log("rowindices: "+JSON.stringify(rowIndexes));
         if(rowIndexes == 'all'){
             var indexes = []
             for(var i = 0; i < this.state.data.length; i ++){
                 indexes.push(i);
             }
             await this.setState({selected_items: this.state.data, selected_indexes: indexes});
-            // console.log("this is the selected prodlines2: "+JSON.stringify(this.state.selected_items));
-            this.props.handleSelectProdLines(this.state.selected_items, this.state.selected_indexes);
+            this.props.handleSelectManuLines(this.state.selected_items, this.state.selected_indexes);
             return;
         }
         else if(rowIndexes == 'none'){
             rowIndexes = [];
         }
-        // console.log(rowIndexes);
         var newState = [];
         rowIndexes.forEach( index => {
             newState.push(this.state.data[index]);
         });
-        await this.setState({ selected_items: newState, selected_indexes: rowIndexes});
-        this.props.handleSelectProdLines(this.state.selected_items, this.state.selected_indexes);
-        // console.log("this is the selected prodlines: "+JSON.stringify(this.state.selected_items));
+        console.log("newState: "+JSON.stringify(newState));
+        await this.setState({ 
+            selected_items: newState, selected_indexes: rowIndexes});
+            
+        console.log("newState22: "+JSON.stringify(this.state.selected_items));
+        this.props.handleSelectManuLines(this.state.selected_items, this.state.selected_indexes);
     };
 
 
 
     onDetailViewSelect = async (event, item) => {
-    
-
     };
 
     getButtons = () => {
-        return (
-        <div className = "ingbuttons"> 
-        </div>
-        );
     }
 
     render() {
         return (
             <div className="prod-line-select-page">
                 <div className = "prod-line-select-table prod-select-report">
-                    <Label>Select Product Line</Label>
+                    <Label>{Constants.select_manu_lines_label}</Label>
                     <PageTable 
                         columns={this.state.table_columns} 
                         table_properties={this.state.table_properties} 
@@ -269,6 +256,7 @@ export default class ProductLineSelectSalesReport extends React.Component {
                         handleDetailViewSelect={this.onDetailViewSelect}
                         showDetails = {false}
                         selectable = {true}
+                        // enableSelect = {this.props.enableSelect}
                         sortable = {false}
                         title = {this.state.page_title}
                         showHeader = {true}
@@ -278,8 +266,6 @@ export default class ProductLineSelectSalesReport extends React.Component {
                         onFilterValueSelection = {this.onFilterValueSelection}
                         onFilterValueChange = {this.onFilterValueChange}
                         onRemoveFilter = {this.onRemoveFilter}
-                        ingredients = {this.state.ingredients}
-                        products = {this.state.product_lines}
                         onTableOptionSelection = {this.onTableOptionSelection}
                         reportSelect = {true}
                     />                              
@@ -296,9 +282,10 @@ export default class ProductLineSelectSalesReport extends React.Component {
     }
 }
 
-ProductLineSelectSalesReport.propTypes = {
-    handleSelectProdLines: PropTypes.func,
+ManuLineSelect.propTypes = {
+    handleSelectManuLines: PropTypes.func,
     simple: PropTypes.bool,
-    prod_lines: PropTypes.arrayOf(PropTypes.object),
-    prod_lines_indices: PropTypes.arrayOf(PropTypes.number)
+    manu_lines: PropTypes.arrayOf(PropTypes.object),
+    // manu_lines_indices: PropTypes.arrayOf(PropTypes.number),
+    enableSelect: PropTypes.bool
 }

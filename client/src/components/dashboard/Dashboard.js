@@ -15,9 +15,8 @@ class Dashboard extends Component {
 
     return (
       <div style={{ height: "75vh" }} className="container valign-wrapper">
-      {//add the buttons to the different pages.
-      }
-        <Redirect to="/skus" />
+        {/* <Redirect to="/skus" /> */}
+        {this.props.title}
       </div>
     );
   }

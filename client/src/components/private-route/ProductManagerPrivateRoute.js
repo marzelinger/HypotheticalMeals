@@ -2,27 +2,24 @@ import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-
-const PrivateRoute = ({ component: Component, auth, ...rest }) => (
+const ProductManagerPrivateRoute = ({ component: Component, auth, ...rest }) => (
   <Route
     {...rest}
     render={props =>
-      <div>
-      {
-       ((auth.isAuthenticated === true))? (
+        
+      auth.isPM === true ? (
         <Component {...props} />
       ) : (
-        <Redirect to="/" />
+        <Redirect to="/skus" />
       )
-        }
-      </div>
+        
     }
   />
 );
-PrivateRoute.propTypes = {
+ProductManagerPrivateRoute.propTypes = {
   auth: PropTypes.object.isRequired
 };
 const mapStateToProps = state => ({
   auth: state.auth
 });
-export default connect(mapStateToProps)(PrivateRoute);
+export default connect(mapStateToProps)(ProductManagerPrivateRoute);
