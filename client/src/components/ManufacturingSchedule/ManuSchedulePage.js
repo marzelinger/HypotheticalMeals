@@ -780,7 +780,9 @@ export default class ManuSchedulePage extends Component {
     isEmpty(obj) {
         for(var key in obj) {
             if(obj.hasOwnProperty(key))
-                return false;
+                if(obj[key].length !== 0){
+                    return false;
+                }
         }
         return true;
     }
