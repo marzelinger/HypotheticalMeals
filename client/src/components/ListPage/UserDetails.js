@@ -12,22 +12,17 @@ import {
     FormGroup,
     Label,
     CustomInput } from 'reactstrap';
+
 import DataStore from '../../helpers/DataStore'
 import DetailsViewSkuTable from './DetailsViewSkuTable'
 import { Form, FormText } from 'reactstrap';
 import printFuncFront from '../../printFuncFront';
 import Checkbox from './Checkbox';
-
-
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
-
-
-// const items = [
-//     'One',
-//     'Two',
-//     'Three',
-//   ];
-  
+import ModifyManuLines from '../ListPage/ModifyManuLines'; 
+import ManuLineSelect from './ManuLineSelect';
+import AuthRoleValidation from '../auth/AuthRoleValidation';
+import { constants } from 'fs';
+import SubmitRequest from '../../helpers/SubmitRequest';
 
 export default class UserDetails extends React.Component {
     constructor(props) {
@@ -45,6 +40,10 @@ export default class UserDetails extends React.Component {
             item_property_labels,
             item_property_patterns,
             item_property_field_type,
+            manu_lines: [],
+            //Object.assign([], props.general_prod_lines),
+            manu_lines_indices: [],
+            //Object.assign([], props.general_prod_lines_indices),
             invalid_inputs: []
         }
     }
@@ -101,15 +100,6 @@ export default class UserDetails extends React.Component {
         })
         await this.setState({ invalid_inputs: inv_in });
     }
-    onAdminCheckBoxClick = () => {
-
-        var new_item = this.state.item
-        new_item["isAdmin"] = !this.state.item.isAdmin;
-        this.setState({
-            item: new_item
-        })
-    };
-
 
 
     injectProperties = () => {
@@ -128,24 +118,131 @@ export default class UserDetails extends React.Component {
         }
         return null;
     }
-    
+
+    onCheckBoxClick = async (role) => {
+        var new_item = this.state.item;
+        var new_roles = new_item.roles;
+        console.log("new_item: "+JSON.stringify(new_item));
+        if(new_roles.includes(role)){
+            //removing this role
+            var ind = new_roles.indexOf(role);
+            new_roles.splice(ind, 1);
+
+            //TODO: MAYBE SEND AN ALERT IF THEY TRY TO UNSELECT ONE THAT ISN'T UNSELECTABLE?
+            if(role==Constants.plant_manager){
+                var new_manu_lines = [];
+                new_item.manu_lines = new_manu_lines;
+            }
+        }
+        else{
+            //adding this role.
+            new_roles.push(role);
+            if(role==Constants.admin){
+                //want to add all the roles to the user.
+                if(!new_roles.includes(Constants.analyst)) new_roles.push(Constants.analyst);                
+                if(!new_roles.includes(Constants.product_manager)) new_roles.push(Constants.product_manager);
+                if(!new_roles.includes(Constants.business_manager)) new_roles.push(Constants.business_manager);
+                if(!new_roles.includes(Constants.plant_manager)) new_roles.push(Constants.plant_manager);
+                //want to add all the manulines to the user.
+                //TODO
+                var manu_res = await SubmitRequest.submitGetData(Constants.manu_line_page_name);
+                var new_manu_lines = [];
+                if(manu_res.success){
+                    if(manu_res.data!=null){
+                        for(let i = 0; i<manu_res.data.length; i++){
+                            new_manu_lines.push(manu_res.data[i]._id);
+                        }
+                    }
+                }
+                new_item.manu_lines = new_manu_lines;
+            }
+            else if(role==Constants.product_manager){
+                //want to add analyst role to the user.
+                if(!new_roles.includes(Constants.analyst)) new_roles.push(Constants.analyst);  
+            }
+            else if(role==Constants.business_manager){
+                //want to add analyst role to the user.
+                if(!new_roles.includes(Constants.analyst)) new_roles.push(Constants.analyst);  
+            }
+            else if(role==Constants.plant_manager){
+                //want to add analyst role to the user.
+                if(!new_roles.includes(Constants.analyst)) new_roles.push(Constants.analyst); 
+                //TODO
+                //make the manu selector available. 
+            }
+        }
+        new_item.roles = new_roles;
+
+        await this.setState({
+            item: new_item
+        })
+        console.log("new_item with new roles: "+JSON.stringify(this.state.item));
+
+
+
+    };
+
+    isChecked(role) {
+        var roles = this.state.item.roles;
+        if(roles.includes(role)){
+            return true;
+        }
+        return false;
+    };
+
+    onSelectManuLines = async (manu_lines, indices) =>{
+        console.log("this is the state.item: "+JSON.stringify(this.state.item));
+        console.log("manuLines: "+JSON.stringify(manu_lines));
+        var new_item = this.state.item;
+        new_item.manu_lines = manu_lines;
+        await this.setState({
+            item: new_item,
+            manu_lines_indices: indices,
+            new_data: true,
+        })
+    }
+
+
     render() {
         return (
         <div className='item-details'>
             <div className='item-title'>
-                <h1>{ this.props.item  ? this.props.item.name : Constants.undefined }</h1>
+                <h1>{ this.props.item ? this.props.item.name : Constants.undefined }</h1>
             </div>
             <div className='item-properties'>
                 { this.injectProperties() }
             </div>
             <div className= 'privilege'>
-            </div>
-            
+            </div> 
             <FormGroup>
                 <Label>Administrator</Label>
                 <br></br>
-                <Switch onChange={() => this.onAdminCheckBoxClick()} checked={this.state.item.isAdmin} disabled = {this.state.item.username ==="admin"}/>
+                <Switch onChange={() => this.onCheckBoxClick(Constants.admin)} checked={this.isChecked(Constants.admin)} disabled = {this.state.item.username ==="admin"}/>
             </FormGroup>
+            <Form>
+                <FormGroup>
+                <Label for="exampleCheckbox">User Roles</Label>
+                <div>
+                    <CustomInput type="checkbox" id="analyst" label="Analyst" checked={this.isChecked(Constants.analyst)} onChange={() => this.onCheckBoxClick(Constants.analyst)} disabled = {this.isChecked(Constants.admin)|| this.isChecked(Constants.product_manager) || this.isChecked(Constants.plant_manager) || this.isChecked(Constants.business_manager)}/>
+                    <CustomInput type="checkbox" id="product_manager" label="Product Manager" checked={this.isChecked(Constants.product_manager)}  disabled = {this.isChecked(Constants.admin)} onChange={() => this.onCheckBoxClick(Constants.product_manager)}/>
+                    <CustomInput type="checkbox" id="business_manager" label="Business Manager" checked={this.isChecked(Constants.business_manager)} disabled = {this.isChecked(Constants.admin)} onChange={() => this.onCheckBoxClick(Constants.business_manager)}/>
+                    <CustomInput type="checkbox" id="plant_manager" label="Plant Manager" checked={this.isChecked(Constants.plant_manager)} disabled = {this.isChecked(Constants.admin)} onChange={() => this.onCheckBoxClick(Constants.plant_manager)}/>
+                    {/* <CustomInput type="checkbox" id="admin" label="Admin" disabled = {false} /> */}
+                </div>
+                </FormGroup>
+            </Form>
+            {this.isChecked(Constants.plant_manager) ?
+                <div>
+                    <ManuLineSelect
+                            className = 'select-manu-lines'
+                            handleSelectManuLines= {this.onSelectManuLines}
+                            simple = {false}
+                            manu_lines = {this.state.item.manu_lines}
+                        >
+                    </ManuLineSelect>
+                </div>
+            : <div></div>
+            }
             <div className='item-options'>
                 { this.props.detail_view_options.map(opt => 
                     <Button 

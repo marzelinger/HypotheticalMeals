@@ -100,7 +100,6 @@ export default class ItemSearchInput extends React.Component {
         else if(this.props.item_type ===Constants.sku_label){
             return Constants.skus_page_name;
         }
-
     }
     onFilterValueSelection (label, value) {
         this.setState({

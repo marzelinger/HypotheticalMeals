@@ -88,6 +88,18 @@ class Manu_GoalHandler{
         }
     }
 
+    static async getManufacturingGoalsByUsername(req, res){
+        try {
+            var username = req.params.username;
+            let to_return = await Manu_Goal.find({ user : username});
+
+            if(to_return.length == 0) return res.json({success: false, error: '404'});
+            return res.json({ success: true, data: to_return});
+        } catch (err){
+            return res.json({ success: false, error: err});
+        }
+    }
+
     static async getManufacturingGoalByName(req, res){
         try {
             var target_name = req.params.name;

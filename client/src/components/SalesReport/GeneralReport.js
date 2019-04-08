@@ -29,8 +29,6 @@ import ExportSimple from '../export/ExportSimple';
 import ItemSearchInput from '../ListPage/ItemSearchInput'
 import style from '../../style/GeneralReport.css';
 
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
-
 export default class GeneralReport extends React.Component {
     constructor(props) {
         super(props);

@@ -6,7 +6,8 @@ import TableOptions from './TableOptions'
 import TextField from 'material-ui/TextField';
 import SearchIcon from 'material-ui/svg-icons/action/search'
 import AddIcon from 'material-ui/svg-icons/content/add-circle'
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
+import AuthRoleValidation from "../auth/AuthRoleValidation";
+
 
 
 export default class TableActions extends React.Component {
@@ -23,7 +24,6 @@ export default class TableActions extends React.Component {
       width: 10,
       height: 10,
     }
-    console.log(this.state.page_name)
     return (
       <div id={this.state.simple ? "simple" : "complex"}>
       {(this.state.page_name != Constants.users_page_name && this.state.page_name != Constants.manugoals_page_name)? 
@@ -50,7 +50,12 @@ export default class TableActions extends React.Component {
 
         )})
       }
-      {(currentUserIsAdmin().isValid && (this.state.page_name != Constants.users_page_name) && !this.props.reportSelect)? 
+      {(AuthRoleValidation.checkRole(this.props.user, Constants.admin) 
+          || (AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) && this.props.page_name!=Constants.manugoals_page_name)
+          || (AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.page_name == Constants.manugoals_page_name)
+          
+          
+          && (this.state.page_name != Constants.users_page_name) && !this.props.reportSelect) ? 
       (<AddIcon style = {{width: '50px', height: '50px', cursor: 'pointer'}} onClick = {() => {this.props.onTableOptionSelection(null, Constants.create_item)}}></AddIcon>)
       :(<div/>)}
       </div>

@@ -15,10 +15,10 @@ import ManuSchedulePalette from './ManuSchedulePalette'
 import './../../style/ManuSchedulePageStyle.css';
 import GeneralNavBar from '../GeneralNavBar';
 import ManuActivityErrors from './ManuActivityErrors';
+import AuthRoleValidation from '../auth/AuthRoleValidation';
 import ManuSchedHelp from '../../resources/ManuSchedHelp.png'
 import ManuAutoSchedule from "./ManuAutoShedule";
 const jwt_decode = require('jwt-decode');
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
 
 export default class ManuSchedulePage extends Component {
     constructor(props) {
@@ -38,7 +38,6 @@ export default class ManuSchedulePage extends Component {
         tomorrow.setDate(today.getDate() + 1)
 
         this.state = {
-            user: '',
             options: {},
             lines: [],
             activities: [],
@@ -49,6 +48,9 @@ export default class ManuSchedulePage extends Component {
             modal: false,
             modal_type : '',
             error_change: false,
+            current_user: {},
+            token: '',
+
             autoschedule: false,
             autoschedule_dateRange: { 
                 'startdate': today, 
@@ -70,6 +72,8 @@ export default class ManuSchedulePage extends Component {
         this.onAdd = this.onAdd.bind(this);
         this.updateRange = this.updateRange.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
+        this.determineUser = this.determineUser.bind(this);
+        this.determineUser();
         this.onSelectAutoselectActivities = this.onSelectAutoselectActivities.bind(this);
         this.toggleAutoschedule = this.toggleAutoschedule.bind(this);
         this.onDateRangeSelect = this.onDateRangeSelect.bind(this)
@@ -81,6 +85,36 @@ export default class ManuSchedulePage extends Component {
     async componentDidMount() {
         console.log("mounting")
         await this.loadScheduleData();
+    }
+
+    async componentDidUpdate (prevProps, prevState) {
+
+        if(localStorage != null){
+            if(localStorage.getItem("jwtToken")!= null){
+                var token = localStorage.getItem("jwtToken");
+                if(this.state.token!=null){
+                    if(this.state.token != token){
+                        await this.determineUser();
+                    }
+                }
+            }
+        }
+        
+        if(this.state.current_user._id != AuthRoleValidation.getUserID()){
+            await this.determineUser();
+        }
+    }
+
+    async determineUser() {
+        var res = await AuthRoleValidation.determineUser();
+        if(res!=null){
+            var user = res.user;
+            var token = res.token;
+            await this.setState({
+                current_user: user,
+                token: token
+            })
+        }
     }
 
     async loadScheduleData() {
@@ -474,7 +508,8 @@ export default class ManuSchedulePage extends Component {
         }
         await this.setState({ uncommitted_items: [] })
         await this.loadScheduleData()
-        let TEMP_acts = this.getSelectedActivities()
+        let TEMP_acts = this.getSelectedActivities();
+        this.deSelectAll();
         console.log(TEMP_acts)
         TEMP_acts.sort(function(a, b){
             let aDate = new Date(a.deadline)
@@ -646,8 +681,8 @@ export default class ManuSchedulePage extends Component {
 
     }
 
-    getSelectedActivities = () => {
-        var unscheduled_goal_activities = this.state.unscheduled_goals.map((goal) => {
+    filterGoalActivities = () => {
+        var uscheduled_goal_activities = this.state.unscheduled_goals.map((goal) => {
             var unscheduled_activities = goal.activities.filter((activity)=> activity.scheduled == false);
             unscheduled_activities.map(ua => {
                 ua.goal = goal.name
@@ -655,6 +690,11 @@ export default class ManuSchedulePage extends Component {
             })
             return {...goal, activities: unscheduled_activities};
         });
+        return uscheduled_goal_activities
+    }
+
+    getSelectedActivities = () => {
+        var unscheduled_goal_activities = this.filterGoalActivities();
         var selected_activities = [];
         for(var goal_index in this.state.selected_indexes){
             var activity_indexes = this.state.selected_indexes[goal_index];
@@ -714,6 +754,20 @@ export default class ManuSchedulePage extends Component {
         await this.loadScheduleData()
     }
 
+    toggleSelectAll= () => {
+        for(var i  = 0 ; i < this.state.unscheduled_goals.length; i ++){
+            this.handleSelect(this.state.all_selected ? 'none': 'all', i);
+        }
+        this.setState({all_selected: !this.state.all_selected});
+    }
+
+    deSelectAll = () => {
+        for(var i  = 0 ; i < this.state.unscheduled_goals.length; i ++){
+            this.handleSelect('none', i);
+        }
+        this.setState({all_selected: false});
+    }
+
     isEmpty(obj) {
         for(var key in obj) {
             if(obj.hasOwnProperty(key))
@@ -741,15 +795,53 @@ export default class ManuSchedulePage extends Component {
                         groups={groups}
                         doubleClickHandler={this.doubleClickHandler.bind(this)}
                         rangechangeHandler = {this.updateRange}
+                        user = {this.state.current_user}
+
                     />) : null}
                 </div>
                 <div className = "belowTimeline">
                     <div className='palette-container'>
-                        <h6 className='palette-title'>Unscheduled Activities</h6>
-                        <div 
-                            className = "info-modal-button" 
-                            onClick={(e) => this.toggleModal('palette')}
-                        >?</div>
+                        <div className = 'palette-header'>
+                            {this.state.autoschedule ? 
+                            <div></div>
+                            :
+                            <div 
+                                    className = "select-all-button" 
+                                    onClick={(e) => this.toggleSelectAll()}
+                                >{this.state.all_selected ? 'Deselect All' : 'Select All'}
+                            </div>
+                            }
+                            <h6 className='palette-title'>Unscheduled Activities</h6>
+                            <div 
+                                className = "info-modal-button" 
+                                onClick={(e) => this.toggleModal('palette')}
+                            >?
+                            </div>
+                        </div>
+                        {this.state.autoschedule ? 
+                            <ManuAutoSchedule
+                                dateRange={this.state.autoschedule_dateRange}
+                                handleDateRangeSelect={this.onDateRangeSelect}
+                                uncommitted_items={this.state.uncommitted_items}
+                                handleAutoscheduleDecision={this.onAutoscheduleDecision}
+                                warning={this.state.autoschedule_warning}
+                                warning_color={this.state.autoschedule_warning_color}
+                                user = {this.state.current_user}
+                            /> : 
+                            <ManuSchedulePalette
+                                goals={this.state.unscheduled_goals}
+                                activities={this.state.activities}
+                                lines={this.state.lines}
+                                handleSelect = {this.handleSelect}
+                                selected_indexes = {this.state.selected_indexes}
+                                selected_items = {this.state.selected_items}
+                                activity_to_schedule={this.state.activity_to_schedule}
+                                prepareAddActivity={this.prepareAddActivity}
+                                selected_activities={this.state.autoselect_activities}
+                                handleToggleActivity={this.onSelectAutoselectActivities}
+                                user = {this.state.current_user}
+                            />
+                        }
                         {!this.isEmpty(this.state.selected_indexes) ?
                             <Button
                                 onClick={this.toggleAutoschedule}
@@ -764,28 +856,6 @@ export default class ManuSchedulePage extends Component {
                             >Generate Autoschedule</Button> :
                             null
                         }
-                        {this.state.autoschedule ? 
-                            <ManuAutoSchedule
-                                dateRange={this.state.autoschedule_dateRange}
-                                handleDateRangeSelect={this.onDateRangeSelect}
-                                uncommitted_items={this.state.uncommitted_items}
-                                handleAutoscheduleDecision={this.onAutoscheduleDecision}
-                                warning={this.state.autoschedule_warning}
-                                warning_color={this.state.autoschedule_warning_color}
-                            /> : 
-                            <ManuSchedulePalette
-                                goals={this.state.unscheduled_goals}
-                                activities={this.state.activities}
-                                lines={this.state.lines}
-                                handleSelect = {this.handleSelect}
-                                selected_indexes = {this.state.selected_indexes}
-                                selected_items = {this.state.selected_items}
-                                activity_to_schedule={this.state.activity_to_schedule}
-                                prepareAddActivity={this.prepareAddActivity}
-                                selected_activities={this.state.autoselect_activities}
-                                handleToggleActivity={this.onSelectAutoselectActivities}
-                            />
-                        }
                     </div>
                     <div className='errors-container'>
                         <h6 className='errors-title'>Activity Errors</h6>
@@ -795,6 +865,7 @@ export default class ManuSchedulePage extends Component {
                             className = "errors" 
                             range = {this.range} 
                             activities = {this.state.activities.filter((activity) => activity.scheduled)}
+                            user = {this.state.current_user}
                         />
                     </div>
                 </div>

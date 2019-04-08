@@ -6,24 +6,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import PageTable from './PageTable'
 import SubmitRequest from '../../helpers/SubmitRequest'
-import ItemStore from '../../helpers/ItemStore'
 import UserDetails from './UserDetails'
 import { 
-    Alert,
     Modal, ModalHeader} from 'reactstrap';
 import * as Constants from '../../resources/Constants';
 import './../../style/SkusPage.css';
 import './../../style/UserTableStyle.css';
 import DataStore from '../../helpers/DataStore'
 import TablePagination from './TablePagination'
-import ExportSimple from '../export/ExportSimple';
 import printFuncFront from '../../printFuncFront';
 import GeneralNavBar from '../GeneralNavBar';
+import AuthRoleValidation from "../auth/AuthRoleValidation";
+
 const jwt_decode = require('jwt-decode');
-
-
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
-
 
 
 export default class UserPage extends React.Component {
@@ -61,12 +56,11 @@ export default class UserPage extends React.Component {
             pagesCount: 0,
             filters: {
                 'keyword': ''
-                //,
-                // 'users': [],
             },
-            filterChange: false
-            // ,
-            // users: []
+            filterChange: false,
+            current_user: {},
+            token: ''
+
         };
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!= null){
@@ -79,6 +73,8 @@ export default class UserPage extends React.Component {
         this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
+        this.determineUser = this.determineUser.bind(this);
+        this.determineUser();
         this.setInitPages();
     }
 
@@ -88,19 +84,38 @@ export default class UserPage extends React.Component {
         });
     }   
 
+
+    async determineUser() {
+        var res = await AuthRoleValidation.determineUser();
+        if(res!=null){
+            var user = res.user;
+            var token = res.token;
+            await this.setState({
+                current_user: user,
+                token: token
+            })
+        }
+    }
+
     async componentDidMount() {
-        // if (this.props.default_users_filter !== undefined){
-        //     await this.onFilterValueSelection([{ value: this.props.default_users_filter._id }], null, 'usernames');
-        // }
-        // if (this.props.default_sku_filter !== undefined){
-        //     await this.onAddFilter(Constants.sku_label)
-        //     await this.onFilterValueSelection(undefined, this.props.default_sku_filter, 0);
-        // }
         await this.loadDataFromServer();
     }
 
     async componentDidUpdate (prevProps, prevState) {
-        console.log(this.state.data)
+        if(localStorage != null){
+            if(localStorage.getItem("jwtToken")!= null){
+                var token = localStorage.getItem("jwtToken");
+                if(this.state.token!=null){
+                    if(this.state.token != token){
+                        await this.determineUser();
+                    }
+                }
+            }
+        }
+        
+        if(this.state.current_user._id != AuthRoleValidation.getUserID()){
+            await this.determineUser();
+        }
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }
@@ -112,9 +127,7 @@ export default class UserPage extends React.Component {
     }
 
     async loadDataFromServer() {
-        let allData = await SubmitRequest.submitGetData(this.state.page_name);
         var final_keyword_filter = this.state.filters['keyword'];
-        //var final_users_filter = this.state.filters['users'].join(',');
         var final_users_filter = '_';
 
         if (final_keyword_filter === '') final_keyword_filter = '_';
@@ -122,8 +135,6 @@ export default class UserPage extends React.Component {
         printFuncFront("here in loadDataFromServer");
         var resALL = await SubmitRequest.submitGetFilterData(Constants.users_filter_path, 
             this.state.sort_field, final_users_filter, final_keyword_filter, 0, 0);
-        //printFuncFront("this is resALL"+resALL);
-        //printFuncFront("this is resALL stringify"+JSON.stringify(resALL));
 
         await this.checkCurrentPageInBounds(resALL);
         var res = await SubmitRequest.submitGetFilterData(Constants.users_filter_path, 
@@ -175,18 +186,6 @@ export default class UserPage extends React.Component {
         }
 
     }
-
-    // async updateUserCounts() {
-    //     let data = this.state.data.slice();
-    //     await data.map(async (item) => {
-    //                    let users = await SubmitRequest.submitGetFilterData(Constants.users_filter_path,'_', item._id, '_', this.state.currentPage, this.state.pageSize,'_');
-
-    //         item.users_count = users.data.length;
-    //         await SubmitRequest.submitUpdateItem(this.state.page_name, item);
-    //         }
-    //     );
-    //     this.setState({ data: data })
-    // }
 
     onFilterValueChange = (e, value, filterType) => {
         var filters = this.state.filters;
@@ -242,22 +241,6 @@ export default class UserPage extends React.Component {
     }
 
     async onCreateNewItem() {
-        // var item = await ItemStore.getEmptyItem(this.state.page_name);
-        // const newData = this.state.data.slice();
-        // newData.push(item);
-
-        // //for the pagination stuff
-        // const newExportData = this.state.exportData.slice();
-        // newExportData.push(item);
-
-        // this.setState({ 
-        //     data: newData,
-        //     exportData: newExportData,
-        //     detail_view_item: item,
-        //     detail_view_options: [Constants.details_create, Constants.details_delete, Constants.details_cancel]
-        // })
-        // this.toggleModal();
-        // this.loadDataFromServer();
     }
 
     onTableOptionSelection = (e, opt) => {
@@ -288,7 +271,7 @@ export default class UserPage extends React.Component {
     };
 
     onDetailViewSelect = (event, item) => {
-        if(currentUserIsAdmin().isValid){
+        if(AuthRoleValidation.checkRole(this.state.current_user, Constants.admin)){
             printFuncFront("This is the new item being saved: "+JSON.stringify(item));
             this.setState({ 
             detail_view_item: item ,
@@ -308,7 +291,7 @@ export default class UserPage extends React.Component {
         console.log(item)
         var res = {};
         var newData = this.state.data.splice();
-        //
+        console.log("new data: "+JSON.stringify(newData));
         switch (option) {
             // case Constants.details_create:
             //     newData.push(item);
@@ -317,7 +300,9 @@ export default class UserPage extends React.Component {
             case Constants.details_save:
                 let toSave = newData.findIndex(obj => {return obj._id === item._id});
                 newData[toSave] = item;
+                console.log("new data222: "+JSON.stringify(newData));
                 res = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
+                console.log("res in save: "+JSON.stringify(res));
                 break;
             case Constants.details_delete:
                 let toDelete = newData.findIndex(obj => {return obj._id === item._id});
@@ -343,8 +328,6 @@ export default class UserPage extends React.Component {
     getButtons = () => {
         return (
         <div className = "usersbuttons">     
-            {/* <DependencyReport data = {this.state.exportData} /> */}
-            {/* <ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/>  */}
         </div>
         );
     }
@@ -353,7 +336,6 @@ export default class UserPage extends React.Component {
         return (
             <div className="list-page">
                         <GeneralNavBar title={Constants.UserTitle}></GeneralNavBar>
-
                 <div className = 'user-table'>
                     <PageTable 
                         columns={this.state.table_columns} 
@@ -379,6 +361,7 @@ export default class UserPage extends React.Component {
                         skus = {this.state.skus}
                         onTableOptionSelection = {this.onTableOptionSelection}
                         page_name= {this.state.page_name}
+                        user = {this.state.current_user}
                     />
                 </div>
                 <Modal isOpen={this.state.modal} toggle={this.toggleModal} id="popup" className='item-details'>
@@ -387,6 +370,7 @@ export default class UserPage extends React.Component {
                             item={this.state.detail_view_item}
                             detail_view_options={this.state.detail_view_options}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
+                            user = {this.state.current_user}
                         />
                 </Modal>   
                 <TablePagination

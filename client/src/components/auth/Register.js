@@ -5,12 +5,12 @@ import { connect } from "react-redux";
 import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
 import { CustomInput, Form, FormGroup, Label } from 'reactstrap';
-import GeneralNavBar from '../GeneralNavBar';
+import AuthRoleValidation from "./AuthRoleValidation";
+import * as Constants from '../../resources/Constants';
 
-const currentUserIsAdmin = require("./currentUserIsAdmin");
 const currentUserUsername = require("./currentUserUsername");
 
-var userIsAdmin = false;
+
 
 class Register extends Component {
   constructor() {
@@ -23,22 +23,17 @@ class Register extends Component {
       username: "",
       password: "",
       password2: "",
-      // privileges: [],
-      admin_creator: currentUserUsername(),
       isNetIDLogin: false,
-      isAdmin: false,
+      roles: [],
+      manu_lines: [],
       errors: {}
     };
   }
 
   componentDidMount() {
-    console.log("trying to mount the register" +this.props.history);
-
     // If logged in and user navigates to Register page, should redirect them to dashboard
-    //TODO refactor the below to use this.props.auth.isAdmin
-    if (this.props.auth.isAuthenticated && !currentUserIsAdmin().isValid) {
+    if (this.props.auth.isAuthenticated && !AuthRoleValidation.checkCurrentUserIsRole(Constants.admin)) {
       this.props.history.push("/skus"); //if they are not an admin, get redirected to skus.
-      console.log("mounted" +this.props.history);
     }
 
   }
@@ -60,18 +55,17 @@ onSubmit(e){
       username: this.state.username,
       password: this.state.password,
       password2: this.state.password2,
-      admin_creator: this.state.admin_creator,
       isNetIDLogin: this.state.isNetIDLogin,
-      isAdmin: this.state.isAdmin,
-      // privileges: [this.state.privileges]
+      roles: this.state.roles,
+      manu_lines: this.state.manu_lines
     };
 
-    if(currentUserIsAdmin().isValid){
-      this.props.registerUser(newUser, this.props.history); 
-    }
-    else{
-      console.log("person trying to register user when non admin");
-    }
+    // if(AuthRoleValidation.checkCurrentUserIsRole(Constants.admin)){
+    //   this.props.registerUser(newUser, this.props.history); 
+    // }
+    // else{
+    //   console.log("person trying to register user when non admin");
+    // }
   };
 
 
@@ -106,20 +100,6 @@ return (
                 <label htmlFor="name">Username</label>
                 <span className="red-text">{errors.username}</span>
               </div>
-              {/* <div className="input-field col s12">
-                <input
-                  onChange={this.onChange}
-                  value={this.state.email}
-                  error={errors.email}
-                  id="email"
-                  type="email"
-                  className={classnames("", {
-                    invalid: errors.email
-                  })}
-                />
-                <label htmlFor="email">Email</label>
-                <span className="red-text">{errors.email}</span>
-              </div> */}
               <div className="input-field col s12">
                 <input
                   onChange={this.onChange}
@@ -150,11 +130,6 @@ return (
               </div>
 
               <FormGroup>
-          <div>
-            {/* <CustomInput type="checkbox" id="admin" label="Assign Admin Privilige" //onSelect = {this.setPrivileges("Admin")}
-            />
-             */}
-          </div>
         </FormGroup>
               <div className="col s12" style={{ paddingLeft: "11.250px" }}>
                 <button

@@ -98,8 +98,10 @@ router.put('/manulines/:manu_line_id', (req, res) => Manu_LineHandler.updateManu
 router.get('/manulines', (req, res) => Manu_LineHandler.getAllManufacturingLines(req, res));
 router.get('/manulines/:manu_line_id', (req, res) => Manu_LineHandler.getManufacturingLineByID(req, res));
 router.delete('/manulines/:manu_line_id', (req, res) => Manu_LineHandler.deleteManufacturingLineByID(req, res));
-router.get('/manulines_name/:search_substr', (req, res) => Manu_LineHandler.getManufacturingLinesByNameSubstring(req, res));
+router.get('/manulines_name/:search_substr/:currentPage/:pageSize', (req, res) => Manu_LineHandler.getManufacturingLinesByNameSubstring(req, res));
 router.get('/manulines_shortname/:short_name', (req, res) => Manu_LineHandler.getManufacturingLinesByShortName(req, res));
+router.get('/manulines/:currentPage/:pageSize', (req, res) => Manu_LineHandler.getAllManuLinesPag(req, res));
+
 
 // Manufacturing Activity database APIs
 router.post('/manuactivities', (req, res) => Manu_ActivityHandler.createManufacturingActivity(req, res));
@@ -130,6 +132,7 @@ router.delete('/manugoals/:manu_goal_id', (req, res) => Manu_GoalHandler.deleteM
 router.get('/manugoals_filter/:name_substr/:user_substr/:user', (req, res) => Manu_GoalHandler.getManufacturingGoalByFilter(req, res));
 router.get('/manugoals_activity/:activity_id', (req, res) => Manu_GoalHandler.getManufacturingGoalByActivity(req, res));
 router.get('/manugoals_name/:name',(req, res) => Manu_GoalHandler.getManufacturingGoalByName(req, res));
+router.get('/manugoals_by_user/:username',(req, res) => Manu_GoalHandler.getManufacturingGoalsByUsername(req, res));
 
 // Customer database APIs
 router.post('/customers', (req, res) => CustomerHandler.createCustomer(req, res));

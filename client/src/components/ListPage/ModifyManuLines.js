@@ -9,7 +9,7 @@ import * as Constants from '../../resources/Constants';
 import SubmitRequest from './../../helpers/SubmitRequest'
 import Filter from './Filter'
 import { EditorMultilineChart } from 'material-ui/svg-icons';
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
+import AuthRoleValidation from '../auth/AuthRoleValidation';
 
 
 export default class ModifyManuLines extends React.Component {
@@ -35,7 +35,7 @@ export default class ModifyManuLines extends React.Component {
     }
 
     async onFilterValueSelection (opts, e) {
-        if(currentUserIsAdmin().isValid){
+        if(AuthRoleValidation.checkRole(this.props.user, Constants.admin)|| AuthRoleValidation.checkRole(this.props.user, Constants.product_manager)){
         let newLines = [];
         opts.map(opt => {
             if (!newLines.includes(opt.value._id)){

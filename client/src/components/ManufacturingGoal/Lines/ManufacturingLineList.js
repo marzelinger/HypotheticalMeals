@@ -16,6 +16,7 @@ const ManufacturingLineList = (props) => {
       handleDetailViewSelect = {props.handleDetailViewSelect}
       handleDetailViewSubmit = {props.handleDetailViewSubmit}
       validateShortName = {props.validateShortName}
+      user = {props.user}
     >
       { line.name}
     </ManufacturingLine>

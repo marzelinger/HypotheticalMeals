@@ -16,14 +16,12 @@ import DataStore from '../../helpers/DataStore'
 import TablePagination from './TablePagination'
 import SkuDetails from './SkuDetails';
 import GeneralNavBar from '../GeneralNavBar';
+import AuthRoleValidation from '../auth/AuthRoleValidation';
 
 import '../../style/SkusPage.css'
 import '../../style/SkuTableStyle.css'
 import BulkEditManuLines from './BulkEditManuLines';
 const jwt_decode = require('jwt-decode');
-
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
-
 
 
 export default class ListPage extends React.Component {
@@ -72,7 +70,9 @@ export default class ListPage extends React.Component {
             },
             filterChange: false,
             ingredients: [], 
-            product_lines: []
+            product_lines: [],
+            current_user: {},
+            token: ''
         };
         if(localStorage != null){
             if(localStorage.getItem("jwtToken")!= null){
@@ -90,6 +90,8 @@ export default class ListPage extends React.Component {
         this.handlePageClick=this.handlePageClick.bind(this);
         this.onSelect = this.onSelect.bind(this)
         this.onBulkManuLineSubmit = this.onBulkManuLineSubmit.bind(this);
+        this.determineUser = this.determineUser.bind(this);
+        this.determineUser();
         this.setInitPages();
     }
 
@@ -115,6 +117,18 @@ export default class ListPage extends React.Component {
         }
     }
     
+    async determineUser() {
+        var res = await AuthRoleValidation.determineUser();
+        if(res!=null){
+            var user = res.user;
+            var token = res.token;
+            await this.setState({
+                current_user: user,
+                token: token
+            })
+        }
+    }
+
     componentWillUnmount() {
         if (this.pollInterval) clearInterval(this.pollInterval);
         this.pollInterval = null;
@@ -140,6 +154,21 @@ export default class ListPage extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
+
+        if(localStorage != null){
+            if(localStorage.getItem("jwtToken")!= null){
+                var token = localStorage.getItem("jwtToken");
+                if(this.state.token!=null){
+                    if(this.state.token != token){
+                        await this.determineUser();
+                    }
+                }
+            }
+        }
+        
+        if(this.state.current_user._id != AuthRoleValidation.getUserID()){
+            await this.determineUser();
+        }
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }
@@ -153,14 +182,11 @@ export default class ListPage extends React.Component {
 
 
     async loadDataFromServer() {
-        console.log('loading data')
         let allData = await SubmitRequest.submitGetData(this.state.page_name);
-        console.log(allData)
         var final_ing_filter = this.state.filters['ingredients'].join(',');
         var final_keyword_filter = this.state.filters['keyword'];
         var final_prod_line_filter = this.state.filters['product lines'].join(',');
         var final_formula_filter = this.state.filters['formula'].join(',');
-        console.log("final formula filter is" + final_formula_filter);
         //Check how the filter state is being set 
         if (final_ing_filter === '') final_ing_filter = '_';
         if (final_keyword_filter === '') final_keyword_filter = '_';
@@ -175,14 +201,11 @@ export default class ListPage extends React.Component {
             res.data = [];
             resALL.data = [];
         }
-        console.log(res);
         await this.setState({
             data: res.data,
             exportData: resALL.data,
             filterChange: false
         })
-        console.log('here???')
-        console.log(this.state.data)
         await this.updateDataState();
 
     }
@@ -240,7 +263,6 @@ export default class ListPage extends React.Component {
     }
 
     onFilterValueChange = (e, value, filterType) => {
-        console.log(this.state.filters)
         var filters = this.state.filters;
         if(filterType == 'keyword'){
             filters[filterType] = value;
@@ -257,12 +279,10 @@ export default class ListPage extends React.Component {
     }
 
     onFilterValueSelection (vals, e, type)  {
-        console.log(vals);
         var filters = this.state.filters;
         filters[type] = []
         vals.map((item) => {
             filters[type].push(item.value._id);
-            console.log("the item is" + JSON.stringify(item));
         })
         this.setState({
             filters: filters,
@@ -312,9 +332,10 @@ export default class ListPage extends React.Component {
 
     onAddManuGoals =  async() => {
         this.toggle(Constants.manu_goals_modal);
-        let res = await SubmitRequest.submitGetManuGoalsData(this.state.user);
-        console.log(res)
+        let res = await SubmitRequest.submitGetManuGoalsByUsername(this.state.current_user.username);
+        if(res.success){
         this.setState({ manu_goals_data: res.data});
+        }
     }
 
     async onBulkManuLineSubmit(event, opt, skus) {
@@ -324,7 +345,6 @@ export default class ListPage extends React.Component {
                 await skus.map(async (sku) => {
                     newSkus[newSkus.findIndex(el => el._id === sku._id)] = sku;
                     var res = await SubmitRequest.submitUpdateItem(Constants.skus_page_name, sku);
-                    console.log(res)
                 });
                 break;
             case Constants.details_cancel:
@@ -366,7 +386,8 @@ export default class ListPage extends React.Component {
             detail_view_item: item,
             detail_view_formula_item: formula_item.data[0]
         });
-        if(currentUserIsAdmin().isValid){
+        if(AuthRoleValidation.checkRole(this.state.current_user, Constants.admin) 
+        || AuthRoleValidation.checkRole(this.state.current_user, Constants.product_manager) ){
             this.setState({ 
             detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel],
             detail_view_action: Constants.details_edit
@@ -396,7 +417,6 @@ export default class ListPage extends React.Component {
                 else resFormula = await SubmitRequest.submitUpdateItem(Constants.formulas_page_name, formula_item);
 
                 // var newSKUitem = this.formatNewSKUFormula(item, resFormula);
-                console.log(resFormula)
                 if(resFormula.success){
                     item['formula']= resFormula.data._id;
                     resItem = await SubmitRequest.submitCreateItem(this.state.page_name, item);
@@ -452,12 +472,12 @@ export default class ListPage extends React.Component {
                             onClick={() => SubmitRequest.updateSkuRecords()}
                             primary={true}
                             > Add All Records </div> */}
-            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) ? null : 
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || !AuthRoleValidation.checkRole(this.state.current_user, Constants.business_manager) ? null : 
                             (<div className = "manugoalbutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}
                             primary={true}
                             > {Constants.add_to_manu_goals} </div>)}
-            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || !currentUserIsAdmin().isValid ? null : 
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || !AuthRoleValidation.checkRole(this.state.current_user, Constants.product_manager) ? null : 
                             (<div className = "manulinebutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.edit_manu_lines)}
                             primary={true}
@@ -497,7 +517,7 @@ export default class ListPage extends React.Component {
                         onRemoveFilter = {this.onRemoveFilter}
                         ingredients = {this.state.ingredients}
                         products = {this.state.product_lines}
-                        onTableOptionSelection = {this.onTableOptionSelection}
+                        user = {this.state.current_user}
                     />
                 </div>
                 <Modal isOpen={this.state.details_modal} toggle={this.toggle} id="popup" className='item-details'>
@@ -507,6 +527,7 @@ export default class ListPage extends React.Component {
                             detail_view_options={this.state.detail_view_options}
                             detail_view_action = {this.state.detail_view_action}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
+                            user = {this.state.current_user}
                         />
                 </Modal>
                 <AddToManuGoal 

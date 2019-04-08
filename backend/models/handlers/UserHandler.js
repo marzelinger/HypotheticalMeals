@@ -4,20 +4,14 @@
 import User from '../databases/User';
 import Manu_Goal from '../databases/manu_goal';
 import Manu_Activity from '../databases/manu_activity';
+
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
-import printFuncBack from "../../printFuncBack";
-
-
-
 
 // Load input validation
 const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
-
-var client_id = "meta-alligators";
-
 
 class UserHandler{
     // Creates a User in the Database
@@ -37,12 +31,9 @@ class UserHandler{
       const newUser = new User({
           username: req.body.username,
           password: req.body.password,
-          //privileges : req.body.privileges,
-          admin_creator: req.body.admin_creator,
-          isAdmin: req.body.isAdmin,
           isNetIDLogin: req.body.isNetIDLogin,
-          comment: req.body.comment,
-
+          roles: req.body.roles,
+          manu_lines: req.body.manu_lines
         });
   // Hash password before saving in database
         bcrypt.genSalt(10, (err, salt) => {
@@ -81,11 +72,31 @@ class UserHandler{
         if (isMatch) {
           // User matched
           // Create JWT Payload
+          var new_admin = false;
+          var new_pm = false;
+          var new_bm = false;
+          var new_analyst = false;
+          var new_plantm = false;
+          var roles = user.roles;
+
+          if(roles!= undefined){
+            var new_admin = roles.includes("admin");
+            var new_pm = roles.includes("product_manager");
+            var new_bm = roles.includes("business_manager");
+            var new_analyst = roles.includes("analyst");
+            var new_plantm = roles.includes("plant_manager");
+            
+          }
           const payload = {
             id: user.id,
             username: user.username,
-            admin: user.isAdmin
-          };
+            admin: new_admin,
+            product_manager: new_pm,
+            business_manager: new_bm,
+            analyst: new_analyst,
+            plant_manager: new_plantm
+
+          }
   // Sign token
           jwt.sign(
             payload,
@@ -100,7 +111,6 @@ class UserHandler{
               });
             }
           );
-          printFuncBack("this is the payload token. " +JSON.stringify(payload));
         } else {
           return res
             .status(400)
@@ -114,14 +124,10 @@ class UserHandler{
       const username = req.body.username;
       const isNetIDLogin = req.body.isNetIDLogin;
       // Find user by username
-      printFuncBack("this is in the loginUserDukeNetID");
-      printFuncBack("this is the request string: "+JSON.stringify(req.body));
       User.findOne({ username }).then(user => {
         // Check if user exists
-        printFuncBack("user: "+user);
 
         if (!user) {
-          printFuncBack("user was not true");
 
           //user doesn't exist, so create a new one.
           const newUser = new User({
@@ -130,13 +136,32 @@ class UserHandler{
             });
           newUser.save().then(newuser => {
             //res.json(user)
-            printFuncBack("newuser is: "+JSON.stringify(newuser));
 
-            const payload = {
-              id: newuser.id,
-              username: newuser.username,
-              admin: newuser.isAdmin
-            };
+            var new_admin = false;
+          var new_pm = false;
+          var new_bm = false;
+          var new_analyst = false;
+          var new_plantm = false;
+          var roles = user.roles;
+
+          if(roles!= undefined){
+            var new_admin = roles.includes("admin");
+            var new_pm = roles.includes("product_manager");
+            var new_bm = roles.includes("business_manager");
+            var new_analyst = roles.includes("analyst");
+            var new_plantm = roles.includes("plant_manager");
+            
+          }
+          const payload = {
+            id: user.id,
+            username: user.username,
+            admin: new_admin,
+            product_manager: new_pm,
+            business_manager: new_bm,
+            analyst: new_analyst,
+            plant_manager: new_plantm
+
+          }
   
             jwt.sign(
               payload,
@@ -154,15 +179,34 @@ class UserHandler{
           }).catch(err => console.log(err));
         }
         else if (user && isNetIDLogin){
-          printFuncBack("user existed is: "+JSON.stringify(user));
 
           //for sure is the netid stuff and going to make payload and login.
+          // const payload = {};
+          var new_admin = false;
+          var new_pm = false;
+          var new_bm = false;
+          var new_analyst = false;
+          var new_plantm = false;
+          var roles = user.roles;
+
+          if(roles!= undefined){
+            var new_admin = roles.includes("admin");
+            var new_pm = roles.includes("product_manager");
+            var new_bm = roles.includes("business_manager");
+            var new_analyst = roles.includes("analyst");
+            var new_plantm = roles.includes("plant_manager");
+            
+          }
           const payload = {
             id: user.id,
             username: user.username,
-            admin: user.isAdmin
-          };
-          printFuncBack("this is the payload token in logging in user.. " +JSON.stringify(payload));
+            admin: new_admin,
+            product_manager: new_pm,
+            business_manager: new_bm,
+            analyst: new_analyst,
+            plant_manager: new_plantm
+
+          }
 
           jwt.sign(
             payload,
@@ -183,23 +227,17 @@ class UserHandler{
 
   static async updateUserByID(req, res){
       try {
-          printFuncBack("here in the update user by id");
           var target_id = req.params.user_id;
-          printFuncBack("target id stuff "+target_id);
 
           if (!target_id) {
               return res.json({ success: false, error: 'No user id provided'});
           }
-          var new_username = req.body.username;
-          var new_isAdmin = req.body.isAdmin;
-          var new_comment = req.body.comment;
-          printFuncBack("new stuff: "+new_username+new_isAdmin+new_comment);
+          var new_roles = req.body.roles;
+          var new_lines = req.body.manu_lines;
 
           let updated_user = await User.findOneAndUpdate({ _id: target_id},
-              {$set: {username: new_username, isAdmin : new_isAdmin, comment: new_comment}}, {upsert: true, new: true});
+              {$set: { roles: new_roles, manu_lines: new_lines}}, {upsert: true, new: true});
           //let test_user = await User.find(target_id);
-          printFuncBack("new updateduser: "+updated_user);
-          printFuncBack("new stringifty: "+JSON.stringify(updated_user));
 
 
           if(!updated_user){
@@ -216,19 +254,10 @@ class UserHandler{
       }
   }
 
-
-  
-
-
-
-
   static async getUserByID(req, res){
     try {
         var target_id = req.params.user_id;
-        // console.log("this is the targetid: "+target_id);
-
-        let to_return = await User.find({ _id : target_id });
-        // console.log("this is the to_return: "+to_return);
+        let to_return = await User.find({ _id : target_id }).populate('manu_lines');
         if(to_return.length == 0) return res.json({ success: false, error: '404'});
         return res.json({ success: true, data: to_return});
     } catch (err) {
@@ -253,12 +282,8 @@ class UserHandler{
         let user = await User.find({ _id: target_id});
         if (user != undefined){
           if(user.length>0){
-          console.log("this is the user in Delete user: "+JSON.stringify(user));
           let username = user[0].username;
-          console.log("this is the username "+username);
           let manuGoals = await Manu_Goal.find({user: username}).populate('activities');
-          console.log("this is the manuGoals: "+JSON.stringify(manuGoals));
-          console.log("this is the manuGoals.length: "+manuGoals.length);
 
           if(manuGoals.length>0){
             //manuGoals associated with this username
@@ -266,15 +291,12 @@ class UserHandler{
             //delete the activities for a manugoal and then delete the actual manu goal, and then delete the username.
             for(let m = 0; m<manuGoals.length; m++){
               let curActs = manuGoals[m]['activities'];
-              console.log("this is the curActs: "+JSON.stringify(curActs));
 
               if(curActs.length>0){
                 //activities associated with this goal. go through these activities and delete them.
                 for(let a = 0; a<curActs.length; a++){
                   let act_id = curActs[a]._id;
-                  console.log("this is the curactid: "+JSON.stringify(act_id));
                   let act_to_remove = await Manu_Activity.findOneAndDelete({ _id : act_id});
-                  console.log("this is the act to remove response: "+JSON.stringify(act_to_remove));
 
                     if(!act_to_remove){
                       return res.json({ success: false, error: '404:failed to delete activity in delete user'});
@@ -284,7 +306,6 @@ class UserHandler{
               //once all the activities are deleted -> delete the goal
               let goal_id = manuGoals[m]._id;
               let goal_to_remove = await Manu_Goal.findOneAndDelete({ _id : goal_id});  
-              console.log("this is the goal to remove response: "+JSON.stringify(goal_to_remove));
 
               if(!goal_to_remove){
                 return res.json({ success: false, error: '404:failed to delete goal in delete user'});
@@ -293,7 +314,6 @@ class UserHandler{
           }
           //now delete the user
           let user_to_remove = await User.findByIdAndDelete({_id: target_id});
-          console.log("this is the goal to remove response: "+JSON.stringify(user_to_remove));
 
           if(!user_to_remove){
             return res.json({ success: false, error: '404:failed to delete user in delete user'});

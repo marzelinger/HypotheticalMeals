@@ -33,14 +33,18 @@
 div.info-modal-button {
     line-height: 20px;
     text-align: center;
-    float: right;
     height: 20px;
     width: 20px;
-    margin-top: -27px;
-    margin-left: 30px;
     border: 1px solid rgb(0, 188, 212);
     color: rgb(0, 188, 212);
     border-radius: 100%;
+    cursor: pointer;
+}
+
+.select-all-button {
+    line-height: 20px;
+    text-align: center;
+    color: rgb(0, 188, 212);
     cursor: pointer;
 }
 
@@ -152,4 +156,9 @@ td, tr {
     padding-left: 0px !important;
     padding-right: 0px !important;
     grid-template-columns:  minmax(100px, 2fr) minmax(100px,2fr);
+}
+
+.palette-header {
+    display: flex;
+    justify-content: space-between;
 }
