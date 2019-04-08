@@ -1,5 +1,10 @@
 import React from 'react';
-import { Button, Progress } from 'reactstrap';
+import { Button, 
+    Progress,
+    Dropdown,
+    DropdownToggle,
+    DropdownMenu,
+    DropdownItem } from 'reactstrap';
 import PropTypes from 'prop-types';
 import * as Constants from '../../../resources/Constants';
 import DatePicker from 'react-date-picker';
@@ -8,30 +13,71 @@ import SubmitRequest from '../../../helpers/SubmitRequest';
 import Calculations from '../../SalesReport/Calculations';
 import './../../SideBySideBox.css';
 
+
 export default class SalesProjectionModal extends React.Component {
     constructor(props){
         super(props);
+
+        var monthOptions = [];
+        for (var i = 1; i < 13; i++){
+            monthOptions.push(i + "");
+        }
 
         this.state = {
             sku: this.props.item,
             start_date: new Date(),
             end_date: new Date(),
             showPastYearsReport: false,
+
+            monthOptions: monthOptions,
+            dateOptions: [],
+
             to_show: [],
             loading: false,
             sales_average: "",
             std_dev: "",
+
+            start_month_selected: false,
+            start_date_selected: false,
+
+            end_month_selected: false,
+            end_date_selected: false,
+
+            start_date_month_open: false,
+            start_date_day_open: false,
+
+            end_date_month_open: false,
+            end_date_day_open: false,
+
+            startMonthTitle: "Please select a month",
+            startDateTitle: "Please select a date",
         }
+
 
         this.handleSubmit = this.handleSubmit.bind(this);
         this.standardDeviation = this.standardDeviation.bind(this);
+        this.toggleStartDateMonth = this.toggleStartDateMonth.bind(this);
+        this.toggleStartDateDay = this.toggleStartDateDay.bind(this);
+    }
+
+    toggleStartDateMonth() {
+        this.setState({
+            start_date_month_open: !this.state.start_date_month_open,
+        })
+    }
+
+    toggleStartDateDay() {
+        if(!this.state.start_month_selected) return;
+        this.setState({
+            start_date_day_open: !this.state.start_date_day_open,
+        })
     }
 
     componentDidMount() {
 
     }
-/*
-    async onChangeStartDate(date){
+
+ /*   async onChangeStartDate(date){
         console.log(date);
         if(date.getMonth() >= 12 || date.getMonth < 0){
             alert("Please enter a valid month");
@@ -125,7 +171,7 @@ export default class SalesProjectionModal extends React.Component {
 
  
         var arrToUse = [];
-        var yearlyRevArry = [];
+        var yearlyRevArray = [];
         var total = 0;
         for(var i = 0; i < 4; i ++){
             let  datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', '_', '_', this.state.sku._id,
@@ -133,6 +179,7 @@ export default class SalesProjectionModal extends React.Component {
             console.log("datares is : " + JSON.stringify(datares));
             if(datares.success){
                 var recordsCalcs = await Calculations.getSalesTotals(datares.data);
+                console.log(recordsCalcs);
                 var currStartEntryArr = rangesStart[i].split("-");
                 var start_date = new Date();
                 start_date.setFullYear(currStartEntryArr[0]);
@@ -150,11 +197,13 @@ export default class SalesProjectionModal extends React.Component {
 
                 var total_data = await Calculations.calcTotalData(this.state.sku, recordsCalcs.revenue, recordsCalcs.sales, recordsCalcs.avg_rev_per_case, start_date.toISOString(), end_date.toISOString());
                 console.log(total_data);
-                total_data.number = i;
-                total_data.date_range = "From " + rangesStart[i] + " to " + rangesEnd[i];
-                total += Number(total_data.sum_yearly_rev);
-                arrToUse.push(total_data);
-                yearlyRevArry.push(total_data.sum_yearly_rev);
+                recordsCalcs.number = i;
+                recordsCalcs.date_range = "From " + rangesStart[i] + " to " + rangesEnd[i];
+                //total += Number(total_data.sum_yearly_rev);
+                total +=Number(recordsCalcs.sales);
+                arrToUse.push(recordsCalcs);
+                //yearlyRevArry.push(total_data.sum_yearly_rev);
+                yearlyRevArray.push(recordsCalcs.sales);
             }
             else{ 
                 alert("FUCK");
@@ -162,7 +211,7 @@ export default class SalesProjectionModal extends React.Component {
             }
         }
         var avg = total/4;
-        var std_dev = await this.standardDeviation(yearlyRevArry, avg);
+        var std_dev = await this.standardDeviation(yearlyRevArray, avg);
         avg = avg.toFixed(2) + "";
         console.log('gets here');
         std_dev = std_dev.toFixed(5) + "";
@@ -195,9 +244,39 @@ export default class SalesProjectionModal extends React.Component {
         return stdDev;
     }
 
-    onCalenderOpen = () => {
+    changeStartMonth(month){
+        this.setState({
+            start_month_selected: false,
+        })
+        var numDays = 0;
+        var dateOptions = [];
+        if(["1","3","5","7","8","10","12"].includes(month)){
+            numDays = 31;
+        } else if(["4","6","9","11"].includes(month)){
+            numDays = 30;
+        } else{
+            numDays = 28;
+        }
 
+        for(var i = 0; i < numDays; i++){
+            var toUse = i+1;
+            dateOptions.push("" + toUse);
+        }
+        this.setState({
+            startMonthTitle: month,
+            start_month_selected: true,
+            dateOptions: dateOptions,
+        })
     }
+
+    changeStartDate(date){
+        this.setState({
+            startDateTitle: date,
+            start_date_selected: true,
+        })
+    }
+
+
 
     render() {
         return (
@@ -205,14 +284,13 @@ export default class SalesProjectionModal extends React.Component {
                 <h1>{this.state.sku.name} Yearly Sales Report</h1>
                 <div>
                     <div className = "paddedDiv">
-                    Please enter a start date.
+                        Please enter a start date.
                         <DatePicker
-                                onChange = {this.onChangeStartDate}
-                                value={this.state.start_date}
+                                onChange = {this.onChangeEndDate}
+                                value={this.state.end_date}
                                 format={"M-d-y"}
                                 calendarIcon={null}
-                                onCalenderOpen={this.onCalenderOpen}
-                        />
+                            /> 
                     </div>
                     <div className = "paddedDiv">
                         Please enter an end date.

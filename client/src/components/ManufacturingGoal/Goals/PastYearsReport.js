@@ -7,15 +7,13 @@ export default class PastYearsReport extends React.Component{
     constructor(props){
         super(props);
 
-        var currDate = new Date();
         this.state = {
             sku : this.props.sku,
             start_date: this.props.start_date,
             end_date: this.props.end_date,
             yearly_revenues: this.props.yearly_revenues,
-            currDate: currDate,
-            table_properties: ["date_range", "sum_yearly_rev"],
-            table_columns: ["Date Range", "Revenue (USD)"],
+            table_properties: ["date_range", "sales"],
+            table_columns: ["Date Range", "Sales"],
             std_dev: this.props.std_dev,
             sales_average: this.props.sales_average,
         }
