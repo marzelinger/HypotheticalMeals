@@ -18,6 +18,7 @@ import ManuActivityErrors from './ManuActivityErrors';
 import AuthRoleValidation from '../auth/AuthRoleValidation';
 import ManuSchedHelp from '../../resources/ManuSchedHelp.png'
 import ManuAutoSchedule from "./ManuAutoShedule";
+import { LinearProgress } from "@material-ui/core";
 const jwt_decode = require('jwt-decode');
 
 export default class ManuSchedulePage extends Component {
@@ -50,7 +51,6 @@ export default class ManuSchedulePage extends Component {
             error_change: false,
             current_user: {},
             token: '',
-
             autoschedule: false,
             autoschedule_dateRange: { 
                 'startdate': today, 
@@ -122,18 +122,20 @@ export default class ManuSchedulePage extends Component {
         groups.length = 0;
         let initial_activities = await SubmitRequest.submitGetData(Constants.manu_activity_page_name);
         let lines = await SubmitRequest.submitGetData(Constants.manu_line_page_name);
+        console.log(this.state.current_user)
         lines.data.map(line => {
             groups.push({ id: line._id, content: line.name });
-            if (line.role.includes("NEEDS MADDIE'S ISH")){ ///////Attention
-                console.log('WHATS UPPPPPPPPP')
+            console.log(this.state.current_user)
+            if (this.state.current_user.manu_lines.find(ml => ml._id === line._id)){ 
                 items.push({
-                    id: "USER'S NAME HERE", ///////Attention
+                    id: this.state.current_user.username,
                     content: '',
                     start: new Date('01/01/1980'),
                     end: new Date('01/01/2050'),
                     type: 'background',
                     group: line._id
                 })
+                console.log(items[items.length-1])
             }
         });
         console.log(initial_activities)
@@ -169,7 +171,7 @@ export default class ManuSchedulePage extends Component {
         if (act.scheduled) {
             if (items.find(i => i._id === act._id) === undefined) {
                 let start = new Date(act.start);
-                let end = new Date(start.getTime() + Math.floor(act.duration/10)*24*60*60*1000 + (act.duration%10 * 60 * 60 * 1000));
+                let end = this.determineEnd(start, act.duration);
                 let assoc_goal = null;
                 goals.data.map(goal => {
                     if(goal.activities.find(a => a._id === act._id)){
@@ -214,11 +216,11 @@ export default class ManuSchedulePage extends Component {
             let prompt_str = 'This activity '
             if (clicked_activity[0].overwritten) {
                 prompt_str += 'has been overriden to a duration of ' + clicked_activity[0].duration + ' hours from the calculated ' + 
-                Math.round(clicked_activity[0].sku.manu_rate*clicked_activity[0].quantity) + ' hours. ';
+                Math.round(clicked_activity[0].quantity/clicked_activity[0].sku.manu_rate) + ' hours. ';
             }
             else {
                 prompt_str += 'has a calculated duration of ' + 
-                Math.round(clicked_activity[0].sku.manu_rate*clicked_activity[0].quantity) + ' hours. ';
+                Math.round(clicked_activity[0].quantity/clicked_activity[0].sku.manu_rate) + ' hours. ';
             }
             prompt_str += 'Please enter an integer duration to replace the current.'
             let val = window.prompt(prompt_str, clicked_activity[0].duration)
@@ -226,14 +228,14 @@ export default class ManuSchedulePage extends Component {
                 let start = new Date(clicked_item[0].start)
                 let end = new Date()
                 let duration = parseInt(val)
-                end.setTime(start.getTime() + (Math.floor(duration/10)*24 + (duration%10))*60*60*1000)
+                end.setTime(this.determineEnd(start, duration).getTime())
                 clicked_item[0].start = start
                 clicked_item[0].end = end
                 if (!this.checkWithinHoursAndOverlap(clicked_item[0])) {
                     return
                 }
                 else {
-                    clicked_activity[0].overwritten = !(parseInt(val) === Math.round(clicked_activity[0].sku.manu_rate*clicked_activity[0].quantity))
+                    clicked_activity[0].overwritten = !(parseInt(val) === Math.round(clicked_activity[0].quantity/clicked_activity[0].sku.manu_rate))
                     clicked_activity[0].duration = parseInt(val)
                     await CheckErrors.updateActivityErrors(clicked_activity[0]);
                     await this.loadScheduleData();
@@ -285,10 +287,10 @@ export default class ManuSchedulePage extends Component {
             //removing drag to change duration functionality because of duration calculations
             callback(null)
             return 
-            act.data[0].start = item.start
-            this.determineWorkHours(start, end)
-            act.data[0].duration = Math.floor(hour_difference/24)*10 + (hour_difference%24)
-            act.data[0].overwritten = true
+            // act.data[0].start = item.start
+            // this.determineWorkHours(start, end)
+            // act.data[0].duration = Math.floor(hour_difference/24)*10 + (hour_difference%24)
+            // act.data[0].overwritten = true
         }
         else {
             act.data[0].start = item.start;
@@ -619,7 +621,7 @@ export default class ManuSchedulePage extends Component {
     }
 
     verifyPlacement(act, start, mline, rel_items, auto_end) {
-        //if (ml.role.includes('NEED MADDIES STUFF HERE')) return null //////ATTENTION
+        //if (!this.state.current_user.manu_lines.includes(mline._id)) return null
         let end = this.determineEnd(start, act.duration)
         let className = 'uncommitted'
         if (end.getTime() > act.deadline.getTime()) {
@@ -745,11 +747,14 @@ export default class ManuSchedulePage extends Component {
                 })
                 console.log(i);
                 let res = await CheckErrors.updateActivityErrors(ua);
+                console.log(res)
             }
         }
         await this.setState({
             uncommitted_items: [],
-            error_change: true
+            error_change: true,
+            autoschedule: !decision,
+            autoschedule_toggle_button: decision ? 'Autoschedule' : 'Cancel'
         })
         await this.loadScheduleData()
     }
