@@ -329,6 +329,8 @@ class ManufacturingGoalsBox extends Component {
 }
 
   onDetailViewSelect = async (event, item) => {
+
+    //NEED TO CHECK WHAT OPTIONS TO PUT BASED ON THE USER.
     if(item.deadline != " "){
       var deadline = new Date(item.deadline)
       var localDate = deadline
@@ -346,7 +348,7 @@ class ManufacturingGoalsBox extends Component {
     this.setState({
         detail_view_item: item
     });
-    if(AuthRoleValidation.checkRole(this.props.user, Constants.admin)){
+    if(AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && item.user ==this.props.user.username){
         this.setState({ 
         detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel],
         detail_view_action: Constants.details_edit

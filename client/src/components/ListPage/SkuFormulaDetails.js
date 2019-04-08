@@ -262,7 +262,9 @@ export default class SkuFormulaDetails extends React.Component {
                     item_type={Constants.formula_label}
                     invalid_inputs={this.state.invalid_inputs}
                     handleSelectItem={this.props.handleSelectFormulaItem}
-                    disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin) ? false : true}
+                    disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin) 
+                        || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) ? "" : "disabled"}
+
                 />
                 {this.props.existingFormulaSelected
                 ?
@@ -293,7 +295,9 @@ export default class SkuFormulaDetails extends React.Component {
                 item_type={Constants.formula_label}
                 invalid_inputs={this.state.invalid_inputs}
                 handleSelectItem={this.props.handleSelectFormulaItem}
-                disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin) ? false : true}
+                disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin) 
+                    || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) ? "" : "disabled"}
+
             />
             {this.props.existingFormulaSelected
             ?
@@ -316,13 +320,17 @@ export default class SkuFormulaDetails extends React.Component {
                   item_type={Constants.details_modify_ingredient}
                   options={[Constants.details_add, Constants.details_remove]}
                   handleModifyList={this.props.handleModifyList}
-                  disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin) ? false : true}
+                  disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin) 
+                    || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) ? "" : "disabled"}
+
               />
               <IngredientsViewSimple 
                   formula={this.props.formula_item} 
                   handlePropChange={this.props.handleFormulaPropChange}
                   //handleFormulaPropChange={this.props.handleFormulaPropChange}
-                  disabled={AuthRoleValidation.checkRole(this.props.user, Constants.admin) ? false : true}
+                  disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin) 
+                    || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) ? "" : "disabled"}
+
               />
             
           </div>
@@ -339,7 +347,9 @@ export default class SkuFormulaDetails extends React.Component {
                     value={ this.props.formula_item[prop] }
                     invalid={ this.state.invalid_inputs.includes(prop) }
                     onChange={ (e) => this.props.handleFormulaPropChange(e.target.value, this.props.formula_item, prop)}
-                    disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin) ? "" : "disabled"}
+                    disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin) 
+                        || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) ? "" : "disabled"}
+
                />
             </FormGroup>));
     }

@@ -35,7 +35,7 @@ export default class ModifyManuLines extends React.Component {
     }
 
     async onFilterValueSelection (opts, e) {
-        if(AuthRoleValidation.checkRole(this.props.user, Constants.admin)){
+        if(AuthRoleValidation.checkRole(this.props.user, Constants.admin)|| AuthRoleValidation.checkRole(this.props.user, Constants.product_manager)){
         let newLines = [];
         opts.map(opt => {
             if (!newLines.includes(opt.value._id)){

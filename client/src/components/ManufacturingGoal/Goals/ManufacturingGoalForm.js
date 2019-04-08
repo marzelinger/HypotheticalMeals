@@ -2,6 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import addButton from '../../../resources/add.png';
+import * as Constants from '../../../resources/Constants';
+
+import AuthRoleValidation from '../../auth/AuthRoleValidation';
 
 class GoalForm extends React.Component{
   constructor(props) {
@@ -22,6 +25,8 @@ class GoalForm extends React.Component{
   render(){
     return (
       <div>
+        {AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) ?
+        <div>
         <img className = "hoverable" id = "button" src={addButton} onClick={this.toggle}></img>
         <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup" className={this.props.className}>
           <ModalHeader toggle={this.toggle}>Create New Manufacturing Goal</ModalHeader>
@@ -40,6 +45,10 @@ class GoalForm extends React.Component{
           </ModalFooter>
           </form>
         </Modal>
+        </div>
+        :
+        <div/>
+        }
       </div>
     )
   }

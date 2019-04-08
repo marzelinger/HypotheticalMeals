@@ -332,8 +332,10 @@ export default class ListPage extends React.Component {
 
     onAddManuGoals =  async() => {
         this.toggle(Constants.manu_goals_modal);
-        let res = await SubmitRequest.submitGetManuGoalsData(this.state.user);
+        let res = await SubmitRequest.submitGetManuGoalsByUsername(this.state.current_user.username);
+        if(res.success){
         this.setState({ manu_goals_data: res.data});
+        }
     }
 
     async onBulkManuLineSubmit(event, opt, skus) {
@@ -470,12 +472,12 @@ export default class ListPage extends React.Component {
                             onClick={() => SubmitRequest.updateSkuRecords()}
                             primary={true}
                             > Add All Records </div> */}
-            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || !AuthRoleValidation.checkRole(this.state.current_user, Constants.product_manager) ? null : 
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || !AuthRoleValidation.checkRole(this.state.current_user, Constants.business_manager) ? null : 
                             (<div className = "manugoalbutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.add_to_manu_goals)}
                             primary={true}
                             > {Constants.add_to_manu_goals} </div>)}
-            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || !AuthRoleValidation.checkRole(this.state.current_user, Constants.business_manager) ? null : 
+            {(this.props.default_ing_filter !== undefined || this.props.default_formula_filter !== undefined) || !AuthRoleValidation.checkRole(this.state.current_user, Constants.product_manager) ? null : 
                             (<div className = "manulinebutton hoverable"
                             onClick={() => this.onTableOptionSelection(null, Constants.edit_manu_lines)}
                             primary={true}

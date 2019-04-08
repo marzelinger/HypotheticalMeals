@@ -414,6 +414,21 @@ export default class SubmitRequest{
       });
   }
 
+  static submitGetManuGoalsByUsername(username) {
+    return fetch(`/api/manugoals_by_user/${username}`, { method: 'GET' })
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { error: res.error } ;
+        else return { 
+          success: res.success,
+          data: res.data
+        };
+        
+      });
+  }
+
+
+
   static submitUpdateGoal(user, id, item) {
     return fetch(`/api/manugoals/${user}/${id}`, {
       method: 'PUT',

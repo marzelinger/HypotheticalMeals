@@ -96,9 +96,16 @@ export default class PageTable extends Component {
       <TableHeaderColumn> 
           {this.props.simple? 'Details' : 
           (AuthRoleValidation.checkRole(this.props.user, Constants.admin) 
-          || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager)?
+          || (AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) && this.props.page_name!=Constants.manugoals_page_name)
+          ?
           'Edit Details' :
-          'See More Details')
+          ((AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.page_name == Constants.manugoals_page_name)
+          ?
+          'Edit/View Details'
+          :
+          'See More Details'
+          )
+          )
           } 
       </TableHeaderColumn>);
       }

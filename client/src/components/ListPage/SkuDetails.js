@@ -99,7 +99,7 @@ export default class SKUDetails extends React.Component {
     }
 
     onSelectProductLine = (pl) => {
-        if(AuthRoleValidation.checkRole(this.props.user, Constants.admin)){
+        if(AuthRoleValidation.checkRole(this.props.user, Constants.admin) || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager)){
             var newItem = Object.assign({}, this.state.item);
             newItem['prod_line'] = pl._id;
             this.setState({
@@ -117,7 +117,7 @@ export default class SKUDetails extends React.Component {
         var new_formula_item = await SubmitRequest.submitGetFormulaByID(formula._id);
         console.log("the formula from the call: "+ JSON.stringify(new_formula_item));
         if(new_formula_item.success){
-            if(AuthRoleValidation.checkRole(this.props.user, Constants.admin)){
+            if(AuthRoleValidation.checkRole(this.props.user, Constants.admin) || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager)){
                 var newItem = Object.assign({}, this.state.item);
                 newItem['formula'] = formula._id;
                 await this.setState({
@@ -132,7 +132,7 @@ export default class SKUDetails extends React.Component {
     }
 
     onModifyManuLines = (list) => {
-        if(AuthRoleValidation.checkRole(this.props.user, Constants.admin)){
+        if(AuthRoleValidation.checkRole(this.props.user, Constants.admin) || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager)){
             var newItem = Object.assign({}, this.state.item);
             console.log(newItem);
             newItem['manu_lines'] = list;
@@ -180,7 +180,7 @@ export default class SKUDetails extends React.Component {
         console.log("in on modify list qty: "+ JSON.stringify(qty));
 
 
-        if(AuthRoleValidation.checkRole(this.props.user, Constants.admin)){
+        if(AuthRoleValidation.checkRole(this.props.user, Constants.admin) || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager)){
             var formula_item = Object.assign({}, this.state.formula_item);
             console.log("this is the current formula"+ JSON.stringify(formula_item));
             console.log("this is the option"+ JSON.stringify(option));
@@ -449,7 +449,7 @@ export default class SKUDetails extends React.Component {
                         value={ this.state.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
                         onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
-                        disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin) && this.isNewSku(prop) ? "" : "disabled"}
+                        disabled = {(AuthRoleValidation.checkRole(this.props.user, Constants.admin) || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager)) && this.isNewSku(prop) ? "" : "disabled"}
                    />
                 </FormGroup>
             )
@@ -471,7 +471,8 @@ export default class SKUDetails extends React.Component {
                     item={this.state.item}
                     label={Constants.modify_manu_lines_label}
                     handleModifyManuLines={this.onModifyManuLines}
-                    disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin)}
+                    disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin) 
+                        || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) ? "" : "disabled"}                    
                     user = {this.props.user}
                 />
                 <ItemSearchInput
@@ -479,7 +480,8 @@ export default class SKUDetails extends React.Component {
                     item_type={Constants.prod_line_label}
                     invalid_inputs={this.state.invalid_inputs}
                     handleSelectItem={this.onSelectProductLine}
-                    disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin)}
+                    disabled = {AuthRoleValidation.checkRole(this.props.user, Constants.admin) 
+                        || AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) ? "" : "disabled"}                    
                     user = {this.props.user}
                 />
                 <SkuFormulaDetails
