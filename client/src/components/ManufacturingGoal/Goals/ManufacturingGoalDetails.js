@@ -66,6 +66,7 @@ export default class ManufacturingGoalDetails extends React.Component {
     }
 
     onPropChange = async (value, item, prop) => {
+        console.log(value)
         item[prop] = value
         await this.setState({ item: item });
     };
@@ -186,6 +187,7 @@ export default class ManufacturingGoalDetails extends React.Component {
             }
         }
         var date = new Date(this.state.item['deadline'])
+        console.log(date);
         if(!Boolean(+date))inv_in.push('deadline')
         await this.setState({ invalid_inputs: inv_in, errorText: error_text });
     }
@@ -231,8 +233,8 @@ export default class ManufacturingGoalDetails extends React.Component {
                     <Label>Deadline</Label>
                     <br></br>
                     <TextField
-                        id="datetime-local"
-                        type="datetime-local"
+                        id="data"
+                        type="date"
                         value = {this.state.item['deadline']}
                         className={`text ${this.state.invalid_inputs.includes('deadline') ? 'is-invalid form-control' : ''}`}
                         onClick = {(event) => this.onPropChange(event.target.value, this.state.item, 'deadline')}

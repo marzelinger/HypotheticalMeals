@@ -3,6 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import { Alert } from 'reactstrap';
 import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -33,6 +34,7 @@ class SalesReportPage extends React.Component {
             general_customer: {},
             drilldown_customer: {},
             dateRange: { 'startdate': last_year.toISOString().substr(0,10), 'enddate': today.toISOString().substr(0,10)},
+            dateRange_valid: true
         }
 
         this.onDateRangeSelect = this.onDateRangeSelect.bind(this);
@@ -77,16 +79,16 @@ class SalesReportPage extends React.Component {
         console.log(new Date())
         let newRange = Object.assign({}, this.state.dateRange)
         newRange[type] = event.target.value
-        // if (new Date(newRange['startdate']) > new Date(newRange['enddate'])) {
-        //     alert('Start date cannot be after End date!')
-        //     return
-        // }
-        // else if (new Date(newRange['enddate']) > new Date()) {
-        //     alert('Start date cannot be after End date!')
-        //     return
-        // }
+        let valid = true
+        if (new Date(newRange['startdate']).getTime() > new Date(newRange['enddate']).getTime()) {
+            valid = false
+        }
+        else if (new Date(newRange['enddate']).getTime() > new Date().getTime()) {
+            valid = false
+        }
         this.setState({
-            dateRange: newRange
+            dateRange: newRange,
+            dateRange_valid: valid
         })
     }
 
@@ -124,6 +126,7 @@ class SalesReportPage extends React.Component {
                         handleSelectSku={this.onSelectSku}
                         handleSelectCustomer={this.onSelectDrilldownCustomer}
                         dateRange={this.state.dateRange}
+                        dateRange_valid={this.state.dateRange_valid}
                         handleDateRangeSelect={this.onDateRangeSelect}
                     /> 
                 } 

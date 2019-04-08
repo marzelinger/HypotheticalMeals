@@ -15,8 +15,9 @@ import ManuSchedulePalette from './ManuSchedulePalette'
 import './../../style/ManuSchedulePageStyle.css';
 import GeneralNavBar from '../GeneralNavBar';
 import ManuActivityErrors from './ManuActivityErrors';
-import ManuSchedHelp from '../../resources/ManuSchedHelp.png';
 import AuthRoleValidation from '../auth/AuthRoleValidation';
+import ManuSchedHelp from '../../resources/ManuSchedHelp.png'
+import ManuAutoSchedule from "./ManuAutoShedule";
 const jwt_decode = require('jwt-decode');
 
 export default class ManuSchedulePage extends Component {
@@ -24,25 +25,48 @@ export default class ManuSchedulePage extends Component {
         super(props)
         this.range = {};
         
+        let today = new Date()
+        today.setHours(8)
+        today.setMinutes(0)
+        today.setSeconds(0)
+        today.setMilliseconds(0)
+        let tomorrow = new Date(today.getTime())
+        tomorrow.setHours(18)
+        tomorrow.setMinutes(0)
+        tomorrow.setSeconds(0)
+        tomorrow.setMilliseconds(0)
+        tomorrow.setDate(today.getDate() + 1)
+
         this.state = {
             options: {},
             lines: [],
             activities: [],
             unscheduled_goals: [],
             activity_to_schedule: null,
-            selected_activities: [],
+            autoselect_activities: [],
             loaded: false,
             modal: false,
             modal_type : '',
             error_change: false,
             current_user: {},
-            token: ''
+            token: '',
 
+            autoschedule: false,
+            autoschedule_dateRange: { 
+                'startdate': today, 
+                'enddate': tomorrow 
+            },
+            autoschedule_toggle_button: 'Autoschedule',
+            selected_indexes: {},
+            selected_items: [],
+            all_selected: false,
+            uncommitted_items: [],
+            autoschedule_warning: '',
+            autoschedule_warning_color: ''
         }
 
         this.prepareAddActivity = this.prepareAddActivity.bind(this);
         this.doubleClickHandler = this.doubleClickHandler.bind(this);
-        this.selectHandler = this.selectHandler.bind(this);
         this.onMove = this.onMove.bind(this);
         this.onRemove = this.onRemove.bind(this);
         this.onAdd = this.onAdd.bind(this);
@@ -50,6 +74,12 @@ export default class ManuSchedulePage extends Component {
         this.toggleModal = this.toggleModal.bind(this);
         this.determineUser = this.determineUser.bind(this);
         this.determineUser();
+        this.onSelectAutoselectActivities = this.onSelectAutoselectActivities.bind(this);
+        this.toggleAutoschedule = this.toggleAutoschedule.bind(this);
+        this.onDateRangeSelect = this.onDateRangeSelect.bind(this)
+        this.handleSelect = this.handleSelect.bind(this);
+        this.generateAutoschedule = this.generateAutoschedule.bind(this);
+        this.onAutoscheduleDecision = this.onAutoscheduleDecision.bind(this);
     }
 
     async componentDidMount() {
@@ -91,6 +121,22 @@ export default class ManuSchedulePage extends Component {
         items.length = 0;
         groups.length = 0;
         let initial_activities = await SubmitRequest.submitGetData(Constants.manu_activity_page_name);
+        let lines = await SubmitRequest.submitGetData(Constants.manu_line_page_name);
+        lines.data.map(line => {
+            groups.push({ id: line._id, content: line.name });
+            if (line.manager.includes("NEEDS MADDIE'S ISH")){ ///////Attention
+                console.log('WHATS UPPPPPPPPP')
+                items.push({
+                    id: "USER'S NAME HERE", ///////Attention
+                    content: '',
+                    start: new Date('01/01/1980'),
+                    end: new Date('01/01/2050'),
+                    type: 'background',
+                    group: line._id
+                })
+            }
+        });
+        console.log(initial_activities)
         let activities = []
         for(var i = 0; i < initial_activities.data.length; i ++){
             let activity = initial_activities.data[i];
@@ -100,6 +146,9 @@ export default class ManuSchedulePage extends Component {
         activities.map(act => {
             this.scheduleOrPalette(act, goals);
         });
+        this.state.uncommitted_items.map(ui => {
+            items.push(ui)
+        })
         let unscheduled_goals = goals.data.filter(goal => {
             let not_all_scheduled = false;
             goal.activities.map(act => {
@@ -107,16 +156,13 @@ export default class ManuSchedulePage extends Component {
             })
             return not_all_scheduled
         })
-        let lines = await SubmitRequest.submitGetData(Constants.manu_line_page_name);
-        lines.data.map(line => {
-            groups.push({ id: line._id, content: line.name });
-        });
         await this.setState({
             activities: activities,
             lines: lines.data,
             unscheduled_goals: unscheduled_goals,
             loaded: true
         });
+        console.log(items)
     }
 
     scheduleOrPalette(act, goals) {
@@ -142,8 +188,9 @@ export default class ManuSchedulePage extends Component {
                         start: start,
                         end: end,
                         content: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity,
-                        title: 'Goal: ' + assoc_goal.name + '<br>Deadline: ' + (parseInt(dl.getMonth())+1) + '/' + dl.getDate() + '/' + 
-                            dl.getFullYear() + ' ' + dl.getHours() + ':' + (dl.getMinutes()<10 ? ('0'+dl.getMinutes()) : dl.getMinutes()),
+                        title: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity + 
+                            '<br>Goal: ' + assoc_goal.name + 
+                            '<br>Deadline: ' + (parseInt(dl.getMonth())+1) + '/' + dl.getDate() + '/' + dl.getFullYear(),
                         group: act.manu_line._id,
                         className: cName,
                         _id: act._id
@@ -198,11 +245,6 @@ export default class ManuSchedulePage extends Component {
         }
     }
 
-    async selectHandler(items, event) {
-        await this.setState({ selected_activities: items })
-        return(items)
-    }
-
     prepareAddActivity(activity) {
         let new_act = null
         if (this.state.activity_to_schedule === null) {
@@ -222,6 +264,11 @@ export default class ManuSchedulePage extends Component {
     }
 
     async onMove(item, callback) {
+        if (item.className.includes('uncommitted')) {
+            alert('Uncommitted Autoschedule items cannot be edited!')
+            callback(null)
+            return
+        }
         let act = await SubmitRequest.submitGetManufacturingActivityByID(item._id)
         let end = new Date(item.end)
         let start = new Date(item.start)
@@ -308,6 +355,7 @@ export default class ManuSchedulePage extends Component {
                 start: item.start,
                 manu_line: { _id: item.group }
             })
+            console.log(activity)
             await CheckErrors.updateActivityErrors(activity);
             await this.loadScheduleData();
             await this.setState({ 
@@ -321,6 +369,11 @@ export default class ManuSchedulePage extends Component {
     }
 
     async onRemove(item, callback) {
+        if (item.className.includes('uncommitted')) {
+            alert('Uncommitted Autoschedule items cannot be edited!')
+            callback(null)
+            return
+        }
         let act = await SubmitRequest.submitGetManufacturingActivityByID(item._id)
         act.data[0].start = null;
         act.data[0].scheduled = false;
@@ -329,7 +382,7 @@ export default class ManuSchedulePage extends Component {
         await CheckErrors.updateActivityErrors(act.data[0]);
         await this.loadScheduleData();
         callback(item)
-        await this.setState({error_change: true})
+        await this.setState({error_change: true, selected_indexes:[]});
     }
 
     snap(date, scale, step) {
@@ -401,7 +454,7 @@ export default class ManuSchedulePage extends Component {
 
     updateRange =  (event) => {
         // this.setState({start: event.start})
-        this.range['start'] = event.start
+        this.range.start = event.start
         this.range.end = event.end;
     }
 
@@ -409,7 +462,323 @@ export default class ManuSchedulePage extends Component {
         await this.setState({error_change: false})
     }
 
+    async onSelectAutoselectActivities(act) {
+        console.log(act)
+        let asa = Object.assign([], this.state.autoselect_activities)
+        let ind = asa.find(res => res._id === act._id)
+        if (ind > -1) {
+            asa.splice(ind, 1)
+        }
+        else {
+            asa.push(act)
+        }
+        console.log(asa)
+        await this.setState({
+            autoselect_activities: asa
+        })
+    }
+
+    async toggleAutoschedule() {
+        let str = this.state.autoschedule ? 'Autoschedule' : 'Cancel' 
+        await this.setState({ 
+            autoschedule: !this.state.autoschedule,
+            autoschedule_toggle_button: str,
+            uncommitted_items: []
+        })
+    }
+
+    async onDateRangeSelect(event, type) {
+        let newRange = Object.assign({}, this.state.autoschedule_dateRange)
+        let oldDate = newRange[type]
+        let newDate = new Date(event.target.value)
+        oldDate.setFullYear(newDate.getFullYear())
+        oldDate.setMonth(newDate.getMonth())
+        oldDate.setDate(newDate.getDate()+1)
+        newRange[type] = oldDate
+        await this.setState({
+            dateRange: newRange,
+            uncommitted_items: []
+        })
+    }
+
+    async generateAutoschedule() {
+        if (this.state.autoschedule_dateRange.startdate.getTime() > this.state.autoschedule_dateRange.enddate.getTime()) {
+            alert ('Start cannot be after End date!')
+            return
+        }
+        await this.setState({ uncommitted_items: [] })
+        await this.loadScheduleData()
+        let TEMP_acts = this.getSelectedActivities();
+        this.deSelectAll();
+        console.log(TEMP_acts)
+        TEMP_acts.sort(function(a, b){
+            let aDate = new Date(a.deadline)
+            let bDate = new Date(b.deadline)
+            if (aDate.getTime() !== bDate.getTime()) return aDate.getTime() - bDate.getTime()
+            else return a.duration - b.duration
+        })
+        console.log(TEMP_acts)
+        let start = this.state.autoschedule_dateRange.startdate
+        let end = this.state.autoschedule_dateRange.enddate
+        console.log(start)
+        // filter to only items that end after range_start
+        let rel_items= items.filter(it => {
+            let it_end = new Date(it.end)
+            return (it_end.getTime() > start.getTime())
+        })
+        // sort items by end time, earliest to latest
+        rel_items.sort(function(a,b) {
+            let aDate = new Date(a.end)
+            let bDate = new Date(b.end)
+            return aDate.getTime() - bDate.getTime()
+        })
+        console.log(rel_items)
+        let new_items = []
+        let unscheduled_activities = []
+        while (TEMP_acts.length > 0) {
+            let curr = TEMP_acts[0]
+            let mlines = Object.assign([], curr.sku.manu_lines) //need to filter out lines not owned by self
+            let final_item = null
+            //try placing items at start of time range
+            mlines.some(ml => {
+                final_item = this.verifyPlacement(curr, start, mlines[0], rel_items, end)
+                if (final_item !== null) return true
+            })
+            console.log(final_item)
+            //if that didn't work, iterate through sorted list of items
+            if (final_item === null) {
+                rel_items.some(it => {
+                    if (curr.sku.manu_lines.includes(it.group)) {
+                        final_item = this.verifyPlacement(curr, this.determineNextStart(it.end), it.group, rel_items, end)
+                        console.log(final_item)
+                        if (final_item !== null) return true
+                    }
+                })
+            }
+            //if that didn't work, push to unscheduled items
+            if (final_item === null) unscheduled_activities.push(curr)
+            else {
+                final_item.id = curr.id
+                new_items.push(final_item)
+                rel_items.push(final_item)
+                rel_items.sort(function(a,b) {
+                    let aDate = new Date(a.end)
+                    let bDate = new Date(b.end)
+                    return aDate.getTime() - bDate.getTime()
+                })
+                // this.insertItem(final_item, rel_items);
+            }
+            TEMP_acts.splice(0, 1)
+        }
+        console.log(new_items)
+        console.log(unscheduled_activities)
+        if (new_items.length === 0) {
+            alert('None of the selected activities could be scheduled!')
+        }
+        else {
+            var str = ''
+            let alert = ''
+            if (unscheduled_activities.length > 0) {
+                str = 'The following activities could not be scheduled: '
+                unscheduled_activities.map(ua => {
+                    str += ua.sku.name + ': ' + ua.sku.unit_size + ' * ' + ua.quantity + ', '
+                })
+                str = str.substr(0, str.length - 2)
+                alert = 'warning'
+            }
+            else {
+                str = 'Activities successfully scheduled!'
+                alert = 'success'
+            }
+            await this.setState({
+                uncommitted_items: new_items,
+                autoschedule_warning: str,
+                autoschedule_warning_color: alert
+            })
+            await this.loadScheduleData()
+        }
+    }
+
+    insertItem(final_item, rel_items) {
+        let last_end = new Date();
+        let curr_end = new Date(final_item.end);
+        let final_ind = -1;
+        rel_items.some((ri, ind) => {
+            let next_end = new Date(ri.end);
+            if (curr_end.getTime() >= last_end.getTime() && curr_end <= next_end.getTime()) {
+                final_ind = ind;
+            }
+            last_end = new Date(ri.end);
+        });
+        if (final_ind > -1) {
+            rel_items.splice(final_ind, 0, final_item);
+        }
+        else {
+            rel_items.push(final_item);
+        }
+    }
+
+    verifyPlacement(act, start, mline, rel_items, auto_end) {
+        //if (ml.manager.includes('NEED MADDIES STUFF HERE')) return null //////ATTENTION
+        let end = this.determineEnd(start, act.duration)
+        let className = 'uncommitted'
+        if (end.getTime() > act.deadline.getTime()) {
+            className = className + ' over_deadline'
+        }
+        let item = {
+            start: new Date(start.getTime()),
+            end: new Date(end.getTime()),
+            content: act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity,
+            title: '*UNCOMMITTED*<br>' +
+                    act.sku.name + ': ' + act.sku.unit_size + ' * ' + act.quantity + 
+                    '<br>Goal: ' + act.goal + 
+                    '<br>Deadline: ' + (parseInt(act.deadline.getMonth())+1) + '/' + act.deadline.getDate() + '/' + act.deadline.getFullYear(),
+            group: mline,
+            className: className,
+            _id: act._id
+        };
+        console.log(item)
+        if (item.start.getHours() < 8 || (item.end.getHours() === 18 && item.end.getMinutes() > 0) || (item.end.getHours() > 18)) {
+            return null;
+        }
+        if (end.getTime() > auto_end.getTime()) return null //this needs to be tested
+        let toReturn = item
+        console.log('START') 
+        rel_items.map(i => {
+            console.log(i)
+            if (item.group === i.group) {
+                if ((i.start < item.end && i.start >= item.start) ||
+                    (i.end > item.start && i.end <= item.end) ||
+                    (i.start <= item.start && i.end >= item.end)){
+                        console.log('***failed')
+                        toReturn = null
+                    }
+            }
+        })
+        console.log('END')
+        console.log(toReturn)
+        return toReturn
+    }
+
+    determineEnd(_start, duration) {
+        console.log(_start)
+        console.log(duration)
+        /// end needs to calculate across multiple days !!!!!!!!!!!!!!
+        let start = new Date(_start.getTime())
+        let dur = Math.round(duration) + _start.getHours() - 8
+        start.setHours(8)
+        console.log(new Date(start.getTime() + Math.floor(dur/10)*24*60*60*1000 + (dur%10 * 60 * 60 * 1000)).toISOString())
+        return new Date(start.getTime() + Math.floor(dur/10)*24*60*60*1000 + (dur%10 * 60 * 60 * 1000));
+    }
+
+    determineNextStart(item_end) {
+        let start = new Date(item_end)
+        if (start.getHours() === 18) {
+            start.setDate(start.getDate() + 1)
+            start.setHours(8)
+        }
+        console.log(start.toISOString())
+        return start
+
+    }
+
+    filterGoalActivities = () => {
+        var uscheduled_goal_activities = this.state.unscheduled_goals.map((goal) => {
+            var unscheduled_activities = goal.activities.filter((activity)=> activity.scheduled == false);
+            unscheduled_activities.map(ua => {
+                ua.goal = goal.name
+                ua.deadline = new Date(goal.deadline)
+            })
+            return {...goal, activities: unscheduled_activities};
+        });
+        return uscheduled_goal_activities
+    }
+
+    getSelectedActivities = () => {
+        var unscheduled_goal_activities = this.filterGoalActivities();
+        var selected_activities = [];
+        for(var goal_index in this.state.selected_indexes){
+            var activity_indexes = this.state.selected_indexes[goal_index];
+            activity_indexes.forEach((index) => {
+                selected_activities.push(unscheduled_goal_activities[goal_index].activities[index]);
+            })
+        }
+        console.log(selected_activities);
+        return selected_activities;
+    }
+
+    handleSelect = async (rowIndexes, g_index) => {
+        console.log(rowIndexes)
+        var selected = this.state.selected_indexes;
+        if(rowIndexes == 'all'){
+            var indexes = []
+            var unscheduled_activities = this.state.unscheduled_goals[g_index].activities.filter((activity) => activity.scheduled == false);
+            for(var i = 0; i < unscheduled_activities.length; i ++){
+                indexes.push(i);
+            }
+            selected[g_index] = indexes;
+           
+        }
+        else if(rowIndexes == 'none'){
+            selected[g_index] = [];
+        }
+        else{
+            console.log(selected);
+            selected[g_index] = rowIndexes
+            console.log(selected);
+        }
+
+        await this.setState({selected_indexes: selected});
+        console.log(this.state.selected_indexes);
+        this.getSelectedActivities();
+        return;
+    };
+
+    async onAutoscheduleDecision(decision) {
+        if (decision) {
+            for(var i = 0; i < this.state.uncommitted_items.length; i ++){
+                var ui = this.state.uncommitted_items[i];
+                let ua = this.state.activities.find(a => a._id === ui._id)
+                Object.assign(ua, {
+                    scheduled: true,
+                    start: ui.start,
+                    manu_line: { _id: ui.group }
+                })
+                console.log(i);
+                let res = await CheckErrors.updateActivityErrors(ua);
+            }
+        }
+        await this.setState({
+            uncommitted_items: [],
+            error_change: true
+        })
+        await this.loadScheduleData()
+    }
+
+    toggleSelectAll= () => {
+        for(var i  = 0 ; i < this.state.unscheduled_goals.length; i ++){
+            this.handleSelect(this.state.all_selected ? 'none': 'all', i);
+        }
+        this.setState({all_selected: !this.state.all_selected});
+    }
+
+    deSelectAll = () => {
+        for(var i  = 0 ; i < this.state.unscheduled_goals.length; i ++){
+            this.handleSelect('none', i);
+        }
+        this.setState({all_selected: false});
+    }
+
+    isEmpty(obj) {
+        for(var key in obj) {
+            if(obj.hasOwnProperty(key))
+                return false;
+        }
+        return true;
+    }
+
     render() {
+        console.log('rendering page')
         return (
         <div>
             <GeneralNavBar title = {Constants.ManuScheduleTitle}></GeneralNavBar>
@@ -419,34 +788,75 @@ export default class ManuSchedulePage extends Component {
                     <Timeline 
                         options={this.getOptions()}
                         items={items.length ? items : [
-                            {
-                                start: new Date(),
-                                group: groups[0]._id,
-                            }
+                            // {
+                            //     start: new Date()
+                            //     group: groups[0]._id,
+                            // }
                         ]}
                         groups={groups}
                         doubleClickHandler={this.doubleClickHandler.bind(this)}
                         rangechangeHandler = {this.updateRange}
-                        // selectHandler={this.selectHandler.bind(this)}
                         user = {this.state.current_user}
 
                     />) : null}
                 </div>
                 <div className = "belowTimeline">
                     <div className='palette-container'>
-                        <h6 className='palette-title'>Unscheduled Activities</h6>
-                        <div 
-                            className = "info-modal-button" 
-                            onClick={(e) => this.toggleModal('palette')}
-                        >?</div>
-                        <ManuSchedulePalette
-                            goals={this.state.unscheduled_goals}
-                            activities={this.state.activities}
-                            lines={this.state.lines}
-                            activity_to_schedule={this.state.activity_to_schedule}
-                            prepareAddActivity={this.prepareAddActivity}
-                            user = {this.state.current_user}
-                        />
+                        <div className = 'palette-header'>
+                            {this.state.autoschedule ? 
+                            <div></div>
+                            :
+                            <div 
+                                    className = "select-all-button" 
+                                    onClick={(e) => this.toggleSelectAll()}
+                                >{this.state.all_selected ? 'Deselect All' : 'Select All'}
+                            </div>
+                            }
+                            <h6 className='palette-title'>Unscheduled Activities</h6>
+                            <div 
+                                className = "info-modal-button" 
+                                onClick={(e) => this.toggleModal('palette')}
+                            >?
+                            </div>
+                        </div>
+                        {this.state.autoschedule ? 
+                            <ManuAutoSchedule
+                                dateRange={this.state.autoschedule_dateRange}
+                                handleDateRangeSelect={this.onDateRangeSelect}
+                                uncommitted_items={this.state.uncommitted_items}
+                                handleAutoscheduleDecision={this.onAutoscheduleDecision}
+                                warning={this.state.autoschedule_warning}
+                                warning_color={this.state.autoschedule_warning_color}
+                                user = {this.state.current_user}
+                            /> : 
+                            <ManuSchedulePalette
+                                goals={this.state.unscheduled_goals}
+                                activities={this.state.activities}
+                                lines={this.state.lines}
+                                handleSelect = {this.handleSelect}
+                                selected_indexes = {this.state.selected_indexes}
+                                selected_items = {this.state.selected_items}
+                                activity_to_schedule={this.state.activity_to_schedule}
+                                prepareAddActivity={this.prepareAddActivity}
+                                selected_activities={this.state.autoselect_activities}
+                                handleToggleActivity={this.onSelectAutoselectActivities}
+                                user = {this.state.current_user}
+                            />
+                        }
+                        {!this.isEmpty(this.state.selected_indexes) ?
+                            <Button
+                                onClick={this.toggleAutoschedule}
+                            > 
+                                {this.state.autoschedule_toggle_button}
+                            </Button> :
+                            null
+                        }
+                        {this.state.autoschedule && this.state.loaded ? 
+                            <Button
+                                onClick={this.generateAutoschedule}
+                            >Generate Autoschedule</Button> :
+                            null
+                        }
                     </div>
                     <div className='errors-container'>
                         <h6 className='errors-title'>Activity Errors</h6>
