@@ -69,7 +69,7 @@ export default class Filter extends React.Component {
                     });
                     break;
                 case Constants.manu_line_page_name:
-                    SubmitRequest.submitGetManufacturingLinesByNameSubstring(input).then((response) => {
+                    SubmitRequest.submitGetManufacturingLinesByNameSubstring(input, 0, 0).then((response) => {
                         this.handleResponse(response)
                     });
                     break;

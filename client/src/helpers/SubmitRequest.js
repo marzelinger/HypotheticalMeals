@@ -33,7 +33,7 @@ export default class SubmitRequest{
   }
 
   static async updateSkuRecords() {
-    console.log('here')
+    // console.log('here')
     fetch(`/api/update_all`, { method: 'GET' })
   }
 
@@ -338,6 +338,7 @@ export default class SubmitRequest{
       return fetch('/api/users/' + id)
       .then(data => data.json())
       .then((res) => {
+        // console.log("THIS IS THE RES IN SUBMIT; "+JSON.stringify(res));
         if (!res.success) return { success: res.success, error: res.error };
         else return { 
           success: res.success,
@@ -413,6 +414,21 @@ export default class SubmitRequest{
       });
   }
 
+  static submitGetManuGoalsByUsername(username) {
+    return fetch(`/api/manugoals_by_user/${username}`, { method: 'GET' })
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { error: res.error } ;
+        else return { 
+          success: res.success,
+          data: res.data
+        };
+        
+      });
+  }
+
+
+
   static submitUpdateGoal(user, id, item) {
     return fetch(`/api/manugoals/${user}/${id}`, {
       method: 'PUT',
@@ -437,9 +453,9 @@ export default class SubmitRequest{
     });
   }
 
-  static submitGetManufacturingLinesByNameSubstring(substr) {
+  static submitGetManufacturingLinesByNameSubstring(substr, currentPage, pageSize) {
     try {
-      return fetch('/api/manulines_name/' + substr)
+      return fetch('/api/manulines_name/' + substr +'/'+currentPage+'/'+pageSize)
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { success: res.success, error: res.error };
@@ -511,7 +527,7 @@ export default class SubmitRequest{
   static async submitGetManufacturingActivitiesBySKU(sku_id, start, end) {
     try {
       // console.log("THIS IS THE SKU: "+JSON.stringify(sku_id));
-      console.log("sku: "+sku_id+"     start;    "+start+"       end: "+end);
+      // console.log("sku: "+sku_id+"     start;    "+start+"       end: "+end);
       return fetch('/api/manuactivities/' + sku_id+'/'+start+'/'+end)
       .then(data => data.json())
       .then((res) => {

@@ -35,6 +35,7 @@ export default class AddToManuGoal extends React.Component {
         console.log(skus);
         console.log(goal.activities);
         for(const skustring in quantities){
+            //TODO fix error
             var sku = JSON.parse(skustring);
             var skukey = sku._id
             if(!skus.includes(skukey)){

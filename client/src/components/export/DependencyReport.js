@@ -149,8 +149,6 @@ async loadDataFromServerForReport(ingredients){
       csvContent += curRow + "\r\n";
     }
     }
-
-
     fileDownload(csvContent, fileTitle+'.csv');
 };
 

@@ -10,8 +10,8 @@ import { Modal } from 'reactstrap';
 import ManufacturingScheduleReportDetails from './ManufacturingScheduleReportDetails';
 import ManufacturingReport from './ManufacturingReport';
 import { exportManuScheduleReport} from "../../actions/ManufacturingScheduleReport";
+import AuthRoleValidation from '../auth/AuthRoleValidation';
 const jwt_decode = require('jwt-decode');
-const currentUserIsAdmin = require("../../components/auth/currentUserIsAdmin");
 
 
 
@@ -59,19 +59,48 @@ export default class ManufacturingLinePage extends React.Component {
         beg_cut: [],
         end_cut: [],
         all_cut: [],
-        summation: []
+        summation: [],
+        current_user: {},
+        token: ''
 
 
     };
-    if(localStorage != null){
-        if(localStorage.getItem("jwtToken")!= null){
-            this.state.user = jwt_decode(localStorage.getItem("jwtToken")).username;
-        }
-    }
     this.toggle = this.toggle.bind(this);
     this.print = this.print.bind(this);
     // this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
     // this.setInitPages();
+    this.determineUser = this.determineUser.bind(this);
+    this.determineUser();
+  }
+
+  async determineUser() {
+    var res = await AuthRoleValidation.determineUser();
+    if(res!=null){
+        var user = res.user;
+        var token = res.token;
+        await this.setState({
+            current_user: user,
+            token: token
+        })
+    }
+  }
+
+  async componentDidUpdate (prevProps, prevState) {
+
+    if(localStorage != null){
+        if(localStorage.getItem("jwtToken")!= null){
+            var token = localStorage.getItem("jwtToken");
+            if(this.state.token!=null){
+                if(this.state.token != token){
+                    await this.determineUser();
+                }
+            }
+        }
+    }
+    
+    if(this.state.current_user._id != AuthRoleValidation.getUserID()){
+        await this.determineUser();
+    }
   }
 
   print() {
@@ -161,7 +190,8 @@ export default class ManufacturingLinePage extends React.Component {
       <div>
         <GeneralNavBar title={Constants.ManuLineTitle}></GeneralNavBar>
         <ManufacturingLineBox
-        handleManuScheduleReportSelect = {this.onManuReportSelect}
+          handleManuScheduleReportSelect = {this.onManuReportSelect}
+          user = {this.state.current_user}
         ></ManufacturingLineBox>
         <Modal isOpen={this.state.manu_report_modal} toggle={this.toggle} id="popup" className='manu-report-details'>
                     <ManufacturingScheduleReportDetails
@@ -169,6 +199,7 @@ export default class ManufacturingLinePage extends React.Component {
                             detail_view_options={this.state.detail_view_options}
                             detail_view_action = {this.state.detail_view_action}
                             handleDetailViewSubmit={this.onDetailViewSubmitReport}
+                            user = {this.state.current_user}
                         />
         </Modal>
         <Modal isOpen={this.state.manu_report_data_modal} toggle={this.toggle} id="popup" className='manu-report-display'>
@@ -177,6 +208,7 @@ export default class ManufacturingLinePage extends React.Component {
                             manuData = {this.state.manuData}
                             detail_view_options = {this.state.detail_view_options}
                             handleDetailViewSubmit={this.onDetailViewDataSubmit}
+                            user = {this.state.current_user}
                     />
         </Modal>
       </div>

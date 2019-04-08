@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import 'whatwg-fetch';
 import ProductLineList from './ProductLineList';
-import ProductLineForm from './ProductLineForm';
 import * as Constants from '../../resources/Constants';
 import SubmitRequest from '../../helpers/SubmitRequest';
 import '../../style/ManufacturingGoalsBox.css'
@@ -204,6 +203,7 @@ class ProductLinesBox extends Component {
             handleDeleteProdLine={this.onDeleteProdLine}
             handleUpdateProdLine={this.onUpdateProdLine}
             handleDetailViewSubmit = {this.handleDetailViewSubmit}
+            user = {this.props.user}
           />
         </div>
         <div className="form">
@@ -211,6 +211,7 @@ class ProductLinesBox extends Component {
                 buttonImage = {addButton}
                 handleDetailViewSubmit = {this.handleDetailViewSubmit}
                 options = {[Constants.details_create]}
+                user = {this.props.user}
                 ></ProductLineDetails>
           <ExportSimple data = {this.state.data} fileTitle = {"productLines"}/> 
 

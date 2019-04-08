@@ -9,7 +9,6 @@ import ManufacturingGoalDetails from './ManufacturingGoalDetails';
 import ItemStore from '../../../helpers/ItemStore';
 import TextField from 'material-ui/TextField';
 import SearchIcon from 'material-ui/svg-icons/action/search'
-import currentUserIsAdmin from '../../auth/currentUserIsAdmin'
 import addButton from '../../../resources/add.png';
 import TablePagination from '../../ListPage/TablePagination';
 import PageTable from '../../ListPage/PageTable';
@@ -20,6 +19,7 @@ import {
   Label,
   Modal, FormFeedback } from 'reactstrap';
 import DataStore from '../../../helpers/DataStore';
+import AuthRoleValidation from '../../auth/AuthRoleValidation';
 const jwt_decode = require('jwt-decode');
 
 class ManufacturingGoalsBox extends Component {
@@ -45,13 +45,11 @@ class ManufacturingGoalsBox extends Component {
       user: '',
       enabled: false,
       date: '',
-      isAdmin: currentUserIsAdmin(),
       sort_field:'_',
       details_modal: false,
       detail_view_options: [],
       detail_view_action: ''
     };
-    console.log(this.state.isAdmin);
     if(localStorage != null){
       if(localStorage.getItem("jwtToken")!= null){
         this.state.user = jwt_decode(localStorage.getItem("jwtToken")).username;
@@ -331,6 +329,8 @@ class ManufacturingGoalsBox extends Component {
 }
 
   onDetailViewSelect = async (event, item) => {
+
+    //NEED TO CHECK WHAT OPTIONS TO PUT BASED ON THE USER.
     if(item.deadline != " "){
       var deadline = new Date(item.deadline)
       var localDate = deadline
@@ -348,7 +348,7 @@ class ManufacturingGoalsBox extends Component {
     this.setState({
         detail_view_item: item
     });
-    if(currentUserIsAdmin().isValid){
+    if(AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && item.user ==this.props.user.username){
         this.setState({ 
         detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel],
         detail_view_action: Constants.details_edit
@@ -387,6 +387,7 @@ class ManufacturingGoalsBox extends Component {
                   filters = {[]}
                   table_options = {this.state.table_options}
                   onTableOptionSelection = {this.onTableOptionSelection}
+                  user = {this.props.user}
               />
           </div>
           <div className = 'goal-sku-table'>
@@ -397,6 +398,7 @@ class ManufacturingGoalsBox extends Component {
               buttonImage = {addButton}
               handleDetailViewSubmit = {this.onDetailViewSubmit}
               detail_view_options = {this.state.detail_view_options}
+              user = {this.props.user}
               ></ManufacturingGoalDetails>
           </Modal>
           </div>

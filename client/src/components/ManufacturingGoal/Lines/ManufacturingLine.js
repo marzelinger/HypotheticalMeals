@@ -9,6 +9,7 @@ import SubmitRequest from '../../../helpers/SubmitRequest';
 import ManufacturingLineDetails from './ManufacturingLineDetails';
 import editButton from '../../../resources/edit.png';
 import * as Constants from '../../../resources/Constants';
+import AuthRoleValidation from '../../auth/AuthRoleValidation';
 
 
 
@@ -43,17 +44,14 @@ export default class ManufacturingLine extends React.Component{
   }
 
   render() {
-    // console.log("this is the manu_line: "+JSON.stringify(this.props.manu_line));
     return (
       <div id="singleGoal">
         <div className="textContent">
           <div className="singleGoalContent" id={'manuline' + this.props.id}>
           <h3>{this.props.name}</h3>
-          {/* <input onKeyPress = {(event) => this.onNameSubmit(event)} type = "text" value = {this.state.name} onChange = {(event) => this.onNameChange(event)}></input> */}
           </div>
         </div>
         <div className="singleGoalButtons">
-            {/* <img className = "hoverable" id ="deleteButton" onClick={() => {this.handleDeleteGoal()}} src= {deleteButton}></img> */}
             <div className = "editform" className="form">
               <ManufacturingLineDetails
               onEnabled = {this.onEnabled}
@@ -61,11 +59,12 @@ export default class ManufacturingLine extends React.Component{
               item = {this.props.manu_line}
               buttonImage = {editButton}
               handleDetailViewSubmit = {this.props.handleDetailViewSubmit}
-              options = {[Constants.details_save, Constants.details_delete, Constants.details_cancel]}
+              options = {AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) ? [Constants.details_save, Constants.details_delete, Constants.details_cancel] : [Constants.details_cancel]}
               validateShortName = {this.props.validateShortName} 
+              user = {this.props.user}
               ></ManufacturingLineDetails>
             </div>
-            <div className = "exportbutton pdfbutton hoverable" onClick = {() => this.onReportClick()}>Report</div>
+            {AuthRoleValidation.checkRole(this.props.user, Constants.analyst) ? <div className = "exportbutton pdfbutton hoverable" onClick = {() => this.onReportClick()}>Report</div> :<div/>}   
           </div>
       </div>
     )

@@ -19,9 +19,7 @@ import TablePagination from './TablePagination'
 import DependencyReport from "../export/DependencyReport";
 import ExportSimple from '../export/ExportSimple';
 import GeneralNavBar from '../GeneralNavBar';
-
-const currentUserIsAdmin = require("../auth/currentUserIsAdmin");
-
+import AuthRoleValidation from '../auth/AuthRoleValidation';
 
 
 export default class IngredientsPage extends React.Component {
@@ -61,7 +59,9 @@ export default class IngredientsPage extends React.Component {
                 'skus': []
             },
             filterChange: false,
-            skus: []
+            skus: [],
+            current_user: {},
+            token: ''
 
         };
         this.toggleModal = this.toggleModal.bind(this);
@@ -70,7 +70,9 @@ export default class IngredientsPage extends React.Component {
         this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
         this.onSort = this.onSort.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
+        this.determineUser = this.determineUser.bind(this);
         this.setInitPages();
+        this.determineUser();
     }
 
     toggleModal(){
@@ -78,6 +80,18 @@ export default class IngredientsPage extends React.Component {
             modal: !this.state.modal
         });
     }   
+
+    async determineUser() {
+        var res = await AuthRoleValidation.determineUser();
+        if(res!=null){
+            var user = res.user;
+            var token = res.token;
+            await this.setState({
+                current_user: user,
+                token: token
+            })
+        }
+    }
 
     async componentDidMount() {
         if (this.props.default_sku_filter !== undefined){
@@ -89,6 +103,20 @@ export default class IngredientsPage extends React.Component {
     }
 
     async componentDidUpdate (prevProps, prevState) {
+        if(localStorage != null){
+            if(localStorage.getItem("jwtToken")!= null){
+                var token = localStorage.getItem("jwtToken");
+                if(this.state.token!=null){
+                    if(this.state.token != token){
+                        await this.determineUser();
+                    }
+                }
+            }
+        }
+
+        if(this.state.current_user._id != AuthRoleValidation.getUserID()){
+            await this.determineUser();
+        }
         if (this.state.filterChange) {
             await this.loadDataFromServer();
         }
@@ -275,7 +303,8 @@ export default class IngredientsPage extends React.Component {
     };
 
     onDetailViewSelect = (event, item) => {
-        if(currentUserIsAdmin().isValid){
+        if (AuthRoleValidation.checkRole(this.state.current_user, Constants.admin) 
+        || AuthRoleValidation.checkRole(this.state.current_user, Constants.product_manager) ){
             this.setState({ 
             detail_view_item: item ,
             detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel]
@@ -332,8 +361,8 @@ export default class IngredientsPage extends React.Component {
 
     getButtons = () => {
         return (
-        <div className = "ingbuttons">     
-            <DependencyReport data = {this.state.exportData} />
+        <div className = "ingbuttons">
+            {AuthRoleValidation.checkRole(this.state.current_user, Constants.analyst) ? <DependencyReport data = {this.state.exportData} /> : <div></div>}     
             <ExportSimple data = {this.state.exportData} fileTitle = {this.state.page_name}/> 
         </div>
         );
@@ -367,6 +396,7 @@ export default class IngredientsPage extends React.Component {
                         onRemoveFilter = {this.onRemoveFilter}
                         skus = {this.state.skus}
                         onTableOptionSelection = {this.onTableOptionSelection}
+                        user = {this.state.current_user}
                     />
                 </div>
                 <Modal isOpen={this.state.modal} toggle={this.toggleModal} id="popup" className='item-details'>
@@ -375,6 +405,7 @@ export default class IngredientsPage extends React.Component {
                             item={this.state.detail_view_item}
                             detail_view_options={this.state.detail_view_options}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
+                            user = {this.state.current_user}
                         />
                 </Modal>   
                 <TablePagination

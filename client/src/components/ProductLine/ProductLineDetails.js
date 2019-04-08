@@ -10,6 +10,7 @@ import {
 import DataStore from '../../helpers/DataStore'
 import ItemStore from '../../helpers/ItemStore';
 import addButton from '../../resources/add.png';
+import AuthRoleValidation from '../auth/AuthRoleValidation';
 
 export default class ProductLineDetails extends React.Component {
     constructor(props) {
@@ -95,6 +96,8 @@ export default class ProductLineDetails extends React.Component {
                         value={ this.state.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
                         onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
+                        disabled = {!AuthRoleValidation.checkRole(this.props.user, Constants.product_manager)}
+
                     />
                 </FormGroup>));
         }
@@ -119,7 +122,12 @@ export default class ProductLineDetails extends React.Component {
     render() {
         return (
         <div>
-        <img id = "buttonline" src={this.props.buttonImage} onClick={this.toggle}></img>
+            {!AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) && this.props.buttonImage===addButton
+            ?
+            <div/>
+            :
+            <img id = "buttonline" src={this.props.buttonImage} onClick={this.toggle}></img>
+            }
             <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup" className='item-details'>
             <div className='item-details'>
                 <div className='item-title'>
