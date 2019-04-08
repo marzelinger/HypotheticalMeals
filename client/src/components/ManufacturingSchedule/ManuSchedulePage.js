@@ -90,7 +90,7 @@ export default class ManuSchedulePage extends Component {
         let lines = await SubmitRequest.submitGetData(Constants.manu_line_page_name);
         lines.data.map(line => {
             groups.push({ id: line._id, content: line.name });
-            if (line.manager.includes("NEEDS MADDIE'S ISH")){ ///////Attention
+            if (line.role.includes("NEEDS MADDIE'S ISH")){ ///////Attention
                 console.log('WHATS UPPPPPPPPP')
                 items.push({
                     id: "USER'S NAME HERE", ///////Attention
@@ -584,7 +584,7 @@ export default class ManuSchedulePage extends Component {
     }
 
     verifyPlacement(act, start, mline, rel_items, auto_end) {
-        //if (ml.manager.includes('NEED MADDIES STUFF HERE')) return null //////ATTENTION
+        //if (ml.role.includes('NEED MADDIES STUFF HERE')) return null //////ATTENTION
         let end = this.determineEnd(start, act.duration)
         let className = 'uncommitted'
         if (end.getTime() > act.deadline.getTime()) {
