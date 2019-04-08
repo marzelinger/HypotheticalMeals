@@ -124,9 +124,9 @@ export default class ManuSchedulePalette extends Component {
                                     onRowSelection = {(res) => this.props.handleSelect(res, g_index)}
                                 >
                                     <TableHeader  
-                                    displaySelectAll={true}
-                                    adjustForCheckbox={true}
-                                    enableSelectAll={true}>
+                                        displaySelectAll={true}
+                                        adjustForCheckbox={true}
+                                        enableSelectAll={true}>
                                     <TableRow>
                                         {this.state.item_properties.map(prop =>
                                             <TableHeaderColumn>{this.getPropertyLabel(prop)}</TableHeaderColumn>
@@ -134,7 +134,7 @@ export default class ManuSchedulePalette extends Component {
                                     </TableRow>
                                     </TableHeader>
                                     <TableBody
-                                    deselectOnClickaway={false}
+                                        deselectOnClickaway={false}
                                     >
                                     {this.getActivities(goal, g_index)}
                                     </TableBody>

@@ -125,18 +125,18 @@ export default class ManuSchedulePage extends Component {
         console.log(this.state.current_user)
         lines.data.map(line => {
             groups.push({ id: line._id, content: line.name });
-            console.log(this.state.current_user)
-            if (this.state.current_user.manu_lines.find(ml => ml._id === line._id)){ 
-                items.push({
-                    id: this.state.current_user.username,
-                    content: '',
-                    start: new Date('01/01/1980'),
-                    end: new Date('01/01/2050'),
-                    type: 'background',
-                    group: line._id
-                })
-                console.log(items[items.length-1])
-            }
+            // console.log(this.state.current_user)
+            // if (this.state.current_user.manu_lines.find(ml => ml._id === line._id)){ 
+            //     items.push({
+            //         id: this.state.current_user.username,
+            //         content: '',
+            //         start: new Date('01/01/1980'),
+            //         end: new Date('01/01/2050'),
+            //         type: 'background',
+            //         group: line._id
+            //     })
+            //     console.log(items[items.length-1])
+            // }
         });
         console.log(initial_activities)
         let activities = []
@@ -763,7 +763,6 @@ export default class ManuSchedulePage extends Component {
     }
 
     toggleSelectAll= () => {
-        if (!this.state.current_user.roles.includes('plant_manager')) return
         for(var i  = 0 ; i < this.state.unscheduled_goals.length; i ++){
             this.handleSelect(this.state.all_selected ? 'none': 'all', i);
         }
