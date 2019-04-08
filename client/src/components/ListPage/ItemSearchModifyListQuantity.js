@@ -100,6 +100,8 @@ export default class ItemSearchModifyListQuantity extends React.Component {
             case Constants.details_remove:
                 return (state.value === '' || (!satisfiesRegex && this.props.item_type === Constants.details_modify_ingredient && 
                         this.props.qty_disable === true) || (state.qty <= 0 && this.props.qty_disable !== true))
+            case Constants.details_sales_projection:
+                    return (this.state.value === '');
         }
     }
 
