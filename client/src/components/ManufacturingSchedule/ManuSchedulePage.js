@@ -124,10 +124,11 @@ export default class ManuSchedulePage extends Component {
         let lines = await SubmitRequest.submitGetData(Constants.manu_line_page_name);
         lines.data.map(line => {
             groups.push({ id: line._id, content: line.name });
-            if (line.manager.includes("NEEDS MADDIE'S ISH")){ ///////Attention
+            // if (line.manager.includes("NEEDS MADDIE'S ISH")){ ///////Attention
+            if (this.state.current_user.manu_lines.includes(line._id)){
                 console.log('WHATS UPPPPPPPPP')
                 items.push({
-                    id: "USER'S NAME HERE", ///////Attention
+                    id: this.state.current_user.username, ///////Attention
                     content: '',
                     start: new Date('01/01/1980'),
                     end: new Date('01/01/2050'),
@@ -797,7 +798,6 @@ export default class ManuSchedulePage extends Component {
                         doubleClickHandler={this.doubleClickHandler.bind(this)}
                         rangechangeHandler = {this.updateRange}
                         user = {this.state.current_user}
-
                     />) : null}
                 </div>
                 <div className = "belowTimeline">
@@ -843,7 +843,7 @@ export default class ManuSchedulePage extends Component {
                                 user = {this.state.current_user}
                             />
                         }
-                        {!this.isEmpty(this.state.selected_indexes) ?
+                        {!this.isEmpty(this.state.selected_indexes) && AuthRoleValidation.checkRole(this.state.current_user, Constants.plant_manager)?
                             <Button
                                 onClick={this.toggleAutoschedule}
                             > 
@@ -851,7 +851,9 @@ export default class ManuSchedulePage extends Component {
                             </Button> :
                             null
                         }
+                        {/* {this.state.autoschedule && this.state.loaded && AuthRoleValidation.checkRole(this.state.current_user, Constants.plant_manager) ?  */}
                         {this.state.autoschedule && this.state.loaded ? 
+
                             <Button
                                 onClick={this.generateAutoschedule}
                             >Generate Autoschedule</Button> :

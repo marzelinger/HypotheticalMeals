@@ -3,6 +3,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import DataStore from "../../helpers/DataStore"
+import * as Constants from '../../resources/Constants';
+
 
 import {
     Table,
@@ -22,6 +24,7 @@ import {
 // import 'react-accessible-accordion/dist/minimal-example.css';
 import '../../style/accordianStyle.css';
 import ManuSchedulePaletteGoal from "./ManuSchedulePaletteGoal";
+import AuthRoleValidation from "../auth/AuthRoleValidation"
 import Checkbox from '@material-ui/core/Checkbox';
 
 
@@ -85,7 +88,7 @@ export default class ManuSchedulePalette extends Component {
                                 onClick={(e) => this.props.prepareAddActivity(act)}
                                 style = {{backgroundColor: this.props.activity_to_schedule ? (this.props.activity_to_schedule._id === act._id ? '#98edf3' : '#d7fbfd') : '#d7fbfd'}}
                                 className='add_to_schedule'
-                                disabled={this.props.activity_to_schedule ? (this.props.activity_to_schedule._id === act._id ? false : true) : false}
+                                disabled={((AuthRoleValidation.checkRole(this.props.user, Constants.plant_manager) && this.props.user.manu_lines.includes(act.manu_line))|| AuthRoleValidation.checkRole(this.props.user, Constants.admin) )? (this.props.activity_to_schedule ? (this.props.activity_to_schedule._id === act._id ? false : true) : false) : true}
                             >{this.props.activity_to_schedule ? (this.props.activity_to_schedule._id === act._id ? 'x' : '+') : '+'}</div>
                         </TableRowColumn>
                     )
