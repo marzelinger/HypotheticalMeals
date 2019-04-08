@@ -33,7 +33,8 @@ export default class ManuLineSelect extends React.Component {
             table_columns,
             table_properties,
             table_options,
-            selected_items: Object.assign([], props.manu_lines),
+            // selected_items: Object.assign([], props.manu_lines),
+            selected_items: [],
             // selected_indexes: [Object.assign([], props.manu_lines_indices)],
             selected_indexes: [],
             data: [],
@@ -59,7 +60,9 @@ export default class ManuLineSelect extends React.Component {
         this.onFilterValueChange = this.onFilterValueChange.bind(this);
         this.onSort = this.onSort.bind(this);
         this.handlePageClick=this.handlePageClick.bind(this);
-        this.onSelect = this.onSelect.bind(this)
+        this.onSelect = this.onSelect.bind(this);
+        this.setInitManuLines = this.setInitManuLines.bind(this);
+        this.setInitManuLines();
         this.setInitPages();
     }  
 
@@ -67,6 +70,13 @@ export default class ManuLineSelect extends React.Component {
         this.loadDataFromServer();
     }
 
+    async setInitManuLines() {
+        if(this.props.manu_lines!=undefined){
+            this.setState({
+                selected_items: this.props.manu_lines
+            })
+        }
+    }
     async componentDidUpdate (prevProps, prevState) {
         if (this.state.filterChange || this.state.selected_items!=this.props.manu_lines) {
             this.setState ({
@@ -197,6 +207,7 @@ export default class ManuLineSelect extends React.Component {
     };
 
     onSelect = async (rowIndexes) => {
+        console.log("rowindices: "+JSON.stringify(rowIndexes));
         if(rowIndexes == 'all'){
             var indexes = []
             for(var i = 0; i < this.state.data.length; i ++){
@@ -213,7 +224,11 @@ export default class ManuLineSelect extends React.Component {
         rowIndexes.forEach( index => {
             newState.push(this.state.data[index]);
         });
-        await this.setState({ selected_items: newState, selected_indexes: rowIndexes});
+        console.log("newState: "+JSON.stringify(newState));
+        await this.setState({ 
+            selected_items: newState, selected_indexes: rowIndexes});
+            
+        console.log("newState22: "+JSON.stringify(this.state.selected_items));
         this.props.handleSelectManuLines(this.state.selected_items, this.state.selected_indexes);
     };
 
@@ -253,8 +268,6 @@ export default class ManuLineSelect extends React.Component {
                         onRemoveFilter = {this.onRemoveFilter}
                         onTableOptionSelection = {this.onTableOptionSelection}
                         reportSelect = {true}
-
-
                     />                              
                     <TablePagination
                         currentPage = {this.state.currentPage}

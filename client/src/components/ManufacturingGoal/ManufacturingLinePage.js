@@ -10,6 +10,7 @@ import { Modal } from 'reactstrap';
 import ManufacturingScheduleReportDetails from './ManufacturingScheduleReportDetails';
 import ManufacturingReport from './ManufacturingReport';
 import { exportManuScheduleReport} from "../../actions/ManufacturingScheduleReport";
+import AuthRoleValidation from '../auth/AuthRoleValidation';
 const jwt_decode = require('jwt-decode');
 
 

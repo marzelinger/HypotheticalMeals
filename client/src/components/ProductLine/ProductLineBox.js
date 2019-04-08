@@ -203,6 +203,7 @@ class ProductLinesBox extends Component {
             handleDeleteProdLine={this.onDeleteProdLine}
             handleUpdateProdLine={this.onUpdateProdLine}
             handleDetailViewSubmit = {this.handleDetailViewSubmit}
+            user = {this.props.user}
           />
         </div>
         <div className="form">
@@ -210,6 +211,7 @@ class ProductLinesBox extends Component {
                 buttonImage = {addButton}
                 handleDetailViewSubmit = {this.handleDetailViewSubmit}
                 options = {[Constants.details_create]}
+                user = {this.props.user}
                 ></ProductLineDetails>
           <ExportSimple data = {this.state.data} fileTitle = {"productLines"}/> 
 

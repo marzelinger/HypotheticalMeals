@@ -16,6 +16,7 @@ import {
 import * as Constants from '../../resources/Constants';
 import Select from 'react-select'
 import '../../style/TableStyle.css'
+import AuthRoleValidation from '../auth/AuthRoleValidation';
 
 export class ProductLineSkuTable extends React.Component{
     constructor(props) {
@@ -50,8 +51,21 @@ export class ProductLineSkuTable extends React.Component{
               width: '150px'
           })
         }
+        console.log("this is user: "+JSON.stringify(this.props.user));
        
-        return (<Select  styles={customStyles} className = "select" defaultValue = {defaultValue} onChange = {(newval, {action}) => this.props.onProdLineChange(newval, index, action) } options={options} />);
+        return (AuthRoleValidation.checkRole(this.props.user, Constants.product_manager)?
+                  <Select  
+                  styles={customStyles} 
+                  className = "select" 
+                  defaultValue = {defaultValue} 
+                  onChange = {(newval, {action}) => this.props.onProdLineChange(newval, index, action) } 
+                  options={options}
+                  disabled = {!AuthRoleValidation.checkRole(this.props.user, Constants.product_manager)} />
+                  :
+                  <div>
+                  {item.prod_line.name}
+                  </div>
+                  );
     }
     
     render() {

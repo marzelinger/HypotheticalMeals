@@ -202,29 +202,6 @@ export default class UserDetails extends React.Component {
         })
     }
 
-    // onSelect = async (rowIndexes) => {
-    //     if(rowIndexes == 'all'){
-    //         var indexes = []
-    //         for(var i = 0; i < this.state.data.length; i ++){
-    //             indexes.push(i);
-    //         }
-    //         await this.setState({selected_items: this.state.data, selected_indexes: indexes});
-    //         this.onSelectManuLines(this.state.selected_items, this.state.selected_indexes);
-    //         return;
-    //     }
-    //     else if(rowIndexes == 'none'){
-    //         rowIndexes = [];
-    //     }
-    //     var newState = [];
-    //     rowIndexes.forEach( index => {
-    //         newState.push(this.state.data[index]);
-    //     });
-    //     await this.setState({ selected_items: newState, selected_indexes: rowIndexes});
-    //     this.onSelectManuLines(this.state.selected_items, this.state.selected_indexes);
-    // };
-
-
-
 
     render() {
         return (
@@ -261,7 +238,6 @@ export default class UserDetails extends React.Component {
                             handleSelectManuLines= {this.onSelectManuLines}
                             simple = {false}
                             manu_lines = {this.state.item.manu_lines}
-                            // manu_lines_indices = {this.state.manu_lines_indices}
                         >
                     </ManuLineSelect>
                 </div>

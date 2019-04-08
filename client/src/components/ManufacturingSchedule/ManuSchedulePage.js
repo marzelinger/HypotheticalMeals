@@ -15,7 +15,8 @@ import ManuSchedulePalette from './ManuSchedulePalette'
 import './../../style/ManuSchedulePageStyle.css';
 import GeneralNavBar from '../GeneralNavBar';
 import ManuActivityErrors from './ManuActivityErrors';
-import ManuSchedHelp from '../../resources/ManuSchedHelp.png'
+import ManuSchedHelp from '../../resources/ManuSchedHelp.png';
+import AuthRoleValidation from '../auth/AuthRoleValidation';
 const jwt_decode = require('jwt-decode');
 
 export default class ManuSchedulePage extends Component {
@@ -24,7 +25,6 @@ export default class ManuSchedulePage extends Component {
         this.range = {};
         
         this.state = {
-            user: '',
             options: {},
             lines: [],
             activities: [],
@@ -34,13 +34,12 @@ export default class ManuSchedulePage extends Component {
             loaded: false,
             modal: false,
             modal_type : '',
-            error_change: false
+            error_change: false,
+            current_user: {},
+            token: ''
+
         }
-        if(localStorage != null){
-            if(localStorage.getItem("jwtToken")!= null){
-                this.state.user = jwt_decode(localStorage.getItem("jwtToken")).username;
-            }
-        }
+
         this.prepareAddActivity = this.prepareAddActivity.bind(this);
         this.doubleClickHandler = this.doubleClickHandler.bind(this);
         this.selectHandler = this.selectHandler.bind(this);
@@ -49,11 +48,43 @@ export default class ManuSchedulePage extends Component {
         this.onAdd = this.onAdd.bind(this);
         this.updateRange = this.updateRange.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
+        this.determineUser = this.determineUser.bind(this);
+        this.determineUser();
     }
 
     async componentDidMount() {
         console.log("mounting")
         await this.loadScheduleData();
+    }
+
+    async componentDidUpdate (prevProps, prevState) {
+
+        if(localStorage != null){
+            if(localStorage.getItem("jwtToken")!= null){
+                var token = localStorage.getItem("jwtToken");
+                if(this.state.token!=null){
+                    if(this.state.token != token){
+                        await this.determineUser();
+                    }
+                }
+            }
+        }
+        
+        if(this.state.current_user._id != AuthRoleValidation.getUserID()){
+            await this.determineUser();
+        }
+    }
+
+    async determineUser() {
+        var res = await AuthRoleValidation.determineUser();
+        if(res!=null){
+            var user = res.user;
+            var token = res.token;
+            await this.setState({
+                current_user: user,
+                token: token
+            })
+        }
     }
 
     async loadScheduleData() {
@@ -397,6 +428,8 @@ export default class ManuSchedulePage extends Component {
                         doubleClickHandler={this.doubleClickHandler.bind(this)}
                         rangechangeHandler = {this.updateRange}
                         // selectHandler={this.selectHandler.bind(this)}
+                        user = {this.state.current_user}
+
                     />) : null}
                 </div>
                 <div className = "belowTimeline">
@@ -412,6 +445,7 @@ export default class ManuSchedulePage extends Component {
                             lines={this.state.lines}
                             activity_to_schedule={this.state.activity_to_schedule}
                             prepareAddActivity={this.prepareAddActivity}
+                            user = {this.state.current_user}
                         />
                     </div>
                     <div className='errors-container'>
@@ -422,6 +456,7 @@ export default class ManuSchedulePage extends Component {
                             className = "errors" 
                             range = {this.range} 
                             activities = {this.state.activities.filter((activity) => activity.scheduled)}
+                            user = {this.state.current_user}
                         />
                     </div>
                 </div>

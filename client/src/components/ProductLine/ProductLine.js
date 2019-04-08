@@ -8,6 +8,8 @@ import SubmitRequest from '../../helpers/SubmitRequest';
 import editButton from '../../resources/edit.png';
 import * as Constants from '../../resources/Constants';
 import ProductLineDetails from './ProductLineDetails';
+import AuthRoleValidation from '../auth/AuthRoleValidation';
+
 
 
 
@@ -39,7 +41,7 @@ export default class ProductLine extends React.Component{
           <UncontrolledCollapse toggler={'#prodline' + this.props.id}>
                 <Card>
                     <CardBody>
-                        <ProductLineTables prod_lines = {this.props.prod_lines} data = {this.props.skus} onProdLineChange = {this.onProdLineChange} ></ProductLineTables>
+                        <ProductLineTables prod_lines = {this.props.prod_lines} data = {this.props.skus} onProdLineChange = {this.onProdLineChange} user = {this.props.user}></ProductLineTables>
                     </CardBody>
                 </Card>
             </UncontrolledCollapse>
@@ -50,7 +52,8 @@ export default class ProductLine extends React.Component{
                 item = {this.props.line}
                 buttonImage = {editButton}
                 handleDetailViewSubmit = {this.handleDetailViewSubmit}
-                options = {[Constants.details_save, Constants.details_delete, Constants.details_cancel]}
+                options = {AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) ? [Constants.details_save, Constants.details_delete, Constants.details_cancel] : [Constants.details_cancel]}
+                user = {this.props.user}
                 ></ProductLineDetails>
           </div>
         </div>

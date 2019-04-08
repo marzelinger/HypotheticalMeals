@@ -6,6 +6,7 @@ import ProductLine from './ProductLine';
 const ProductLineList = (props) => {
   const LineNodes = props.data.map(line => (
     <ProductLine
+      user = {props.user}
       line = {line}
       key={line._id}
       id={line._id}

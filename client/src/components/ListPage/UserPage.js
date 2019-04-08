@@ -371,7 +371,6 @@ export default class UserPage extends React.Component {
                             detail_view_options={this.state.detail_view_options}
                             handleDetailViewSubmit={this.onDetailViewSubmit}
                             user = {this.state.current_user}
-
                         />
                 </Modal>   
                 <TablePagination

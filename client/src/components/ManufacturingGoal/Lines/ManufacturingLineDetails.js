@@ -13,6 +13,7 @@ import ItemStore from '../../../helpers/ItemStore';
 import addButton from '../../../resources/add.png';
 import SimpleLineTable from './SimpleLineTable';
 import ItemSearchModifyListQuantity from '../../ListPage/ItemSearchModifyListQuantity';
+import AuthRoleValidation from '../../auth/AuthRoleValidation';
 // import { constants } from 'http2';
 
 export default class ManufacturingLineDetails extends React.Component {
@@ -211,6 +212,7 @@ export default class ManufacturingLineDetails extends React.Component {
                         value={ this.state.item[prop] }
                         invalid={ this.state.invalid_inputs.includes(prop) }
                         onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
+                        disabled = {!AuthRoleValidation.checkRole(this.props.user, Constants.product_manager)}
                     />
                 </FormGroup>));
         }
@@ -236,10 +238,15 @@ export default class ManufacturingLineDetails extends React.Component {
       }
 
     render() {
-        // console.log("these are the skus: "+JSON.stringify(this.state.item));
         return (
         <div>
-        <img id = "buttonline" src={this.props.buttonImage} onClick={this.toggle}></img>
+        
+            {!AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) && this.props.buttonImage===addButton
+            ?
+            <div/>
+            :
+            <img id = "buttonline" src={this.props.buttonImage} onClick={this.toggle}></img>
+            }
             <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup" className='item-details'>
             <div className='item-details'>
                 <div className='item-title'>
@@ -253,6 +260,7 @@ export default class ManufacturingLineDetails extends React.Component {
                         options={[Constants.details_add, Constants.details_remove]}
                         handleModifyList={this.onModifyList}
                         qty_disable = {true}
+                        disabled = {!AuthRoleValidation.checkRole(this.props.user, Constants.product_manager)}
                     />
                     <SimpleLineTable skus = {this.state.item.skus} >
                     </SimpleLineTable>
