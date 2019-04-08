@@ -81,7 +81,7 @@ export default class ManuSchedulePalette extends Component {
                 if (prop === 'sku'){
                     return (<TableRowColumn>{act[prop].name + ': ' + act[prop].unit_size + ' * ' + act.quantity}</TableRowColumn>)
                 }
-                if (prop === 'add_to_schedule'){
+                if (prop === 'add_to_schedule' && this.props.user.roles.includes('plant_manager')){
                     return (
                         <TableRowColumn>
                             <div 
@@ -127,9 +127,9 @@ export default class ManuSchedulePalette extends Component {
                                     onRowSelection = {(res) => this.props.handleSelect(res, g_index)}
                                 >
                                     <TableHeader  
-                                    displaySelectAll={true}
-                                    adjustForCheckbox={true}
-                                    enableSelectAll={true}>
+                                        displaySelectAll={true}
+                                        adjustForCheckbox={true}
+                                        enableSelectAll={true}>
                                     <TableRow>
                                         {this.state.item_properties.map(prop =>
                                             <TableHeaderColumn>{this.getPropertyLabel(prop)}</TableHeaderColumn>
@@ -137,7 +137,7 @@ export default class ManuSchedulePalette extends Component {
                                     </TableRow>
                                     </TableHeader>
                                     <TableBody
-                                    deselectOnClickaway={false}
+                                        deselectOnClickaway={false}
                                     >
                                     {this.getActivities(goal, g_index)}
                                     </TableBody>
@@ -156,5 +156,6 @@ ManuSchedulePalette.propTypes = {
     activity_to_schedule: PropTypes.object,
     prepareAddActivity: PropTypes.func,
     selected_activities: PropTypes.array,
-    handleToggleActivity: PropTypes.func
+    handleToggleActivity: PropTypes.func,
+    user: PropTypes.object
 }
