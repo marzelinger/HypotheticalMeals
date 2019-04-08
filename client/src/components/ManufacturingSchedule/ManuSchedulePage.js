@@ -628,7 +628,6 @@ export default class ManuSchedulePage extends Component {
     determineEnd(_start, duration) {
         console.log(_start)
         console.log(duration)
-        /// end needs to calculate across multiple days !!!!!!!!!!!!!!
         let start = new Date(_start.getTime())
         let dur = Math.round(duration) + _start.getHours() - 8
         start.setHours(8)
