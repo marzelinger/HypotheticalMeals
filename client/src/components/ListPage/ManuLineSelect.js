@@ -208,6 +208,8 @@ export default class ManuLineSelect extends React.Component {
 
     onSelect = async (rowIndexes) => {
         console.log("rowindices: "+JSON.stringify(rowIndexes));
+        var newState = [];
+
         if(rowIndexes == 'all'){
             var indexes = []
             for(var i = 0; i < this.state.data.length; i ++){
@@ -220,7 +222,6 @@ export default class ManuLineSelect extends React.Component {
         else if(rowIndexes == 'none'){
             rowIndexes = [];
         }
-        var newState = [];
         rowIndexes.forEach( index => {
             newState.push(this.state.data[index]);
         });
