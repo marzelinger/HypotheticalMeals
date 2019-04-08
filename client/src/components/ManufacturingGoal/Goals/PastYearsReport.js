@@ -15,7 +15,9 @@ export default class PastYearsReport extends React.Component{
             yearly_revenues: this.props.yearly_revenues,
             currDate: currDate,
             table_properties: ["date_range", "sum_yearly_rev"],
-            table_columns: ["Date Range", "Revenue"]
+            table_columns: ["Date Range", "Revenue (USD)"],
+            std_dev: this.props.std_dev,
+            sales_average: this.props.sales_average,
         }
 
     }
@@ -27,6 +29,7 @@ export default class PastYearsReport extends React.Component{
     render() {
         return (
             <div>
+                <div>
                 <Table>
                     <thead>
                         <tr style={{gridTemplateColumns: `repeat( ${this.state.table_properties.length}, minmax(100px, 1fr))`}}>
@@ -54,6 +57,13 @@ export default class PastYearsReport extends React.Component{
                     </tbody>
 
                 </Table>
+                </div>
+                <div>
+                    <h2> Summary Row</h2>
+                    <div className="centerContainer">
+                        {this.state.sales_average} +/- {this.state.std_dev}
+                    </div>
+                </div>
                 
             </div>
         )
