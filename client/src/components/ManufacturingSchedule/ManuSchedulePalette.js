@@ -78,7 +78,7 @@ export default class ManuSchedulePalette extends Component {
                 if (prop === 'sku'){
                     return (<TableRowColumn>{act[prop].name + ': ' + act[prop].unit_size + ' * ' + act.quantity}</TableRowColumn>)
                 }
-                if (prop === 'add_to_schedule'){
+                if (prop === 'add_to_schedule' && this.props.user.roles.includes('plant_manager')){
                     return (
                         <TableRowColumn>
                             <div 
@@ -153,5 +153,6 @@ ManuSchedulePalette.propTypes = {
     activity_to_schedule: PropTypes.object,
     prepareAddActivity: PropTypes.func,
     selected_activities: PropTypes.array,
-    handleToggleActivity: PropTypes.func
+    handleToggleActivity: PropTypes.func,
+    user: PropTypes.object
 }

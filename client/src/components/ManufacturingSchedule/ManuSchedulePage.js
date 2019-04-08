@@ -210,6 +210,7 @@ export default class ManuSchedulePage extends Component {
       }
 
     async doubleClickHandler(e) {
+        if (!this.state.current_user.roles.includes('plant_manager')) return
         if (e.item !== null) {
             let clicked_item = items.filter(i => {return i.id === e.item})
             let clicked_activity = this.state.activities.filter(a => {return a._id === clicked_item[0]._id})
@@ -439,13 +440,13 @@ export default class ManuSchedulePage extends Component {
             end: '2018-02-02 08:00:00', 
             repeat:'daily'
         },
-        selectable: true,
-        multiselect: true,
+        selectable: this.state.current_user.roles.includes('plant_manager'),
+        multiselect: this.state.current_user.roles.includes('plant_manager'),
         editable: {
-            add: true,
-            remove: true,
-            updateGroup: true,
-            updateTime: true,
+            add: this.state.current_user.roles.includes('plant_manager'),
+            remove: this.state.current_user.roles.includes('plant_manager'),
+            updateGroup: this.state.current_user.roles.includes('plant_manager'),
+            updateTime: this.state.current_user.roles.includes('plant_manager'),
         },
         verticalScroll: true,
         onMove: this.onMove,
@@ -465,6 +466,7 @@ export default class ManuSchedulePage extends Component {
     }
 
     async onSelectAutoselectActivities(act) {
+        if (!this.state.current_user.roles.includes('plant_manager')) return
         console.log(act)
         let asa = Object.assign([], this.state.autoselect_activities)
         let ind = asa.find(res => res._id === act._id)
@@ -709,6 +711,7 @@ export default class ManuSchedulePage extends Component {
     }
 
     handleSelect = async (rowIndexes, g_index) => {
+        if (!this.state.current_user.roles.includes('plant_manager')) return
         console.log(rowIndexes)
         var selected = this.state.selected_indexes;
         if(rowIndexes == 'all'){
@@ -760,6 +763,7 @@ export default class ManuSchedulePage extends Component {
     }
 
     toggleSelectAll= () => {
+        if (!this.state.current_user.roles.includes('plant_manager')) return
         for(var i  = 0 ; i < this.state.unscheduled_goals.length; i ++){
             this.handleSelect(this.state.all_selected ? 'none': 'all', i);
         }
@@ -767,6 +771,7 @@ export default class ManuSchedulePage extends Component {
     }
 
     deSelectAll = () => {
+        if (!this.state.current_user.roles.includes('plant_manager')) return
         for(var i  = 0 ; i < this.state.unscheduled_goals.length; i ++){
             this.handleSelect('none', i);
         }
@@ -847,7 +852,7 @@ export default class ManuSchedulePage extends Component {
                                 user = {this.state.current_user}
                             />
                         }
-                        {!this.isEmpty(this.state.selected_indexes) ?
+                        {!this.isEmpty(this.state.selected_indexes) && this.state.current_user.roles.includes('plant_manager') ?
                             <Button
                                 onClick={this.toggleAutoschedule}
                             > 
