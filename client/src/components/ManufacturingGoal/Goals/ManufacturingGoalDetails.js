@@ -214,12 +214,12 @@ export default class ManufacturingGoalDetails extends React.Component {
                         invalid={ this.state.invalid_inputs.includes(prop) }
                         errorText = {this.state.errorText}
                         onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
-                        disabled = {!(AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)}
+                        disabled = {!((AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)|| AuthRoleValidation.checkRole(this.props.user, Constants.admin))}
                     />
                     <FormFeedback invalid>{this.state.errorText}</FormFeedback>
                 </FormGroup>));
 
-            var enable = this.props.detail_view_options.includes(Constants.details_save) && (AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username) ? 
+            var enable = this.props.detail_view_options.includes(Constants.details_save) && ((AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)|| AuthRoleValidation.checkRole(this.props.user, Constants.admin)) ? 
             <FormGroup>
                 <Label>Enabled</Label>
                 <br></br>
@@ -227,7 +227,9 @@ export default class ManufacturingGoalDetails extends React.Component {
                 onColor = '#98FB98' 
                 onChange={this.onEnable} 
                 checked={this.state.item.enabled} 
-                disabled = {!(AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)}
+                disabled = {!((AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)|| AuthRoleValidation.checkRole(this.props.user, Constants.admin))}
+
+
                 />
             </FormGroup> : 
             <div></div>
@@ -246,7 +248,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                         onClick = {(event) => this.onPropChange(event.target.value, this.state.item, 'deadline')}
                         onKeyPress = {(event) => this.onPropChange(event.target.value, this.state.item, 'deadline')}
                         onChange = {(event) => this.onPropChange((event.target.value), this.state.item, 'deadline')}
-                        disabled = {!(AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)}
+                        disabled = {!((AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)|| AuthRoleValidation.checkRole(this.props.user, Constants.admin))}
                         
                         
                         InputLabelProps={{
@@ -274,7 +276,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                         item_type={Constants.details_modify_skus}
                         options={[Constants.details_add, Constants.details_remove]}
                         handleModifyList={this.onModifyList}
-                        disabled = {!(AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)}
+                        disabled = {!((AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)|| AuthRoleValidation.checkRole(this.props.user, Constants.admin))}
 
 
                     />

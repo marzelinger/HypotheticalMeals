@@ -332,10 +332,19 @@ export default class ListPage extends React.Component {
 
     onAddManuGoals =  async() => {
         this.toggle(Constants.manu_goals_modal);
-        let res = await SubmitRequest.submitGetManuGoalsByUsername(this.state.current_user.username);
-        if(res.success){
-        this.setState({ manu_goals_data: res.data});
+        if(AuthRoleValidation.checkRole(this.state.current_user, Constants.admin)){
+            let res = await SubmitRequest.submitGetManuGoalsData(this.state.current_user.username);
+            if(res.success){
+                this.setState({ manu_goals_data: res.data});
+            }
         }
+        else{
+            let res = await SubmitRequest.submitGetManuGoalsByUsername(this.state.current_user.username);
+            if(res.success){
+                this.setState({ manu_goals_data: res.data});
+            }
+        }
+
     }
 
     async onBulkManuLineSubmit(event, opt, skus) {

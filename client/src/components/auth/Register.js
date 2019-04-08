@@ -33,7 +33,7 @@ class Register extends Component {
   componentDidMount() {
     // If logged in and user navigates to Register page, should redirect them to dashboard
     if (this.props.auth.isAuthenticated && !AuthRoleValidation.checkCurrentUserIsRole(Constants.admin)) {
-      this.props.history.push("/skus"); //if they are not an admin, get redirected to skus.
+      this.props.history.push("/"); //if they are not an admin, get redirected to skus.
     }
 
   }
@@ -60,12 +60,12 @@ onSubmit(e){
       manu_lines: this.state.manu_lines
     };
 
-    // if(AuthRoleValidation.checkCurrentUserIsRole(Constants.admin)){
-    //   this.props.registerUser(newUser, this.props.history); 
-    // }
-    // else{
-    //   console.log("person trying to register user when non admin");
-    // }
+    if(AuthRoleValidation.checkCurrentUserIsRole(Constants.admin)){
+      this.props.registerUser(newUser, this.props.history); 
+    }
+    else{
+      console.log("person trying to register user when non admin");
+    }
   };
 
 

@@ -49,16 +49,9 @@ class Landing extends Component {
 
 
   componentDidMount() {
-    //console.log("trying to mount the adminregister" +this.props.history);
-    //var response = this.props.getAllUsers();
-    //console.log("this is the response for the getAll Users: " +response);
-    //this.setState(this.state.users);
-    // authURI = OAUTH_URL +'?'+this.encodeGetParams(params);
-    // console.log("this is the authURI: "+authURI);
-    // console.log("this is the hash: "+window.location.hash);
-
-    //this.checkAccessToken();
-    //this.getAccessToken();
+    if (this.props.auth.isAuthenticated) {
+      this.props.history.push("/skus"); //if they are not an admin, get redirected to skus.
+    }
   }
 
   componentWillReceiveProps(nextProps) {

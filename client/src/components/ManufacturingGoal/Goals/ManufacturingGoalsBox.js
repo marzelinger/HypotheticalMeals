@@ -348,7 +348,7 @@ class ManufacturingGoalsBox extends Component {
     this.setState({
         detail_view_item: item
     });
-    if(AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && item.user ==this.props.user.username){
+    if((AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && item.user ==this.props.user.username) || AuthRoleValidation.checkRole(this.props.user, Constants.admin)){
         this.setState({ 
         detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel],
         detail_view_action: Constants.details_edit
