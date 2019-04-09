@@ -618,15 +618,13 @@ export default class ManuSchedulePage extends Component {
 
     verifyPlacement(act, start, mline, rel_items, auto_end) {
         if (!this.state.current_user.manu_lines.find(ml => ml._id === mline)) {
-            console.log(this.state.current_user.manu_lines)
-            console.log(mline)
             return null
         }
-        console.log('its on my line!!!')
         let end = this.determineEnd(start, act.duration)
         let className = 'uncommitted'
         if (end.getTime() > act.deadline.getTime()) {
-            className = className + ' over_deadline'
+            return null
+            // className = className + ' over_deadline'
         }
         let item = {
             start: new Date(start.getTime()),
