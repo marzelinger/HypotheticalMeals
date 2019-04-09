@@ -62,8 +62,10 @@ export default class ManuSchedulePage extends Component {
             all_selected: false,
             uncommitted_items: [],
             autoschedule_warning: '',
-            autoschedule_warning_color: ''
+            autoschedule_warning_color: '',
+            showSelectAll: false
         }
+        this.determineUser();
 
         this.prepareAddActivity = this.prepareAddActivity.bind(this);
         this.doubleClickHandler = this.doubleClickHandler.bind(this);
@@ -73,7 +75,6 @@ export default class ManuSchedulePage extends Component {
         this.updateRange = this.updateRange.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
         this.determineUser = this.determineUser.bind(this);
-        this.determineUser();
         this.onSelectAutoselectActivities = this.onSelectAutoselectActivities.bind(this);
         this.toggleAutoschedule = this.toggleAutoschedule.bind(this);
         this.onDateRangeSelect = this.onDateRangeSelect.bind(this)
@@ -84,6 +85,7 @@ export default class ManuSchedulePage extends Component {
 
     async componentDidMount() {
         console.log("mounting")
+        await this.determineUser();
         await this.loadScheduleData();
     }
 
@@ -112,7 +114,13 @@ export default class ManuSchedulePage extends Component {
             var token = res.token;
             await this.setState({
                 current_user: user,
-                token: token
+                token: token,
+            })
+            console.log('determining')
+            console.log(this.state.current_user)
+            console.log(this.state.current_user.roles.includes('plant_manager'))
+            await this.setState({
+                showSelectAll: this.state.current_user.roles.includes('plant_manager')
             })
         }
     }
@@ -788,6 +796,7 @@ export default class ManuSchedulePage extends Component {
 
     render() {
         console.log('rendering page')
+        console.log(JSON.stringify(this.state.current_user))
         return (
         <div>
             <GeneralNavBar title = {Constants.ManuScheduleTitle}></GeneralNavBar>
@@ -839,6 +848,7 @@ export default class ManuSchedulePage extends Component {
                                 user = {this.state.current_user}
                             /> : 
                             <ManuSchedulePalette
+                                showSelectAll = {this.state.showSelectAll}
                                 goals={this.state.unscheduled_goals}
                                 activities={this.state.activities}
                                 lines={this.state.lines}

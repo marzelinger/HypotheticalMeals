@@ -124,9 +124,9 @@ export default class ManuSchedulePalette extends Component {
                                     onRowSelection = {(res) => this.props.handleSelect(res, g_index)}
                                 >
                                     <TableHeader  
-                                        displaySelectAll={true}
+                                        displaySelectAll={this.props.showSelectAll}
                                         adjustForCheckbox={true}
-                                        enableSelectAll={true}>
+                                        enableSelectAll={this.props.showSelectAll}>
                                     <TableRow>
                                         {this.state.item_properties.map(prop =>
                                             <TableHeaderColumn>{this.getPropertyLabel(prop)}</TableHeaderColumn>
