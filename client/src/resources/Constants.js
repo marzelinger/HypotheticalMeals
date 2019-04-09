@@ -37,6 +37,7 @@ export const formulas_page_name = 'formulas';
 export const customers_page_name = 'customers';
 export const sku_drilldown_page_name = 'customers_sku';
 export const general_report_page_name = 'general_report';
+export const no_manu_lines = 'no_manu_lines';
 
 export const options = 'Options'
 export const keyword_label = "Keyword"

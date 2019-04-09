@@ -13,6 +13,7 @@ import '../../style/GeneralReportTableStyle.css'
 import '../../style/SkuTableStyle.css'
 import '../../style/GeneralReport.css'
 import { Label } from 'reactstrap';
+import AuthRoleValidation from '../auth/AuthRoleValidation';
 const jwt_decode = require('jwt-decode');
 
 export default class ManuLineSelect extends React.Component {
@@ -33,9 +34,7 @@ export default class ManuLineSelect extends React.Component {
             table_columns,
             table_properties,
             table_options,
-            // selected_items: Object.assign([], props.manu_lines),
             selected_items: [],
-            // selected_indexes: [Object.assign([], props.manu_lines_indices)],
             selected_indexes: [],
             data: [],
             sort_field: '_',
@@ -207,30 +206,41 @@ export default class ManuLineSelect extends React.Component {
     };
 
     onSelect = async (rowIndexes) => {
-        console.log("rowindices: "+JSON.stringify(rowIndexes));
-        var newState = [];
 
-        if(rowIndexes == 'all'){
-            var indexes = []
-            for(var i = 0; i < this.state.data.length; i ++){
-                indexes.push(i);
+        if(!AuthRoleValidation.checkRole(this.props.user_item, Constants.admin)){
+            console.log("rowindices: "+JSON.stringify(rowIndexes));
+            var newState = [];
+            if(rowIndexes == 'all'){
+                var indexes = []
+                for(var i = 0; i < this.state.data.length; i ++){
+                    indexes.push(i);
+                    newState.push(this.state.data[i]._id);
+                }
+                await this.setState({selected_items: newState, selected_indexes: indexes});
+                this.props.handleSelectManuLines(this.state.selected_items, this.state.selected_indexes);
+                return;
             }
-            await this.setState({selected_items: this.state.data, selected_indexes: indexes});
-            this.props.handleSelectManuLines(this.state.selected_items, this.state.selected_indexes);
-            return;
+            else if(rowIndexes == 'none'){
+                rowIndexes = [];
+                newState = [];
+                await this.setState({selected_items: newState, selected_indexes: rowIndexes});
+                this.props.handleSelectManuLines(this.state.selected_items, this.state.selected_indexes);
+                return;
+            }
+
+            rowIndexes.forEach( index => {
+                newState.push(this.state.data[index]._id);
+            });
+            console.log("newState: "+JSON.stringify(newState));
+            console.log("newState index: "+JSON.stringify(rowIndexes));
+
+            await this.setState({ selected_items: newState, selected_indexes: rowIndexes});
+                
+            console.log("newState22: "+JSON.stringify(this.state.selected_items));
+            console.log("newState22index: "+JSON.stringify(this.state.selected_indexes));
+
+            this.props.handleSelectManuLines(newState, this.state.selected_indexes);
         }
-        else if(rowIndexes == 'none'){
-            rowIndexes = [];
-        }
-        rowIndexes.forEach( index => {
-            newState.push(this.state.data[index]);
-        });
-        console.log("newState: "+JSON.stringify(newState));
-        await this.setState({ 
-            selected_items: newState, selected_indexes: rowIndexes});
-            
-        console.log("newState22: "+JSON.stringify(this.state.selected_items));
-        this.props.handleSelectManuLines(this.state.selected_items, this.state.selected_indexes);
     };
 
 
@@ -269,6 +279,7 @@ export default class ManuLineSelect extends React.Component {
                         onRemoveFilter = {this.onRemoveFilter}
                         onTableOptionSelection = {this.onTableOptionSelection}
                         reportSelect = {true}
+                        manu_line_select = {true}
                     />                              
                     <TablePagination
                         currentPage = {this.state.currentPage}

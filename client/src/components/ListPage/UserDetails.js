@@ -82,8 +82,16 @@ export default class UserDetails extends React.Component {
                 return;
             }
         }
+
         else{
             await this.validateInputs();
+            if(this.state.invalid_inputs.length==1){
+                if(this.state.invalid_inputs.includes(Constants.no_manu_lines)){
+                    if(window.confirm(`A Plant Manager must manage at least one manufacturing line.`)){
+                        return;
+                    }
+                }
+            }
             if (this.state.invalid_inputs.length === 0) {
                 this.props.handleDetailViewSubmit(e, this.props.item, opt);
             }
@@ -97,7 +105,16 @@ export default class UserDetails extends React.Component {
             if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) {
                 inv_in.push(prop);
             }
-        })
+        });
+        console.log("this is validate: ")
+        console.log("this is props item: "+JSON.stringify(this.props.item));
+        if(AuthRoleValidation.checkRole(this.props.item, Constants.plant_manager)){
+            if(this.props.item.manu_lines!=undefined){
+                if(this.props.item.manu_lines.length==0){
+                    inv_in.push(Constants.no_manu_lines);
+                }
+            }
+        }
         await this.setState({ invalid_inputs: inv_in });
     }
 
@@ -238,6 +255,8 @@ export default class UserDetails extends React.Component {
                             handleSelectManuLines= {this.onSelectManuLines}
                             simple = {false}
                             manu_lines = {this.state.item.manu_lines}
+                            user = {this.props.user}
+                            user_item = {this.state.item}
                         >
                     </ManuLineSelect>
                 </div>
