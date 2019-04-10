@@ -388,6 +388,7 @@ class ManufacturingGoalsBox extends Component {
                   table_options = {this.state.table_options}
                   onTableOptionSelection = {this.onTableOptionSelection}
                   user = {this.props.user}
+                  showCalculator = {true}
               />
           </div>
           <div className = 'goal-sku-table'>

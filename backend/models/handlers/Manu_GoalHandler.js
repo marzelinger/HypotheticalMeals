@@ -67,7 +67,11 @@ class Manu_GoalHandler{
     static async getAllManufacturingGoals(req, res){
         try {
             var sort_field = req.params.sort_field;
-            let all_manu_goals = await Manu_Goal.find().populate('activities').populate({path: 'activities', populate: { path: 'sku' }}).sort(sort_field);
+            let all_manu_goals = await Manu_Goal.find()
+                                            .populate('activities')
+                                            .populate({path: 'activities', populate: { path: 'sku' }})
+                                            .populate({path: 'activities', populate: { path: 'sku', populate: {path: 'formula', populate: {path: 'ingredients'}} }})
+                                            .sort(sort_field);
             return res.json({ success: true, data: all_manu_goals});
         }
         catch (err) {
