@@ -76,7 +76,7 @@ export default class ManuSchedulePalette extends Component {
     injectActivityData(act, a_index, g_index) {
         // console.log(this.state.selected)
         return (
-            <TableRow selected = {this.determineSelected(a_index, g_index)}>
+            <TableRow selectable = {this.props.showSelect} selected = {this.determineSelected(a_index, g_index)}>
                 {this.state.item_properties.map(prop => {
                 if (prop === 'sku'){
                     return (<TableRowColumn>{act[prop].name + ': ' + act[prop].unit_size + ' * ' + act.quantity}</TableRowColumn>)
@@ -123,13 +123,13 @@ export default class ManuSchedulePalette extends Component {
                             </AccordionItemTitle>
                             <AccordionItemBody>
                                 <Table borderless size="sm" className='accordian-table goal-table' 
-                                    multiSelectable={true}
+                                    multiSelectable={this.props.showSelect}
                                     onRowSelection = {(res) => this.props.handleSelect(res, g_index)}
                                 >
                                     <TableHeader  
-                                        displaySelectAll={true}
-                                        adjustForCheckbox={true}
-                                        enableSelectAll={true}>
+                                        displaySelectAll={this.props.showSelectAll}
+                                        adjustForCheckbox={this.props.showSelect}
+                                        enableSelectAll={this.props.showSelectAll}>
                                     <TableRow>
                                         {this.state.item_properties.map(prop =>
                                             <TableHeaderColumn>{this.getPropertyLabel(prop)}</TableHeaderColumn>
@@ -138,6 +138,7 @@ export default class ManuSchedulePalette extends Component {
                                     </TableHeader>
                                     <TableBody
                                         deselectOnClickaway={false}
+                                        displayRowCheckbox={this.props.showSelect}
                                     >
                                     {this.getActivities(goal, g_index)}
                                     </TableBody>
