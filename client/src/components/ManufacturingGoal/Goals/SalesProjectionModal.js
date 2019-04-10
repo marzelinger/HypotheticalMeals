@@ -288,8 +288,8 @@ export default class SalesProjectionModal extends React.Component {
                     <div className = "paddedDiv">
                         Please enter a start date.
                         <DatePicker
-                                onChange = {this.onChangeEndDate}
-                                value={this.state.end_date}
+                                onChange = {this.onChangeStartDate}
+                                value={this.state.start_date}
                                 format={"M-d"}
                                 calendarIcon={null}
                             /> 
