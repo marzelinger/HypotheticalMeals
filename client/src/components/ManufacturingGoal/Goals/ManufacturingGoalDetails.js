@@ -137,8 +137,51 @@ export default class ManufacturingGoalDetails extends React.Component {
 
     }
 
+    handleDeleteGoal = async () => {
+        //if any activities are scheduled
+        if(this.props.goal.enabled){
+          alert("You cannot delete an enabled manufacturing goal")
+          console.log("return false")
+          return false;
+        }
+        else{
+          if(this.props.activities.filter((activity => activity.scheduled)).length != 0){
+            if(window.confirm("Deleting this goal will remove all orphaned activities from the schedule, are you sure you want to delete?")){
+              for(var i = 0; i < this.props.activities.length; i ++){
+                await SubmitRequest.submitDeleteItem('manuactivities', this.props.activities[i]);
+                this.props.activities.splice(i, 1);
+              }
+              this.props.handleDeleteGoal(this.props.id)
+              return true;
+            }
+            return false;
+          }
+          else{
+            for(var i = 0; i < this.props.activities.length; i ++){
+              console.log('deleting activity')
+              await SubmitRequest.submitDeleteItem('manuactivities', this.props.activities[i]);
+              this.props.activities.splice(i, 1);
+            }
+            this.props.handleDeleteGoal(this.props.id)
+            return true;
+          }
+        }
+      }
+
     async handleSubmit(e, opt) {
-        if (![Constants.details_save, Constants.details_create].includes(opt)) {
+        if (![Constants.details_save, Constants.details_create, Constants.details_delete].includes(opt)) {
+            var return_val = await this.props.handleDetailViewSubmit(e, this.state.item, opt);
+            console.log(return_val)
+            if(return_val){
+                this.props.toggle();
+            };
+            return;
+        }
+        if ([Constants.details_delete].includes(opt)) {
+            if(this.state.item.enabled){
+                alert("You cannot delete an enabled manufacturing goal")
+                return false;
+            }
             var return_val = await this.props.handleDetailViewSubmit(e, this.state.item, opt);
             console.log(return_val)
             if(return_val){

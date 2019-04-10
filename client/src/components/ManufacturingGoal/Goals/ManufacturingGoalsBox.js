@@ -48,7 +48,9 @@ class ManufacturingGoalsBox extends Component {
       sort_field:'_',
       details_modal: false,
       detail_view_options: [],
-      detail_view_action: ''
+      detail_view_action: '',
+      detail_view_item: {},
+      detail_view_old_activities: []
     };
     if(localStorage != null){
       if(localStorage.getItem("jwtToken")!= null){
@@ -102,6 +104,19 @@ class ManufacturingGoalsBox extends Component {
     let res = await SubmitRequest.submitDeleteItem(Constants.manugoals_page_name, item);
     if (!res.success) {
       this.setState({ error: res.error });
+    }
+    else {
+      //need to delete all the activities associated with this goal.
+      console.log("this is the item: "+JSON.stringify(item));
+      if(item.activities!=undefined) {
+        //activities to delete
+        for(let a = 0; a<item.activities.length; a++){
+          var deleteActRes = await SubmitRequest.submitDeleteItem(Constants.manu_activity_page_name, item);
+        }
+        if(!deleteActRes.success){
+          this.setState({ error: deleteActRes.error });
+        }
+      }
     }
     return res.success;
   }
@@ -171,9 +186,14 @@ class ManufacturingGoalsBox extends Component {
 
 
   async submitUpdatedGoal() {
-    console.log("submiting updated goal")
+    let old_activities = this.state.detail_view_old_activities;
+    console.log("old_activities: "+JSON.stringify(old_activities));
     const { name, activities, user, updateId, enabled, deadline} = this.state;
-    console.log(activities);
+    console.log("activities: "+JSON.stringify(activities));
+
+
+    // if(old_activities==undefined && acitivities == undefined);
+
     let created_activities = await this.submitUpdateActivity(activities);
     console.log(created_activities);
     let item = { name, activities: created_activities, user, enabled, deadline };
@@ -216,24 +236,32 @@ class ManufacturingGoalsBox extends Component {
   async onDetailViewSubmit(event, item, option) {
     console.log('here')
     var newData = this.state.data;
-    console.log(item)
     console.log(item);
     switch (option) {
-        case Constants.details_delete:
-        var resp = await this.onDeleteGoal(item._id);
-        return resp;
         case Constants.details_create:
-          await this.setState({
-            name: item.name,
-            activities: item.activities,
-            deadline: item.deadline
-          })
-          console.log(this.state.deadline);
-          var response = await this.submitNewGoal();
-          console.log(response)
-          return response;
+        await this.setState({
+          name: item.name,
+          activities: item.activities,
+          deadline: item.deadline
+        })
+        var response = await this.submitNewGoal();
+        return response;
+
+        case Constants.details_delete:
+          if(this.item.enabled){
+            alert("You cannot delete an enabled manufacturing goal.");
+            return false;
+          }
+          if(window.confirm("Deleting this manufacturing goal will remove all activities associated with it from the schedule. Are you sure you want to delete this goal?")){
+            await this.setState({
+              name: item.name,
+              activities: [],
+            })  
+            this.onDeleteGoal(item._id)
+              return true;
+            }
+            return false;
         case Constants.details_save:
-            // let activities = [];
             await this.setState({
               name: item.name,
               activities: item.activities,
@@ -245,6 +273,8 @@ class ManufacturingGoalsBox extends Component {
             console.log(response)
             return response;
         case Constants.details_cancel:
+          break;
+        case Constants.details_exit:
             break;
     }
       this.setState({ 
@@ -310,7 +340,8 @@ class ManufacturingGoalsBox extends Component {
         // exportData: newExportData,
         detail_view_item: new_item,
         detail_view_options: [Constants.details_create, Constants.details_cancel],
-        detail_view_action: Constants.details_create
+        detail_view_action: Constants.details_create,
+        detail_view_old_activities: []
     })
     this.toggle(Constants.details_modal);
     this.loadGoalsFromServer();
@@ -346,7 +377,8 @@ class ManufacturingGoalsBox extends Component {
     }
     console.log(item);
     this.setState({
-        detail_view_item: item
+        detail_view_item: item,
+        detail_view_old_activities: item.activities
     });
     if((AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && item.user ==this.props.user.username) || AuthRoleValidation.checkRole(this.props.user, Constants.admin)){
         this.setState({ 
