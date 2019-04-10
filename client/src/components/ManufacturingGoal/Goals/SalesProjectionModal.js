@@ -94,6 +94,7 @@ export default class SalesProjectionModal extends React.Component {
             var newDate = new Date;
             newDate.setDate(date.getDate());
             newDate.setMonth(date.getMonth());
+            newDate.setFullYear(2019);
             this.setState({ start_date: newDate })
         } else this.setState({start_date: date});
     }
@@ -102,6 +103,7 @@ export default class SalesProjectionModal extends React.Component {
             var newDate = new Date;
             newDate.setDate(date.getDate());
             newDate.setMonth(date.getMonth());
+            newDate.setFullYear(2019);
             this.setState({ end_date: newDate })
         } else this.setState({end_date: date});
     }
@@ -288,7 +290,7 @@ export default class SalesProjectionModal extends React.Component {
                         <DatePicker
                                 onChange = {this.onChangeEndDate}
                                 value={this.state.end_date}
-                                format={"M-d-y"}
+                                format={"M-d"}
                                 calendarIcon={null}
                             /> 
                     </div>
@@ -297,7 +299,7 @@ export default class SalesProjectionModal extends React.Component {
                         <DatePicker
                             onChange = {this.onChangeEndDate}
                             value={this.state.end_date}
-                            format={"M-d-y"}
+                            format={"M-d"}
                             calendarIcon={null}
                         />  
                     </div>  
@@ -305,7 +307,7 @@ export default class SalesProjectionModal extends React.Component {
                     <div className ="centerContainer">
                         <Button className="centerButton"
                             onClick ={this.handleSubmit}
-                        >Get Past Yearly Revenue</Button>
+                        >Get Past Yearly Sales</Button>
                     </div>
                 </div>
 
@@ -314,7 +316,12 @@ export default class SalesProjectionModal extends React.Component {
                 </div>
 
                 <div>
-                    {this.state.showPastYearsReport && <PastYearsReport sku={this.state.item} start_date={this.state.start_date} end_date={this.state.end_date} sales_average={this.state.sales_average} std_dev={this.state.std_dev} yearly_revenues={this.state.to_show}></PastYearsReport>}
+                    {this.state.showPastYearsReport && <PastYearsReport sku={this.state.item} start_date={this.state.start_date} end_date={this.state.end_date} sales_average={this.state.sales_average} std_dev={this.state.std_dev} yearly_revenues={this.state.to_show} useAverage={this.props.useAverage}></PastYearsReport>}
+                </div>
+
+                <div className="centerContainer">
+                    <Button className="centerButton"
+                        onClick={this.props.onExitButton}>Exit</Button>
                 </div>
             </div>
         );
@@ -324,4 +331,6 @@ export default class SalesProjectionModal extends React.Component {
 SalesProjectionModal.propTypes = {
     item: PropTypes.object,
     toggle: PropTypes.func,
+    onExitButton: PropTypes.func,
+    useAverage: PropTypes.func,
 };

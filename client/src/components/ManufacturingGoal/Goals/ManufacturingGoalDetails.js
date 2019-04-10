@@ -50,7 +50,7 @@ export default class ManufacturingGoalDetails extends React.Component {
         this.validateInputs = this.validateInputs.bind(this);
         this.onEnable = this.onEnable.bind(this);
         this.toggleSalesProjection = this.toggleSalesProjection.bind(this);
-
+        this.onSalesProjectionExitButton = this.onSalesProjectionExitButton.bind(this);
     }
 
     async componentDidMount() {
@@ -79,6 +79,12 @@ export default class ManufacturingGoalDetails extends React.Component {
         await this.setState({
             showSalesProjection: !this.state.showSalesProjection,
         })
+    }
+
+    async onSalesProjectionExitButton() {
+        await this.setState({
+            showSalesProjection: false,
+        });
     }
 
     onModifyList = async (option, value, qty) => {
@@ -297,7 +303,8 @@ export default class ManufacturingGoalDetails extends React.Component {
                     />
                     <Modal isOpen={this.state.showSalesProjection} toggle={this.toggleSalesProjection}>
                         <SalesProjectionModal 
-                            item={this.state.sku_sales_projection}>
+                            item={this.state.sku_sales_projection}
+                            onExitButton={this.onSalesProjectionExitButton}>
                         </SalesProjectionModal>
                     </Modal>
 

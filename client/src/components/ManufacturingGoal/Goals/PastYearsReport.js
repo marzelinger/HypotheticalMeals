@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Table } from 'reactstrap';
+import {Button, Table } from 'reactstrap';
 import * as Constants from '../../../resources/Constants';
 
 export default class PastYearsReport extends React.Component{
@@ -62,6 +62,11 @@ export default class PastYearsReport extends React.Component{
                         {this.state.sales_average} +/- {this.state.std_dev}
                     </div>
                 </div>
+
+                <div className="centerContainer ">
+                    <Button className="centerButton"
+                        onClick={this.props.useAverage}> Use average sales as quantity</Button>
+                </div>
                 
             </div>
         )
@@ -70,4 +75,5 @@ export default class PastYearsReport extends React.Component{
 
 PastYearsReport.propTypes = {
     yearly_revenues: PropTypes.arrayOf(PropTypes.object),
+    useAverage: PropTypes.func,
 }
