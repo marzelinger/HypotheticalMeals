@@ -59,6 +59,7 @@ export const details_delete = 'Delete'
 export const details_cancel = 'Cancel'
 export const details_exit = 'Exit'
 export const details_create = 'Create'
+export const details_sales_projection = 'See Sales Projection'
 export const details_export = 'Export'
 
 export const details_edit = 'Edit'

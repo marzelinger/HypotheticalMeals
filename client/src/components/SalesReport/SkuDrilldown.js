@@ -70,6 +70,8 @@ export default class SkuDrilldown extends React.Component {
             var cust_str = (this.props.customer._id === undefined) ? '_' : this.props.customer._id;
             let datares = await SubmitRequest.submitGetSaleRecordsByFilter('_', cust_str, '_', this.props.sku._id, 
                                 this.props.dateRange['startdate'], this.props.dateRange['enddate'], 0, 0)
+            console.log("This is what I care about: " + this.props.dateRange['startdate']);
+            console.log("this is what I care about: " + this.props.dateRange['enddate']);
             console.log(datares.data)
             if(datares.success){
                 await this.getTotalRowData(datares.data);

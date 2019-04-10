@@ -1,3 +1,7 @@
 .rowC{display:flex; flex-direction:row;}
 
 .paddedDiv{padding: 10px;}
+
+.centerContainer{text-align:center;}
+
+.centerButton{margin: 5px;display: inline-block;}

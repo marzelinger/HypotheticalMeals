@@ -17,6 +17,7 @@ import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import SubmitRequest from '../../../helpers/SubmitRequest';
 import Switch from "react-switch";
+import SalesProjectionModal from './SalesProjectionModal';
 import AuthRoleValidation from '../../auth/AuthRoleValidation';
 
 
@@ -38,6 +39,8 @@ export default class ManufacturingGoalDetails extends React.Component {
             invalid_inputs: [],
             page_title: 'SKUs',
             data: [],
+            showSalesProjection: false,
+            sku_sales_projection: null,
         }
 
         this.onModifyList = this.onModifyList.bind(this);
@@ -46,7 +49,8 @@ export default class ManufacturingGoalDetails extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.validateInputs = this.validateInputs.bind(this);
         this.onEnable = this.onEnable.bind(this);
-
+        this.toggleSalesProjection = this.toggleSalesProjection.bind(this);
+        this.onSalesProjectionExitButton = this.onSalesProjectionExitButton.bind(this);
     }
 
     async componentDidMount() {
@@ -71,6 +75,18 @@ export default class ManufacturingGoalDetails extends React.Component {
         await this.setState({ item: item });
     };
 
+    toggleSalesProjection = async () => {
+        await this.setState({
+            showSalesProjection: !this.state.showSalesProjection,
+        })
+    }
+
+    async onSalesProjectionExitButton() {
+        await this.setState({
+            showSalesProjection: false,
+        });
+    }
+
     onModifyList = async (option, value, qty) => {
         console.log("modifything list;");
         var item = Object.assign({}, this.state.item);
@@ -82,6 +98,13 @@ export default class ManufacturingGoalDetails extends React.Component {
                 break;
             case Constants.details_remove:
                 await this.removeSku(item, value, qty);
+                break;
+            case Constants.details_sales_projection:
+                console.log(value);
+                await this.setState({
+                    sku_sales_projection: value,
+                    showSalesProjection: true,
+                });
                 break;
         }
         await this.setState({ 
@@ -272,12 +295,19 @@ export default class ManufacturingGoalDetails extends React.Component {
                     <ItemSearchModifyListQuantity
                         api_route={Constants.skus_page_name}
                         item_type={Constants.details_modify_skus}
-                        options={[Constants.details_add, Constants.details_remove]}
+                        options={[Constants.details_add, Constants.details_remove, Constants.details_sales_projection]}
                         handleModifyList={this.onModifyList}
                         disabled = {!(AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)}
 
 
                     />
+                    <Modal isOpen={this.state.showSalesProjection} toggle={this.toggleSalesProjection}>
+                        <SalesProjectionModal 
+                            item={this.state.sku_sales_projection}
+                            onExitButton={this.onSalesProjectionExitButton}>
+                        </SalesProjectionModal>
+                    </Modal>
+
                     <SimpleGoalTable
                     activities = {this.state.item.activities}
                     ></SimpleGoalTable>
