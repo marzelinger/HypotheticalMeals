@@ -63,7 +63,8 @@ export default class ManuSchedulePage extends Component {
             uncommitted_items: [],
             autoschedule_warning: '',
             autoschedule_warning_color: '',
-            showSelectAll: false
+            showSelectAll: false,
+            showSelect: false
         }
         this.determineUser();
 
@@ -116,11 +117,9 @@ export default class ManuSchedulePage extends Component {
                 current_user: user,
                 token: token,
             })
-            console.log('determining')
-            console.log(this.state.current_user)
-            console.log(this.state.current_user.roles.includes('plant_manager'))
             await this.setState({
-                showSelectAll: this.state.current_user.roles.includes('plant_manager')
+                showSelectAll: this.state.current_user.roles.includes('admin'),
+                showSelect: this.state.current_user.roles.includes('plant_manager')
             })
         }
     }
@@ -393,7 +392,7 @@ export default class ManuSchedulePage extends Component {
         await CheckErrors.updateActivityErrors(act.data[0]);
         await this.loadScheduleData();
         callback(item)
-        await this.setState({error_change: true, selected_indexes:[]});
+        await this.setState({error_change: true});
     }
 
     snap(date, scale, step) {
@@ -716,7 +715,6 @@ export default class ManuSchedulePage extends Component {
     }
 
     handleSelect = async (rowIndexes, g_index) => {
-        if (!this.state.current_user.roles.includes('plant_manager')) return
         console.log(rowIndexes)
         var selected = this.state.selected_indexes;
         if(rowIndexes == 'all'){
@@ -821,7 +819,7 @@ export default class ManuSchedulePage extends Component {
                 <div className = "belowTimeline">
                     <div className='palette-container'>
                         <div className = 'palette-header'>
-                            {this.state.autoschedule ? 
+                            {this.state.autoschedule || !this.state.showSelectAll ? 
                             <div></div>
                             :
                             <div 
@@ -849,6 +847,7 @@ export default class ManuSchedulePage extends Component {
                             /> : 
                             <ManuSchedulePalette
                                 showSelectAll = {this.state.showSelectAll}
+                                showSelect = {this.state.showSelect}
                                 goals={this.state.unscheduled_goals}
                                 activities={this.state.activities}
                                 lines={this.state.lines}
