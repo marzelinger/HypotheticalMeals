@@ -797,10 +797,10 @@ export default class ManuSchedulePage extends Component {
                     <Timeline 
                         options={this.getOptions()}
                         items={items.length ? items : [
-                            // {
-                            //     start: new Date()
-                            //     group: groups[0]._id,
-                            // }
+                            {
+                                start: new Date(),
+                                group: ''
+                            }
                         ]}
                         groups={groups}
                         doubleClickHandler={this.doubleClickHandler.bind(this)}
