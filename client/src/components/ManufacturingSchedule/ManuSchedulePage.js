@@ -389,13 +389,6 @@ export default class ManuSchedulePage extends Component {
     }
 
     snap(date, scale, step) {
-        // var clone = new Date(date.valueOf());
-        // if (clone.getMinutes() > 30){
-        //     clone.setHours(clone.getHours() + 1)
-        // }
-        // clone.setMinutes(0)
-        // clone.setMilliseconds(0)
-        // return clone
         var hour = 60 * 60 * 1000;
         return Math.round(date / hour) * hour;
     }
@@ -489,6 +482,7 @@ export default class ManuSchedulePage extends Component {
             autoschedule_toggle_button: str,
             uncommitted_items: []
         })
+        await this.loadScheduleData()
     }
 
     async onDateRangeSelect(event, type) {
@@ -513,7 +507,6 @@ export default class ManuSchedulePage extends Component {
         await this.setState({ uncommitted_items: [] })
         await this.loadScheduleData()
         let TEMP_acts = this.getSelectedActivities();
-        this.deSelectAll();
         console.log(TEMP_acts)
         TEMP_acts.sort(function(a, b){
             let aDate = new Date(a.deadline)
@@ -578,6 +571,7 @@ export default class ManuSchedulePage extends Component {
         console.log(unscheduled_activities)
         if (new_items.length === 0) {
             alert('None of the selected activities could be scheduled!')
+            this.toggleAutoschedule()
         }
         else {
             var str = ''
@@ -599,8 +593,8 @@ export default class ManuSchedulePage extends Component {
                 autoschedule_warning: str,
                 autoschedule_warning_color: alert
             })
-            await this.loadScheduleData()
         }
+        await this.loadScheduleData()
     }
 
     insertItem(final_item, rel_items) {
@@ -623,11 +617,14 @@ export default class ManuSchedulePage extends Component {
     }
 
     verifyPlacement(act, start, mline, rel_items, auto_end) {
-        //if (!this.state.current_user.manu_lines.includes(mline._id)) return null
+        if (!this.state.current_user.manu_lines.find(ml => ml._id === mline)) {
+            return null
+        }
         let end = this.determineEnd(start, act.duration)
         let className = 'uncommitted'
         if (end.getTime() > act.deadline.getTime()) {
-            className = className + ' over_deadline'
+            return null
+            // className = className + ' over_deadline'
         }
         let item = {
             start: new Date(start.getTime()),
@@ -752,6 +749,7 @@ export default class ManuSchedulePage extends Component {
                 let res = await CheckErrors.updateActivityErrors(ua);
                 console.log(res)
             }
+            if (this.state.autoschedule) this.deSelectAll();
         }
         await this.setState({
             uncommitted_items: [],
@@ -760,6 +758,7 @@ export default class ManuSchedulePage extends Component {
             autoschedule_toggle_button: decision ? 'Autoschedule' : 'Cancel'
         })
         await this.loadScheduleData()
+        console.log(this.state.selected_indexes)
     }
 
     toggleSelectAll= () => {
@@ -780,7 +779,9 @@ export default class ManuSchedulePage extends Component {
     isEmpty(obj) {
         for(var key in obj) {
             if(obj.hasOwnProperty(key))
-                return false;
+                if(obj[key].length !== 0){
+                    return false;
+                }
         }
         return true;
     }
@@ -850,7 +851,8 @@ export default class ManuSchedulePage extends Component {
                                 user = {this.state.current_user}
                             />
                         }
-                        {!this.isEmpty(this.state.selected_indexes) && AuthRoleValidation.checkRole(this.state.current_user, Constants.plant_manager)?
+                        {!this.isEmpty(this.state.selected_indexes) && AuthRoleValidation.checkRole(this.state.current_user, Constants.plant_manager)
+                         && this.state.uncommitted_items.length === 0 ?
                             <Button
                                 onClick={this.toggleAutoschedule}
                             > 
@@ -863,7 +865,7 @@ export default class ManuSchedulePage extends Component {
 
                             <Button
                                 onClick={this.generateAutoschedule}
-                            >Generate Autoschedule</Button> :
+                            >{this.state.uncommitted_items.length === 0 ? 'Generate Autoschedule' : 'Regenerate Autoschedule'}</Button> :
                             null
                         }
                     </div>
