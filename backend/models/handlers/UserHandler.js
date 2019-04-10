@@ -54,13 +54,17 @@ class UserHandler{
     // Form validation
     const { errors, isValid } = validateLoginInput(req.body);
     // Check validation
+    console.log("HERE2");
+
     if (!isValid) {
       return res.status(400).json(errors);
     }
-    //const email = req.body.email;
+    console.log("HERE3");
     const username = req.body.username;
     const password = req.body.password;
     // Find user by username
+    console.log("HERE4");
+
     User.findOne({ username }).then(user => {
       // Check if user exists
       if (!user) {
