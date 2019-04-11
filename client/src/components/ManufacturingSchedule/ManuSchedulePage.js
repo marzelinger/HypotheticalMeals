@@ -274,6 +274,10 @@ export default class ManuSchedulePage extends Component {
     }
 
     async onMove(item, callback) {
+        if (!this.state.current_user.roles.includes('plant_manager')) {
+            callback(null)
+            return 
+        }
         if (item.className.includes('uncommitted')) {
             alert('Uncommitted Autoschedule items cannot be edited!')
             callback(null)
@@ -347,6 +351,10 @@ export default class ManuSchedulePage extends Component {
     }
 
     async onAdd(item, callback) {
+        if (!this.state.current_user.roles.includes('plant_manager')) {
+            callback(null)
+            return 
+        }
         if (this.state.activity_to_schedule) {
             let activity = this.state.activity_to_schedule;
             let start = new Date(item.start)
@@ -379,6 +387,10 @@ export default class ManuSchedulePage extends Component {
     }
 
     async onRemove(item, callback) {
+        if (!this.state.current_user.roles.includes('plant_manager')) {
+            callback(null)
+            return 
+        }
         if (item.className.includes('uncommitted')) {
             alert('Uncommitted Autoschedule items cannot be edited!')
             callback(null)
