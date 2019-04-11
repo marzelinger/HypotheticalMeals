@@ -119,6 +119,17 @@ div.vis-tooltip {
     min-height: 38px;
 }
 
+.vis-group-enabled {
+    height: 38px;
+
+}
+
+.vis-group-disabled {
+    height: 38px;
+    background-color: rgb(10, 10, 20, .08);
+}
+
+
 td, tr {
     text-align: center;
 }

@@ -135,10 +135,12 @@ export default class ManuSchedulePage extends Component {
             console.log("2  "+AuthRoleValidation.checkRole(this.state.current_user, Constants.plant_manager));
             console.log("3  "+AuthRoleValidation.IsCurrentUserPlantMForX(this.state.current_user, line));
             if(AuthRoleValidation.checkRole(this.state.current_user, Constants.admin) || (AuthRoleValidation.checkRole(this.state.current_user, Constants.plant_manager) && AuthRoleValidation.IsCurrentUserPlantMForX(this.state.current_user, line))){
-                groups.push({ id: line._id, content: line.name, style: "color: black; background-color:  #98FB98;" });
+                //these are the enabled.
+                groups.push({ id: line._id, content: line.name, className: "vis-group-enabled" });
             }
             else {
-                groups.push({ id: line._id, content: line.name, style: "color: black; background-color: grey;" });
+                //these are the disabled
+                groups.push({ id: line._id, content: line.name, className: "vis-group-disabled" });
             }
             // console.log(this.state.current_user)
             // if (this.state.current_user.manu_lines.find(ml => ml._id === line._id)){ 
