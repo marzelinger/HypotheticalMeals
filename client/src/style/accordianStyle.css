@@ -1,3 +1,7 @@
+.disableCheckbox div{
+    display: none;
+}
+
 .accordian-table {
     font-size: .8rem;
 }

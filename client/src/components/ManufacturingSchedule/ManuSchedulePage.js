@@ -715,7 +715,6 @@ export default class ManuSchedulePage extends Component {
     }
 
     handleSelect = async (rowIndexes, g_index) => {
-        console.log(rowIndexes)
         var selected = this.state.selected_indexes;
         if(rowIndexes == 'all'){
             var indexes = []

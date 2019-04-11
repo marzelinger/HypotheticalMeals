@@ -70,10 +70,17 @@ export default class ManuSchedulePalette extends Component {
         return false;
     }
     
+    checkManuLine = (act) => {
+        var manulines = act.sku.manu_lines;
+        var user_lines = this.props.user.manu_lines.map(manu_line => manu_line._id);
+        var filtered = manulines.filter((line => user_lines.includes(line)));
+        return filtered.length != 0;
+    }
+
     injectActivityData(act, a_index, g_index) {
-        // console.log(this.state.selected)
+        console.log(act);
         return (
-            <TableRow selectable = {this.props.showSelect} selected = {this.determineSelected(a_index, g_index)}>
+            <TableRow class = {this.checkManuLine(act) ? '' : 'disableCheckbox'} selectable = {this.props.showSelect && this.checkManuLine(act)} selected = {this.determineSelected(a_index, g_index)}>
                 {this.state.item_properties.map(prop => {
                 if (prop === 'sku'){
                     return (<TableRowColumn>{act[prop].name + ': ' + act[prop].unit_size + ' * ' + act.quantity}</TableRowColumn>)
