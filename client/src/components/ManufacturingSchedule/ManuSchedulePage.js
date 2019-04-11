@@ -274,7 +274,9 @@ export default class ManuSchedulePage extends Component {
     }
 
     async onMove(item, callback) {
-        if (!this.state.current_user.roles.includes('plant_manager')) {
+        if (!this.state.current_user.manu_lines.find(ml => ml._id === item.group)) {
+            let line = this.state.lines.find(ml => ml._id === item.group)
+            alert("This user cannot edit the manufacturing line " + line.name)
             callback(null)
             return 
         }
@@ -351,11 +353,13 @@ export default class ManuSchedulePage extends Component {
     }
 
     async onAdd(item, callback) {
-        if (!this.state.current_user.roles.includes('plant_manager')) {
-            callback(null)
-            return 
-        }
         if (this.state.activity_to_schedule) {
+            if (!this.state.current_user.manu_lines.find(ml => ml._id === item.group)) {
+                let line = this.state.lines.find(ml => ml._id === item.group)
+                alert("This user cannot edit the manufacturing line " + line.name)
+                callback(null)
+                return 
+            }
             let activity = this.state.activity_to_schedule;
             let start = new Date(item.start)
             let end = new Date()
@@ -387,7 +391,9 @@ export default class ManuSchedulePage extends Component {
     }
 
     async onRemove(item, callback) {
-        if (!this.state.current_user.roles.includes('plant_manager')) {
+        if (!this.state.current_user.manu_lines.find(ml => ml._id === item.group)) {
+            let line = this.state.lines.find(ml => ml._id === item.group)
+            alert("This user cannot edit the manufacturing line " + line.name)
             callback(null)
             return 
         }
