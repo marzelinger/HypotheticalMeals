@@ -135,8 +135,14 @@ export default class ManuSchedulePalette extends Component {
                                         adjustForCheckbox={this.props.showSelect}
                                         enableSelectAll={this.props.showSelectAll}>
                                     <TableRow>
-                                        {this.state.item_properties.map(prop =>
-                                            <TableHeaderColumn>{this.getPropertyLabel(prop)}</TableHeaderColumn>
+                                        {this.state.item_properties.map(prop => {
+                                            if (prop === 'add_to_schedule' && !this.props.user.roles.includes('plant_manager')){
+                                                return null
+                                            }
+                                            else {
+                                                return (<TableHeaderColumn>{this.getPropertyLabel(prop)}</TableHeaderColumn>)
+                                            }
+                                        }
                                         )}
                                     </TableRow>
                                     </TableHeader>
