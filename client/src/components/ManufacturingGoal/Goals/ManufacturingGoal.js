@@ -138,7 +138,7 @@ export default class ManufacturingGoal extends React.Component{
               options = {[Constants.details_save, Constants.details_delete, Constants.details_cancel]}
               ></ManufacturingGoalDetails>
             </div> */}
-            <ManufacturingGoalCalculator name = {this.props.name} activities = {this.props.activities}></ManufacturingGoalCalculator>
+            
           </div>
       </div>
     )

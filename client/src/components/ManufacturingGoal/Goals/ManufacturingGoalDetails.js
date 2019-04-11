@@ -304,7 +304,8 @@ export default class ManufacturingGoalDetails extends React.Component {
                     <Modal isOpen={this.state.showSalesProjection} toggle={this.toggleSalesProjection}>
                         <SalesProjectionModal 
                             item={this.state.sku_sales_projection}
-                            onExitButton={this.onSalesProjectionExitButton}>
+                            onExitButton={this.onSalesProjectionExitButton}
+                            useAverage={this.useAverage}>
                         </SalesProjectionModal>
                     </Modal>
 
