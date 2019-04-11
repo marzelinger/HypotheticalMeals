@@ -154,6 +154,18 @@ class ManufacturingGoalsBox extends Component {
     return created_activities;
   }
 
+  submitDeleteActivity = async(activities) => {
+    for(const activity of activities) {
+      try{
+        if(!activity._id){
+          let response = await SubmitRequest.submitDeleteItem('manuactivities', activity);
+        }
+      } catch (e){
+        console.log(e);
+      }
+    }
+  }
+
   submitNewActivity = async(activities) => {
     let created_activities = [];
     for(const activity of activities) {
@@ -187,14 +199,99 @@ class ManufacturingGoalsBox extends Component {
 
   async submitUpdatedGoal() {
     let old_activities = this.state.detail_view_old_activities;
+    let created_activities=[];
     console.log("old_activities: "+JSON.stringify(old_activities));
     const { name, activities, user, updateId, enabled, deadline} = this.state;
     console.log("activities: "+JSON.stringify(activities));
+    //might need to go through all of the activities to see if they exist correctly.
+
+    option 1:
+    if(old_activities==undefined && activities == undefined){
+      //no new activities;
+      //no old activities
+      //don't need to do anything.
+      created_activities=[]
+    }
+    else if (old_activities==undefined && activities!=undefined){
+      //new activities;
+      created_activities = await this.submitUpdateActivity(activities);
+    }
+    else if(old_activities!=undefined && activities== undefined){
+      //want to delete the old activities
+      //need to go through and delete the old activities
+      await this.submitDeleteActivity(activities);
+      created_activities = [];
+    }
+    else {
+      //both old activities and new activities. check the lengths of the two.
+      //maybe go through and delete each of the old activities and then create a new one for each
+      //new activity need to go through the old ones and see if they match
+      await this.submitDeleteActivity(old_activities);
+      created_activities = await this.submitUpdateActivity(activities);
+    }
+
+    //option 2:
+    //go through each activity and check if a goal contains it.
+    var all_activities = await SubmitRequest.submitGetData(Constants.manu_activity_page_name);
+    var all_goals = await SubmitRequest.submitGetData(Constants.manugoals_page_name);
+
+    // if(all_activities.success){
+    //   if(all_activities.data!=undefined){
+    //     if(all_goals.success){
+    //       if(all_goals.data!=undefined){
+    //         for(let act = 0; act<all_activities.data.length; act++){
+    //           //check that the activity belongs to a goal.
+    //           //if the activity belongs to this goal, make sure it is updated correctly.
+    //           for(let goal = 0; goal<all_goals.data.length; goal++){
+    //             //if this activity belongs to a goal that isn't the current goal, just continue
+    //             if(all_goals.data[goal].activities!=undefined){
+    //               for(let goal_act = 0; goal_act<all_goals.data[goal].activities.length; goal_act++){
+    //                 //go through the goals activities and then check if the activity is the one you are checking with
+    //                 if(all_goals.data[goal].activities[goal_act]._id == all_activities.data[act]._id){
+    //                   //this goal_act is equal to this activity
+    //                   if(all_goals.data[goal]._id!=this.state.detail_view_item._id){
+    //                     //this is a different goal and a different activity.
+    //                     continue;
+    //                   }
+    //                   else{
+    //                     //this goal is the detail view goal and it includes the current activity.
+    //                     //need to check that the activity is the right stuff.
+    //                     //need to check that the activity is in the new goal update.
+    //                     //we know that this activity corresponds to this goal.
+    //                     //check that this activity has the right stuff in it for the "new_activities."
+    //                     if(activities!=undefined){
+    //                       for(let new_act = 0; new_act<activities.length; new_act++){
+    //                         //CHECK THE SYNTAX HERE.
+    //                         if(activities[new_act]._id == all_activities.data[act]._id){
+    //                           //the activities are the same just continue
+    //                           //activities.splice(new_act, 1);
+    //                           created_activities.push(activities[new_act]._id);
+    //                           continue;
+    //                         }
+    //                       }
+    //                       //the matching activity not found in the new activities. delete this activity then
+    //                       await this.submitDeleteActivity([all_activities.data[act]]);
+
+    //                     }
+    //                   }
+    //                 }
+    //               }
+    //             }
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+
+    //go through the left over activities and create them
+    created_activities = await this.submitUpdateActivity(activities);
 
 
-    // if(old_activities==undefined && acitivities == undefined);
 
-    let created_activities = await this.submitUpdateActivity(activities);
+
+
+    // let created_activities = await this.submitUpdateActivity(activities);
     console.log(created_activities);
     let item = { name, activities: created_activities, user, enabled, deadline };
     let res = await SubmitRequest.submitUpdateGoal(user, updateId, item);
@@ -376,22 +473,23 @@ class ManufacturingGoalsBox extends Component {
       item.deadline = dateString;
     }
     console.log(item);
-    this.setState({
+    await this.setState({
         detail_view_item: item,
         detail_view_old_activities: item.activities
     });
     if((AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && item.user ==this.props.user.username) || AuthRoleValidation.checkRole(this.props.user, Constants.admin)){
-        this.setState({ 
+        await this.setState({ 
         detail_view_options: [Constants.details_save, Constants.details_delete, Constants.details_cancel],
-        detail_view_action: Constants.details_edit
+        detail_view_action: Constants.details_edit,
         });
     }
     else{
-        this.setState({ 
+        await this.setState({ 
             detail_view_options: [Constants.details_exit],
-            detail_view_action: Constants.details_view
+            detail_view_action: Constants.details_view,
             });
     }
+    console.log("detail old: "+JSON.stringify(this.state.detail_view_old_activities));
     this.toggle();
 };
 
