@@ -23,6 +23,7 @@ import TableActions from './TableActions';
 import '../../style/TableStyle.css'
 import SubmitRequest from '../../helpers/SubmitRequest';
 import AuthRoleValidation from '../auth/AuthRoleValidation';
+import ManufacturingGoalCalculator from '../ManufacturingGoal/Goals/ManufacturingGoalCalculator';
 
 
 /**
@@ -179,12 +180,23 @@ export default class PageTable extends Component {
     }
   }
 
+  getCalculatorColumn= () => {
+    if(this.props.showCalculator){
+      // return <TableHeaderColumn>Calculator</TableHeaderColumn>
+    }
+    
+  }
+
+  getCalculatorItem = (item) => {
+    return <ManufacturingGoalCalculator name = {item.name} activities = {item.activities}></ManufacturingGoalCalculator>
+  }
+
 
   render() {
     return (
       <div className = "table-container">
         <Table
-          height={this.props.reportSelect ? null : (!this.state.selectable ? null : '413px')}
+          height={this.props.reportSelect ? null : (!this.state.selectable && !this.props.page_name == 'manu_goals'? null : '413px')}
           fixedHeader={this.state.fixedHeader}
           fixedFooter={this.state.fixedFooter}
           selectable={this.state.selectable}
@@ -203,6 +215,7 @@ export default class PageTable extends Component {
                 )}
                 {this.getDetailsCol()}
                 {this.getLoadingCol()}
+                {this.getCalculatorColumn()}
             </TableRow>
           </TableHeader>
           <TableBody
@@ -243,7 +256,8 @@ export default class PageTable extends Component {
                         disabled={this.props.disable_inputs}
                       />
                     </TableRowColumn>)}
-                    {this.props.showLoading ? this.getLoadingItem(item) : <div></div>}
+                    {this.props.showLoading ? this.getLoadingItem(item) : null}
+                    {this.props.showCalculator ? this.getCalculatorItem(item) : null}
                 </TableRow>
               )}
           </TableBody>

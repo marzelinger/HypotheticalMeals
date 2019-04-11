@@ -69,13 +69,13 @@ export default class ManufacturingGoalCalculator extends React.Component{
 
   // broken rn bc using old structure of skus
   getIngredientInfo = async () => {
-      console.log("activities" + JSON.stringify(this.props.activities));
+      console.log(this.props.activities);
 
       let index = 0;
       await this.props.activities.forEach( async (activity) => {
         var quantity = activity.quantity * activity.sku.scale_factor;
-        var ingredients = activity.sku.formula.ingredients;
-        var ingr_quantities = activity.sku.formula.ingredient_quantities;
+        var ingredients = activity.sku.formula.ingredients || [];
+        var ingr_quantities = activity.sku.formula.ingredient_quantities || [];
         for(var i = 0; i < ingredients.length; i ++){
           var ingr_with_quantity = {
             ...ingredients[i],
@@ -108,8 +108,8 @@ export default class ManufacturingGoalCalculator extends React.Component{
   render(){
     
     return (
-      <div>
-        <img id = "button" src={calculatorButton} onClick={this.toggle}></img>
+      <div class = "calc-column">
+        <img class = "calculator" id = "button" src={calculatorButton} onClick={this.toggle}></img>
         <Modal isOpen={this.state.modal} toggle={this.toggle} id="popup">
           <ModalHeader toggle={this.toggle}>Calculator Results</ModalHeader>
           <ModalBody class = "modal">

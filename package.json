@@ -47,6 +47,7 @@
     "path": "^0.12.7",
     "querystring": "^0.2.0",
     "react": "^16.7.0",
+    "react-date-picker": "^7.5.0",
     "react-dom": "^16.7.0",
     "react-loading-overlay": "^1.0.1",
     "react-redux": "^6.0.0",
