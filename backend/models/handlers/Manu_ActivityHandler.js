@@ -72,7 +72,6 @@ class Manu_ActivityHandler{
             if(!target_id){
                 return res.json({ success: false, error: 'No manufacturing actvity named provided'});
             }
-            console.log('updating');
             var new_sku = req.body.sku;
             var new_quantity = req.body.quantity;
             var new_scheduled = req.body.scheduled;
@@ -147,13 +146,10 @@ class Manu_ActivityHandler{
             // }            
             var target_start_date = req.params.start;
             var target_end_date = req.params.end;
-            console.log("TARGET_START: "+target_start_date);
-            console.log("TARGET_END: "+target_end_date);
 
             var complete = [];
             // let to_return = await Manu_Activity.find({ sku : sku_res[0]._id, start: {$gte: target_start_date}})
             let to_return = await Manu_Activity.find({ sku: target_sku_id, start: {$gte: target_start_date}});
-            console.log("TO_RETURN LENGTH: "+to_return.length);
             if(to_return.length == 0) {
                 return res.json({success: false, error: '404'});
             }
@@ -233,14 +229,7 @@ class Manu_ActivityHandler{
                     //startAct<startRep && endAct=<endRep: beg cut 
                     //startAct<startRep && endAct>endRep: beg cut, end cut
                     //startAct>=startRep && endAct=<endRep: complete
-                    //startAct>=startRep && endAct>endRep: end cut
-                    console.log("START_REP: "+startRep);
-                    console.log("END_REP: "+endRep);
-                    console.log("START_ACT: "+startAct);
-                    console.log("END_ACT: "+endAct);
-                    console.log("COMPLETE: startAct>=startRep && endAct<=endRep"+ startAct>=startRep && endAct<=endRep);
-                    console.log("COMPLETE: startAct>=startRep && endAct<=endRep"+ startAct>=startRep && endAct<=endRep);
-                    
+                  
                     //SOMETHING WRONG IN END CUT
                     if(endAct<=startRep){
                         //this activity shouldn't be anywhere. happens before schedule.
@@ -256,7 +245,6 @@ class Manu_ActivityHandler{
                         if(endAct<=endRep){
                             //activity ends before report ends
                             //complete here
-                            console.log("comp");
                             complete_activities.push(curAct);
     
                             continue;
@@ -265,7 +253,6 @@ class Manu_ActivityHandler{
                         else if(endAct>endRep){
                             //the activity ends after the report
                             //end cut
-                            console.log("end");
 
                             ending_cut.push(curAct);
                             // console.log("ending: "+ending_cut.length);
