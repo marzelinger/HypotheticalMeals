@@ -64,7 +64,6 @@ class ManufacturingGoalsBox extends Component {
     this.onDeleteGoal = this.onDeleteGoal.bind(this);
     this.loadGoalsFromServer = this.loadGoalsFromServer.bind(this);
     this.submitUpdatedGoal = this.submitUpdatedGoal.bind(this);
-    this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
     this.onSort = this.onSort.bind(this);
     this.toggle = this.toggle.bind(this);
     this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
@@ -76,21 +75,21 @@ class ManufacturingGoalsBox extends Component {
     this.setState(newState);
   }
 
-  onUpdateGoal = async (id,new_name) => {
-    console.log('updating goal')
-    console.log(new_name);
-    const oldGoal = this.state.data.find(c => c._id === id);
-    if (!oldGoal) return;
-    await this.setState({
-        name: new_name || oldGoal.name,
-        activities: oldGoal.activities,
-        updateId: id,
-        enabled: oldGoal.enabled,
-        deadline: oldGoal.deadline
-    });
+  // onUpdateGoal = async (id,new_name) => {
+  //   console.log('updating goal')
+  //   console.log(new_name);
+  //   const oldGoal = this.state.data.find(c => c._id === id);
+  //   if (!oldGoal) return;
+  //   await this.setState({
+  //       name: new_name || oldGoal.name,
+  //       activities: oldGoal.activities,
+  //       updateId: id,
+  //       enabled: oldGoal.enabled,
+  //       deadline: oldGoal.deadline
+  //   });
     
-    this.submitUpdatedGoal();
-  }
+  //   this.submitUpdatedGoal();
+  // }
 
   async onDeleteGoal(id) {
     const i = this.state.data.findIndex(c => c._id === id);
@@ -101,6 +100,10 @@ class ManufacturingGoalsBox extends Component {
     ];
     this.setState({ data });
 
+    let goal_to_delete = await SubmitRequest.submitGetManuGoalByID(item._id);
+    if (!goal_to_delete.success) {
+      this.setState({ error: res.error });
+    }
     let res = await SubmitRequest.submitDeleteItem(Constants.manugoals_page_name, item);
     if (!res.success) {
       this.setState({ error: res.error });
@@ -108,10 +111,11 @@ class ManufacturingGoalsBox extends Component {
     else {
       //need to delete all the activities associated with this goal.
       console.log("this is the item: "+JSON.stringify(item));
-      if(item.activities!=undefined) {
+      if(goal_to_delete.data[0].activities!=undefined) {
         //activities to delete
-        for(let a = 0; a<item.activities.length; a++){
-          var deleteActRes = await SubmitRequest.submitDeleteItem(Constants.manu_activity_page_name, item);
+        for(let a = 0; a<goal_to_delete.data[0].activities.length; a++){
+          //CHECK THE SYNTAX HERE.
+          var deleteActRes = await SubmitRequest.submitDeleteItem(Constants.manu_activity_page_name, goal_to_delete.data[0].activities[a]);
         }
         if(!deleteActRes.success){
           this.setState({ error: deleteActRes.error });
@@ -121,17 +125,17 @@ class ManufacturingGoalsBox extends Component {
     return res.success;
   }
 
-  submitGoal = (e) => {
-    console.log('in submit goal')
-    e.preventDefault();
-    const { name, updateId } = this.state;
-    if (!name) return;
-    if (updateId) {
-      this.submitUpdatedGoal();
-    } else {
-      this.submitNewGoal();
-    }
-  }
+  // submitGoal = (e) => {
+  //   console.log('in submit goal')
+  //   e.preventDefault();
+  //   const { name, updateId } = this.state;
+  //   if (!name) return;
+  //   if (updateId) {
+  //     this.submitUpdatedGoal();
+  //   } else {
+  //     this.submitNewGoal();
+  //   }
+  // }
 
   submitUpdateActivity = async(activities) => {
     let created_activities = [];
@@ -197,115 +201,71 @@ class ManufacturingGoalsBox extends Component {
 
 
 
-  async submitUpdatedGoal() {
-    let old_activities = this.state.detail_view_old_activities;
+  async submitUpdatedGoal(item, deleted_activities) {
+    console.log("these are the old_activities from details: "+JSON.stringify(deleted_activities));
+    console.log("deleted acti")
     let created_activities=[];
-    console.log("old_activities: "+JSON.stringify(old_activities));
     const { name, activities, user, updateId, enabled, deadline} = this.state;
-    console.log("activities: "+JSON.stringify(activities));
+    console.log("activities: "+JSON.stringify(activities.length));
     //might need to go through all of the activities to see if they exist correctly.
 
-    option 1:
-    if(old_activities==undefined && activities == undefined){
-      //no new activities;
-      //no old activities
-      //don't need to do anything.
-      created_activities=[]
-    }
-    else if (old_activities==undefined && activities!=undefined){
-      //new activities;
-      created_activities = await this.submitUpdateActivity(activities);
-    }
-    else if(old_activities!=undefined && activities== undefined){
-      //want to delete the old activities
-      //need to go through and delete the old activities
-      await this.submitDeleteActivity(activities);
-      created_activities = [];
+    // //go through each activity and check if a goal contains it.
+    let old_goal = await SubmitRequest.submitGetManuGoalByID(item._id);
+    if (!old_goal.success) {
+      console.log('not a success')
+      this.setState({ error: old_goal.error });
+      return old_goal;
     }
     else {
-      //both old activities and new activities. check the lengths of the two.
-      //maybe go through and delete each of the old activities and then create a new one for each
-      //new activity need to go through the old ones and see if they match
-      await this.submitDeleteActivity(old_activities);
-      created_activities = await this.submitUpdateActivity(activities);
+      if(old_goal.data[0].activities==undefined){
+        console.log("old_goals undefined activities");
+        if(activities==undefined){
+          //no old activities and no new activities
+          created_activities = [];
+        }
+        else if (activities!=undefined){
+          //new activities and no old activities.
+          created_activities = await this.submitUpdateActivity(activities);
+        }
+      }
+      else if(old_goal.data[0].activities!=undefined){
+        //old goals exist.
+        console.log("old_goals activities length: "+JSON.stringify(old_goal.data[0].activities.length));
+
+        if(activities == undefined){
+          console.log("new activities undefined: ");
+
+          //old activities but no current activities. 
+          //delete all the old ones.
+          await this.submitDeleteActivity(old_goal.data[0].activities);
+        }
+        else if (activities !=undefined){
+          console.log("new activities length: "+JSON.stringify(activities.length));
+
+          //there are old activities and new activities.
+          //delete all the old ones, create all the new ones.
+          await this.submitDeleteActivity(old_goal.data[0].activities);
+          created_activities = await this.submitUpdateActivity(activities);
+        }
+      }
+      // let created_activities = await this.submitUpdateActivity(activities);
+      console.log(created_activities);
+      let item = { name, activities: created_activities, user, enabled, deadline };
+      let res = await SubmitRequest.submitUpdateGoal(user, updateId, item);
+      if (!res.success) {
+        console.log(res.error);
+        this.setState({ error: res.error});
+      }
+      else {
+        console.log("load goals from server")
+        this.setState({ name: '', activities: '', enabled: false, error: null })
+        this.loadGoalsFromServer();
+      }
+      return res;
     }
-
-    //option 2:
-    //go through each activity and check if a goal contains it.
-    var all_activities = await SubmitRequest.submitGetData(Constants.manu_activity_page_name);
-    var all_goals = await SubmitRequest.submitGetData(Constants.manugoals_page_name);
-
-    // if(all_activities.success){
-    //   if(all_activities.data!=undefined){
-    //     if(all_goals.success){
-    //       if(all_goals.data!=undefined){
-    //         for(let act = 0; act<all_activities.data.length; act++){
-    //           //check that the activity belongs to a goal.
-    //           //if the activity belongs to this goal, make sure it is updated correctly.
-    //           for(let goal = 0; goal<all_goals.data.length; goal++){
-    //             //if this activity belongs to a goal that isn't the current goal, just continue
-    //             if(all_goals.data[goal].activities!=undefined){
-    //               for(let goal_act = 0; goal_act<all_goals.data[goal].activities.length; goal_act++){
-    //                 //go through the goals activities and then check if the activity is the one you are checking with
-    //                 if(all_goals.data[goal].activities[goal_act]._id == all_activities.data[act]._id){
-    //                   //this goal_act is equal to this activity
-    //                   if(all_goals.data[goal]._id!=this.state.detail_view_item._id){
-    //                     //this is a different goal and a different activity.
-    //                     continue;
-    //                   }
-    //                   else{
-    //                     //this goal is the detail view goal and it includes the current activity.
-    //                     //need to check that the activity is the right stuff.
-    //                     //need to check that the activity is in the new goal update.
-    //                     //we know that this activity corresponds to this goal.
-    //                     //check that this activity has the right stuff in it for the "new_activities."
-    //                     if(activities!=undefined){
-    //                       for(let new_act = 0; new_act<activities.length; new_act++){
-    //                         //CHECK THE SYNTAX HERE.
-    //                         if(activities[new_act]._id == all_activities.data[act]._id){
-    //                           //the activities are the same just continue
-    //                           //activities.splice(new_act, 1);
-    //                           created_activities.push(activities[new_act]._id);
-    //                           continue;
-    //                         }
-    //                       }
-    //                       //the matching activity not found in the new activities. delete this activity then
-    //                       await this.submitDeleteActivity([all_activities.data[act]]);
-
-    //                     }
-    //                   }
-    //                 }
-    //               }
-    //             }
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
-
-    //go through the left over activities and create them
-    created_activities = await this.submitUpdateActivity(activities);
-
-
-
-
-
-    // let created_activities = await this.submitUpdateActivity(activities);
-    console.log(created_activities);
-    let item = { name, activities: created_activities, user, enabled, deadline };
-    let res = await SubmitRequest.submitUpdateGoal(user, updateId, item);
-    if (!res.success) {
-      console.log(res.error);
-      this.setState({ error: res.error});
-    }
-    else {
-      console.log("load goals from server")
-      this.setState({ name: '', activities: '', enabled: false, error: null })
-      this.loadGoalsFromServer();
-    }
-    return res;
   }
+
+
 
   componentDidMount() {
     this.loadGoalsFromServer();
@@ -330,8 +290,9 @@ class ManufacturingGoalsBox extends Component {
     }
   }
 
-  async onDetailViewSubmit(event, item, option) {
-    console.log('here')
+  async onDetailViewSubmit(event, item, option, deleted_activities) {
+    console.log('here');
+    if(deleted_activities!=undefined)    console.log("in detailview submit. old length: "+deleted_activities.length);
     var newData = this.state.data;
     console.log(item);
     switch (option) {
@@ -366,7 +327,7 @@ class ManufacturingGoalsBox extends Component {
               enabled: item.enabled,
               deadline: item.deadline
           });
-            var response = await this.submitUpdatedGoal();
+            var response = await this.submitUpdatedGoal(item, deleted_activities);
             console.log(response)
             return response;
         case Constants.details_cancel:
@@ -473,9 +434,10 @@ class ManufacturingGoalsBox extends Component {
       item.deadline = dateString;
     }
     console.log(item);
+    var old_acts = item.activities;
     await this.setState({
         detail_view_item: item,
-        detail_view_old_activities: item.activities
+        detail_view_old_activities: old_acts
     });
     if((AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && item.user ==this.props.user.username) || AuthRoleValidation.checkRole(this.props.user, Constants.admin)){
         await this.setState({ 
@@ -489,7 +451,7 @@ class ManufacturingGoalsBox extends Component {
             detail_view_action: Constants.details_view,
             });
     }
-    console.log("detail old: "+JSON.stringify(this.state.detail_view_old_activities));
+    console.log("detail old LENGTH: "+JSON.stringify(this.state.detail_view_old_activities.length));
     this.toggle();
 };
 
@@ -530,6 +492,7 @@ class ManufacturingGoalsBox extends Component {
               handleDetailViewSubmit = {this.onDetailViewSubmit}
               detail_view_options = {this.state.detail_view_options}
               user = {this.props.user}
+              old_activities= {this.state.detail_view_old_activities}
               ></ManufacturingGoalDetails>
           </Modal>
           </div>

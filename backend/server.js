@@ -133,6 +133,8 @@ router.get('/manugoals_filter/:name_substr/:user_substr/:user', (req, res) => Ma
 router.get('/manugoals_activity/:activity_id', (req, res) => Manu_GoalHandler.getManufacturingGoalByActivity(req, res));
 router.get('/manugoals_name/:name',(req, res) => Manu_GoalHandler.getManufacturingGoalByName(req, res));
 router.get('/manugoals_by_user/:username',(req, res) => Manu_GoalHandler.getManufacturingGoalsByUsername(req, res));
+router.get('/manugoals_by_ID/:manu_goal_id', (req, res) => Manu_ActivityHandler.getManufacturingGoalByID(req, res));
+
 
 // Customer database APIs
 router.post('/customers', (req, res) => CustomerHandler.createCustomer(req, res));

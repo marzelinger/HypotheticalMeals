@@ -41,6 +41,7 @@ export default class ManufacturingGoalDetails extends React.Component {
             data: [],
             showSalesProjection: false,
             sku_sales_projection: null,
+            deleted_activities: []
         }
 
         this.onModifyList = this.onModifyList.bind(this);
@@ -131,7 +132,17 @@ export default class ManufacturingGoalDetails extends React.Component {
                 item.activities[ind].quantity = Math.round(item.activities[ind].quantity - qty);
             } 
             else {
+                //want to add this item to the deletect_activities variable.
+                var act = item.activities[ind];
+                var activities_to_delete = this.state.deleted_activities;
+                activities_to_delete.push(act);
+                await this.setState({
+                    deleted_activities: activities_to_delete
+                });
+                //splicing it from the activities that will eventually be added.
                 item.activities.splice(ind,1);
+
+
             }
         }
         await this.setState({ item: item })
@@ -192,8 +203,9 @@ export default class ManufacturingGoalDetails extends React.Component {
       }
 
     async handleSubmit(e, opt) {
+        console.log("OLD ACTIVITIES IN DETAILS: "+this.props.old_activities);
         if (![Constants.details_save, Constants.details_create, Constants.details_delete].includes(opt)) {
-            var return_val = await this.props.handleDetailViewSubmit(e, this.state.item, opt);
+            var return_val = await this.props.handleDetailViewSubmit(e, this.state.item, opt, this.state.deleted_activities);
             console.log(return_val)
             if(return_val){
                 this.props.toggle();
@@ -205,7 +217,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                 alert("You cannot delete an enabled manufacturing goal")
                 return false;
             }
-            var return_val = await this.props.handleDetailViewSubmit(e, this.state.item, opt);
+            var return_val = await this.props.handleDetailViewSubmit(e, this.state.item, opt, this.state.deleted_activities);
             console.log(return_val)
             if(return_val){
                 this.props.toggle();
@@ -218,7 +230,7 @@ export default class ManufacturingGoalDetails extends React.Component {
         if (inv.length === 0) {
             var item = this.state.item;
             item.deadline = new Date(item.deadline)
-            var return_val = await this.props.handleDetailViewSubmit(e, item, opt)
+            var return_val = await this.props.handleDetailViewSubmit(e, item, opt, this.deleted_activities)
             console.log(return_val)
             if(return_val.success){
                 await this.setState({errorText: ''})

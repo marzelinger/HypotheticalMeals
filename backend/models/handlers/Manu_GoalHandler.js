@@ -104,6 +104,21 @@ class Manu_GoalHandler{
         }
     }
 
+
+
+    static async getManufacturingGoalByID(req, res){
+        try {
+            var target_id = req.params.manu_goal_id;
+            let to_return = await Manu_Goal.find({ _id : target_id}).populate('activities');
+
+            if(to_return.length == 0) return res.json({success: false, error: '404'});
+            return res.json({ success: true, data: to_return});
+        } catch (err){
+            return res.json({ success: false, error: err});
+        }
+    }
+
+
     static async getManufacturingGoalByName(req, res){
         try {
             var target_name = req.params.name;

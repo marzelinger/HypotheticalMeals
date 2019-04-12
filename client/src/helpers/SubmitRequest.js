@@ -401,8 +401,34 @@ export default class SubmitRequest{
       );
   }
   
+  static submitGetManuGoalByID(id) {
+    return fetch(`/api/manugoals_by_ID/${id}`, { method: 'GET' })
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { error: res.error } ;
+        else return { 
+          success: res.success,
+          data: res.data
+        };
+        
+      });
+  }
+
   static submitGetManuGoalsData(user) {
     return fetch(`/api/manugoals/${user}`, { method: 'GET' })
+      .then(data => data.json())
+      .then((res) => {
+        if (!res.success) return { error: res.error } ;
+        else return { 
+          success: res.success,
+          data: res.data
+        };
+        
+      });
+  }
+
+  static submitGetAllManuGoalsData(user) {
+    return fetch(`/api/manugoals/_`, { method: 'GET' })
       .then(data => data.json())
       .then((res) => {
         if (!res.success) return { error: res.error } ;
