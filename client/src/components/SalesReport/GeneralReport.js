@@ -362,10 +362,11 @@ export default class GeneralReport extends React.Component {
                     {this.state.tenYRdata.prodLines.map(pl_row => 
                     <div className = "report-container-general"> 
                         <h5>Product Line: {pl_row.prod_line.name}</h5>
-                            {pl_row.tenYRSKUdata.skus.length != 0 ? 
+                            {pl_row.tenYRSKUdata.skus.length != 0 ?
+                           
                               <div className = "report-container-general">
                                 {pl_row.tenYRSKUdata.skus.map((cur_sku,index) =>
-                                <div>
+                                    <div>
                                     <div className = "row">
                                         <h7  >
                                         SKU Name: {cur_sku.sku.name}
@@ -379,40 +380,56 @@ export default class GeneralReport extends React.Component {
                                             </div>                
                                         </div>
                                     </div>
-                                    <div className = "report-container-general-sku">
-                                        <Table height={'40px'}>
-                                        <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-                                            {this.skuLabelHeader(cur_sku)}
-                                        </TableHeader>
-                                        <TableBody displayRowCheckbox = {false} stripedRows={this.state.stripedRows}>
-                                            {this.getSKUTable(cur_sku)}
-                                        </TableBody>
-                                        </Table>
 
-                                    </div>
-                                    <div className = "report-container-general-records">
-                                        <Table height={'300px'}>
-                                        <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-                                            {this.recordsLabelHeader()}
-                                        </TableHeader>
-                                        <TableBody displayRowCheckbox = {false} stripedRows={this.state.stripedRows}>
-                                            {this.getRecordsTable(cur_sku)}
-                                        </TableBody>
-                                        </Table>
-                                    </div>
-                                    <div className = "report-container-general-total">
+                                    {cur_sku.sku.status== 'queued'?
+                                    <h6> Data of {cur_sku.sku.name} is currently loading. </h6> 
+                                    :
+                                        
+                                    (<div>
+                                        
+                                        <div className = "report-container-general-sku">
                                             <Table height={'40px'}>
                                             <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-                                            {this.skuTotalsHeader()}
+                                                {this.skuLabelHeader(cur_sku)}
                                             </TableHeader>
                                             <TableBody displayRowCheckbox = {false} stripedRows={this.state.stripedRows}>
-                                                {this.getSKUTotals(cur_sku)}
+                                                {this.getSKUTable(cur_sku)}
                                             </TableBody>
                                             </Table>
+
+                                        </div>
+                                        <div className = "report-container-general-records">
+                                            <Table height={'300px'}>
+                                            <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+                                                {this.recordsLabelHeader()}
+                                            </TableHeader>
+                                            <TableBody displayRowCheckbox = {false} stripedRows={this.state.stripedRows}>
+                                                {this.getRecordsTable(cur_sku)}
+                                            </TableBody>
+                                            </Table>
+                                        </div>
+                                        <div className = "report-container-general-total">
+                                                <Table height={'40px'}>
+                                                <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+                                                {this.skuTotalsHeader()}
+                                                </TableHeader>
+                                                <TableBody displayRowCheckbox = {false} stripedRows={this.state.stripedRows}>
+                                                    {this.getSKUTotals(cur_sku)}
+                                                </TableBody>
+                                                </Table>
+                                        </div>
+                                    </div> )}
                                     </div>
-                                </div>
+
                                 )}
                                 </div>
+
+
+
+
+
+
+
                                 :
                                 <h6> {pl_row.prod_line.name} has no SKUs associated with it. </h6>
                             }

@@ -26,7 +26,7 @@ export default class TableActions extends React.Component {
     }
     return (
       <div id={this.state.simple ? "simple" : "complex"}>
-      {(this.state.page_name != Constants.users_page_name && this.state.page_name != Constants.manugoals_page_name)? 
+      {(this.state.page_name != Constants.users_page_name && this.state.page_name != Constants.manugoals_page_name && !this.props.manu_line_select && !this.props.reportSelect)? 
       (<div>
       <SearchIcon style = {{width: '20px', height: '20px'}}></SearchIcon>
       
@@ -53,9 +53,7 @@ export default class TableActions extends React.Component {
       {(AuthRoleValidation.checkRole(this.props.user, Constants.admin) 
           || (AuthRoleValidation.checkRole(this.props.user, Constants.product_manager) && this.props.page_name!=Constants.manugoals_page_name)
           || (AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.page_name == Constants.manugoals_page_name)
-          
-          
-          && (this.state.page_name != Constants.users_page_name) && !this.props.reportSelect) ? 
+          && (this.state.page_name != Constants.users_page_name) && !this.props.reportSelect) && (this.state.page_name !=Constants.users_page_name) ? 
       (<AddIcon style = {{width: '50px', height: '50px', cursor: 'pointer'}} onClick = {() => {this.props.onTableOptionSelection(null, Constants.create_item)}}></AddIcon>)
       :(<div/>)}
       </div>

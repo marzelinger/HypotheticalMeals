@@ -39,7 +39,7 @@ export default class PageTable extends Component {
       showRowHover: true,
       selectable: props.selectable!=undefined ? props.selectable : true,
       multiSelectable: props.selectable!=undefined ? props.selectable : true,
-      enableSelectAll: props.selectable!=undefined ? props.selectable : true,
+      enableSelectAll: props.manu_line_select != undefined ? !props.manu_line_select : (props.selectable!=undefined ? props.selectable : true),
       deselectOnClickaway: false,
       showCheckboxes: props.selectable!=undefined ? props.selectable : true,
       showDetails: props.showDetails!= undefined ? props.showDetails : false,
@@ -157,6 +157,7 @@ export default class PageTable extends Component {
                 page_name = {this.state.page_name}
                 reportSelect = {this.props.reportSelect}
                 user = {this.props.user}
+                manu_line_select = {this.props.manu_line_select}
               >
               </TableActions>
             

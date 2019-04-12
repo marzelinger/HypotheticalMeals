@@ -1,6 +1,7 @@
 // AuthRoleValidation.js
 import SubmitRequest from '../../helpers/SubmitRequest';
 import * as Constants from '../../resources/Constants';
+import { useReducer } from 'react';
 const jwt_decode = require('jwt-decode');
 const isEmpty = require("is-empty");
 
@@ -108,19 +109,24 @@ export default class AuthRoleValidation{
         return false;
     }
 
-    static async IsCurrentUserPlantMForX(manu_line){
-        var res = await SubmitRequest.submitGetUserByID(this.getUserID());
-        if(res.success){
-            if(res.data!=null){
-                if(res.data[0].roles!=null){
-                    if (res.data[0].roles.includes(Constants.plant_manager)) {
-                        if(res.data[0].manu_lines.includes(manu_line)){
-                            return true;
-                        }
+    static IsCurrentUserPlantMForX(user, manu_line){
+        console.log("user: "+ JSON.stringify(user));
+        console.log("manuline: "+ JSON.stringify(manu_line));
+            if(this.checkRole(user, Constants.plant_manager)){
+                console.log("here1");
+                if(user.manu_lines!=null){
+                    console.log("here2");
+                    for(let m = 0; m<user.manu_lines.length; m++){
+                        if(user.manu_lines[m]._id == manu_line._id) return true;
                     }
+
+                    // if (user.manu_lines.includes(manu_line)) {
+                    //     console.log("here3");
+
+                    //         return true;
+                    // }
                 }
             }
-        }
         return false;
     }
 

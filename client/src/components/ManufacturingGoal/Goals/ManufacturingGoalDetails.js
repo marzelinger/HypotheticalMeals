@@ -41,6 +41,7 @@ export default class ManufacturingGoalDetails extends React.Component {
             data: [],
             showSalesProjection: false,
             sku_sales_projection: null,
+            deleted_activities: []
         }
 
         this.onModifyList = this.onModifyList.bind(this);
@@ -70,7 +71,6 @@ export default class ManufacturingGoalDetails extends React.Component {
     }
 
     onPropChange = async (value, item, prop) => {
-        console.log(value)
         item[prop] = value
         await this.setState({ item: item });
     };
@@ -88,19 +88,15 @@ export default class ManufacturingGoalDetails extends React.Component {
     }
 
     onModifyList = async (option, value, qty) => {
-        console.log("modifything list;");
         var item = Object.assign({}, this.state.item);
         switch (option) {
             case Constants.details_add:
-                console.log("adding list;");
-
                 await this.addSku(item, value, qty);
                 break;
             case Constants.details_remove:
                 await this.removeSku(item, value, qty);
                 break;
             case Constants.details_sales_projection:
-                console.log(value);
                 await this.setState({
                     sku_sales_projection: value,
                     showSalesProjection: true,
@@ -131,6 +127,16 @@ export default class ManufacturingGoalDetails extends React.Component {
                 item.activities[ind].quantity = Math.round(item.activities[ind].quantity - qty);
             } 
             else {
+                //want to add this item to the deletect_activities variable.
+                console.log("activities to delete in details11: "+JSON.stringify(activities_to_delete));
+                var act = item.activities[ind];
+                var activities_to_delete = this.state.deleted_activities;
+                activities_to_delete.push(act);
+                console.log("activities to delete in details: "+JSON.stringify(activities_to_delete));
+                await this.setState({
+                    deleted_activities: activities_to_delete
+                });
+                //splicing it from the activities that will eventually be added.
                 item.activities.splice(ind,1);
             }
         }
@@ -156,14 +162,53 @@ export default class ManufacturingGoalDetails extends React.Component {
             item.activities.push(new_activity);
         }
         await this.setState({ item: item })
-        console.log("this is the item after adding sku: "+JSON.stringify(this.state.item));
-
     }
 
+    // handleDeleteGoal = async () => {
+    //     //if any activities are scheduled
+    //     if(this.props.goal.enabled){
+    //       alert("You cannot delete an enabled manufacturing goal")
+    //       console.log("return false")
+    //       return false;
+    //     }
+    //     else{
+    //       if(this.props.activities.filter((activity => activity.scheduled)).length != 0){
+    //         if(window.confirm("Deleting this goal will remove all orphaned activities from the schedule, are you sure you want to delete?")){
+    //           for(var i = 0; i < this.props.activities.length; i ++){
+    //             await SubmitRequest.submitDeleteItem('manuactivities', this.props.activities[i]);
+    //             this.props.activities.splice(i, 1);
+    //           }
+    //           this.props.handleDeleteGoal(this.props.id)
+    //           return true;
+    //         }
+    //         return false;
+    //       }
+    //       else{
+    //         for(var i = 0; i < this.props.activities.length; i ++){
+    //           console.log('deleting activity')
+    //           await SubmitRequest.submitDeleteItem('manuactivities', this.props.activities[i]);
+    //           this.props.activities.splice(i, 1);
+    //         }
+    //         this.props.handleDeleteGoal(this.props.id)
+    //         return true;
+    //       }
+    //     }
+    //   }
+
     async handleSubmit(e, opt) {
-        if (![Constants.details_save, Constants.details_create].includes(opt)) {
+        if (![Constants.details_save, Constants.details_create, Constants.details_delete].includes(opt)) {
             var return_val = await this.props.handleDetailViewSubmit(e, this.state.item, opt);
-            console.log(return_val)
+            if(return_val){
+                this.props.toggle();
+            };
+            return;
+        }
+        if ([Constants.details_delete].includes(opt)) {
+            if(this.state.item.enabled){
+                alert("You cannot delete an enabled manufacturing goal")
+                return false;
+            }
+            var return_val = await this.props.handleDetailViewSubmit(e, this.state.item, opt);
             if(return_val){
                 this.props.toggle();
             };
@@ -176,7 +221,6 @@ export default class ManufacturingGoalDetails extends React.Component {
             var item = this.state.item;
             item.deadline = new Date(item.deadline)
             var return_val = await this.props.handleDetailViewSubmit(e, item, opt)
-            console.log(return_val)
             if(return_val.success){
                 await this.setState({errorText: ''})
                 this.props.toggle();
@@ -210,7 +254,6 @@ export default class ManufacturingGoalDetails extends React.Component {
             }
         }
         var date = new Date(this.state.item['deadline'])
-        console.log(date);
         if(!Boolean(+date))inv_in.push('deadline')
         await this.setState({ invalid_inputs: inv_in, errorText: error_text });
     }
@@ -237,12 +280,12 @@ export default class ManufacturingGoalDetails extends React.Component {
                         invalid={ this.state.invalid_inputs.includes(prop) }
                         errorText = {this.state.errorText}
                         onChange={ (e) => this.onPropChange(e.target.value, this.state.item, prop)}
-                        disabled = {!(AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)}
+                        disabled = {!((AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)|| AuthRoleValidation.checkRole(this.props.user, Constants.admin))}
                     />
                     <FormFeedback invalid>{this.state.errorText}</FormFeedback>
                 </FormGroup>));
 
-            var enable = this.props.detail_view_options.includes(Constants.details_save) && (AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username) ? 
+            var enable = this.props.detail_view_options.includes(Constants.details_save) && ((AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)|| AuthRoleValidation.checkRole(this.props.user, Constants.admin)) ? 
             <FormGroup>
                 <Label>Enabled</Label>
                 <br></br>
@@ -250,7 +293,9 @@ export default class ManufacturingGoalDetails extends React.Component {
                 onColor = '#98FB98' 
                 onChange={this.onEnable} 
                 checked={this.state.item.enabled} 
-                disabled = {!(AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)}
+                disabled = {!((AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)|| AuthRoleValidation.checkRole(this.props.user, Constants.admin))}
+
+
                 />
             </FormGroup> : 
             <div></div>
@@ -269,7 +314,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                         onClick = {(event) => this.onPropChange(event.target.value, this.state.item, 'deadline')}
                         onKeyPress = {(event) => this.onPropChange(event.target.value, this.state.item, 'deadline')}
                         onChange = {(event) => this.onPropChange((event.target.value), this.state.item, 'deadline')}
-                        disabled = {!(AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)}
+                        disabled = {!((AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)|| AuthRoleValidation.checkRole(this.props.user, Constants.admin))}
                         
                         
                         InputLabelProps={{
@@ -297,7 +342,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                         item_type={Constants.details_modify_skus}
                         options={[Constants.details_add, Constants.details_remove, Constants.details_sales_projection]}
                         handleModifyList={this.onModifyList}
-                        disabled = {!(AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)}
+                        disabled = {!((AuthRoleValidation.checkRole(this.props.user, Constants.business_manager) && this.props.item.user ==this.props.user.username)|| AuthRoleValidation.checkRole(this.props.user, Constants.admin))}
 
 
                     />

@@ -32,9 +32,7 @@ export const loginUser = userData => dispatch => {
       setAuthToken(token);
       const decoded = jwt_decode(token);
 
-      if(decoded.admin==true){
-        setAdminToken(token);
-      }
+      console.log("res: "+JSON.stringify(res));
       // Decode token to get user data
       // Set current user
       dispatch(setCurrentUser(decoded));
@@ -42,7 +40,7 @@ export const loginUser = userData => dispatch => {
     .catch(err =>
       dispatch({
         type: GET_ERRORS,
-        payload: err.res.data
+        payload: err.response.data
       })
     );
 };

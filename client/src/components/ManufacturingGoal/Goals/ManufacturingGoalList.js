@@ -1,4 +1,5 @@
 
+//DEPRECATED/NOT USED
 import React from 'react';
 import PropTypes from 'prop-types';
 import ManufacturingGoal from './ManufacturingGoal';
