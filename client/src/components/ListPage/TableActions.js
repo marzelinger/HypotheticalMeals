@@ -26,7 +26,7 @@ export default class TableActions extends React.Component {
     }
     return (
       <div id={this.state.simple ? "simple" : "complex"}>
-      {(this.state.page_name != Constants.users_page_name && this.state.page_name != Constants.manugoals_page_name && !this.props.manu_line_select)? 
+      {(this.state.page_name != Constants.users_page_name && this.state.page_name != Constants.manugoals_page_name && !this.props.manu_line_select && !this.props.reportSelect)? 
       (<div>
       <SearchIcon style = {{width: '20px', height: '20px'}}></SearchIcon>
       
