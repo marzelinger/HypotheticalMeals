@@ -55,7 +55,6 @@ class ManufacturingGoalsBox extends Component {
     if(localStorage != null){
       if(localStorage.getItem("jwtToken")!= null){
         this.state.user = jwt_decode(localStorage.getItem("jwtToken")).username;
-        console.log(jwt_decode(localStorage.getItem("jwtToken")).username);
       }
     }
 
@@ -104,23 +103,24 @@ class ManufacturingGoalsBox extends Component {
     if (!goal_to_delete.success) {
       this.setState({ error: res.error });
     }
-    let res = await SubmitRequest.submitDeleteItem(Constants.manugoals_page_name, item);
-    if (!res.success) {
-      this.setState({ error: res.error });
-    }
-    else {
-      //need to delete all the activities associated with this goal.
-      console.log("this is the item: "+JSON.stringify(item));
-      if(goal_to_delete.data[0].activities!=undefined) {
-        //activities to delete
-        for(let a = 0; a<goal_to_delete.data[0].activities.length; a++){
-          //CHECK THE SYNTAX HERE.
-          var deleteActRes = await SubmitRequest.submitDeleteItem(Constants.manu_activity_page_name, goal_to_delete.data[0].activities[a]);
-        }
+    //need to delete all the activities associated with this goal.
+    // console.log("this is the item in delete goal: "+JSON.stringify(item));
+    if(goal_to_delete.data.activities!=undefined) {
+      //activities to delete
+      for(let a = 0; a<goal_to_delete.data.activities.length; a++){
+        //CHECK THE SYNTAX HERE.
+        var deleteActRes = await SubmitRequest.submitDeleteItem(Constants.manu_activity_page_name, goal_to_delete.data.activities[a]);
+
         if(!deleteActRes.success){
           this.setState({ error: deleteActRes.error });
+          return deleteActRes;
         }
       }
+    }
+    let res = await SubmitRequest.submitDeleteItem(Constants.manugoals_page_name, item);
+    console.log("res from delete manugoal: "+JSON.stringify(res));
+    if (!res.success) {
+      this.setState({ error: res.error });
     }
     return res.success;
   }
@@ -138,6 +138,7 @@ class ManufacturingGoalsBox extends Component {
   // }
 
   submitUpdateActivity = async(activities) => {
+    console.log("updating activities length: "+JSON.stringify(activities.length));
     let created_activities = [];
     for(const activity of activities) {
       try{
@@ -147,7 +148,6 @@ class ManufacturingGoalsBox extends Component {
           created_activities.push(new_activity.data)
         }
         else {
-          console.log("caught existing");
           let updated_activity = await SubmitRequest.submitUpdateItem('manuactivities', activity);
           created_activities.push(updated_activity.data)
         }
@@ -159,11 +159,13 @@ class ManufacturingGoalsBox extends Component {
   }
 
   submitDeleteActivity = async(activities) => {
+    console.log("activities to delete .length: "+JSON.stringify(activities.length));
     for(const activity of activities) {
       try{
-        if(!activity._id){
-          let response = await SubmitRequest.submitDeleteItem('manuactivities', activity);
-        }
+        console.log("this is the activity: "+JSON.stringify(activity));
+        let response = await SubmitRequest.submitDeleteItem('manuactivities', activity);
+        console.log("deleted activity: "+JSON.stringify(response));
+        
       } catch (e){
         console.log(e);
       }
@@ -184,13 +186,10 @@ class ManufacturingGoalsBox extends Component {
   }
 
   async submitNewGoal() {
-    console.log('submitting new goal')
     const { name, activities, user, deadline } = this.state;
-    console.log(user);
     let created_activities = await this.submitNewActivity(activities);
     let res = await SubmitRequest.submitCreateItem(Constants.manugoals_page_name, { name, activities:created_activities, user, deadline });
     if (!res.success) {
-      console.log('not a success')
       this.setState({ error: res.error });
     }
     else {
@@ -201,9 +200,8 @@ class ManufacturingGoalsBox extends Component {
 
 
 
-  async submitUpdatedGoal(item, deleted_activities) {
-    console.log("these are the old_activities from details: "+JSON.stringify(deleted_activities));
-    console.log("deleted acti")
+  async submitUpdatedGoal(item) {
+    // console.log("these are the old_activities from details: "+JSON.stringify(deleted_activities.length));
     let created_activities=[];
     const { name, activities, user, updateId, enabled, deadline} = this.state;
     console.log("activities: "+JSON.stringify(activities.length));
@@ -217,7 +215,8 @@ class ManufacturingGoalsBox extends Component {
       return old_goal;
     }
     else {
-      if(old_goal.data[0].activities==undefined){
+      console.log("old_goal: "+JSON.stringify(old_goal.data.length));
+      if(old_goal.data.activities==undefined){
         console.log("old_goals undefined activities");
         if(activities==undefined){
           //no old activities and no new activities
@@ -228,28 +227,27 @@ class ManufacturingGoalsBox extends Component {
           created_activities = await this.submitUpdateActivity(activities);
         }
       }
-      else if(old_goal.data[0].activities!=undefined){
+      else if(old_goal.data.activities!=undefined){
         //old goals exist.
-        console.log("old_goals activities length: "+JSON.stringify(old_goal.data[0].activities.length));
-
+        console.log("old_goals activities length: "+JSON.stringify(old_goal.data.activities.length));
         if(activities == undefined){
           console.log("new activities undefined: ");
 
           //old activities but no current activities. 
           //delete all the old ones.
-          await this.submitDeleteActivity(old_goal.data[0].activities);
+          await this.submitDeleteActivity(old_goal.data.activities);
         }
         else if (activities !=undefined){
           console.log("new activities length: "+JSON.stringify(activities.length));
 
           //there are old activities and new activities.
           //delete all the old ones, create all the new ones.
-          await this.submitDeleteActivity(old_goal.data[0].activities);
+          await this.submitDeleteActivity(old_goal.data.activities);
           created_activities = await this.submitUpdateActivity(activities);
         }
       }
       // let created_activities = await this.submitUpdateActivity(activities);
-      console.log(created_activities);
+      console.log("created_activities.length: "+JSON.stringify(created_activities.length));
       let item = { name, activities: created_activities, user, enabled, deadline };
       let res = await SubmitRequest.submitUpdateGoal(user, updateId, item);
       if (!res.success) {
@@ -257,7 +255,6 @@ class ManufacturingGoalsBox extends Component {
         this.setState({ error: res.error});
       }
       else {
-        console.log("load goals from server")
         this.setState({ name: '', activities: '', enabled: false, error: null })
         this.loadGoalsFromServer();
       }
@@ -280,7 +277,6 @@ class ManufacturingGoalsBox extends Component {
   }
 
   async loadGoalsFromServer() {
-    console.log(this.state.page_name)
     var res = await SubmitRequest.submitGetData(`${this.state.page_name}/${this.state.sort_field}`);
     if (!res.success) {
       this.setState({ error: res.error });
@@ -290,11 +286,8 @@ class ManufacturingGoalsBox extends Component {
     }
   }
 
-  async onDetailViewSubmit(event, item, option, deleted_activities) {
-    console.log('here');
-    if(deleted_activities!=undefined)    console.log("in detailview submit. old length: "+deleted_activities.length);
+  async onDetailViewSubmit(event, item, option) {
     var newData = this.state.data;
-    console.log(item);
     switch (option) {
         case Constants.details_create:
         await this.setState({
@@ -306,7 +299,7 @@ class ManufacturingGoalsBox extends Component {
         return response;
 
         case Constants.details_delete:
-          if(this.item.enabled){
+          if(item.enabled){
             alert("You cannot delete an enabled manufacturing goal.");
             return false;
           }
@@ -327,8 +320,7 @@ class ManufacturingGoalsBox extends Component {
               enabled: item.enabled,
               deadline: item.deadline
           });
-            var response = await this.submitUpdatedGoal(item, deleted_activities);
-            console.log(response)
+            var response = await this.submitUpdatedGoal(item);
             return response;
         case Constants.details_cancel:
           break;
@@ -372,7 +364,6 @@ class ManufacturingGoalsBox extends Component {
   };
 
   toggle = () => {
-    console.log('toggle')
     this.setState({details_modal: !this.state.details_modal});
   };
 
@@ -429,11 +420,9 @@ class ManufacturingGoalsBox extends Component {
       var yyyymmdd = this.pad(year, 4) +  "-" + this.pad(month + 1, 2) + "-" + this.pad(day, 2);
       var hours = this.pad(''+localDate.getHours(), 2);
       var minutes = this.pad(''+localDate.getMinutes(), 2);
-      console.log(`${hours}:${minutes}`);
       var dateString = `${yyyymmdd}`
       item.deadline = dateString;
     }
-    console.log(item);
     var old_acts = item.activities;
     await this.setState({
         detail_view_item: item,
@@ -451,7 +440,6 @@ class ManufacturingGoalsBox extends Component {
             detail_view_action: Constants.details_view,
             });
     }
-    console.log("detail old LENGTH: "+JSON.stringify(this.state.detail_view_old_activities.length));
     this.toggle();
 };
 

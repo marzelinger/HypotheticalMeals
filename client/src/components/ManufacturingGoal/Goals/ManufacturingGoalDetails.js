@@ -71,7 +71,6 @@ export default class ManufacturingGoalDetails extends React.Component {
     }
 
     onPropChange = async (value, item, prop) => {
-        console.log(value)
         item[prop] = value
         await this.setState({ item: item });
     };
@@ -89,19 +88,15 @@ export default class ManufacturingGoalDetails extends React.Component {
     }
 
     onModifyList = async (option, value, qty) => {
-        console.log("modifything list;");
         var item = Object.assign({}, this.state.item);
         switch (option) {
             case Constants.details_add:
-                console.log("adding list;");
-
                 await this.addSku(item, value, qty);
                 break;
             case Constants.details_remove:
                 await this.removeSku(item, value, qty);
                 break;
             case Constants.details_sales_projection:
-                console.log(value);
                 await this.setState({
                     sku_sales_projection: value,
                     showSalesProjection: true,
@@ -133,16 +128,16 @@ export default class ManufacturingGoalDetails extends React.Component {
             } 
             else {
                 //want to add this item to the deletect_activities variable.
+                console.log("activities to delete in details11: "+JSON.stringify(activities_to_delete));
                 var act = item.activities[ind];
                 var activities_to_delete = this.state.deleted_activities;
                 activities_to_delete.push(act);
+                console.log("activities to delete in details: "+JSON.stringify(activities_to_delete));
                 await this.setState({
                     deleted_activities: activities_to_delete
                 });
                 //splicing it from the activities that will eventually be added.
                 item.activities.splice(ind,1);
-
-
             }
         }
         await this.setState({ item: item })
@@ -167,46 +162,42 @@ export default class ManufacturingGoalDetails extends React.Component {
             item.activities.push(new_activity);
         }
         await this.setState({ item: item })
-        console.log("this is the item after adding sku: "+JSON.stringify(this.state.item));
-
     }
 
-    handleDeleteGoal = async () => {
-        //if any activities are scheduled
-        if(this.props.goal.enabled){
-          alert("You cannot delete an enabled manufacturing goal")
-          console.log("return false")
-          return false;
-        }
-        else{
-          if(this.props.activities.filter((activity => activity.scheduled)).length != 0){
-            if(window.confirm("Deleting this goal will remove all orphaned activities from the schedule, are you sure you want to delete?")){
-              for(var i = 0; i < this.props.activities.length; i ++){
-                await SubmitRequest.submitDeleteItem('manuactivities', this.props.activities[i]);
-                this.props.activities.splice(i, 1);
-              }
-              this.props.handleDeleteGoal(this.props.id)
-              return true;
-            }
-            return false;
-          }
-          else{
-            for(var i = 0; i < this.props.activities.length; i ++){
-              console.log('deleting activity')
-              await SubmitRequest.submitDeleteItem('manuactivities', this.props.activities[i]);
-              this.props.activities.splice(i, 1);
-            }
-            this.props.handleDeleteGoal(this.props.id)
-            return true;
-          }
-        }
-      }
+    // handleDeleteGoal = async () => {
+    //     //if any activities are scheduled
+    //     if(this.props.goal.enabled){
+    //       alert("You cannot delete an enabled manufacturing goal")
+    //       console.log("return false")
+    //       return false;
+    //     }
+    //     else{
+    //       if(this.props.activities.filter((activity => activity.scheduled)).length != 0){
+    //         if(window.confirm("Deleting this goal will remove all orphaned activities from the schedule, are you sure you want to delete?")){
+    //           for(var i = 0; i < this.props.activities.length; i ++){
+    //             await SubmitRequest.submitDeleteItem('manuactivities', this.props.activities[i]);
+    //             this.props.activities.splice(i, 1);
+    //           }
+    //           this.props.handleDeleteGoal(this.props.id)
+    //           return true;
+    //         }
+    //         return false;
+    //       }
+    //       else{
+    //         for(var i = 0; i < this.props.activities.length; i ++){
+    //           console.log('deleting activity')
+    //           await SubmitRequest.submitDeleteItem('manuactivities', this.props.activities[i]);
+    //           this.props.activities.splice(i, 1);
+    //         }
+    //         this.props.handleDeleteGoal(this.props.id)
+    //         return true;
+    //       }
+    //     }
+    //   }
 
     async handleSubmit(e, opt) {
-        console.log("OLD ACTIVITIES IN DETAILS: "+this.props.old_activities);
         if (![Constants.details_save, Constants.details_create, Constants.details_delete].includes(opt)) {
-            var return_val = await this.props.handleDetailViewSubmit(e, this.state.item, opt, this.state.deleted_activities);
-            console.log(return_val)
+            var return_val = await this.props.handleDetailViewSubmit(e, this.state.item, opt);
             if(return_val){
                 this.props.toggle();
             };
@@ -217,8 +208,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                 alert("You cannot delete an enabled manufacturing goal")
                 return false;
             }
-            var return_val = await this.props.handleDetailViewSubmit(e, this.state.item, opt, this.state.deleted_activities);
-            console.log(return_val)
+            var return_val = await this.props.handleDetailViewSubmit(e, this.state.item, opt);
             if(return_val){
                 this.props.toggle();
             };
@@ -230,8 +220,7 @@ export default class ManufacturingGoalDetails extends React.Component {
         if (inv.length === 0) {
             var item = this.state.item;
             item.deadline = new Date(item.deadline)
-            var return_val = await this.props.handleDetailViewSubmit(e, item, opt, this.deleted_activities)
-            console.log(return_val)
+            var return_val = await this.props.handleDetailViewSubmit(e, item, opt)
             if(return_val.success){
                 await this.setState({errorText: ''})
                 this.props.toggle();
@@ -265,7 +254,6 @@ export default class ManufacturingGoalDetails extends React.Component {
             }
         }
         var date = new Date(this.state.item['deadline'])
-        console.log(date);
         if(!Boolean(+date))inv_in.push('deadline')
         await this.setState({ invalid_inputs: inv_in, errorText: error_text });
     }
