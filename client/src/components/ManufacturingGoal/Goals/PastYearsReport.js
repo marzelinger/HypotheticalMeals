@@ -65,7 +65,7 @@ export default class PastYearsReport extends React.Component{
 
                 <div className="centerContainer ">
                     <Button className="centerButton"
-                        onClick={this.props.useAverage}> Use average sales as quantity</Button>
+                        onClick={() => this.props.useAverage(this.state.sales_average)}> Use average sales as quantity</Button>
                 </div>
                 
             </div>

@@ -52,6 +52,7 @@ export default class ManufacturingGoalDetails extends React.Component {
         this.onEnable = this.onEnable.bind(this);
         this.toggleSalesProjection = this.toggleSalesProjection.bind(this);
         this.onSalesProjectionExitButton = this.onSalesProjectionExitButton.bind(this);
+        this.useAverageFromSalesProjection = this.useAverageFromSalesProjection.bind(this);
     }
 
     async componentDidMount() {
@@ -258,6 +259,17 @@ export default class ManufacturingGoalDetails extends React.Component {
         await this.setState({ invalid_inputs: inv_in, errorText: error_text });
     }
 
+    useAverageFromSalesProjection(avg) {
+        var qty = {};
+        qty.target = {};
+        qty.target.value = avg
+        this.refs.child.onQuantityChange(qty)
+
+        this.setState({
+            showSalesProjection: false,
+        })
+    }
+
     onEnable = async () => {
         var action = !this.state.item.enabled ? 'enable' : 'disable';
         var result = !this.state.item.enabled ? 'a need to schedule all currently scheduled activities' : 'all currently scheduled activities becoming orphaned.';
@@ -337,7 +349,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                 </div>
                 <div className='item-properties'>
                     { this.injectProperties() }
-                    <ItemSearchModifyListQuantity
+                    <ItemSearchModifyListQuantity ref="child"
                         api_route={Constants.skus_page_name}
                         item_type={Constants.details_modify_skus}
                         options={[Constants.details_add, Constants.details_remove, Constants.details_sales_projection]}
@@ -350,7 +362,7 @@ export default class ManufacturingGoalDetails extends React.Component {
                         <SalesProjectionModal 
                             item={this.state.sku_sales_projection}
                             onExitButton={this.onSalesProjectionExitButton}
-                            useAverage={this.useAverage}>
+                            useAverage={this.useAverageFromSalesProjection}>
                         </SalesProjectionModal>
                     </Modal>
 
