@@ -57,7 +57,6 @@ export default class UserMenu extends React.Component {
             onRequestClose={this.handleRequestClose}
             >
                 <Menu>
-                    {/* <Logout></Logout> */}
                     <MenuItem primaryText = "LogoutDUMMY"></MenuItem>                    
                 </Menu>
             </Popover>

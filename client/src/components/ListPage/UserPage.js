@@ -17,11 +17,15 @@ import TablePagination from './TablePagination'
 import printFuncFront from '../../printFuncFront';
 import GeneralNavBar from '../GeneralNavBar';
 import AuthRoleValidation from "../auth/AuthRoleValidation";
+import { connect } from "react-redux";
+
+import { setCurrentUser, logoutUser, getAllUsers } from "../../actions/authActions";
+
 
 const jwt_decode = require('jwt-decode');
 
 
-export default class UserPage extends React.Component {
+class UserPage extends React.Component {
     constructor(props) {
         super(props);
 
@@ -292,6 +296,7 @@ export default class UserPage extends React.Component {
         var res = {};
         var newData = this.state.data.splice();
         console.log("new data: "+JSON.stringify(newData));
+        var curUser = await AuthRoleValidation.determineUser();
         switch (option) {
             // case Constants.details_create:
             //     newData.push(item);
@@ -308,6 +313,11 @@ export default class UserPage extends React.Component {
                 let toDelete = newData.findIndex(obj => {return obj._id === item._id});
                 newData.splice(toDelete, 1);
                 res = await SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
+                //check if yourself was deleted.
+                if(curUser.name == item.name){
+                    console.log('NEED TO LOUGOUT PERSON.');
+                    this.props.logoutUser();
+                }
                 break;
             case Constants.details_cancel:
                 res = {success: true}
@@ -387,5 +397,17 @@ export default class UserPage extends React.Component {
 }
 
 UserPage.propTypes = {
-    default_users_filter: PropTypes.object
+    default_users_filter: PropTypes.object,
+    logoutUser: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired
 }
+
+const mapStateToProps = state => ({
+    auth: state.auth
+  });
+  
+  
+  export default connect(
+    mapStateToProps,
+    { logoutUser }
+  )(UserPage);

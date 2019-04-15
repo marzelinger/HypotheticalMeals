@@ -71,13 +71,23 @@ export default class UserDetails extends React.Component {
 
     async handleSubmit(e, opt) {
         console.log("this is the item: "+JSON.stringify(this.props.item));
+        var curUser = await AuthRoleValidation.determineUser();
         if (![Constants.details_save, Constants.details_create, Constants.details_delete].includes(opt)) {
             this.props.handleDetailViewSubmit(e, this.props.item, opt);
             return;
         }
         
         if([Constants.details_delete].includes(opt)){
-            if(window.confirm(`Are you sure you want to delete this user? Doing so will result in all manufacturing goals and activities belonging to ${this.props.item.username} being deleted.`)){
+            //check if you are deleting yourself.
+
+            if(curUser.name == this.props.item.name){
+                //trying to delete yourself.
+                if(window.confirm(`Are you sure you want to delete your own account? Doing so will result in all manufacturing goals and activities belonging to you being deleted. You will also be logged out of the system.`)){
+                    this.props.handleDetailViewSubmit(e, this.props.item, opt);
+                    return;
+                }
+            }
+            else if(window.confirm(`Are you sure you want to delete this user? Doing so will result in all manufacturing goals and activities belonging to ${this.props.item.username} being deleted.`)){
                 this.props.handleDetailViewSubmit(e, this.props.item, opt);
                 return;
             }
