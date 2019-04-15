@@ -461,8 +461,9 @@ export default class CSV_parser{
             return toReturn;
         }
 
-        var sku_MLs_string = obj[Constants.csv_sku_ml].substring(1, obj[Constants.csv_sku_ml].length - 1);
-
+     //   var sku_MLs_string = obj[Constants.csv_sku_ml].substring(1, obj[Constants.csv_sku_ml].length - 1);
+        var sku_MLs_string = obj[Constants.csv_sku_ml];
+        
         var sku_MLs_arr = sku_MLs_string.split(",");
         for(var i = 0 ; i < sku_MLs_arr.length; i++){
             if(!db_Manu_Line.has(sku_MLs_arr[i])) {
