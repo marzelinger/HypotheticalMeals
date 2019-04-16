@@ -351,6 +351,62 @@ export default class SubmitRequest{
     }
   }
 
+  static async submitGetUsersByManuLineID(manu_line_id) {
+    try {
+      return fetch('/api/users/manu_lines/' + manu_line_id, {method: 'GET'})
+      .then(data => data.json())
+      .then((res) => {
+        // console.log("THIS IS THE RES IN SUBMIT; "+JSON.stringify(res));
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+  
+
+  static async submitGetPlantManagerByManuLineID(manu_line_id) {
+    try {
+      return fetch('/api/users/plant_manager/' + manu_line_id)
+      .then(data => data.json())
+      .then((res) => {
+        // console.log("THIS IS THE RES IN SUBMIT; "+JSON.stringify(res));
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
+  static async submitGetAllAdmins() {
+    try {
+      return fetch('/api/users_all_admins')
+      .then(data => data.json())
+      .then((res) => {
+        // console.log("THIS IS THE RES IN SUBMIT; "+JSON.stringify(res));
+        if (!res.success) return { success: res.success, error: res.error };
+        else return { 
+          success: res.success,
+          data: res.data
+        } ;
+      });
+    }
+    catch (err){
+      return { success: false, error: err };
+    }
+  }
+
+
 
   static submitGetManuGoalsByFilter = (name_filter, username_filter, user) => {
     return fetch(`/api/manugoals_filter/${name_filter || '_'}/${username_filter || '_'}/${user}`, {method: 'GET'})

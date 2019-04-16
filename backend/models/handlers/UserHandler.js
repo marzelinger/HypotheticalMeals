@@ -270,6 +270,48 @@ class UserHandler{
     }
   }
 
+
+  static async getAllAdmins(req, res){
+    try {
+        console.log("res in getAllAdmins: "+JSON.stringify(req.body));
+        let to_return = await User.find({ roles: "admin"});
+        // if(to_return.length == 0) return res.json({ success: false, error: '404'});
+        return res.json({ success: true, data: to_return});
+    } catch (err) {
+        console.log(err)
+        return res.json({ success: false, error: err});
+    }
+  }
+
+
+  static async getUsersByManuLineID(req, res){
+    try {
+        var manu_line_id = req.params.manu_line_id;
+        let to_return = await User.find({ manu_lines: manu_line_id});
+        // if(to_return.length == 0) return res.json({ success: false, error: '404'});
+        return res.json({ success: true, data: to_return});
+    } catch (err) {
+        console.log(err)
+        return res.json({ success: false, error: err});
+    }
+  }
+
+
+  static async getPlantManagerByManuLineID(req, res){
+    try {
+        var manu_line_id = req.params.manu_line_id;
+        let to_return = await User.find({ roles: "plant_manager", roles: {$ne: "admin"}, manu_lines: manu_line_id});
+        // if(to_return.length == 0) return res.json({ success: false, error: '404'});
+        return res.json({ success: true, data: to_return});
+    } catch (err) {
+        console.log(err)
+        return res.json({ success: false, error: err});
+    }
+  }
+
+
+  
+
     // Gets all Users in the database
     static getAllUsers(req, res){
         User.find((err, users) => {
