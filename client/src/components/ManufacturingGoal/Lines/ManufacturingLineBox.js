@@ -285,6 +285,7 @@ export default class ManufacturingLinesBox extends Component {
 
 
   async updateUserManuLines(manu_line){
+    console.log(" here in the updateusermanulines: ");
     var all_users_manu_line = await SubmitRequest.submitGetUsersByManuLineID(manu_line._id);
     console.log(" all_skus_manu_line: "+JSON.stringify(all_users_manu_line));
     if(all_users_manu_line.success){
@@ -293,10 +294,12 @@ export default class ManufacturingLinesBox extends Component {
         //remove manu line from all the users.
         for(let u = 0; u<all_users_manu_line.data.length; u++){
           var curUser = all_users_manu_line.data[u];
+          console.log("current user: "+JSON.stringify(curUser));
           var manu_lines = curUser.manu_lines;
           console.log("manu_line: "+ JSON.stringify(manu_line));
            console.log("manu_lines: "+JSON.stringify(manu_lines));
-          var manu_index = manu_lines.findIndex(c => c._id === manu_line._id);
+          var manu_line_id = manu_line._id;
+          var manu_index = manu_lines.indexOf(manu_line_id);
            console.log("manu_index: "+JSON.stringify(manu_index));
           manu_lines.splice(manu_index, 1);
           curUser.manu_lines = manu_lines;
