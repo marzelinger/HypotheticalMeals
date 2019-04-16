@@ -24,8 +24,14 @@ export default class AddToManuGoal extends React.Component {
         this.setState({currentScreen: 'quantities', goal: goal})
     }
 
+    cancel = () => {
+        this.resetState();
+        this.props.toggle(Constants.manu_goals_modal);
+    }
+
     resetState = () => {
         this.setState({currentScreen: 'selection', goal: {}, quantities: []});
+        
     }
 
     async handleSubmit(quantities) {
@@ -61,22 +67,31 @@ export default class AddToManuGoal extends React.Component {
         this.props.toggle(Constants.manu_goals_modal);
     }
 
+    selectHeader = () => {
+        switch (this.state.currentScreen) {
+            case 'selection':
+                return 'Add SKUs to Manufacturing Goal'
+            case 'quantities':
+                return 'Input SKU Quantities'
+        }
+    }
+
+ 
+
     selectScreen = () => {
         switch (this.state.currentScreen) {
             case 'selection':
-                return <SelectGoal toggle = {this.props.toggle} data = {this.props.manu_goals_data} handleGoalSelection = {this.handleGoalSelection}></SelectGoal>
+                return <SelectGoal cancel = {this.cancel} data = {this.props.manu_goals_data} handleGoalSelection = {this.handleGoalSelection}></SelectGoal>
             case 'quantities':
-                return <SelectQuantities data = {this.props.selected_skus} handleSubmit= {(quantities) => this.handleSubmit(quantities)}></SelectQuantities>
+                return <SelectQuantities cancel = {this.cancel} data = {this.props.selected_skus} handleSubmit= {(quantities) => this.handleSubmit(quantities)}></SelectQuantities>
         }
     }
 
     render(){
         return (
         <Modal isOpen={this.props.isOpen} toggle={() =>  this.props.toggle(Constants.manu_goals_modal)} id="popup" className='item-details'>
-            <ModalHeader toggle={() =>  this.props.toggle(Constants.manu_goals_modal)}>Add SKUs to Manufacturing Goal</ModalHeader>
-            <ModalBody>
-                {this.selectScreen()}
-            </ModalBody>
+            <ModalHeader toggle={() =>  this.props.toggle(Constants.manu_goals_modal)}>{this.selectHeader()}</ModalHeader>
+            {this.selectScreen()}
         </Modal>
         );
     };
