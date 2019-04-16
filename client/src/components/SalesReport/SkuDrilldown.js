@@ -246,23 +246,38 @@ export default class SkuDrilldown extends React.Component {
         return options
     }
 
+    zeroPad(val) {
+        var val_str = ""+val;
+        var split_val = val_str.split(".");
+        if(split_val.length==2){
+            if (split_val[1].length==1){
+                //want to round.
+                return val+""+0;
+            }
+        }
+        else if (split_val.length==1){
+            return val+".00";
+        }
+        return val;
+    }
+
     injectTable() {
         if(this.state.data!=undefined){
             return this.state.data.map( rec => {
                 let rec_return = this.state.item_properties.map( prop => {
                     if (prop === 'year' || prop === 'week') {
-                        var prop_return = rec.date[prop]
+                        var prop_return = (<td>{rec.date[prop]}</td>)
                     }
                     else if (prop === 'revenue') {
-                        var prop_return =  '$' + Calculations.checkPriceLength(parseInt(rec.sales) * parseFloat(rec.ppc))
+                        var prop_return =  (<td className='right-align-td'>{'$' + this.zeroPad(Calculations.checkPriceLength(parseInt(rec.sales) * parseFloat(rec.ppc)))}</td>)
                     }
                     else if (prop === 'ppc') {
-                        var prop_return =  '$' + Calculations.checkPriceLength(rec[prop])
+                        var prop_return =  (<td className='right-align-td'>{'$' + this.zeroPad(Calculations.checkPriceLength(rec[prop]))}</td>)
                     }
                     else {
-                        var prop_return =  rec[prop]
+                        var prop_return =  (<td>{rec[prop]}</td>)
                     }
-                    return (<td>{prop_return}</td>)
+                    return prop_return
                 })
                 return (<tr>{rec_return}</tr>)
             })
