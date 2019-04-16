@@ -8,6 +8,7 @@ process.on('message', (message) => {
         trigger_reset();
     }
     else{
+        console.log(message);
         update_queue(message)
     }
     process.send('message recieved')
@@ -32,6 +33,7 @@ process.on('message', (message) => {
     }
 
     async function updateRecords() {
+        console.log('updating records');
         var sku = sku_queue.shift();
         scrape_record(sku.num, sku.year);
         if(sku_queue.length != 0){

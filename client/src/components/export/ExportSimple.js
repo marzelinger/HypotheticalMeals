@@ -2,6 +2,12 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Constants from '../../resources/Constants'
+import { 
+  Button,
+  Input,
+  FormGroup,
+  Label,
+  Modal, FormFeedback } from 'reactstrap';
 
 import { exportSKUS, exportIngredients, exportProdLines, exportCalculator, exportFormulas, exportSalesReport, exportManuGoal } from "../../actions/exportActions";
 import {exportGeneralReport} from '../SalesReport/GeneralReportExport';
@@ -56,14 +62,22 @@ class ExportSimple extends Component {
   };
 render() {
     const { user } = this.props.auth;
-return (
-            <div className = "exportbutton hoverable"
-              onClick={this.onExportSimpleClick}
-              primary={true}
-            >
-              {this.props.name || 'Export'}
-            </div>
-    );
+    if(this.props.makeButton){
+      return (
+        <Button 
+          className = "detailButtons"
+          onClick={this.onExportSimpleClick}
+        >Export</Button>
+      )
+    }
+    return (
+              <div className = "exportbutton hoverable"
+                onClick={this.onExportSimpleClick}
+                primary={true}
+              >
+                {this.props.name || 'Export'}
+              </div>
+      );
   }
 }
 ExportSimple.propTypes = {

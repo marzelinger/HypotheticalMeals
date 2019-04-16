@@ -4,6 +4,8 @@ import { Modal } from 'reactstrap';
 import PropTypes from 'prop-types';
 import SelectGoal from './SelectGoal';
 import SelectQuantities from './SelectQuantities';
+import * as Constants from '../../resources/Constants';
+import { InputGroup, InputGroupAddon, Input, ModalHeader, ModalBody, ModalFooter, Button, FormGroup } from 'reactstrap';
 import '../../style/ManufacturingGoalsBox.css'
 
 export default class AddToManuGoal extends React.Component {
@@ -19,7 +21,12 @@ export default class AddToManuGoal extends React.Component {
           ));
         return (
             <div>
+                <ModalBody>
                {goalNodes}
+               </ModalBody>
+               <ModalFooter>
+                <Button id = "submitbutton" type="submit" color="primary" onClick={() => this.props.cancel()}>Cancel</Button>
+               </ModalFooter>
             </div>
         );
     };

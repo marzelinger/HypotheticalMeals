@@ -19,6 +19,7 @@ import SubmitRequest from '../../../helpers/SubmitRequest';
 import Switch from "react-switch";
 import SalesProjectionModal from './SalesProjectionModal';
 import AuthRoleValidation from '../../auth/AuthRoleValidation';
+import ExportSimple from'../../export/ExportSimple'
 
 
 export default class ManufacturingGoalDetails extends React.Component {
@@ -342,7 +343,7 @@ export default class ManufacturingGoalDetails extends React.Component {
 
     render() {
         return (
-        <div className = 'details' style = {{border: this.state.item.enabled ? 'solid thick #98FB98' : 'solid thick grey'}}>
+        <div className = 'details goalsdetails' style = {{border: this.state.item.enabled ? 'solid thick #98FB98' : 'solid thick grey'}}>
             <div className='item-details'>
                 <div className='item-title'>
                     <h1>{ this.state.item  ? this.state.item.name : Constants.undefined }</h1>
@@ -378,6 +379,8 @@ export default class ManufacturingGoalDetails extends React.Component {
                             onClick={(e) => this.handleSubmit(e, opt)}
                         >{opt}</Button>
                     )}
+                    <ExportSimple makeButton = {true} data = {this.state.item.activities} fileTitle = {this.state.item.name + '_goal'}/>
+                    
                 </div>
             </div>
         </div>

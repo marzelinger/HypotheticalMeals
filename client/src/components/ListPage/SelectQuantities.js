@@ -37,12 +37,12 @@ export default class SelectQuantities extends React.Component {
 
         return (
             <div>
-                <ModalHeader toggle={this.toggle}>Input SKU Quantities</ModalHeader>
                 <ModalBody>
                     {skuNodes}
                 </ModalBody>
                 <ModalFooter>
-                    <Button id = "submitbutton" type="submit" color="primary" onClick={() => this.props.handleSubmit(this.getQuantities())}>Submit</Button>{' '}
+                    <Button id = "submitbutton" type="submit" color="primary" onClick={() => this.props.handleSubmit(this.getQuantities())}>Submit</Button>
+                    <Button id = "submitbutton" type="submit" color="primary" onClick={() => this.props.cancel()}>Cancel</Button>
                 </ModalFooter>
             </div>
         );
