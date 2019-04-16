@@ -113,7 +113,7 @@ export default class ManufacturingLinesBox extends Component {
             this.submitUpdatedManuLine();
             break;
         case Constants.details_delete:
-          if(window.confirm("Deleting this manufacturing line will unschedule all activities scheduled to it. Are you sure you want to delete it?")){
+          if(window.confirm("Deleting this manufacturing line will unschedule all activities scheduled to it. The Plant Manager(s) managing this line will also no longer manage this line. Are you sure you want to delete it?")){
             await this.setState({
               name: item.name,
               skus: [],

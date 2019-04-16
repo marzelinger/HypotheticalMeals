@@ -130,8 +130,9 @@ export default class ManufacturingLineDetails extends React.Component {
     }
 
     async checkUserPlantManagersBeforeDelete(){
+        console.log("here in checkPlantManager")
         var plant_manager_by_manu_line = await SubmitRequest.submitGetPlantManagerByManuLineID(this.props.item._id);
-        console.log(" all_skus_manu_line: "+JSON.stringify(plant_manager_by_manu_line));
+        console.log(" plant_manager_by_manu_line: "+JSON.stringify(plant_manager_by_manu_line));
         if(plant_manager_by_manu_line.success){
           if(plant_manager_by_manu_line.data!=undefined){
             for(let u = 0; u<plant_manager_by_manu_line.data.length; u++){
@@ -158,7 +159,7 @@ export default class ManufacturingLineDetails extends React.Component {
 
 
     async handleSubmit(e, opt) {
-        if (![Constants.details_save, Constants.details_create].includes(opt)) {
+        if (![Constants.details_save, Constants.details_create, Constants.details_delete].includes(opt)) {
             if(this.props.handleDetailViewSubmit(e, this.state.item, opt)){
                 //TODO CHECK IF YOU CAN DELETE THIS.
                 await this.setState({modal: false})

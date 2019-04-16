@@ -353,7 +353,7 @@ export default class SubmitRequest{
 
   static async submitGetUsersByManuLineID(manu_line_id) {
     try {
-      return fetch('/api/users/manu_lines/' + manu_line_id, {method: 'GET'})
+      return fetch('/api/users_manu_lines/' + manu_line_id, {method: 'GET'})
       .then(data => data.json())
       .then((res) => {
         // console.log("THIS IS THE RES IN SUBMIT; "+JSON.stringify(res));
@@ -372,7 +372,7 @@ export default class SubmitRequest{
 
   static async submitGetPlantManagerByManuLineID(manu_line_id) {
     try {
-      return fetch('/api/users/plant_manager/' + manu_line_id)
+      return fetch('/api/users_plant_manager/' + manu_line_id)
       .then(data => data.json())
       .then((res) => {
         // console.log("THIS IS THE RES IN SUBMIT; "+JSON.stringify(res));
