@@ -106,6 +106,7 @@ export default class BulkEditManuLines extends React.Component {
                             item={sku}
                             label={sku.name}
                             handleModifyManuLines={(list) => this.onModifyManuLines(sku._id, list)}
+                            user = {this.props.user}
                         />)
                 })}
                 {this.state.submit_options.map(opt => {

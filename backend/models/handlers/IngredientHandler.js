@@ -63,6 +63,11 @@ class IngredientHandler{
             if (!target_id) {
                 return res.json({ success: false, error: 'No ingredient name provided'});
             }
+
+            let old_ingredient = await Ingredient.find({ _id : target_id});
+
+            if(UnitConversion.getUnitType(old_ingredient[0].pkg_size) != UnitConversion.getUnitType(req.body.pkg_size)) return res.json({ success: false, error: "Please do not change the unit family (i.e. mass, volume, count) of a ingredient"});
+
             var new_ingredient_name = req.body.name;
             var new_ingredient_num = req.body.num;
             var new_vendor_info = req.body.vendor_info;
@@ -83,6 +88,7 @@ class IngredientHandler{
 
             let conflict = await Ingredient.find({ num : new_ingredient_num });
             if(conflict.length > 0 && conflict[0]._id != target_id) return res.json({ success: false, error: 'CONFLICT'});
+
             let conflict2 = await Ingredient.find({ name : new_ingredient_name});
             if(conflict2.length > 0 && conflict2[0]._id != target_id) return res.json({ success: false, error: 'CONFLICT'});
 

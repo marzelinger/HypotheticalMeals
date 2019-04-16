@@ -103,7 +103,7 @@ export default class FormulaDetails extends React.Component {
             alert("Please enter one of the following units: oz, ounce, lb, pound, ton, g, gram, kilogram, kg, floz, fluidounce, pt, pint, qt, quart, gal, gallon, ml, milliliter, l, liter, ct, count");
             return;
         }
-        var positive = await this.validatePositive(qty);
+        var positive = await this.validatePositive(sanitizedUnits.data);
         if(!positive) {
             alert("Please enter a positive number");
         }
@@ -119,7 +119,7 @@ export default class FormulaDetails extends React.Component {
         if (ind > -1) {
             let curr_qty = item.ingredient_quantities[ind];
 
-            curr_qty = await this.subtractTwoUnits(curr_qty, qty)
+            curr_qty = await this.subtractTwoUnits(curr_qty, sanitizedUnits.data)
             var curr_qty_num_arr = curr_qty.match(/^(-?[0-9]+(?:[\.][0-9]{0,20})?|\.[0-9]{1,20}) (oz|ounce|pound|lb|ton|g|gram|kilogram|kg|floz|fluidounce|pint|pt|quart|qt|gallon|gal|milliliter|ml|liter|l|ct|count)$/);
             if (Number(curr_qty_num_arr[1]) > 0) item.ingredient_quantities[ind] = curr_qty;
             else {
@@ -211,7 +211,7 @@ export default class FormulaDetails extends React.Component {
             return;
         }
 
-        var positive = await this.validatePositive(qty);
+        var positive = await this.validatePositive(sanitizedUnits.data);
         if(!positive) {
             alert("Please enter a positive number");
             return;
@@ -234,13 +234,13 @@ export default class FormulaDetails extends React.Component {
             console.log(curr_qty);
             console.log(qty);
 
-            item.ingredient_quantities[ind] = await this.addTwoUnits(curr_qty, qty);
+            item.ingredient_quantities[ind] = await this.addTwoUnits(curr_qty, sanitizedUnits.data);
         }
         else {
             console.log(item.ingredient_quantities);
             console.log(item.ingredients);
             item.ingredients.push(value);
-            item.ingredient_quantities.push(qty);
+            item.ingredient_quantities.push(sanitizedUnits.data);
             console.log(item.ingredient_quantities);
             console.log(item.ingredients);
         }

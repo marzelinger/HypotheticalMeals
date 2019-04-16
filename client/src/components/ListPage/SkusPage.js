@@ -550,6 +550,7 @@ export default class ListPage extends React.Component {
                     isOpen={this.state.manu_lines_modal} 
                     toggle={(toggler) => this.toggle(toggler)} 
                     handleBulkManuLineSubmit={this.onBulkManuLineSubmit}
+                    user = {this.state.current_user}
                 /> 
                 <TablePagination
                     currentPage = {this.state.currentPage}

@@ -13,6 +13,10 @@
     overflow: hidden;
 }
 
+.right-align-td {
+    text-align: right;
+}
+
 .report-container td, .report-container th {
     display: flex;
     justify-content: center;
