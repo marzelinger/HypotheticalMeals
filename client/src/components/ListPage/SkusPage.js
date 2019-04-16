@@ -206,6 +206,7 @@ export default class ListPage extends React.Component {
             exportData: resALL.data,
             filterChange: false
         })
+        console.log(this.state.data);
         await this.updateDataState();
 
     }
