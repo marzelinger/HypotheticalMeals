@@ -102,6 +102,12 @@ export default class UserDetails extends React.Component {
                     }
                 }
             }
+            // if(this.state.invalid_inputs.includes(Constants.change_own_roles)){
+            //     if(window.confirm(`Are you sure you want to change your own roles? Doing so will result in you being logged out and needing to login again.`)){
+            //         this.props.handleDetailViewSubmit(e, this.props.item, opt);
+            //         return;
+            //     }         
+            // }
             if (this.state.invalid_inputs.length === 0) {
                 this.props.handleDetailViewSubmit(e, this.props.item, opt);
             }
@@ -110,6 +116,7 @@ export default class UserDetails extends React.Component {
     }
 
     async validateInputs() { 
+        var curUser = await AuthRoleValidation.determineUser();
         var inv_in = [];
         this.state.item_properties.map(prop => {
             if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) {
@@ -124,6 +131,9 @@ export default class UserDetails extends React.Component {
                     inv_in.push(Constants.no_manu_lines);
                 }
             }
+        }
+        if(curUser.name == this.props.item.name){
+            inv_in.push(Constants.change_own_roles);
         }
         await this.setState({ invalid_inputs: inv_in });
     }

@@ -308,6 +308,10 @@ class UserPage extends React.Component {
                 console.log("new data222: "+JSON.stringify(newData));
                 res = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
                 console.log("res in save: "+JSON.stringify(res));
+                if(curUser.name == item.name){
+                    console.log('NEED TO LOUGOUT PERSON.');
+                    this.props.logoutUser();
+                }
                 break;
             case Constants.details_delete:
                 let toDelete = newData.findIndex(obj => {return obj._id === item._id});
