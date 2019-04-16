@@ -66,7 +66,7 @@ class IngredientHandler{
 
             let old_ingredient = await Ingredient.find({ _id : target_id});
 
-            if(old_ingredient[0].pkg_size != req.body.pkg_size && old_ingredient[0].sku_count != 0) return res.json({ success: false, error: "Please do not change the package size of an ingredient tied to at least 1 formula"});
+            if(UnitConversion.getUnitType(old_ingredient[0].pkg_size) != UnitConversion.getUnitType(req.body.pkg_size)) return res.json({ success: false, error: "Please do not change the unit family (i.e. mass, volume, count) of a ingredient"});
 
             var new_ingredient_name = req.body.name;
             var new_ingredient_num = req.body.num;
