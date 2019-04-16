@@ -214,9 +214,9 @@ export default class SalesProjectionModal extends React.Component {
         }
         var avg = total/4;
         var std_dev = await this.standardDeviation(yearlyRevArray, avg);
-        avg = avg.toFixed(2) + "";
+        avg = Math.round(avg) + "";
         console.log('gets here');
-        std_dev = std_dev.toFixed(5) + "";
+        std_dev = std_dev.toFixed(2) + "";
 
         console.log(avg);
         console.log(std_dev);
