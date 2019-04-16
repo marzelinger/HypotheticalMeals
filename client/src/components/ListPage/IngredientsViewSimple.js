@@ -177,6 +177,7 @@ export default class IngredientsViewSimple extends React.Component {
             <div className="list-page ingredients-table details-ingredients-table">
                 <div>
                     <PageTable 
+                        page_name = {'ingredients-simple'}
                         columns={this.state.table_columns} 
                         table_properties={this.state.table_properties} 
                         list_items={this.state.currItems}

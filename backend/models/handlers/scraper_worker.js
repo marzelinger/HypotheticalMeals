@@ -8,6 +8,7 @@ process.on('message', (message) => {
         trigger_reset();
     }
     else{
+        console.log(message);
         update_queue(message)
     }
     process.send('message recieved')
@@ -69,10 +70,11 @@ process.on('message', (message) => {
                 })
             }
         ).then(() => {
+            console.log(sku_queue)
             if(!sku_queue.some((sku) =>  sku.num == sku_num)){
+                console.log(sku_num);
                 update_sku(sku_num, 'success');
             }
-           
         });
     }
 

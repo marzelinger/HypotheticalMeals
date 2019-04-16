@@ -118,7 +118,7 @@ export default class ManuSchedulePage extends Component {
                 token: token,
             })
             await this.setState({
-                showSelectAll: this.state.current_user.roles.includes('admin'),
+                showSelectAll: this.state.current_user.roles.includes('admin') || this.state.current_user.roles.includes('plant_manager'),
                 showSelect: this.state.current_user.roles.includes('plant_manager')
             })
         }
@@ -742,6 +742,13 @@ export default class ManuSchedulePage extends Component {
         return selected_activities;
     }
 
+    checkManuLine = (act) => {
+        var manulines = act.sku.manu_lines;
+        var user_lines = this.state.current_user.manu_lines.map(manu_line => manu_line._id);
+        var filtered = manulines.filter((line => user_lines.includes(line)));
+        return filtered.length != 0;
+    }
+
     handleSelect = async (rowIndexes, g_index) => {
         // if (!AuthRoleValidation.checkRole(this.state.current_user, Constants.plant_manager)) return
         console.log(rowIndexes)
@@ -750,15 +757,21 @@ export default class ManuSchedulePage extends Component {
             var indexes = []
             var unscheduled_activities = this.state.unscheduled_goals[g_index].activities.filter((activity) => activity.scheduled == false);
             for(var i = 0; i < unscheduled_activities.length; i ++){
-                indexes.push(i);
+                var act = unscheduled_activities[i];
+                if(this.checkManuLine(act)){
+                    indexes.push(i);
+                }
             }
             selected[g_index] = indexes;
-           
         }
         else if(rowIndexes == 'none'){
+            this.setState({all_selected: false});
             selected[g_index] = [];
         }
         else{
+            if(this.state.all_selected){
+                this.setState({all_selected: false});
+            }
             console.log(selected);
             selected[g_index] = rowIndexes
             console.log(selected);

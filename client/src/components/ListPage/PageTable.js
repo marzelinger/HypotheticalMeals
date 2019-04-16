@@ -32,6 +32,7 @@ import ManufacturingGoalCalculator from '../ManufacturingGoal/Goals/Manufacturin
 export default class PageTable extends Component {
   constructor(props) {
     super(props);
+    console.log(props)
     this.state = {
       fixedHeader: true,
       fixedFooter: false,
@@ -193,10 +194,14 @@ export default class PageTable extends Component {
 
 
   render() {
+    console.log(this.props.reportSelect)
+    console.log(this.state.selectable)
+    console.log(this.props.page_name)
+    console.log(this.props.reportSelect ? null : ((!this.state.selectable && this.props.page_name != 'manugoals') ? null : '413px'));
     return (
       <div className = "table-container">
         <Table
-          height={this.props.reportSelect ? null : (!this.state.selectable && !this.props.page_name == 'manu_goals'? null : '413px')}
+          height={this.props.reportSelect ? null : ((!this.state.selectable && this.props.page_name != 'manugoals') ? null : '413px')}
           fixedHeader={this.state.fixedHeader}
           fixedFooter={this.state.fixedFooter}
           selectable={this.state.selectable}

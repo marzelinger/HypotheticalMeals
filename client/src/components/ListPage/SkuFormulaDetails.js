@@ -194,7 +194,7 @@ export default class SkuFormulaDetails extends React.Component {
         // }
         return (
             <div>
-                <Button color="primary" onClick = {() => this.handleNewFormula()} >Create New Formula</Button>{' '}
+                <Button className = "detailButtons" onClick = {() => this.handleNewFormula()} >Create New Formula</Button>{' '}
                 {/* {formulasExist?  */}
                 <Button color="secondary" onClick = {() => this.handleExistingFormula()} >Add Existing Formula</Button>
                  {/* : <div/>} */}

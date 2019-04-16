@@ -51,11 +51,10 @@ export default class ScraperHandler{
     }
 
     static async updateNewSku(req, res){
-        // console.log(req);
         var curr_year = new Date().getFullYear();
         var target_num = req.body.sku_num;
         var sku_queue = []
-        for(var year = curr_year - 10; year <= curr_year; year ++){
+        for(var year = 1999; year <= curr_year; year ++){
             sku_queue.push({num: target_num, year});
             // worker.update_sku(target_num, 'queued');
         }
@@ -75,6 +74,7 @@ export default class ScraperHandler{
         })
         return res.json({ success: true, data: target_nums});
     }
+
     static async updateStatus(sku_num, status){
         let updated_sku = await SKU.findOneAndUpdate({ num : sku_num},
             {$set: {status : status}}, {upsert : true, new : true});
@@ -100,27 +100,21 @@ export default class ScraperHandler{
 
 
       static async addCustomer(name, num){
-        console.log("maybe customer");
-        console.log("NAME: "+name);
         let conflict = await Customer.find({name: name, number: num});
         if(conflict.length > 0){
           return;
         }
-        console.log("maybe customer");
-
         var customer = new Customer();
         customer.name = name
         customer.number = num
         customer.save();
-
     }
-
-
-
-
 }
+
 process.on('message', async (message) => {
     if(message.type == 'status'){
+        console.log('update status')
+        console.log(message);
         await ScraperHandler.updateStatus(message.sku_num, message.status)
     }
     else if(message.type == 'add_record'){
