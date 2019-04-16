@@ -51,7 +51,6 @@ export default class ScraperHandler{
     }
 
     static async updateNewSku(req, res){
-        console.log(req);
         var curr_year = new Date().getFullYear();
         var target_num = req.body.sku_num;
         var sku_queue = []
@@ -75,6 +74,7 @@ export default class ScraperHandler{
         })
         return res.json({ success: true, data: target_nums});
     }
+
     static async updateStatus(sku_num, status){
         let updated_sku = await SKU.findOneAndUpdate({ num : sku_num},
             {$set: {status : status}}, {upsert : true, new : true});
@@ -118,7 +118,6 @@ process.on('message', async (message) => {
         await ScraperHandler.updateStatus(message.sku_num, message.status)
     }
     else if(message.type == 'add_record'){
-        console.log('add record')
         ScraperHandler.addRecord(message.sale_record);
     }
 })

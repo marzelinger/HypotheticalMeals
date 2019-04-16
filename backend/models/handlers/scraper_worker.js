@@ -33,7 +33,6 @@ process.on('message', (message) => {
     }
 
     async function updateRecords() {
-        console.log('updating records');
         var sku = sku_queue.shift();
         scrape_record(sku.num, sku.year);
         if(sku_queue.length != 0){
@@ -71,10 +70,11 @@ process.on('message', (message) => {
                 })
             }
         ).then(() => {
+            console.log(sku_queue)
             if(!sku_queue.some((sku) =>  sku.num == sku_num)){
+                console.log(sku_num);
                 update_sku(sku_num, 'success');
             }
-           
         });
     }
 
