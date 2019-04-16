@@ -308,20 +308,26 @@ class UserPage extends React.Component {
                 console.log("new data222: "+JSON.stringify(newData));
                 res = await SubmitRequest.submitUpdateItem(this.state.page_name, item, this);
                 console.log("res in save: "+JSON.stringify(res));
-                if(curUser.name == item.name){
+                //CHECK THIS
+
+                console.log("current user name detail: "+ curUser.user.username);
+                console.log("current detail name detail: "+ item.username);
+                if(curUser.user.username == item.username){
                     console.log('NEED TO LOUGOUT PERSON.');
                     this.props.logoutUser();
                 }
                 break;
             case Constants.details_delete:
+                if(curUser.user.username == item.username){
+                    console.log('NEED TO LOUGOUT PERSON.');
+                    this.props.logoutUser();
+                }
                 let toDelete = newData.findIndex(obj => {return obj._id === item._id});
                 newData.splice(toDelete, 1);
                 res = await SubmitRequest.submitDeleteItem(this.state.page_name, item, this);
                 //check if yourself was deleted.
-                if(curUser.name == item.name){
-                    console.log('NEED TO LOUGOUT PERSON.');
-                    this.props.logoutUser();
-                }
+                console.log("current user name DELETE: "+ curUser.user.username);
+                console.log("current detail name DELETE: "+ item.username);
                 break;
             case Constants.details_cancel:
                 res = {success: true}
