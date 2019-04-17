@@ -35,7 +35,10 @@ export default class GeneralReport extends React.Component {
 
         this.state = {
             sku_yr_table_properties: ['Year', 'Total Revenue (USD)', 'Average Revenue Per Case (USD)'],
+            prod_line_yr_table_properties: ['Year', 'Total Revenue (USD)'],
+
             sku_totals_properties: ['Sum of Yearly Rev. (USD)', 'Avg. Manu. Run Size', 'Ingr. CPC (USD)', 'Avg. Manu. Setup CPC (USD)', 'Manu. Run CPC (USD)', 'COGS PC (USD)', 'Avg. Rev. PC (USD)', 'Avg. Profit PC (USD)', 'Profit Margin (%)'],
+            prod_line_totals_properties: ['Sum of Total Revenue (USD)'],
             sku_header_table_properties: ['Name', 'SKU#', 'Case UPC#', 'Unit UPC#', 'Unit Size', 'Count Per Case', 'Setup Cost (USD)', 'Run CPC (USD)'],
             prod_lines: Object.assign([], props.general_prod_lines),
             prod_lines_indices: Object.assign([], props.general_prod_lines_indices),
@@ -174,13 +177,14 @@ export default class GeneralReport extends React.Component {
                     //want to then use that to make a table
                     //await this.calculateYears();
                     var tenYRSKUsdata = await Calculations.getTenYRSalesData(skus, cust_str, this.state.dataRanges, this.state.years);
-                    new_ten_yr_data.prodLines.push({prod_line: this.state.prod_lines[pl], tenYRSKUdata: tenYRSKUsdata});
+                    var prod_totals_data = await Calculations.getProdLineSalesData(tenYRSKUsdata);
+                    new_ten_yr_data.prodLines.push({prod_line: this.state.prod_lines[pl], tenYRSKUdata: tenYRSKUsdata, prod_totals_data: prod_totals_data});
                     await this.setState({tenYRdata: new_ten_yr_data});
                     await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer, this.state.prod_lines_indices);
                     //console.log("this is the tenyr: "+JSON.stringify(this.state.tenYRdata));
                 }
                 else {
-                    new_ten_yr_data.prodLines.push({prod_line: this.state.prod_lines[pl], tenYRSKUdata: { skus: []}});
+                    new_ten_yr_data.prodLines.push({prod_line: this.state.prod_lines[pl], tenYRSKUdata: { skus: []}, prod_totals_data: {}});
                     await this.setState({tenYRdata: new_ten_yr_data});
                     await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer, this.state.prod_lines_indices);
                 }
@@ -246,6 +250,55 @@ export default class GeneralReport extends React.Component {
 
     }
 
+
+    getProdLineTotals = (prod_line_total) => {
+        return (
+            <div>
+                <TableRow  class= "cols trselect">
+                    <TableRowColumn>
+                    {'$'+this.checkPriceLength(prod_line_total)}
+                    </TableRowColumn>
+                </TableRow>
+            </div>
+
+        );
+
+    }
+
+    getProdLineRecordsTable = (prod_totals_data) => {
+
+        // let prodLineData = {
+        //     yearData: [],
+        //     totalData: 0
+
+
+        // yr: curSKUData[y].yr,
+        // yr_total_rev: curSKUData[y].salesData.revenue
+        // };
+        if(prod_totals_data!=undefined){
+            if(prod_totals_data.yearData!=undefined){
+                return (
+                    <div>
+                        {prod_totals_data.yearData.map((data_line,ind) =>
+                                            // need to show the val in the sku data here.
+                                            //here we have the yr, sales data, and the sku# stuff
+                                            <TableRow  class= "cols trselect">
+                                                <TableRowColumn>
+                                                    {data_line.yr}
+                                                </TableRowColumn>
+                                                <TableRowColumn>
+                                                {'$'+this.checkPriceLength(data_line.yr_total_rev)}
+                                                </TableRowColumn>
+                                            </TableRow>
+                                        )} 
+                    </div>
+
+                );
+            }
+        }
+
+    }
+
     getRecordsTable = (cur_sku) => {
         return (
             <div>
@@ -305,6 +358,50 @@ export default class GeneralReport extends React.Component {
 
     }
 
+
+    prodLineTotalCalcsHeader = () => {
+        return (
+            <div>
+                <TableRow  class= "cols trselect">
+                    <TableRowColumn>
+                        Product Line Name
+                    </TableRowColumn>
+                    <TableRowColumn>
+                        Sum of Total Revenue for Past Decade
+                    </TableRowColumn>
+                </TableRow>
+            </div>
+
+        );
+
+    }
+    prodLineTable = () => {
+        return (
+            <div>
+                <TableRow  class= "cols trselect">
+                    <TableRowColumn>
+                    </TableRowColumn>
+                    <TableRowColumn>
+                    </TableRowColumn>
+                    <TableRowColumn>
+                    </TableRowColumn>
+                    <TableRowColumn>
+                    </TableRowColumn>
+                    <TableRowColumn>
+                    </TableRowColumn>
+                    <TableRowColumn>
+                    </TableRowColumn>
+                    <TableRowColumn>
+                    </TableRowColumn>
+                    <TableRowColumn>
+                    </TableRowColumn>
+                </TableRow>
+            </div>
+
+        );
+
+    }
+
     prodLineHeader = (pl_row) => {
         return (
             <TableRow class= "cols trselect">
@@ -324,6 +421,16 @@ export default class GeneralReport extends React.Component {
         );
     }
 
+    prodLineRecordsLabelHeader = () => {
+        return (
+            <TableRow class= "cols trselect" selectable = {false} >
+                {this.state.prod_line_yr_table_properties.map(prop => 
+                    <TableHeaderColumn>{prop}</TableHeaderColumn>
+                )}
+            </TableRow>
+        );
+    }
+
     skuLabelHeader = (cur_sku) => {
         return (
             <TableRow class= "cols trselect" selectable = {false}>
@@ -331,6 +438,17 @@ export default class GeneralReport extends React.Component {
                     <TableHeaderColumn>{prop}</TableHeaderColumn>
                 )}
             </TableRow>
+        );
+    }
+
+    
+    prodLineTotalsHeader = () => {
+        return (
+                <TableRow className = "cols" selectable = {false} >
+                    {this.state.prod_line_totals_properties.map(prop => 
+                        <TableHeaderColumn>{prop}</TableHeaderColumn>
+                    )}
+                </TableRow>
         );
     }
 
@@ -362,6 +480,7 @@ export default class GeneralReport extends React.Component {
                     {this.state.tenYRdata.prodLines.map(pl_row => 
                     <div className = "report-container-general"> 
                         <h5>Product Line: {pl_row.prod_line.name}</h5>
+                        
                             {pl_row.tenYRSKUdata.skus.length != 0 ?
                            
                               <div className = "report-container-general">
@@ -396,7 +515,6 @@ export default class GeneralReport extends React.Component {
                                                 {this.getSKUTable(cur_sku)}
                                             </TableBody>
                                             </Table>
-
                                         </div>
                                         <div className = "report-container-general-records">
                                             <Table height={'300px'}>
@@ -419,20 +537,43 @@ export default class GeneralReport extends React.Component {
                                                 </Table>
                                         </div>
                                     </div> )}
+
+
                                     </div>
 
                                 )}
                                 </div>
-
-
-
-
-
-
-
                                 :
+                                <div>
                                 <h6> {pl_row.prod_line.name} has no SKUs associated with it. </h6>
+                                {/* <h6> zero monies</h6> */}
+
+                                </div>
+                                
                             }
+                            <div>
+                            <h5> {pl_row.prod_line.name} Summary Table: </h5>
+                            <div className = "report-container-general-records">
+                                            <Table height={'300px'}>
+                                            <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+                                                {this.prodLineRecordsLabelHeader()}
+                                            </TableHeader>
+                                            <TableBody displayRowCheckbox = {false} stripedRows={this.state.stripedRows}>
+                                                {this.getProdLineRecordsTable(pl_row.prod_totals_data)}
+                                            </TableBody>
+                                            </Table>
+                                        </div>
+                                        <div className = "report-container-general-total">
+                                                <Table height={'40px'}>
+                                                <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+                                                {this.prodLineTotalsHeader()}
+                                                </TableHeader>
+                                                <TableBody displayRowCheckbox = {false} stripedRows={this.state.stripedRows}>
+                                                    {this.getProdLineTotals(pl_row.prod_totals_data.totalData)}
+                                                </TableBody>
+                                                </Table>
+                            </div>
+                            </div>
                     </div>
                 )}
                 </div>);

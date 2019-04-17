@@ -74,6 +74,17 @@ class ManufacturingGoalsBox extends Component {
     this.setState(newState);
   }
 
+
+
+//   handlePageClick = (e, index) => {
+//     e.preventDefault();
+//     this.setState({
+//         currentPage: index
+//     });
+//     this.loadDataFromServer();
+// }
+
+
   // onUpdateGoal = async (id,new_name) => {
   //   console.log('updating goal')
   //   console.log(new_name);

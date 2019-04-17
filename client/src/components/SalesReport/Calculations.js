@@ -10,6 +10,63 @@ export default class Calculations{
     //total revenue/num cases
     //sales = #cases sold
     //price = price per case
+
+    static async getProdLineSalesData (tenYRSKUdata) {
+        // console.log("tenYrSKUDATA here: "+JSON.stringify(tenYRSKUdata));
+        //need to go through each sku and get the total for each year.
+        //need to go through each sku, add the total for that year to the yearTOTAL
+        let prodLineData = {
+            yearData: [],
+            totalData: 0
+
+        };
+        var total = 0;
+        if(tenYRSKUdata!=undefined){
+            if(tenYRSKUdata.skus!=undefined){
+                console.log("skus length: "+JSON.stringify(tenYRSKUdata.skus.length));
+                for(let sku = 0; sku<tenYRSKUdata.skus.length; sku++){
+                    //                tenYRSKUsdata.skus.push({sku: skus[s], skuData: curSkuData, totalData: skuTotalData});
+                    var skuLine = tenYRSKUdata.skus[sku];
+                    var curSKUData = skuLine.skuData;
+                    console.log(" curSKUData: "+JSON.stringify(curSKUData));
+
+                    //go through the ten years.
+                    if(curSKUData!=undefined){
+                        //     curSkuData.push({ yr: years[yr], salesData: curRowData });
+                        //go through and add this data into my current prodLineData.
+                        for(let y = 0; y<curSKUData.length; y++){
+                            if(prodLineData.yearData.length<10){
+                                //haven't gotten all ten spots in yet.
+
+                                prodLineData.yearData.push({
+                                    yr: curSKUData[y].yr,
+                                    yr_total_rev: curSKUData[y].salesData.revenue
+                                });
+                                console.log(" prodLineData: "+JSON.stringify(prodLineData));
+
+                            }
+                            else{
+                                //the first ten added:
+                                prodLineData.yearData[y].yr_total_rev += curSKUData[y].salesData.revenue
+                                console.log(" prodLineData in second else: "+JSON.stringify(prodLineData));
+                            }
+                        }
+                    }
+                }
+                console.log("is undefined");
+                if(prodLineData.yearData!=undefined){
+                    for(let d = 0; d<prodLineData.yearData.length; d++){
+                        total+= prodLineData.yearData[d].yr_total_rev
+                        console.log(" total: "+JSON.stringify(total));
+
+                    }
+                    prodLineData.totalData = total;
+                }
+            }
+        }
+        return prodLineData;
+    }
+
     static async getTenYRSalesData(skus, cust_str, dateRanges, years){
         let tenYRSKUsdata = {
             skus: []
@@ -24,13 +81,6 @@ export default class Calculations{
         start_date.setHours(start_date.getHours() + 8);
         var end_date = new Date(end)
         end_date.setHours(end_date.getHours() + 8);
-
-
-
-
-
-
-
         if (skus.length>0){
             for (let s = 0; s<skus.length; s++){
                 // //need to go through all the prodlines. and then through all the skus.
