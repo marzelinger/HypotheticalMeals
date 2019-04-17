@@ -8,7 +8,6 @@ process.on('message', (message) => {
         trigger_reset();
     }
     else{
-        console.log(message);
         update_queue(message)
     }
     process.send('message recieved')
@@ -16,6 +15,7 @@ process.on('message', (message) => {
 
     async function trigger_reset(){
         sku_queue = [];
+        awake = false;
     }
 
     async function update_queue(new_skus){
@@ -33,12 +33,15 @@ process.on('message', (message) => {
     }
 
     async function updateRecords() {
+        if(sku_queue.length == 0){
+            return;
+        }
         var sku = sku_queue.shift();
         scrape_record(sku.num, sku.year);
         if(sku_queue.length != 0){
             setTimeout( () => {
             updateRecords()
-            }, 500)
+            }, 1000)
         } 
         else{
             awake = false;
@@ -70,9 +73,7 @@ process.on('message', (message) => {
                 })
             }
         ).then(() => {
-            console.log(sku_queue)
-            if(!sku_queue.some((sku) =>  sku.num == sku_num)){
-                console.log(sku_num);
+            if(sku_year == 2019){
                 update_sku(sku_num, 'success');
             }
         });

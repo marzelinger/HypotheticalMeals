@@ -71,7 +71,7 @@ class Manu_GoalHandler{
                                             .populate('activities')
                                             .populate({path: 'activities', populate: { path: 'sku' }})
                                             .populate({path: 'activities', populate: { path: 'sku', populate: {path: 'formula', populate: {path: 'ingredients'}} }})
-                                            .sort(sort_field);
+                                            .sort(sort_field).collation({locale: "en_US", numericOrdering: true}) ;
             return res.json({ success: true, data: all_manu_goals});
         }
         catch (err) {

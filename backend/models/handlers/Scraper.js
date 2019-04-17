@@ -28,14 +28,15 @@ export default class ScraperHandler{
     static async triggerReset(req, res){
         await Sale_Record.deleteMany({});
         ScraperHandler.resetAllRecords();
+        process.send('reset');
         return res.json({ success: true});
     }
 
     static async resetAllRecords(){
         var skus = await SKU.find();
-        skus.forEach((sku) => {
-            ScraperHandler.updateNewSku({body: {sku_num: sku.num}});
-        });
+        for(var i = 0; i < skus.length; i ++){
+            await ScraperHandler.updateNewSku({body: {sku_num: skus[i].num}});
+        }
     }
 
     static async updateAllRecords(){
@@ -58,6 +59,7 @@ export default class ScraperHandler{
             sku_queue.push({num: target_num, year});
             // worker.update_sku(target_num, 'queued');
         }
+        console.log(sku_queue)
         process.send(sku_queue);
         try{
             return res.json({ success: true});
