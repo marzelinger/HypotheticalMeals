@@ -69,8 +69,10 @@ export default class Calculations{
 
     static async getTenYRSalesData(skus, cust_str, dateRanges, years){
         let tenYRSKUsdata = {
-            skus: []
+            skus: [],
+            skuQueued: false
         }
+        var queued = false;
 
         var len = dateRanges.length;
         var start = dateRanges[0].startdate;
@@ -83,6 +85,11 @@ export default class Calculations{
         end_date.setHours(end_date.getHours() + 8);
         if (skus.length>0){
             for (let s = 0; s<skus.length; s++){
+                console.log("sku status: "+skus[s].status);
+                if(skus[s].status==="queued") {
+                    console.log("IN IFFFF STATEMENT");
+                    queued = true;
+                }
                 // //need to go through all the prodlines. and then through all the skus.
                 var curSkuData = [];
                 var cur_ten_yr_rev = 0;
@@ -106,6 +113,7 @@ export default class Calculations{
                 tenYRSKUsdata.skus.push({sku: skus[s], skuData: curSkuData, totalData: skuTotalData});
             }
         }
+        tenYRSKUsdata.skuQueued = queued;
         return tenYRSKUsdata;
     }
 
