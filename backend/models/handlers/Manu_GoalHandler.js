@@ -79,6 +79,25 @@ class Manu_GoalHandler{
         }
     }
 
+
+
+    static async getAllManufacturingGoalsPag(req, res){
+        try {
+            var sort_field = req.params.sort_field;
+            var currentPage = Number(req.params.currentPage);
+            var pageSize = Number(req.params.pageSize);
+            let all_manu_goals = await Manu_Goal.find()
+                                            .populate('activities')
+                                            .populate({path: 'activities', populate: { path: 'sku' }})
+                                            .populate({path: 'activities', populate: { path: 'sku', populate: {path: 'formula', populate: {path: 'ingredients'}} }})
+                                            .sort(sort_field).skip(currentPage*pageSize).limit(pageSize);
+            return res.json({ success: true, data: all_manu_goals});
+        }
+        catch (err) {
+            return res.json({ success: false, error: err});
+        }
+    }
+
     static async getManufacturingGoalByUser(req, res){
         try {
             var target_id = req.params.manu_goal_id;

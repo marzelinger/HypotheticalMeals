@@ -50,7 +50,11 @@ class ManufacturingGoalsBox extends Component {
       detail_view_options: [],
       detail_view_action: '',
       detail_view_item: {},
-      detail_view_old_activities: []
+      detail_view_old_activities: [],
+      currentPage: 0,
+      previousPage: 0,
+      pageSize: 20,
+      pagesCount: 0,
     };
     if(localStorage != null){
       if(localStorage.getItem("jwtToken")!= null){
@@ -63,9 +67,11 @@ class ManufacturingGoalsBox extends Component {
     this.onDeleteGoal = this.onDeleteGoal.bind(this);
     this.loadGoalsFromServer = this.loadGoalsFromServer.bind(this);
     this.submitUpdatedGoal = this.submitUpdatedGoal.bind(this);
+    this.handlePageClick=this.handlePageClick.bind(this);
     this.onSort = this.onSort.bind(this);
     this.toggle = this.toggle.bind(this);
     this.onDetailViewSubmit = this.onDetailViewSubmit.bind(this);
+    this.setInitPages();
   }
 
   onChangeText = (e) => {
@@ -73,6 +79,17 @@ class ManufacturingGoalsBox extends Component {
     newState[e.target.name] = e.target.value;
     this.setState(newState);
   }
+
+
+
+  handlePageClick = (e, index) => {
+    e.preventDefault();
+    this.setState({
+        currentPage: index
+    });
+    this.loadGoalsFromServer();
+  }
+
 
   // onUpdateGoal = async (id,new_name) => {
   //   console.log('updating goal')
@@ -277,7 +294,11 @@ class ManufacturingGoalsBox extends Component {
   }
 
   async loadGoalsFromServer() {
-    var res = await SubmitRequest.submitGetData(`${this.state.page_name}/${this.state.sort_field}`);
+    var resALL = await SubmitRequest.submitGetData(`manugoals_pag/${this.state.sort_field}/0/0`);
+    await this.checkCurrentPageInBounds(resALL);
+    var res = await SubmitRequest.submitGetData(`manugoals_pag/${this.state.sort_field}/${this.state.currentPage}/${this.state.pageSize}`);
+
+
     if (!res.success) {
       this.setState({ error: res.error });
     }
@@ -285,6 +306,59 @@ class ManufacturingGoalsBox extends Component {
       this.setState({ data: res.data})
     }
   }
+
+
+
+  async checkCurrentPageInBounds(dataResAll){
+    var prev = this.state.previousPage;
+    //there is no data. update the current index stuff
+    if (dataResAll === undefined || !dataResAll.success) {
+        this.setState({
+            currentPage: 0,
+            previousPage: prev,
+            pagesCount: 0,
+        });
+    }
+    else{
+        //there is some sort of data response
+        var dataLength = dataResAll.data.length;
+        var curCount = Math.ceil(dataLength/Number(this.state.pageSize));
+        if(curCount != this.state.pagesCount){
+            //number pages changed.
+            if(this.state.currentPage>= curCount){
+                //previous index out of bounds. want to set the index to be 0.
+                this.setState({
+                    currentPage: 0,
+                    previousPage: prev,
+                    pagesCount: curCount,
+                }); 
+            }
+            else{
+                //the number of pages has changed but the index is still in bounds.
+                //don't need to page change here.
+                this.setState({
+                    pagesCount: curCount,
+                }); 
+            }
+        }
+    }
+
+}
+
+  async setInitPages(){
+    var allData = await SubmitRequest.submitGetData(`${this.state.page_name}/${this.state.sort_field}`);
+    var curCount = 0;
+    if(allData!=undefined){
+        if(allData.data!=undefined){
+             curCount = Math.ceil(allData.data.length/Number(this.state.pageSize));
+        }
+    }
+    this.setState({
+        currentPage: 0,
+        previousPage: 0,
+        pagesCount: curCount,
+    }); 
+}
 
   async onDetailViewSubmit(event, item, option) {
     var newData = this.state.data;
@@ -481,6 +555,7 @@ class ManufacturingGoalsBox extends Component {
               detail_view_options = {this.state.detail_view_options}
               user = {this.props.user}
               old_activities= {this.state.detail_view_old_activities}
+              detail_view_action = {this.state.detail_view_action}
               ></ManufacturingGoalDetails>
           </Modal>
           </div>
