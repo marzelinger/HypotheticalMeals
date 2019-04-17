@@ -83,7 +83,7 @@ export default class ManuSchedulePalette extends Component {
     injectActivityData(act, a_index, g_index) {
         console.log(act);
         return (
-            <TableRow class = {this.checkManuLine(act) ? '' : 'disableCheckbox'} selectable = {this.props.showSelect && this.checkManuLine(act)} selected = {this.determineSelected(a_index, g_index)}>
+            <TableRow className = {`${this.props.showSelect ? "checkbox-show":""} ${this.checkManuLine(act) ? '' : 'disableCheckbox'}`} selectable = {this.props.showSelect && this.checkManuLine(act)} selected = {this.determineSelected(a_index, g_index)}>
                 {this.state.item_properties.map(prop => {
                 if (prop === 'sku'){
                     return (<TableRowColumn>{act[prop].name + ': ' + act[prop].unit_size + ' * ' + act.quantity}</TableRowColumn>)
@@ -129,7 +129,7 @@ export default class ManuSchedulePalette extends Component {
                                 <ManuSchedulePaletteGoal goal={goal} />
                             </AccordionItemTitle>
                             <AccordionItemBody>
-                                <Table borderless size="sm" className='accordian-table goal-table' 
+                                <Table borderless size="sm" className={`accordian-table goal-table `}
                                     multiSelectable={this.props.showSelect}
                                     onRowSelection = {(res) => this.props.handleSelect(res, g_index)}
                                 >
@@ -137,7 +137,7 @@ export default class ManuSchedulePalette extends Component {
                                         displaySelectAll={this.props.showSelectAll}
                                         adjustForCheckbox={this.props.showSelect}
                                         enableSelectAll={this.props.showSelectAll}>
-                                    <TableRow>
+                                    <TableRow className = {`${this.props.showSelect ? "checkbox-show":""}`}>
                                         {this.state.item_properties.map(prop => {
                                             if (prop === 'add_to_schedule' && !this.props.user.roles.includes('plant_manager')){
                                                 return null

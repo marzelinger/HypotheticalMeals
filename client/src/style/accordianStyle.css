@@ -11,7 +11,11 @@
 }
 
 .accordian-table tr {
-    grid-template-columns:  .5fr minmax(50px, 3fr) minmax(50px, 2fr) minmax(50px, 3fr);
+    grid-template-columns:  minmax(50px, 3fr) minmax(50px, 2fr) minmax(50px, 3fr);
+}
+
+.checkbox-show{
+    grid-template-columns:  .5fr minmax(50px, 3fr) minmax(50px, 2fr) minmax(50px, 3fr) !important;
 }
 
 .u-position-absolute {
