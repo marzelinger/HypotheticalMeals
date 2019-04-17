@@ -67,6 +67,7 @@ class Manu_GoalHandler{
     static async getAllManufacturingGoals(req, res){
         try {
             var sort_field = req.params.sort_field;
+            console.log(sort_field)
             let all_manu_goals = await Manu_Goal.find()
                                             .populate('activities')
                                             .populate({path: 'activities', populate: { path: 'sku' }})
@@ -84,13 +85,14 @@ class Manu_GoalHandler{
     static async getAllManufacturingGoalsPag(req, res){
         try {
             var sort_field = req.params.sort_field;
+            console.log(sort_field)
             var currentPage = Number(req.params.currentPage);
             var pageSize = Number(req.params.pageSize);
             let all_manu_goals = await Manu_Goal.find()
                                             .populate('activities')
                                             .populate({path: 'activities', populate: { path: 'sku' }})
                                             .populate({path: 'activities', populate: { path: 'sku', populate: {path: 'formula', populate: {path: 'ingredients'}} }})
-                                            .sort(sort_field).skip(currentPage*pageSize).limit(pageSize);
+                                            .sort(sort_field).collation({locale: "en_US", numericOrdering: true}).skip(currentPage*pageSize).limit(pageSize);
             return res.json({ success: true, data: all_manu_goals});
         }
         catch (err) {
