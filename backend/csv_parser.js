@@ -573,7 +573,6 @@ export default class CSV_parser{
         objNew.scale_factor = objOld[Constants.csv_sku_formula_factor];
         
         var manu_lines_string = objOld[Constants.csv_sku_ml];
-        manu_lines_string = manu_lines_string.substring(1, manu_lines_string.length - 1)
         var manu_lines_arr = manu_lines_string.split(",");
 
         var manu_lines_to_add = [];
