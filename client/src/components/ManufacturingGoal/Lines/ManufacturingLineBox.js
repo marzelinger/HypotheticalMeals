@@ -69,8 +69,12 @@ export default class ManufacturingLinesBox extends Component {
     else {
       console.log("this is res. "+JSON.stringify(res));
       var updateRes = await this.updateSKUManuLines(res.data);
+      var updateUserRes = await this.updateUserManuLines(res.data);
       if(!updateRes.success){
         this.setState({ error: updateRes.error });
+      }
+      if(!updateUserRes.success){
+        this.setState({eror: updateUserRes.error});
       }
       else{
         this.setState({ name: '', error: null });
@@ -90,7 +94,7 @@ export default class ManufacturingLinesBox extends Component {
               short_name: item.short_name,
               comment: item.comment
             })
-            this.submitNewManuLine();
+            await this.submitNewManuLine();
             break;
         case Constants.details_cancel:
             break;
@@ -109,7 +113,7 @@ export default class ManufacturingLinesBox extends Component {
             this.submitUpdatedManuLine();
             break;
         case Constants.details_delete:
-          if(window.confirm("Deleting this manufacturing line will unschedule all activities scheduled to it. Are you sure you want to delete it?")){
+          if(window.confirm("Deleting this manufacturing line will unschedule all activities scheduled to it. The Plant Manager(s) managing this line will also no longer manage this line. Are you sure you want to delete it?")){
             await this.setState({
               name: item.name,
               skus: [],
@@ -170,6 +174,7 @@ export default class ManufacturingLinesBox extends Component {
     else {
       console.log("this is res. "+JSON.stringify(res));
       var updateRes = await this.updateSKUManuLines(res.data);
+      var updateUserRes = await this.addNewLineToAdmins(res.data);
       if(!updateRes.success){
         this.setState({ error: updateRes.error });
       }
@@ -279,6 +284,64 @@ export default class ManufacturingLinesBox extends Component {
   }
 
 
+  async updateUserManuLines(manu_line){
+    console.log(" here in the updateusermanulines: ");
+    var all_users_manu_line = await SubmitRequest.submitGetUsersByManuLineID(manu_line._id);
+    console.log(" all_skus_manu_line: "+JSON.stringify(all_users_manu_line));
+    if(all_users_manu_line.success){
+      if(all_users_manu_line.data!=undefined){
+        //users with this manuline
+        //remove manu line from all the users.
+        for(let u = 0; u<all_users_manu_line.data.length; u++){
+          var curUser = all_users_manu_line.data[u];
+          console.log("current user: "+JSON.stringify(curUser));
+          var manu_lines = curUser.manu_lines;
+          console.log("manu_line: "+ JSON.stringify(manu_line));
+           console.log("manu_lines: "+JSON.stringify(manu_lines));
+          var manu_line_id = manu_line._id;
+          var manu_index = manu_lines.indexOf(manu_line_id);
+           console.log("manu_index: "+JSON.stringify(manu_index));
+          manu_lines.splice(manu_index, 1);
+          curUser.manu_lines = manu_lines;
+          let updateRes = await SubmitRequest.submitUpdateItem(Constants.users_page_name, curUser);
+          console.log("updateRes: "+ JSON.stringify(updateRes));
+          if(!updateRes.success){
+            return {error: updateRes.error, success: false};
+          }
+        }
+      }
+        return { name: '', error: null, success: true };
+      }
+    return {error: all_users_manu_line.error, success: false};
+  }
+
+
+  async addNewLineToAdmins(manu_line){
+    console.log("herre in add new line to admins.")
+    var all_user_admins = await SubmitRequest.submitGetAllAdmins();
+    console.log(" all_skus_manu_line: "+JSON.stringify(all_user_admins));
+    if(all_user_admins.success){
+      if(all_user_admins.data!=undefined){
+        //users with this manuline
+        //remove manu line from all the users.
+        for(let u = 0; u<all_user_admins.data.length; u++){
+          var curUser = all_user_admins.data[u];
+          var manu_lines = curUser.manu_lines;
+          console.log("manu_line: "+ JSON.stringify(manu_line));
+           console.log("manu_lines: "+JSON.stringify(manu_lines));
+          manu_lines.push(manu_line._id);
+          curUser.manu_lines = manu_lines;
+          let updateRes = await SubmitRequest.submitUpdateItem(Constants.users_page_name, curUser);
+          console.log("updateRes: "+ JSON.stringify(updateRes));
+          if(!updateRes.success){
+            return {error: updateRes.error, success: false};
+          }
+        }
+      }
+        return { name: '', error: null, success: true };
+      }
+    return {error: all_user_admins.error, success: false};
+  }
 
   async submitUpdatedManuLine() {
     const { name, short_name, comment, updateId } = this.state;

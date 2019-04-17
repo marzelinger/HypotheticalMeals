@@ -134,6 +134,7 @@ router.get('/manugoals_activity/:activity_id', (req, res) => Manu_GoalHandler.ge
 router.get('/manugoals_name/:name',(req, res) => Manu_GoalHandler.getManufacturingGoalByName(req, res));
 router.get('/manugoals_by_user/:username',(req, res) => Manu_GoalHandler.getManufacturingGoalsByUsername(req, res));
 router.get('/manugoals_by_ID/:manu_goal_id', (req, res) => Manu_GoalHandler.getManufacturingGoalByID(req, res));
+router.get('/manugoals_pag/:sort_field/:currentPage/:pageSize', (req, res) => Manu_GoalHandler.getAllManufacturingGoalsPag(req, res));
 
 
 // Customer database APIs
@@ -193,6 +194,9 @@ router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword
 router.post("/users/loginDukeNetID", (req, res) => UserHandler.loginUserDukeNetID(req,res));
 router.delete('/users/:user_id', (req, res) => UserHandler.deleteUserByID(req, res));
 router.get('/users/:user_id', (req, res) => UserHandler.getUserByID(req, res));
+router.get('/users_plant_manager/:manu_line_id', (req, res) => UserHandler.getPlantManagerByManuLineID(req, res));
+router.get('/users_manu_lines/:manu_line_id', (req, res) => UserHandler.getUsersByManuLineID(req, res));
+router.get('/users_all_admins', (req, res) => UserHandler.getAllAdmins(req, res));
 
 
 
