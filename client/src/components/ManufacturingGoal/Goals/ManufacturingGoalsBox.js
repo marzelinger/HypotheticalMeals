@@ -481,6 +481,7 @@ class ManufacturingGoalsBox extends Component {
               detail_view_options = {this.state.detail_view_options}
               user = {this.props.user}
               old_activities= {this.state.detail_view_old_activities}
+              detail_view_action = {this.state.detail_view_action}
               ></ManufacturingGoalDetails>
           </Modal>
           </div>
