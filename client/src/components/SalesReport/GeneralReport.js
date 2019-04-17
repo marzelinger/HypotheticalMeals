@@ -54,7 +54,7 @@ export default class GeneralReport extends React.Component {
             dataRanges: [],
             years: [],
             loading: false,
-            page_name: Constants.general_report_page_name
+            page_name: Constants.general_report_page_name,
         }
 
         this.calculateYears = this.calculateYears.bind(this);
@@ -178,13 +178,15 @@ export default class GeneralReport extends React.Component {
                     //await this.calculateYears();
                     var tenYRSKUsdata = await Calculations.getTenYRSalesData(skus, cust_str, this.state.dataRanges, this.state.years);
                     var prod_totals_data = await Calculations.getProdLineSalesData(tenYRSKUsdata);
-                    new_ten_yr_data.prodLines.push({prod_line: this.state.prod_lines[pl], tenYRSKUdata: tenYRSKUsdata, prod_totals_data: prod_totals_data});
+                    console.log("from ten yrs sku data: "+tenYRSKUsdata.skuQueued);
+                    new_ten_yr_data.prodLines.push({prod_line: this.state.prod_lines[pl], tenYRSKUdata: tenYRSKUsdata, prod_totals_data: prod_totals_data, skuQueued: tenYRSKUsdata.skuQueued});
                     await this.setState({tenYRdata: new_ten_yr_data});
+                    console.log("in gen report: "+this.state.tenYRdata.prodLines[pl].skuQueued);
                     await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer, this.state.prod_lines_indices);
                     //console.log("this is the tenyr: "+JSON.stringify(this.state.tenYRdata));
                 }
                 else {
-                    new_ten_yr_data.prodLines.push({prod_line: this.state.prod_lines[pl], tenYRSKUdata: { skus: []}, prod_totals_data: {}});
+                    new_ten_yr_data.prodLines.push({prod_line: this.state.prod_lines[pl], tenYRSKUdata: { skus: []}, prod_totals_data: {}, skuQueued: false});
                     await this.setState({tenYRdata: new_ten_yr_data});
                     await this.props.handleGeneralReportDataChange(this.state.tenYRdata, this.state.prod_lines, this.state.customer, this.state.prod_lines_indices);
                 }
@@ -192,7 +194,7 @@ export default class GeneralReport extends React.Component {
         }
         await this.setState({
             loading: false,
-            new_data: false
+            new_data: false,
         });
     }
 
@@ -501,11 +503,9 @@ export default class GeneralReport extends React.Component {
                                     </div>
 
                                     {cur_sku.sku.status== 'queued'?
-                                    <h6> Data of {cur_sku.sku.name} is currently loading. </h6> 
+                                    <h6> Data of {cur_sku.sku.name} is currently queued. </h6> 
                                     :
-                                        
-                                    (<div>
-                                        
+                                    (<div>                                        
                                         <div className = "report-container-general-sku">
                                             <Table height={'40px'}>
                                             <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
@@ -553,6 +553,10 @@ export default class GeneralReport extends React.Component {
                             }
                             <div>
                             <h5> {pl_row.prod_line.name} Summary Table: </h5>
+                            {pl_row.skuQueued ?
+                            (<div>A SKU assigned to {pl_row.prod_line.name} is currently queued. Regenerate report after SKU is no longer queued to calculate Product Line totals.</div>) 
+                            : (
+                                <div>
                             <div className = "report-container-general-records">
                                             <Table height={'300px'}>
                                             <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
@@ -573,6 +577,8 @@ export default class GeneralReport extends React.Component {
                                                 </TableBody>
                                                 </Table>
                             </div>
+                            </div>
+                            )}
                             </div>
                     </div>
                 )}
