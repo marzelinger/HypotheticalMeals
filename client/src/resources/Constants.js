@@ -38,6 +38,8 @@ export const customers_page_name = 'customers';
 export const sku_drilldown_page_name = 'customers_sku';
 export const general_report_page_name = 'general_report';
 export const no_manu_lines = 'no_manu_lines';
+export const change_own_roles = 'change_own_roles';
+
 
 export const options = 'Options'
 export const keyword_label = "Keyword"

@@ -141,7 +141,7 @@ class IngredientHandler{
                 var curr_ingrs_array = curr_formula.ingredients;
                 for(var j = 0; j < curr_ingrs_array.length; j++){
                     if(curr_ingrs_array[j]._id == target_id){
-                        return res.json({ success: false, error: "This ingredient is still tied to a formula"});
+                        return res.json({ success: false, error: "This ingredient is currently being used by a formula. You cannot delete an ingredient being used in a formula."});
                     }
                 }
             }

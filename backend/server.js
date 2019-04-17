@@ -193,6 +193,9 @@ router.post("/users/login", (req, res) => UserHandler.loginUserByNameAndPassword
 router.post("/users/loginDukeNetID", (req, res) => UserHandler.loginUserDukeNetID(req,res));
 router.delete('/users/:user_id', (req, res) => UserHandler.deleteUserByID(req, res));
 router.get('/users/:user_id', (req, res) => UserHandler.getUserByID(req, res));
+router.get('/users_plant_manager/:manu_line_id', (req, res) => UserHandler.getPlantManagerByManuLineID(req, res));
+router.get('/users_manu_lines/:manu_line_id', (req, res) => UserHandler.getUsersByManuLineID(req, res));
+router.get('/users_all_admins', (req, res) => UserHandler.getAllAdmins(req, res));
 
 
 

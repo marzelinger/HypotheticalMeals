@@ -148,7 +148,7 @@ class FormulaHandler{
                     {$set: {ingredients : sku.ingredients, ingredient_quantities: sku.ingredient_quantities}}, 
                     {upsert : true, new : true});
             })*/
-            if(skus.length >= 1) return res.json({ success: false, error: 'Formula still tied to at least one SKU'});
+            if(skus.length >= 1) return res.json({ success: false, error: 'This formula is being used by one or more SKUs. You cannot delete a formula being used by a SKU.'});
             //console.log(target_id);
             let to_remove = await Formula.findOneAndDelete({ _id: target_id});
             if(!to_remove) return res.json({ success: true, error: '404'});

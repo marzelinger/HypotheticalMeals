@@ -14,6 +14,7 @@ import addButton from '../../../resources/add.png';
 import SimpleLineTable from './SimpleLineTable';
 import ItemSearchModifyListQuantity from '../../ListPage/ItemSearchModifyListQuantity';
 import AuthRoleValidation from '../../auth/AuthRoleValidation';
+import SubmitRequest from '../../../helpers/SubmitRequest';
 // import { constants } from 'http2';
 
 export default class ManufacturingLineDetails extends React.Component {
@@ -128,50 +129,56 @@ export default class ManufacturingLineDetails extends React.Component {
         await this.setState({ item: item })
     }
 
-    async checkSKUsManuLinesBeforeDelete(){
-        //go through skus, if any of them only have that manu line, cannot delete
-        var depend_skus = [];
-        if(this.state.item.skus!=undefined){
-            for(let s = 0; s<this.state.item.skus.length; s++){
-                var curSKU = this.state.item.skus[s];
-                if(curSKU.manu_lines!=undefined){
-                    if(curSKU.manu_lines.includes(this.state.item._id)){
-                        if(curSKU.manu_lines.length==1){
-                            //this is the only manu line the sku has, cannot be deleted.
-                            depend_skus.push(curSKU.name);
-                        }
-                    }
-                }
+    async checkUserPlantManagersBeforeDelete(){
+        console.log("here in checkPlantManager")
+        var plant_manager_by_manu_line = await SubmitRequest.submitGetPlantManagerByManuLineID(this.props.item._id);
+        console.log(" plant_manager_by_manu_line: "+JSON.stringify(plant_manager_by_manu_line));
+        if(plant_manager_by_manu_line.success){
+          if(plant_manager_by_manu_line.data!=undefined){
+            for(let u = 0; u<plant_manager_by_manu_line.data.length; u++){
+              var curUser = plant_manager_by_manu_line.data[u];
+              var manu_lines = curUser.manu_lines;
+              console.log("manu_lines: "+JSON.stringify(manu_lines));
+              if(manu_lines.length == 1){
+                  //this is plant m only has this manu_line
+                  //can't delete this.
+                  return {error: true}
+              }
             }
-        }
-        if(depend_skus.length!=0){
-            alert(Constants.sku_dependency_exists+JSON.stringify(depend_skus));
-            return {error: true};
-        }
-        else{
-            return {error: false};
-        }
-
+          }
+            return { name: '', error: null, success: true };
+          }
+        return {error: plant_manager_by_manu_line.error, success: false};
     }
+
+
+
+
+
+
+
+
     async handleSubmit(e, opt) {
-        if (![Constants.details_save, Constants.details_create].includes(opt)) {
+        if (![Constants.details_save, Constants.details_create, Constants.details_delete].includes(opt)) {
             if(this.props.handleDetailViewSubmit(e, this.state.item, opt)){
                 //TODO CHECK IF YOU CAN DELETE THIS.
                 await this.setState({modal: false})
             };
             return;
         }
-        // if([Constants.details_delete].includes(opt)){
-        //     //go through the skus and make sure that can't delete one if the skus.
-        //     var res = await this.checkSKUsManuLinesBeforeDelete();
-        //     if(!res.error){
-        //         if(this.props.handleDetailViewSubmit(e, this.state.item, opt)){
-        //             //TODO CHECK IF YOU CAN DELETE THIS.
-        //             await this.setState({modal: false})
-        //         };
-        //         return;
-        //     }
-        // }
+        if([Constants.details_delete].includes(opt)){
+            //go through the users and make sure that can't delete one if a plant manager is only for that line.
+            var res = await this.checkUserPlantManagersBeforeDelete();
+            if(!res.error){
+                if(this.props.handleDetailViewSubmit(e, this.state.item, opt)){
+                    await this.setState({modal: false})
+                };
+                return;
+            }
+            else if(res.error){
+                alert("This manufacturing line cannot be deleted because it is still being managed by one or more plant managers. Please reassign those plant managers before deleting this manufacturing line.");
+            }
+        }
         else{
             await this.validateInputs();
             let alert_string = 'Invalid Fields';

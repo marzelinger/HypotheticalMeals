@@ -71,13 +71,24 @@ export default class UserDetails extends React.Component {
 
     async handleSubmit(e, opt) {
         console.log("this is the item: "+JSON.stringify(this.props.item));
+        var curUser = await AuthRoleValidation.determineUser();
         if (![Constants.details_save, Constants.details_create, Constants.details_delete].includes(opt)) {
             this.props.handleDetailViewSubmit(e, this.props.item, opt);
             return;
         }
-        
         if([Constants.details_delete].includes(opt)){
-            if(window.confirm(`Are you sure you want to delete this user? Doing so will result in all manufacturing goals and activities belonging to ${this.props.item.username} being deleted.`)){
+            //check if you are deleting yourself.
+            console.log("current user name: "+ curUser.user.username);
+            console.log("current detail name: "+ this.props.item.username);
+
+            if(curUser.user.username == this.props.item.username){
+                //trying to delete yourself.
+                if(window.confirm(`Are you sure you want to delete your own account? Doing so will result in all manufacturing goals and activities belonging to you being deleted. You will also be logged out of the system.`)){
+                    this.props.handleDetailViewSubmit(e, this.props.item, opt);
+                    return;
+                }
+            }
+            else if(window.confirm(`Are you sure you want to delete this user? Doing so will result in all manufacturing goals and activities belonging to ${this.props.item.username} being deleted.`)){
                 this.props.handleDetailViewSubmit(e, this.props.item, opt);
                 return;
             }
@@ -87,19 +98,26 @@ export default class UserDetails extends React.Component {
             await this.validateInputs();
             if(this.state.invalid_inputs.length==1){
                 if(this.state.invalid_inputs.includes(Constants.no_manu_lines)){
-                    if(window.confirm(`A Plant Manager must manage at least one manufacturing line.`)){
+                    if(window.confirm(`A user with the Plant Manager Role must manage at least one manufacturing line.`)){
                         return;
                     }
                 }
             }
+            if(this.state.invalid_inputs.includes(Constants.change_own_roles)){
+                if(window.confirm(`Are you sure you want to change your own roles? Doing so will result in you being logged out and needing to login again.`)){
+                    this.props.handleDetailViewSubmit(e, this.props.item, opt);
+                    return;
+                }         
+            }
             if (this.state.invalid_inputs.length === 0) {
                 this.props.handleDetailViewSubmit(e, this.props.item, opt);
             }
-            else alert('Invalid Fields');
+            else alert('Invalid Fields '+this.state.invalid_inputs[0]);
         }
     }
 
     async validateInputs() { 
+        var curUser = await AuthRoleValidation.determineUser();
         var inv_in = [];
         this.state.item_properties.map(prop => {
             if (!this.props.item[prop].toString().match(this.getPropertyPattern(prop))) {
@@ -114,6 +132,12 @@ export default class UserDetails extends React.Component {
                     inv_in.push(Constants.no_manu_lines);
                 }
             }
+        }
+        console.log("current user name VALID: "+ curUser.user.username);
+        console.log("current detail name VALID: "+ this.props.item.username);
+
+        if(curUser.user.username == this.props.item.username){
+            inv_in.push(Constants.change_own_roles);
         }
         await this.setState({ invalid_inputs: inv_in });
     }
@@ -224,7 +248,7 @@ export default class UserDetails extends React.Component {
         return (
         <div className='item-details'>
             <div className='item-title'>
-                <h1>{ this.props.item ? this.props.item.name : Constants.undefined }</h1>
+                <h1>{ this.props.item ? this.props.item.username : Constants.undefined }</h1>
             </div>
             <div className='item-properties'>
                 { this.injectProperties() }

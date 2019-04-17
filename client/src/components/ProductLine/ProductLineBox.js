@@ -56,7 +56,7 @@ class ProductLinesBox extends Component {
 
   async onDeleteProdLine(id) {
     if(!this.checkValidDelete(id)){
-      alert('You cannot delete this product line, it is still used by skus');
+      alert('This product line is being used by one or more SKUs. You cannot delete a product line being used by a SKU.');
       return false;
     }
     const i = this.state.data.findIndex(c => c._id === id);
