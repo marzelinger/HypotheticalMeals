@@ -30,7 +30,7 @@
     "fast-csv": "^2.4.1",
     "html2canvas": "^1.0.0-alpha.12",
     "is-empty": "^1.2.0",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "js-file-download": "^0.4.4",
     "jsonwebtoken": "^8.4.0",
     "jwt-decode": "^2.2.0",
