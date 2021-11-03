@@ -56,7 +56,7 @@
     "redux-thunk": "^2.3.0",
     "tabletojson": "^1.0.4",
     "uuid": "^3.3.2",
-    "validator": "^10.11.0"
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "case-sensitive-paths-webpack-plugin": "^2.2.0"
